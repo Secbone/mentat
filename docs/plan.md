@@ -250,6 +250,17 @@ Archive 保留**非支配的多样变体**（开放探索），而非只留最�
   `.mentat/runs/<runId>/`（`trace.jsonl` 事件流 + `run.json` 摘要 + `iter-<n>.diff`），
   `mentat trace` 回看。这是"用日志驱动自迭代"的原料。
 
+- **M6** 完成：`LoopConfig.parentSelection: "current" | "archive"`，archive 模式下
+  `SelfIterationLoop` 用 `Archive.selectParent()` 采样父代并经 `Workspace.checkout()` 分支，
+  实现 DGM 式 open-ended 探索（垫脚石可再分支）。
+- **M3** 完成（`@mentat/core`）：`MemoryStore`/`InMemoryMemoryStore`（关键词召回、标签过滤、
+  遗忘）+ `memoryArtifact`（data 制品，可被循环迭代）；`ModelCatalog`（按上下文/成本/供应商
+  选择）+ `modelCatalogArtifact`。
+- **M4** 完成：`TaskSuite` 抽象；`@mentat/iterate` 的 `ContainerRunner`（Docker：`--rm`、
+  挂载 workdir、默认 `--network none`）+ `containerGate`/`ContainerEvaluator` + `dockerRunArgs`
+  纯构造器。真实 Docker（alpine:3）集成测试通过（默认跳过，`MENTAT_DOCKER=1` 启用）。
+- **M9** 暂缓（用户决定）。
+
 **下一步**：把历史运行日志接入 `AgentProposer` 的决策（DGM 式的"分析自己的评测日志"）；
-记忆/模型层（M3）；面向真实改进目标的多信号评测 harness 与容器 runner（M4）；
-用 `mentat iterate` 对 mentat 自身的 worktree 跑第一轮真实自迭代。
+用 `mentat iterate` 对 mentat 自身的 worktree 跑**首个人类冻结验收 + agent 自迭代**的任务
+（推荐 **M7 ACP/opencode 适配器**，因为通用契约测试已就绪）。

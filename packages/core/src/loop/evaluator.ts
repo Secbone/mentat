@@ -14,6 +14,17 @@ export interface Evaluator {
   evaluate(candidate: Candidate): Promise<Signal[]>;
 }
 
+/** A named collection of tasks; the unit a benchmark is built from. */
+export interface TaskSuite {
+  id: string;
+  description?: string;
+  tasks: EvalTask[];
+}
+
+export function defineTaskSuite(suite: TaskSuite): TaskSuite {
+  return suite;
+}
+
 /**
  * Applies a candidate's artifacts to a fresh runtime, runs every task, and
  * aggregates the signals (mean per metric name).

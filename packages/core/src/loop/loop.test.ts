@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { IterableArtifact, Runtime } from "../artifact";
 import { MemoryTracer } from "../trace";
 import type { Disposable } from "../types";
+import { Archive } from "./archive";
 import { type EvalTask, FunctionEvaluator } from "./evaluator";
 import { functionGate } from "./gate";
 import { SelfIterationLoop } from "./loop";
@@ -110,6 +111,26 @@ describe("SelfIterationLoop", () => {
     expect(result.records[0]?.accepted).toBe(false);
     expect(result.records[0]?.reason).toBe("protected artifact");
     expect(workspace.current().id).toBe("root");
+  });
+
+  it("branches from an archived stepping stone in archive mode", async () => {
+    const workspace = new InMemoryWorkspace(root(1));
+    const archive = new Archive(() => 0.0);
+    const loop = new SelfIterationLoop({
+      workspace,
+      proposer: new ScriptedProposer([propose(3), propose(2)]),
+      evaluator: new FunctionEvaluator([readKnob]),
+      archive,
+      config: { maxIterations: 2, parentSelection: "archive" },
+    });
+
+    const result = await loop.run();
+
+    expect(result.records[0]?.accepted).toBe(true);
+    expect(result.records[0]?.childId).toBe("cand-3");
+    // second iteration branches from the root stepping stone, not the latest
+    expect(result.records[1]?.parentId).toBe("root");
+    expect(result.records[1]?.accepted).toBe(true);
   });
 
   it("emits a structured trace of every step", async () => {

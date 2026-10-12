@@ -29,6 +29,11 @@ export interface LoopConfig {
   maxIterations: number;
   /** Stop after this many consecutive rejected iterations. Defaults to Infinity. */
   maxFailures?: number;
+  /**
+   * How the next parent is chosen: the latest accepted candidate ("current")
+   * or sampled from the archive ("archive", DGM-style open-ended search).
+   */
+  parentSelection?: "current" | "archive";
 }
 
 export interface IterationRecord {

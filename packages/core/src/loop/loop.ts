@@ -90,11 +90,26 @@ export class SelfIterationLoop {
 
     const records: IterationRecord[] = [];
     const maxFailures = this.config.maxFailures ?? Number.POSITIVE_INFINITY;
+    const useArchive = this.config.parentSelection === "archive";
     let failures = 0;
 
     for (let iteration = 1; iteration <= this.config.maxIterations; iteration += 1) {
       if (failures >= maxFailures) break;
-      const outcome = await this.iterate(iteration, current, currentSignals);
+
+      let parent = current;
+      let parentSignals = currentSignals;
+      if (useArchive) {
+        const sampled = this.archive.selectParent();
+        if (sampled) {
+          parent = sampled;
+          parentSignals = sampled.signals;
+          if (sampled.id !== this.workspace.current().id) {
+            await this.workspace.checkout?.(sampled);
+          }
+        }
+      }
+
+      const outcome = await this.iterate(iteration, parent, parentSignals);
       records.push(outcome.record);
       this.archive.record(outcome.record);
       this.onIteration?.(outcome.record);

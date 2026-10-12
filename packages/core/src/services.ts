@@ -4,4 +4,6 @@ export const services = {
   kernel: "mentat.kernel",
   loop: "mentat.loop",
   archive: "mentat.archive",
+  memory: "mentat.memory",
+  models: "mentat.models",
 } as const;

@@ -10,6 +10,8 @@ export interface Workspace {
   apply(proposal: Proposal): Promise<Candidate>;
   commit(child: Candidate): Promise<void>;
   rollback(child: Candidate): Promise<void>;
+  /** Make a candidate the active base (used for open-ended branching). */
+  checkout?(candidate: Candidate): Promise<void>;
 }
 
 let counter = 0;
@@ -42,6 +44,10 @@ export class InMemoryWorkspace implements Workspace {
 
   async commit(child: Candidate): Promise<void> {
     if (this.active.id === child.id) this.parents.delete(child.id);
+  }
+
+  async checkout(candidate: Candidate): Promise<void> {
+    this.active = candidate;
   }
 
   async rollback(child: Candidate): Promise<void> {

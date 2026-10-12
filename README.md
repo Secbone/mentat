@@ -76,5 +76,6 @@ mentat trace --raw      # 原始 JSONL
 这份轨迹就是"用日志驱动自迭代"的原料：agent 的 `proposer` 会拿到 `--log-dir`，
 可读取历史运行记录来决定下一轮改什么。
 
-> 状态：M0–M2 完成；M5 真件完成（`GitWorkspace`/`AgentProposer`/命令门与评测器 + `mentat iterate`）。
-> 下一步：记忆/模型层（M3）、多信号评测 harness 与容器 runner（M4）。
+> 状态：M0–M6 完成（core 抽象、Pi 适配、真件 loop、可观测轨迹、记忆/模型层、
+> 多信号评测 harness 与 Docker 容器 runner）。下一步：让 agent 自迭代实现
+> **M7 ACP/opencode 适配器**（通用契约测试已就绪）。
