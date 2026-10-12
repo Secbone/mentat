@@ -55,5 +55,26 @@ mentat iterate --target <git-repo> --task "<goal>" \
 → 评测信号 → Pareto 保留/回滚 → 写入 archive。Pi 会复用 opencode 的凭据（`OPENCODE_API_KEY`
 或 `~/.local/share/opencode/auth.json`）。
 
+## 执行日志
+
+每次 `iterate` 都会落盘一份可观测的执行轨迹到 `.mentat/runs/<runId>/`：
+
+- `trace.jsonl` — 结构化事件流：`run.start` → `agent.prompt` → 每个 `agent.event`
+  （工具调用/结果、消息、usage）→ `iteration.propose/apply/gate/select` → `loop.end` → `run.end`。
+- `run.json` — 本次运行摘要（目标、模型、每个 iteration 的门/信号/是否保留、best）。
+- `iter-<n>.diff` — 每个候选相对父提交的 unified diff。
+
+回看：
+
+```bash
+mentat trace            # 最近一次运行的轨迹（默认折叠 token 级 delta）
+mentat trace <run-dir>  # 指定运行目录
+mentat trace --all      # 含 token 级 delta
+mentat trace --raw      # 原始 JSONL
+```
+
+这份轨迹就是"用日志驱动自迭代"的原料：agent 的 `proposer` 会拿到 `--log-dir`，
+可读取历史运行记录来决定下一轮改什么。
+
 > 状态：M0–M2 完成；M5 真件完成（`GitWorkspace`/`AgentProposer`/命令门与评测器 + `mentat iterate`）。
 > 下一步：记忆/模型层（M3）、多信号评测 harness 与容器 runner（M4）。

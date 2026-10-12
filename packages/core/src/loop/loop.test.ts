@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { IterableArtifact, Runtime } from "../artifact";
+import { MemoryTracer } from "../trace";
 import type { Disposable } from "../types";
 import { type EvalTask, FunctionEvaluator } from "./evaluator";
 import { functionGate } from "./gate";
@@ -109,5 +110,28 @@ describe("SelfIterationLoop", () => {
     expect(result.records[0]?.accepted).toBe(false);
     expect(result.records[0]?.reason).toBe("protected artifact");
     expect(workspace.current().id).toBe("root");
+  });
+
+  it("emits a structured trace of every step", async () => {
+    const workspace = new InMemoryWorkspace(root(1));
+    const tracer = new MemoryTracer();
+    const loop = new SelfIterationLoop({
+      workspace,
+      proposer: new ScriptedProposer([propose(2)]),
+      evaluator: new FunctionEvaluator([readKnob]),
+      config: { maxIterations: 1 },
+      tracer,
+    });
+
+    await loop.run();
+
+    const types = tracer.types();
+    expect(types).toContain("loop.start");
+    expect(types).toContain("iteration.propose");
+    expect(types).toContain("iteration.apply");
+    expect(types).toContain("iteration.gate");
+    expect(types).toContain("iteration.select");
+    expect(types).toContain("loop.end");
+    expect(tracer.find("iteration.select")[0]?.data).toMatchObject({ accepted: true });
   });
 });

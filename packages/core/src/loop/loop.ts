@@ -1,4 +1,6 @@
 import type { Signal } from "../artifact";
+import type { Tracer } from "../trace";
+import type { JsonValue } from "../types";
 import { Archive } from "./archive";
 import type { Evaluator } from "./evaluator";
 import type { Gate } from "./gate";
@@ -14,8 +16,17 @@ export interface LoopDeps {
   gates?: Gate;
   archive?: Archive;
   config?: Partial<LoopConfig>;
+  tracer?: Tracer;
   onIteration?: (record: IterationRecord) => void;
 }
+
+const signalsJson = (signals: Signal[]): JsonValue => signals as unknown as JsonValue;
+
+const candidateJson = (candidate: Candidate): JsonValue => ({
+  id: candidate.id,
+  version: candidate.version,
+  artifacts: candidate.artifacts.map((artifact) => artifact.id),
+});
 
 export interface LoopResult {
   best: Candidate;
@@ -50,6 +61,7 @@ export class SelfIterationLoop {
   private readonly gates?: Gate;
   private readonly archive: Archive;
   private readonly config: LoopConfig;
+  private readonly tracer?: Tracer;
   private readonly onIteration?: (record: IterationRecord) => void;
 
   constructor(deps: LoopDeps) {
@@ -59,13 +71,22 @@ export class SelfIterationLoop {
     if (deps.gates) this.gates = deps.gates;
     this.archive = deps.archive ?? new Archive();
     this.config = { maxIterations: 5, ...deps.config };
+    if (deps.tracer) this.tracer = deps.tracer;
     if (deps.onIteration) this.onIteration = deps.onIteration;
+  }
+
+  private trace(type: string, data?: JsonValue): void {
+    this.tracer?.emit(type, data);
   }
 
   async run(): Promise<LoopResult> {
     let current = this.workspace.current();
     let currentSignals = await this.evaluator.evaluate(current);
     this.archive.add(current, { signals: currentSignals });
+    this.trace("loop.start", {
+      root: candidateJson(current),
+      maxIterations: this.config.maxIterations,
+    });
 
     const records: IterationRecord[] = [];
     const maxFailures = this.config.maxFailures ?? Number.POSITIVE_INFINITY;
@@ -86,7 +107,9 @@ export class SelfIterationLoop {
       }
     }
 
-    return { best: this.archive.best() ?? current, records, archive: this.archive };
+    const best = this.archive.best() ?? current;
+    this.trace("loop.end", { best: candidateJson(best), iterations: records.length });
+    return { best, records, archive: this.archive };
   }
 
   private async iterate(
@@ -95,8 +118,20 @@ export class SelfIterationLoop {
     before: Signal[],
   ): Promise<StepOutcome> {
     const proposal = await this.proposer.propose(parent, before);
+    this.trace("iteration.propose", {
+      iteration,
+      parentId: parent.id,
+      proposalId: proposal.id,
+      description: proposal.description,
+    });
 
     if (touchesProtected(parent, proposal)) {
+      this.trace("iteration.gate", {
+        iteration,
+        passed: false,
+        gate: "protected",
+        reason: "protected artifact",
+      });
       return {
         record: rejected(iteration, parent, proposal.id, proposal, before, "protected artifact"),
       };
@@ -107,6 +142,7 @@ export class SelfIterationLoop {
       child = await this.workspace.apply(proposal);
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
+      this.trace("iteration.apply", { iteration, failed: true, reason });
       return {
         record: rejected(
           iteration,
@@ -118,8 +154,15 @@ export class SelfIterationLoop {
         ),
       };
     }
+    this.trace("iteration.apply", { iteration, childId: child.id });
 
     const gate = this.gates ? await this.gates.check(child) : { passed: true, gate: "none" };
+    this.trace("iteration.gate", {
+      iteration,
+      passed: gate.passed,
+      gate: gate.gate,
+      ...(gate.reason ? { reason: gate.reason } : {}),
+    });
     if (!gate.passed) {
       await this.workspace.rollback(child);
       const record = rejected(
@@ -138,6 +181,13 @@ export class SelfIterationLoop {
     this.archive.add(child, { parentId: parent.id, signals: after });
 
     const accepted = dominates(after, before);
+    this.trace("iteration.select", {
+      iteration,
+      childId: child.id,
+      accepted,
+      before: signalsJson(before),
+      after: signalsJson(after),
+    });
     const record: IterationRecord = {
       iteration,
       parentId: parent.id,

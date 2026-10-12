@@ -1,3 +1,5 @@
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { createInterface } from "node:readline/promises";
 import {
   AdapterRegistry,
@@ -5,6 +7,7 @@ import {
   createFakeAdapter,
   type Gate,
   GateChain,
+  type JsonValue,
   type PermissionHandler,
   pathGuardGate,
   runDemoLoop,
@@ -16,6 +19,7 @@ import {
   commandGate,
   GitWorkspace,
   JsonCommandEvaluator,
+  JsonlTracer,
   type SessionRunner,
 } from "@mentat/iterate";
 import { createPiAdapter, type PermissionMode } from "@mentat/transport-pi";
@@ -27,6 +31,7 @@ Usage:
   mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--permission <ask|auto|full>]
   mentat loop demo
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
+  mentat trace [<run-dir>] [--raw]
   mentat help
 
 Options:
@@ -118,6 +123,7 @@ async function iterateCommand(args: string[]): Promise<number> {
   let check: string | undefined;
   let evalCmd: string | undefined;
   let iterations = 1;
+  let logDir: string | undefined;
   const protect: string[] = [];
   const positional: string[] = [];
 
@@ -144,6 +150,8 @@ async function iterateCommand(args: string[]): Promise<number> {
     } else if (arg === "--protect") {
       const value = args[++i];
       if (value) protect.push(value);
+    } else if (arg === "--log-dir") {
+      logDir = args[++i];
     } else if (arg !== undefined) {
       positional.push(arg);
     }
@@ -175,7 +183,60 @@ async function iterateCommand(args: string[]): Promise<number> {
   }
 
   const adapter = registry.get(harnessId);
+  const runId = `${new Date().toISOString().replace(/[:.]/g, "-")}-${Math.random()
+    .toString(36)
+    .slice(2, 8)}`;
+  const runDir = logDir ? join(logDir, runId) : join(process.cwd(), ".mentat", "runs", runId);
+  mkdirSync(runDir, { recursive: true });
+  const tracer = new JsonlTracer(join(runDir, "trace.jsonl"), { runId });
+
+  const summarize = (event: AgentEvent): JsonValue => {
+    switch (event.type) {
+      case "tool.start":
+        return { type: event.type, name: event.name, input: event.input };
+      case "tool.result":
+        return {
+          type: event.type,
+          id: event.id,
+          isError: event.isError,
+          output: event.output.slice(0, 4000),
+        };
+      case "message.completed":
+        return { type: event.type, text: event.message.text };
+      case "message.delta":
+      case "message.reasoning":
+        return { type: event.type, text: event.text.slice(0, 2000) };
+      case "run.settled":
+        return { type: event.type, reason: event.reason };
+      case "permission.request":
+        return { type: event.type, toolName: event.request.toolName };
+      case "permission.resolved":
+        return { type: event.type, decision: event.decision };
+      case "usage":
+        return {
+          type: event.type,
+          inputTokens: event.usage.inputTokens,
+          outputTokens: event.usage.outputTokens,
+          costUsd: event.usage.costUsd ?? 0,
+        };
+      default:
+        return { type: event.type };
+    }
+  };
+
+  tracer.emit("run.start", {
+    target,
+    task,
+    harness: harnessId,
+    model: model ?? null,
+    check: check ?? null,
+    eval: evalCmd ?? null,
+    protect,
+    permission,
+  });
+
   const runner: SessionRunner = async (prompt) => {
+    tracer.emit("agent.prompt", { prompt });
     const session = await adapter.createSession(
       { cwd: target, ...(model ? { model } : {}) },
       { onPermission: createPermissionHandler(permission) },
@@ -183,6 +244,7 @@ async function iterateCommand(args: string[]): Promise<number> {
     try {
       const settled = new Promise<void>((resolve) => {
         session.subscribe((event: AgentEvent) => {
+          tracer.emit("agent.event", summarize(event));
           if (event.type === "run.settled") resolve();
           else if (event.type === "message.delta") process.stdout.write(event.text);
           else if (event.type === "tool.start") process.stdout.write(`\n[tool] ${event.name}\n`);
@@ -206,13 +268,53 @@ async function iterateCommand(args: string[]): Promise<number> {
 
   const loop = new SelfIterationLoop({
     workspace,
-    proposer: new AgentProposer({ task, cwd: target, runner }),
+    proposer: new AgentProposer({ task, cwd: target, runner, logDir: runDir }),
     evaluator,
     gates: new GateChain(gates),
     config: { maxIterations: iterations },
+    tracer,
   });
 
   const result = await loop.run();
+
+  const recordsJson: JsonValue[] = result.records.map((record) => {
+    if (record.childId !== record.parentId && record.gate?.passed !== false) {
+      try {
+        const diff = workspace.diffShas(record.parentId, record.childId);
+        if (diff.length > 0) writeFileSync(join(runDir, `iter-${record.iteration}.diff`), diff);
+      } catch {
+        /* root or missing commit */
+      }
+    }
+    return {
+      iteration: record.iteration,
+      parentId: record.parentId,
+      childId: record.childId,
+      description: record.proposal.description,
+      gate: record.gate?.gate ?? "none",
+      gatePassed: record.gate?.passed ?? true,
+      accepted: record.accepted,
+      reason: record.reason ?? null,
+      before: record.before as unknown as JsonValue,
+      after: (record.after as unknown as JsonValue) ?? null,
+    };
+  });
+  const summary: JsonValue = {
+    runId,
+    target,
+    task,
+    harness: harnessId,
+    model: model ?? null,
+    check: check ?? null,
+    eval: evalCmd ?? null,
+    protect,
+    best: result.best.id,
+    archiveSize: result.archive.size(),
+    records: recordsJson,
+  };
+  writeFileSync(join(runDir, "run.json"), `${JSON.stringify(summary, null, 2)}\n`);
+  tracer.emit("run.end", { best: result.best.id, records: result.records.length });
+
   process.stdout.write("\niteration  gate   accepted  reason\n");
   for (const record of result.records) {
     const gate = (record.gate?.passed ?? true) ? "pass" : "fail";
@@ -223,6 +325,62 @@ async function iterateCommand(args: string[]): Promise<number> {
     );
   }
   process.stdout.write(`\narchive: ${result.archive.size()} candidates, best=${result.best.id}\n`);
+  process.stdout.write(`log: ${runDir}\n`);
+  return 0;
+}
+
+function latestRunDir(): string | undefined {
+  const base = join(process.cwd(), ".mentat", "runs");
+  if (!existsSync(base)) return undefined;
+  const entries = readdirSync(base).sort();
+  const last = entries[entries.length - 1];
+  return last ? join(base, last) : undefined;
+}
+
+function traceCommand(args: string[]): number {
+  const dirArg = args.find((arg) => !arg.startsWith("-"));
+  const raw = args.includes("--raw");
+  const dir = dirArg ?? latestRunDir();
+  if (!dir) {
+    process.stderr.write("trace: no run directory found (run `mentat iterate` first)\n");
+    return 1;
+  }
+  const tracePath = join(dir, "trace.jsonl");
+  if (!existsSync(tracePath)) {
+    process.stderr.write(`trace: no trace.jsonl in ${dir}\n`);
+    return 1;
+  }
+  const all = args.includes("--all");
+  process.stdout.write(`run: ${dir}${raw ? " (raw)" : ""}\n`);
+  const lines = readFileSync(tracePath, "utf8")
+    .split("\n")
+    .filter((line) => line.trim().length > 0);
+  for (const line of lines) {
+    if (raw) {
+      process.stdout.write(`${line}\n`);
+      continue;
+    }
+    let event: { ts?: number; type?: string; data?: { type?: string } };
+    try {
+      event = JSON.parse(line) as typeof event;
+    } catch {
+      process.stdout.write(`${line}\n`);
+      continue;
+    }
+    // Collapse token-level deltas and per-event usage unless --all is passed.
+    if (
+      !all &&
+      event.type === "agent.event" &&
+      (event.data?.type === "message.delta" ||
+        event.data?.type === "message.reasoning" ||
+        event.data?.type === "usage")
+    ) {
+      continue;
+    }
+    const time = event.ts ? new Date(event.ts).toISOString().slice(11, 19) : "--:--:--";
+    const data = event.data === undefined ? "" : ` ${JSON.stringify(event.data)}`;
+    process.stdout.write(`${time}  ${event.type ?? "?"}${data}\n`);
+  }
   return 0;
 }
 
@@ -335,6 +493,8 @@ export async function run(argv: string[]): Promise<number> {
       return loopCommand(rest);
     case "iterate":
       return iterateCommand(rest);
+    case "trace":
+      return traceCommand(rest);
     default:
       process.stderr.write(`unknown command: ${command}\n\n${USAGE}\n`);
       return 1;

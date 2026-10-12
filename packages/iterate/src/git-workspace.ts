@@ -79,4 +79,16 @@ export class GitWorkspace implements Workspace {
       .map((line) => line.trim())
       .filter((line) => line.length > 0);
   }
+
+  /** Unified diff of a candidate relative to its parent commit. */
+  diff(candidate: Candidate): string {
+    const parent = this.parents.get(candidate.id);
+    if (!parent) return "";
+    return this.diffShas(parent, candidate.id);
+  }
+
+  /** Unified diff between two commits. */
+  diffShas(from: string, to: string): string {
+    return git(this.cwd, ["diff", from, to]);
+  }
 }

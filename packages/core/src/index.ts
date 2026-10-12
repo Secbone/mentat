@@ -8,4 +8,5 @@ export * from "./kernel/kernel";
 export * from "./kernel/plugin";
 export * from "./loop";
 export * from "./services";
+export * from "./trace";
 export * from "./types";

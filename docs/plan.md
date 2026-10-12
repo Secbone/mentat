@@ -245,5 +245,11 @@ Archive 保留**非支配的多样变体**（开放探索），而非只留最�
   实测：Pi（`opencode-go/deepseek-v4.1-flash`）在隔离 git repo 上改代码 → 提交 → 门 → 评测 →
   accept，产出可回滚的候选提交。
 
-**下一步**：记忆/模型层（M3）；面向真实改进目标的多信号评测 harness 与容器 runner（M4）；
+- **可观测性** 完成：`@mentat/core` 的 `Tracer`（循环每步发出结构化事件），
+  `@mentat/iterate` 的 `JsonlTracer`；`mentat iterate` 把每次运行落盘到
+  `.mentat/runs/<runId>/`（`trace.jsonl` 事件流 + `run.json` 摘要 + `iter-<n>.diff`），
+  `mentat trace` 回看。这是"用日志驱动自迭代"的原料。
+
+**下一步**：把历史运行日志接入 `AgentProposer` 的决策（DGM 式的"分析自己的评测日志"）；
+记忆/模型层（M3）；面向真实改进目标的多信号评测 harness 与容器 runner（M4）；
 用 `mentat iterate` 对 mentat 自身的 worktree 跑第一轮真实自迭代。
