@@ -8,6 +8,9 @@ export default defineConfig({
         new URL("./packages/core/src/testing/contract.ts", import.meta.url),
       ),
       "@mentat/core": fileURLToPath(new URL("./packages/core/src/index.ts", import.meta.url)),
+      "@mentat/transport-pi": fileURLToPath(
+        new URL("./packages/transport-pi/src/index.ts", import.meta.url),
+      ),
       "@mentat/cli": fileURLToPath(new URL("./packages/cli/src/index.ts", import.meta.url)),
     },
   },

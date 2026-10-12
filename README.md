@@ -27,6 +27,19 @@ pnpm dev harness list
 | 包 | 职责 |
 |---|---|
 | `@mentat/core` | kernel、artifact 契约、`AgentEvent`、自迭代 loop、eval、archive |
+| `@mentat/transport-pi` | Pi 原生 RPC 适配器（`pi --mode rpc`）+ 权限 bridge 扩展 |
 | `@mentat/cli` | CLI（bin: `mentat`） |
 
-> 状态：M1 开发中（core 抽象 + FakeAdapter + CLI 骨架）。
+## 引擎接入
+
+```bash
+mentat harness list                                   # 列出可用引擎与能力
+mentat run "补全测试" --harness pi --permission ask    # 用 Pi，工具调用逐次审批
+mentat run "..." --harness fake                        # 无依赖的假引擎
+```
+
+引擎适配器必须通过 `@mentat/core/testing` 的共享契约测试（`describeHarnessContract`）；
+新增引擎只要实现 `HarnessAdapter` 并跑通它即可。
+
+> 状态：M0–M2 完成（core 抽象 + FakeAdapter + Pi RPC 适配器 + ask/auto/full 权限门 + CLI）。
+> 下一步 M3+：记忆/模型层、评测 harness、自迭代 loop。

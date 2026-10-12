@@ -42,6 +42,7 @@ export interface EvalSpec {
 /** Minimal surface an artifact applies itself to. */
 export interface Runtime {
   get<T>(key: string): T;
+  provide<T>(key: string, value: T): Disposable;
 }
 
 export interface IterableArtifact {
@@ -49,6 +50,8 @@ export interface IterableArtifact {
   id: string;
   version: string;
   form: ArtifactForm;
+  /** Protected artifacts (safety gates, the loop itself) may not be modified. */
+  protected?: boolean;
   apply(rt: Runtime): MaybePromise<Disposable>;
   snapshot(): JsonValue;
   evalSpec(): EvalSpec;

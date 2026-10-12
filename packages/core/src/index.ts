@@ -6,5 +6,6 @@ export * from "./events";
 export * from "./kernel/context";
 export * from "./kernel/kernel";
 export * from "./kernel/plugin";
+export * from "./loop";
 export * from "./services";
 export * from "./types";

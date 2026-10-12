@@ -12,6 +12,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@mentat/core": "workspace:*"
+    "@mentat/core": "workspace:*",
+    "@mentat/transport-pi": "workspace:*"
   }
 }

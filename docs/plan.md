@@ -222,3 +222,23 @@ Archive 保留**非支配的多样变体**（开放探索），而非只留最�
 | 底座 | Pi + opencode |
 | 插件核心 | 自建 cordis 风格极简核心；cordis/chord 列为 v2 候选 |
 | 迭代对象 | 记忆 / 工具 / skill / 模型 / prompt / 策略 / 适配器 / core / pipeline 全覆盖 |
+
+---
+
+## 11. 进度
+
+- **M0** 完成：pnpm monorepo（`@mentat/core`、`@mentat/cli`），tsc/biome/vitest。
+- **M1** 完成：`AgentEvent` 统一事件流、`HarnessAdapter` 接入缝、`IterableArtifact` 契约、
+  cordis 风格 kernel、FakeAdapter、共享 harness 契约测试套件。
+- **M2** 完成：`@mentat/transport-pi`（`pi --mode rpc` + 事件翻译 + bridge 扩展），
+  CLI 支持 `--harness pi` 与 ask/auto/full 权限三档。
+- **M5 骨架** 完成（用假件跑通闭环，真件待接）：
+  - `loop/`：`SelfIterationLoop`（observe→propose→materialize→gate→evaluate→select→archive）、
+    `Workspace`/`InMemoryWorkspace`、`Proposer`/`ScriptedProposer`、`Evaluator`/`FunctionEvaluator`、
+    `Gate`/`GateChain`、`Archive`（谱系 + DGM 式父代选择）、Pareto `dominates`。
+  - 保护机制：`protected` artifact 不可被修改（安全门/管线）。
+  - 可观察：`mentat loop demo` 打印 accept/rollback/archive 轨迹。
+
+**下一步**：把骨架的假件换成真件——`GitWorkspace`（mentat 仓库当工作区，child=commit、
+rollback=reset）、`AgentProposer`（驱动 Pi 会话改代码）、`CommandGate`（tsc/vitest）、
+任务集评测 + 容器 runner；然后做第一轮 dogfood。
