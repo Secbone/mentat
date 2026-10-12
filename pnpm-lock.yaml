@@ -29,11 +29,23 @@ importers:
       '@mentat/core':
         specifier: workspace:*
         version: link:../core
+      '@mentat/iterate':
+        specifier: workspace:*
+        version: link:../iterate
       '@mentat/transport-pi':
         specifier: workspace:*
         version: link:../transport-pi
 
   packages/core: {}
+
+  packages/iterate:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/transport-pi':
+        specifier: workspace:*
+        version: link:../transport-pi
 
   packages/transport-pi:
     dependencies:

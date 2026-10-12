@@ -13,6 +13,7 @@ import type {
   SessionOptions,
   UserInput,
 } from "@mentat/core";
+import { isOpencodeModel, resolveOpencodeApiKey } from "./opencode-auth";
 import { RpcClient, type RpcClientOptions, type RpcRecord } from "./rpc-client";
 import { translate } from "./translate";
 
@@ -168,16 +169,22 @@ export function createPiAdapter(options: PiAdapterOptions = {}): HarnessAdapter 
         ...(extensionPath ? ["--extension", extensionPath] : []),
         ...(sessionOptions.model ? ["--model", sessionOptions.model] : []),
       ];
+      const env: Record<string, string> = {
+        ...options.env,
+        MENTAT_PERMISSION_MODE: permissionMode,
+      };
+      if (isOpencodeModel(sessionOptions.model) && !env.OPENCODE_API_KEY) {
+        const key = resolveOpencodeApiKey();
+        if (key) env.OPENCODE_API_KEY = key;
+      }
+
       return new PiSession(
         `pi-${++sessions}`,
         {
           binary,
           args,
           cwd: sessionOptions.cwd,
-          env: {
-            ...options.env,
-            MENTAT_PERMISSION_MODE: permissionMode,
-          },
+          env,
         },
         deps,
       );

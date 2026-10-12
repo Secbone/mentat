@@ -18,6 +18,7 @@
       "@mentat/core": ["packages/core/src/index.ts"],
       "@mentat/core/testing": ["packages/core/src/testing/contract.ts"],
       "@mentat/transport-pi": ["packages/transport-pi/src/index.ts"],
+      "@mentat/iterate": ["packages/iterate/src/index.ts"],
       "@mentat/cli": ["packages/cli/src/index.ts"]
     }
   },

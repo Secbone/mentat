@@ -32,7 +32,7 @@ export class InMemoryWorkspace implements Workspace {
     const child: Candidate = {
       id: proposal.id,
       version: `v${++counter}`,
-      artifacts: proposal.artifacts,
+      artifacts: proposal.artifacts ?? [],
       parentId: parent.id,
     };
     this.parents.set(child.id, parent);

@@ -8,11 +8,15 @@ export interface Candidate {
   parentId?: string;
 }
 
-/** A proposed change: the artifact set that should replace the parent's. */
+/**
+ * A proposed change. `artifacts` is the artifact set that replaces the
+ * parent's (data/prompt/memory loops); agent-driven code loops leave it
+ * undefined and edit the workspace directly.
+ */
 export interface Proposal {
   id: string;
   description: string;
-  artifacts: IterableArtifact[];
+  artifacts?: IterableArtifact[];
 }
 
 export interface GateResult {

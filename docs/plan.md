@@ -238,7 +238,12 @@ Archive 保留**非支配的多样变体**（开放探索），而非只留最�
     `Gate`/`GateChain`、`Archive`（谱系 + DGM 式父代选择）、Pareto `dominates`。
   - 保护机制：`protected` artifact 不可被修改（安全门/管线）。
   - 可观察：`mentat loop demo` 打印 accept/rollback/archive 轨迹。
+- **M5 真件** 完成：`@mentat/iterate` 提供 `GitWorkspace`（commit=候选、reset=回滚、
+  `changedFiles`）、`AgentProposer`（把任意 session runner 变成 proposer）、`commandGate`、
+  `CheckEvaluator`/`JsonCommandEvaluator`；`mentat iterate` 串起真闭环。
+  Pi 自动复用 opencode 凭据（`OPENCODE_API_KEY` 或 opencode auth.json）。
+  实测：Pi（`opencode-go/deepseek-v4.1-flash`）在隔离 git repo 上改代码 → 提交 → 门 → 评测 →
+  accept，产出可回滚的候选提交。
 
-**下一步**：把骨架的假件换成真件——`GitWorkspace`（mentat 仓库当工作区，child=commit、
-rollback=reset）、`AgentProposer`（驱动 Pi 会话改代码）、`CommandGate`（tsc/vitest）、
-任务集评测 + 容器 runner；然后做第一轮 dogfood。
+**下一步**：记忆/模型层（M3）；面向真实改进目标的多信号评测 harness 与容器 runner（M4）；
+用 `mentat iterate` 对 mentat 自身的 worktree 跑第一轮真实自迭代。

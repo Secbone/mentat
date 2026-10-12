@@ -28,6 +28,7 @@ pnpm dev harness list
 |---|---|
 | `@mentat/core` | kernel、artifact 契约、`AgentEvent`、自迭代 loop、eval、archive |
 | `@mentat/transport-pi` | Pi 原生 RPC 适配器（`pi --mode rpc`）+ 权限 bridge 扩展 |
+| `@mentat/iterate` | 真件：`GitWorkspace`、`AgentProposer`、命令门与评测器 |
 | `@mentat/cli` | CLI（bin: `mentat`） |
 
 ## 引擎接入
@@ -41,5 +42,18 @@ mentat run "..." --harness fake                        # 无依赖的假引擎
 引擎适配器必须通过 `@mentat/core/testing` 的共享契约测试（`describeHarnessContract`）；
 新增引擎只要实现 `HarnessAdapter` 并跑通它即可。
 
-> 状态：M0–M2 完成（core 抽象 + FakeAdapter + Pi RPC 适配器 + ask/auto/full 权限门 + CLI）。
-> 下一步 M3+：记忆/模型层、评测 harness、自迭代 loop。
+## 自迭代
+
+```bash
+mentat loop demo                                       # 确定性闭环演示
+mentat iterate --target <git-repo> --task "<goal>" \
+  --check "pnpm typecheck && pnpm test" \
+  --harness pi --model opencode-go/deepseek-v4.1-flash  # 真件闭环（agent 改代码）
+```
+
+`iterate` 在隔离的 git repo 上：agent 编辑代码 → 提交为候选 → 门（protected 路径 + check）
+→ 评测信号 → Pareto 保留/回滚 → 写入 archive。Pi 会复用 opencode 的凭据（`OPENCODE_API_KEY`
+或 `~/.local/share/opencode/auth.json`）。
+
+> 状态：M0–M2 完成；M5 真件完成（`GitWorkspace`/`AgentProposer`/命令门与评测器 + `mentat iterate`）。
+> 下一步：记忆/模型层（M3）、多信号评测 harness 与容器 runner（M4）。

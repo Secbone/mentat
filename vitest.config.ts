@@ -11,6 +11,7 @@ export default defineConfig({
       "@mentat/transport-pi": fileURLToPath(
         new URL("./packages/transport-pi/src/index.ts", import.meta.url),
       ),
+      "@mentat/iterate": fileURLToPath(new URL("./packages/iterate/src/index.ts", import.meta.url)),
       "@mentat/cli": fileURLToPath(new URL("./packages/cli/src/index.ts", import.meta.url)),
     },
   },

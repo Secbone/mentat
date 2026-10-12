@@ -30,6 +30,7 @@ interface StepOutcome {
 }
 
 function touchesProtected(parent: Candidate, proposal: Proposal): boolean {
+  if (!proposal.artifacts) return false;
   const previous = new Map(parent.artifacts.map((artifact) => [artifact.id, artifact]));
   for (const artifact of proposal.artifacts) {
     const prev = previous.get(artifact.id);

@@ -3,9 +3,21 @@ import {
   AdapterRegistry,
   type AgentEvent,
   createFakeAdapter,
+  type Gate,
+  GateChain,
   type PermissionHandler,
+  pathGuardGate,
   runDemoLoop,
+  SelfIterationLoop,
 } from "@mentat/core";
+import {
+  AgentProposer,
+  CheckEvaluator,
+  commandGate,
+  GitWorkspace,
+  JsonCommandEvaluator,
+  type SessionRunner,
+} from "@mentat/iterate";
 import { createPiAdapter, type PermissionMode } from "@mentat/transport-pi";
 
 const USAGE = `mentat — a self-iterating agent framework
@@ -14,6 +26,7 @@ Usage:
   mentat harness list
   mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--permission <ask|auto|full>]
   mentat loop demo
+  mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
   mentat help
 
 Options:
@@ -22,6 +35,14 @@ Options:
   --cwd <path>         working directory (default: process.cwd())
   --permission <mode>  ask | auto | full (default: auto)
   --yes                shorthand for --permission full
+
+iterate options:
+  --target <dir>       git repo the agent edits (default: process.cwd())
+  --task "<goal>"      what the agent should achieve (required)
+  --check "<cmd>"      gate + default evaluator: pass=1, fail=0 (required unless --eval)
+  --eval "<cmd>"       evaluator command printing a Signal[] JSON array on stdout
+  --iterations <n>     how many iterations to attempt (default: 1)
+  --protect <glob>     被保护的路径，禁止 agent 修改（可重复；默认 packages/core/src/loop/**）
 `;
 
 export function createDefaultRegistry(permissionMode: PermissionMode = "auto"): AdapterRegistry {
@@ -85,6 +106,123 @@ async function loopCommand(args: string[]): Promise<number> {
   process.stdout.write(
     `\narchive: ${result.archive.size()} candidates, best=${result.best.id} knob=${String(bestKnob)}\n`,
   );
+  return 0;
+}
+
+async function iterateCommand(args: string[]): Promise<number> {
+  let target = process.cwd();
+  let task = "";
+  let harnessId = "pi";
+  let model: string | undefined;
+  let permission: PermissionMode = "full";
+  let check: string | undefined;
+  let evalCmd: string | undefined;
+  let iterations = 1;
+  const protect: string[] = [];
+  const positional: string[] = [];
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === "--target") {
+      target = args[++i] ?? target;
+    } else if (arg === "--task") {
+      task = args[++i] ?? "";
+    } else if (arg === "--harness") {
+      harnessId = args[++i] ?? "";
+    } else if (arg === "--model") {
+      model = args[++i];
+    } else if (arg === "--permission") {
+      permission = parsePermissionMode(args[++i]);
+    } else if (arg === "--yes" || arg === "-y") {
+      permission = "full";
+    } else if (arg === "--check") {
+      check = args[++i];
+    } else if (arg === "--eval") {
+      evalCmd = args[++i];
+    } else if (arg === "--iterations") {
+      iterations = Number(args[++i] ?? "1") || 1;
+    } else if (arg === "--protect") {
+      const value = args[++i];
+      if (value) protect.push(value);
+    } else if (arg !== undefined) {
+      positional.push(arg);
+    }
+  }
+
+  if (!task) task = positional.join(" ").trim();
+  if (!task) {
+    process.stderr.write("iterate: missing --task\n");
+    return 1;
+  }
+  if (!check && !evalCmd) {
+    process.stderr.write("iterate: provide --check or --eval\n");
+    return 1;
+  }
+  if (protect.length === 0) protect.push("packages/core/src/loop/**");
+
+  const registry = createDefaultRegistry(permission);
+  if (!registry.has(harnessId)) {
+    process.stderr.write(`iterate: unknown harness "${harnessId}"\n`);
+    return 1;
+  }
+
+  let workspace: GitWorkspace;
+  try {
+    workspace = new GitWorkspace(target);
+  } catch {
+    process.stderr.write(`iterate: "${target}" is not a git repository with a commit\n`);
+    return 1;
+  }
+
+  const adapter = registry.get(harnessId);
+  const runner: SessionRunner = async (prompt) => {
+    const session = await adapter.createSession(
+      { cwd: target, ...(model ? { model } : {}) },
+      { onPermission: createPermissionHandler(permission) },
+    );
+    try {
+      const settled = new Promise<void>((resolve) => {
+        session.subscribe((event: AgentEvent) => {
+          if (event.type === "run.settled") resolve();
+          else if (event.type === "message.delta") process.stdout.write(event.text);
+          else if (event.type === "tool.start") process.stdout.write(`\n[tool] ${event.name}\n`);
+        });
+      });
+      await session.send({ text: prompt });
+      await settled;
+    } finally {
+      await session.dispose();
+    }
+  };
+
+  const gates: Gate[] = [
+    pathGuardGate("protected", protect, (candidate) => workspace.changedFiles(candidate)),
+  ];
+  if (check) gates.push(commandGate("check", { cwd: target, shell: check }));
+
+  const evaluator = evalCmd
+    ? new JsonCommandEvaluator({ cwd: target, shell: evalCmd })
+    : new CheckEvaluator({ cwd: target, shell: check ?? "" }, "check");
+
+  const loop = new SelfIterationLoop({
+    workspace,
+    proposer: new AgentProposer({ task, cwd: target, runner }),
+    evaluator,
+    gates: new GateChain(gates),
+    config: { maxIterations: iterations },
+  });
+
+  const result = await loop.run();
+  process.stdout.write("\niteration  gate   accepted  reason\n");
+  for (const record of result.records) {
+    const gate = (record.gate?.passed ?? true) ? "pass" : "fail";
+    process.stdout.write(
+      `${String(record.iteration).padEnd(10)} ${gate.padEnd(6)} ${
+        record.accepted ? "yes" : "no"
+      }       ${record.reason ?? ""}\n`,
+    );
+  }
+  process.stdout.write(`\narchive: ${result.archive.size()} candidates, best=${result.best.id}\n`);
   return 0;
 }
 
@@ -195,6 +333,8 @@ export async function run(argv: string[]): Promise<number> {
       return runCommand(rest);
     case "loop":
       return loopCommand(rest);
+    case "iterate":
+      return iterateCommand(rest);
     default:
       process.stderr.write(`unknown command: ${command}\n\n${USAGE}\n`);
       return 1;

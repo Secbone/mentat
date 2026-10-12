@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@mentat/core": "workspace:*",
+    "@mentat/iterate": "workspace:*",
     "@mentat/transport-pi": "workspace:*"
   }
 }
