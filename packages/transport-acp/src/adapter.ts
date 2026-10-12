@@ -233,9 +233,9 @@ class AcpSession implements SessionHandle {
       return;
     }
     const update = params.update as Record<string, unknown> | undefined;
-    if (!update || update.sessionUpdate !== "agent_message_chunk") return;
+    if (update?.sessionUpdate !== "agent_message_chunk") return;
     const content = update.content as Record<string, unknown> | undefined;
-    if (!content || content.type !== "text") return;
+    if (content?.type !== "text") return;
     const text = typeof content.text === "string" ? content.text : "";
     this.accumulated += text;
     this.emit({ type: "message.delta", sessionId: this.id, text });
