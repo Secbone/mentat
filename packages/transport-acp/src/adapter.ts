@@ -365,7 +365,13 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
         },
         deps,
       );
-      await session.start();
+      try {
+        await session.start();
+      } catch (error) {
+        // never leak the child process if the ACP handshake fails
+        await session.dispose();
+        throw error;
+      }
       return session;
     },
   };
