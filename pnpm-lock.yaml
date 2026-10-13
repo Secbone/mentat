@@ -47,6 +47,12 @@ importers:
         specifier: workspace:*
         version: link:../transport-pi
 
+  packages/transport-acp:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+
   packages/transport-pi:
     dependencies:
       '@mentat/core':
