@@ -13,7 +13,9 @@
   },
   "dependencies": {
     "@mentat/core": "workspace:*",
-    "@mentat/iterate": "workspace:*",
+    "@mentat/memory": "workspace:*",
+    "@mentat/runtime": "workspace:*",
+    "@mentat/transport-acp": "workspace:*",
     "@mentat/transport-pi": "workspace:*"
   }
 }

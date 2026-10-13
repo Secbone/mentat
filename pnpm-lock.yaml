@@ -29,32 +29,38 @@ importers:
       '@mentat/core':
         specifier: workspace:*
         version: link:../core
-      '@mentat/iterate':
+      '@mentat/memory':
         specifier: workspace:*
-        version: link:../iterate
+        version: link:../memory
+      '@mentat/runtime':
+        specifier: workspace:*
+        version: link:../runtime
+      '@mentat/transport-acp':
+        specifier: workspace:*
+        version: link:../transport-acp
       '@mentat/transport-pi':
         specifier: workspace:*
         version: link:../transport-pi
 
   packages/core: {}
 
-  packages/iterate:
+  packages/memory:
     dependencies:
       '@mentat/core':
         specifier: workspace:*
         version: link:../core
-      '@mentat/transport-pi':
-        specifier: workspace:*
-        version: link:../transport-pi
-
-  packages/memory-mcp:
-    dependencies:
       '@modelcontextprotocol/sdk':
         specifier: ^1.32.1
         version: 1.32.1(zod@4.6.7)
       zod:
         specifier: ^4.6.7
         version: 4.6.7
+
+  packages/runtime:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
 
   packages/transport-acp:
     dependencies:

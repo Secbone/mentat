@@ -1,19 +1,10 @@
-import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
+import { workspaceAliases } from "./scripts/workspace-aliases.mjs";
 
 export default defineConfig({
   resolve: {
-    alias: {
-      "@mentat/core/testing": fileURLToPath(
-        new URL("./packages/core/src/testing/contract.ts", import.meta.url),
-      ),
-      "@mentat/core": fileURLToPath(new URL("./packages/core/src/index.ts", import.meta.url)),
-      "@mentat/transport-pi": fileURLToPath(
-        new URL("./packages/transport-pi/src/index.ts", import.meta.url),
-      ),
-      "@mentat/iterate": fileURLToPath(new URL("./packages/iterate/src/index.ts", import.meta.url)),
-      "@mentat/cli": fileURLToPath(new URL("./packages/cli/src/index.ts", import.meta.url)),
-    },
+    // Generated from each package.json `exports` by scripts/gen-aliases.mjs.
+    alias: workspaceAliases,
   },
   test: {
     include: ["packages/*/src/**/*.test.ts"],

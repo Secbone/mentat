@@ -79,14 +79,15 @@ interface IterableArtifact {
 
 | 包 | 职责 |
 |---|---|
-| `@mentat/core` | kernel、artifact 契约、`AgentEvent`、自迭代 loop、eval、archive、memory、model；零引擎依赖 |
+| `@mentat/core` | kernel、artifact 契约、`AgentEvent`、自迭代 loop、eval、archive、model；零 workspace 依赖、无 `node:` |
+| `@mentat/memory` | 记忆域：store、memory artifact、离线演化、experience、reflection、memory MCP server |
+| `@mentat/runtime` | 引擎无关执行件：git/data workspace、命令门、评测器、proposer、tracer |
 | `@mentat/transport-pi` | Pi 原生 RPC adapter（`pi --mode rpc`）+ 注入的 bridge 扩展（权限门控） |
 | `@mentat/transport-acp` | 通用 ACP client（opencode 及未来 claude/codex） |
-| `@mentat/server` | 薄层 HTTP + SSE（基于可观察状态，供未来 GUI/远程） |
-| `@mentat/cli` | CLI（bin: `mentat`） |
-| `@mentat/shared` | 共享类型/工具 |
+| `@mentat/cli` | CLI（bin: `mentat`），负责装配 |
 
-依赖方向：`cli → transport-* / server → core`；`core` 不依赖任何 adapter（注册表反向注入）。
+依赖方向：`cli → memory / runtime / transport-* → core`；`core` 不依赖任何 adapter（注册表反向注入）。
+分层规则与自动校验见 [`dev-rules/layering.md`](dev-rules/layering.md)。
 
 ---
 

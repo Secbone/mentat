@@ -1,6 +1,8 @@
 # 架构与包结构评审
 
-> 状态：待决策（本文只做评估与方案，不含改动）
+> 状态：**档 A + 档 B 已实施**。落地后的分层规则见
+> [`docs/dev-rules/layering.md`](dev-rules/layering.md)，由 `pnpm check:layering` 自动校验。
+> 下文保留评审时的现状快照与方案，作为决策记录。
 > 范围：`packages/` 的代码结构、文件组织、包拆分与依赖方向
 
 ## 1. 结论

@@ -8,13 +8,16 @@
     "node": ">=22"
   },
   "scripts": {
+    "gen": "node scripts/gen-aliases.mjs",
+    "check:layering": "node scripts/check-layering.mjs",
     "dev": "tsx packages/cli/src/bin.ts",
-    "test": "vitest run",
+    "test": "node scripts/gen-aliases.mjs && vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "node scripts/gen-aliases.mjs && tsc --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "check": "node scripts/gen-aliases.mjs && node scripts/check-layering.mjs && tsc --noEmit && vitest run && biome check ."
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",

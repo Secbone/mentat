@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@mentat/transport-acp": [
+        "packages/transport-acp/src/index.ts"
+      ],
+      "@mentat/core/testing": [
+        "packages/core/src/testing/contract.ts"
+      ],
+      "@mentat/transport-pi": [
+        "packages/transport-pi/src/index.ts"
+      ],
+      "@mentat/runtime": [
+        "packages/runtime/src/index.ts"
+      ],
+      "@mentat/memory": [
+        "packages/memory/src/index.ts"
+      ],
+      "@mentat/core": [
+        "packages/core/src/index.ts"
+      ],
+      "@mentat/cli": [
+        "packages/cli/src/index.ts"
+      ]
+    }
+  }
+}

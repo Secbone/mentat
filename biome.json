@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!dist", "!coverage", "!.mentat"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!dist",
+      "!coverage",
+      "!.mentat",
+      "!tsconfig.paths.json",
+      "!scripts/workspace-aliases.mjs"
+    ]
   },
   "formatter": {
     "enabled": true,

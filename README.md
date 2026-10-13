@@ -26,10 +26,16 @@ pnpm dev harness list
 
 | 包 | 职责 |
 |---|---|
-| `@mentat/core` | kernel、artifact 契约、`AgentEvent`、自迭代 loop、eval、archive |
+| `@mentat/core` | 纯引擎：kernel、artifact 契约、`AgentEvent`、自迭代 loop、eval、archive、model（零 workspace 依赖、无 `node:`） |
+| `@mentat/memory` | 记忆域：store、memory artifact、离线演化、experience、reflection、memory MCP server |
+| `@mentat/runtime` | 引擎无关的执行件：`GitWorkspace`、data workspace、命令门、评测器、proposer、tracer |
 | `@mentat/transport-pi` | Pi 原生 RPC 适配器（`pi --mode rpc`）+ 权限 bridge 扩展 |
-| `@mentat/iterate` | 真件：`GitWorkspace`、`AgentProposer`、命令门与评测器 |
-| `@mentat/cli` | CLI（bin: `mentat`） |
+| `@mentat/transport-acp` | 通用 ACP 适配器（opencode 及未来 claude/codex） |
+| `@mentat/cli` | CLI（bin: `mentat`），负责装配 |
+
+分层规则与依赖方向见 [`docs/dev-rules/layering.md`](docs/dev-rules/layering.md)，
+由 `pnpm check:layering` 校验；workspace 别名由 `pnpm gen` 从各包 `package.json`
+的 `exports` 单一来源生成。
 
 ## 引擎接入
 
@@ -40,7 +46,9 @@ mentat run "..." --harness fake                        # 无依赖的假引擎
 ```
 
 引擎适配器必须通过 `@mentat/core/testing` 的共享契约测试（`describeHarnessContract`）；
-新增引擎只要实现 `HarnessAdapter` 并跑通它即可。
+新增引擎只要实现 `HarnessAdapter`、跑通它，并在 `packages/cli/src/lib/registry.ts` 注册即可。
+通用 ACP 引擎为可选：设置 `MENTAT_ACP_BIN`（如某个 opencode 构建）后 `--harness acp` 可用，
+`MENTAT_ACP_ARGS` 覆盖默认参数 `acp`。
 
 ## 自迭代
 
@@ -81,7 +89,7 @@ mentat trace --raw      # 原始 JSONL
 `mentat run` 现在的一趟任务会**读记忆 → 干活 → 写记忆**：
 
 - **任务前**：从 `.mentat/memory.json` 检索相关记忆，注入 system prompt；
-  同时挂载**记忆 MCP server**（`@mentat/memory-mcp` 的 `memory_search`/`memory_add`），
+  同时挂载**记忆 MCP server**（`@mentat/memory` 的 `memory_search`/`memory_add`），
   agent 可按需读写。
 - **任务后**：把本次运行落盘为经验（`.mentat/experience/*.jsonl`：outcome/usage/tools），
   并可选写入记忆。
