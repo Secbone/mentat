@@ -76,6 +76,24 @@ mentat trace --raw      # 原始 JSONL
 这份轨迹就是"用日志驱动自迭代"的原料：agent 的 `proposer` 会拿到 `--log-dir`，
 可读取历史运行记录来决定下一轮改什么。
 
-> 状态：M0–M6 完成（core 抽象、Pi 适配、真件 loop、可观测轨迹、记忆/模型层、
-> 多信号评测 harness 与 Docker 容器 runner）。下一步：让 agent 自迭代实现
-> **M7 ACP/opencode 适配器**（通用契约测试已就绪）。
+## 边干活边进化（在线）
+
+`mentat run` 现在的一趟任务会**读记忆 → 干活 → 写记忆**：
+
+- **任务前**：从 `.mentat/memory.json` 检索相关记忆，注入 system prompt；
+  同时挂载**记忆 MCP server**（`@mentat/memory-mcp` 的 `memory_search`/`memory_add`），
+  agent 可按需读写。
+- **任务后**：把本次运行落盘为经验（`.mentat/experience/*.jsonl`：outcome/usage/tools），
+  并可选写入记忆。
+
+```bash
+mentat run "<task>" --harness pi --model <id> --permission full \
+  --remember "the api base url is /v1"   # 规则写入（去重）
+mentat run "<task>" --reflect            # 任务后让 agent 蒸馏可复用记忆
+```
+
+在线只写**数据**（记忆），过 schema 门 + 去重、可 forget；**代码变更仍只走离线 loop**。
+
+> 状态：M0–M6 完成；M7（ACP/opencode 适配器）由 agent 自迭代实现并合并；
+> 在线"边干活边进化" P1–P4 完成（持久记忆 + systemPrompt/MCP 注入、经验落盘、
+> `--remember`、`--reflect`）。下一步：离线 loop 消费 `ExperienceStore`。

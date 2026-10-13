@@ -270,6 +270,17 @@ Archive 保留**非支配的多样变体**（开放探索），而非只留最�
   - CLI：`mentat loop memory`（演示）、`mentat evolve memory --facts|--agent --queries [--store]`
     （规则/agent 驱动、跨运行持久化）。
 
-**下一步**：把 `AgentProposer`/`AgentDataProposer` 与在线"边干活边进化"层接起来
-（任务前检索注入记忆、任务后安全写记忆 + 落盘经验）；以及用 `mentat iterate` 对 mentat
-自身的 worktree 做更多 agent 自迭代任务。
+- **在线"边干活边进化" P1–P4** 完成（`mentat run` 现在会学习）：
+  - P1 持久化记忆 `JsonFileMemoryStore` + `buildMemoryContext`；Pi 用
+    `--append-system-prompt`、ACP 前缀注入 → `run` 任务前检索并注入。
+  - P1b 记忆 MCP server `@mentat/memory-mcp`（`memory_search`/`memory_add`）；
+    `SessionOptions.mcpServers` 经 bridge（Pi）与 `session/new`（ACP）注入。
+  - P2 经验采集 `ExperienceStore`/`SessionRecorder`；`run` 每次落盘
+    `.mentat/experience/*.jsonl`（outcome/usage/tools/toolErrors）。
+  - P3 规则在线写：`run --remember "<fact>"`（`rememberFact` 去重）。
+  - P4 按需 agent 反射：`run --reflect`（`reflectionPrompt`/`parseReflectedMemories`），
+    仅在 `run.settled === "done"` 时蒸馏并写入记忆。
+- 信号：在线仅用 `run.settled`（生命周期），不引入额外 `--check`。
+
+**下一步**：让离线 loop 直接消费 `ExperienceStore`（把失败簇蒸馏成候选记忆/代码提案）；
+以及用 `mentat iterate` 对 mentat 自身的 worktree 做更多 agent 自迭代任务。
