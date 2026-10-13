@@ -259,8 +259,17 @@ Archive 保留**非支配的多样变体**（开放探索），而非只留最�
 - **M4** 完成：`TaskSuite` 抽象；`@mentat/iterate` 的 `ContainerRunner`（Docker：`--rm`、
   挂载 workdir、默认 `--network none`）+ `containerGate`/`ContainerEvaluator` + `dockerRunArgs`
   纯构造器。真实 Docker（alpine:3）集成测试通过（默认跳过，`MENTAT_DOCKER=1` 启用）。
+- **M7** 完成：`@mentat/transport-acp`（ACP 客户端），由 agent 在**冻结契约测试 + 保护路径**
+  下自迭代实现（见下）。
 - **M9** 暂缓（用户决定）。
+- **数据制品离线演化** 完成：`SelfIterationLoop` 本就能演化任意 `IterableArtifact`。
+  - `core/memory`：`recallTask`（held-out 查询的 recall/noise 双信号）、`RuleMemoryProposer`
+    （规则变异：去重追加）、`memoryGate`（schema/类型/重复 id 校验）。
+  - `iterate`：`JsonStoreWorkspace`（数据制品的版本化持久化 + 回滚 + `load` 恢复）、
+    `AgentDataProposer`（agent 输出 JSON → 制品，含 `extractJson`）。
+  - CLI：`mentat loop memory`（演示）、`mentat evolve memory --facts|--agent --queries [--store]`
+    （规则/agent 驱动、跨运行持久化）。
 
-**下一步**：把历史运行日志接入 `AgentProposer` 的决策（DGM 式的"分析自己的评测日志"）；
-用 `mentat iterate` 对 mentat 自身的 worktree 跑**首个人类冻结验收 + agent 自迭代**的任务
-（推荐 **M7 ACP/opencode 适配器**，因为通用契约测试已就绪）。
+**下一步**：把 `AgentProposer`/`AgentDataProposer` 与在线"边干活边进化"层接起来
+（任务前检索注入记忆、任务后安全写记忆 + 落盘经验）；以及用 `mentat iterate` 对 mentat
+自身的 worktree 做更多 agent 自迭代任务。

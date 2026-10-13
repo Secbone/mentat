@@ -4,22 +4,36 @@ import { createInterface } from "node:readline/promises";
 import {
   AdapterRegistry,
   type AgentEvent,
+  type Candidate,
   createFakeAdapter,
+  FunctionEvaluator,
   type Gate,
   GateChain,
   type JsonValue,
+  type MemoryEntry,
+  memoryArtifact,
+  memoryGate,
   type PermissionHandler,
+  type Proposer,
   pathGuardGate,
+  type RecallQuery,
+  RuleMemoryProposer,
+  recallTask,
   runDemoLoop,
+  runMemoryEvolutionDemo,
   SelfIterationLoop,
 } from "@mentat/core";
 import {
+  AgentDataProposer,
   AgentProposer,
+  type ArtifactSnapshot,
   CheckEvaluator,
   commandGate,
+  extractJson,
   GitWorkspace,
   JsonCommandEvaluator,
   JsonlTracer,
+  JsonStoreWorkspace,
   type SessionRunner,
 } from "@mentat/iterate";
 import { createPiAdapter, type PermissionMode } from "@mentat/transport-pi";
@@ -29,7 +43,8 @@ const USAGE = `mentat — a self-iterating agent framework
 Usage:
   mentat harness list
   mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--permission <ask|auto|full>]
-  mentat loop demo
+  mentat loop demo|memory
+  mentat evolve memory --queries <file> (--facts <file> | --agent) [--model <id>] [--store <dir>] [--iterations <n>]
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
   mentat trace [<run-dir>] [--raw]
   mentat help
@@ -93,24 +108,139 @@ function harnessCommand(args: string[]): number {
 }
 
 async function loopCommand(args: string[]): Promise<number> {
-  if (args[0] !== "demo") {
-    process.stderr.write("usage: mentat loop demo\n");
+  const kind = args[0];
+  if (kind !== "demo" && kind !== "memory") {
+    process.stderr.write("usage: mentat loop demo|memory\n");
     return 1;
   }
-  const result = await runDemoLoop();
-  process.stdout.write("iter  parent    child     gate   knob  accepted\n");
+  const result = kind === "memory" ? await runMemoryEvolutionDemo() : await runDemoLoop();
+
+  const metrics = new Set<string>();
   for (const record of result.records) {
-    const knob = record.after?.find((signal) => signal.name === "knob")?.value;
+    for (const signal of record.after ?? []) metrics.add(signal.name);
+  }
+  const metricNames = [...metrics];
+
+  process.stdout.write(`iter  child      gate   accepted  ${metricNames.join("  ")}\n`);
+  for (const record of result.records) {
     const gate = (record.gate?.passed ?? true) ? "pass" : "fail";
+    const values = metricNames.map((name) =>
+      String(record.after?.find((signal) => signal.name === name)?.value ?? "-"),
+    );
     const verdict = record.accepted ? "yes" : `no (${record.reason ?? "rejected"})`;
     process.stdout.write(
-      `${String(record.iteration).padEnd(5)} ${record.parentId.padEnd(8)} ${record.childId.padEnd(9)} ${gate.padEnd(6)} ${String(knob ?? "-").padEnd(5)} ${verdict}\n`,
+      `${String(record.iteration).padEnd(5)} ${record.childId.padEnd(10)} ${gate.padEnd(6)} ${(record.accepted ? "yes" : "no").padEnd(9)} ${values.join("  ").padEnd(14)} ${record.accepted ? "" : verdict}\n`,
     );
   }
-  const bestKnob = result.best.artifacts[0]?.snapshot();
-  process.stdout.write(
-    `\narchive: ${result.archive.size()} candidates, best=${result.best.id} knob=${String(bestKnob)}\n`,
-  );
+  process.stdout.write(`\narchive: ${result.archive.size()} candidates, best=${result.best.id}\n`);
+  return 0;
+}
+
+function createAgentMemoryProposer(queries: RecallQuery[], model: string | undefined): Proposer {
+  const adapter = createDefaultRegistry("full").get("pi");
+  const runner = async (prompt: string): Promise<string> => {
+    const session = await adapter.createSession(
+      { cwd: process.cwd(), ...(model ? { model } : {}) },
+      { onPermission: createPermissionHandler("full") },
+    );
+    let text = "";
+    try {
+      const settled = new Promise<void>((resolve) => {
+        session.subscribe((event: AgentEvent) => {
+          if (event.type === "message.completed") text = event.message.text;
+          else if (event.type === "run.settled") resolve();
+        });
+      });
+      await session.send({ text: prompt });
+      await settled;
+    } finally {
+      await session.dispose();
+    }
+    return text;
+  };
+
+  return new AgentDataProposer({
+    task: "evolve memory",
+    cwd: process.cwd(),
+    runner,
+    buildPrompt: ({ parent, signals }) =>
+      [
+        "You maintain the memory store of a coding agent. Improve recall without adding noise.",
+        `Queries that must be answerable (query -> expected memory id): ${JSON.stringify(queries)}`,
+        `Current memory entries: ${JSON.stringify(parent.artifacts[0]?.snapshot() ?? [])}`,
+        `Current signals: ${JSON.stringify(signals)}`,
+        'Return ONLY a JSON array of entries {"id":string,"text":string,"createdAt":number(epoch ms)}. Keep useful existing entries.',
+      ].join("\n"),
+    parse: (output) => {
+      const parsed = extractJson(output);
+      const entries = Array.isArray(parsed) ? (parsed as unknown as MemoryEntry[]) : [];
+      return [memoryArtifact("memory", entries)];
+    },
+  });
+}
+
+async function evolveCommand(args: string[]): Promise<number> {
+  if (args[0] !== "memory") {
+    process.stderr.write(
+      "usage: mentat evolve memory --facts <file> --queries <file> [--store <dir>] [--iterations <n>]\n",
+    );
+    return 1;
+  }
+
+  let store = join(process.cwd(), ".mentat", "memory");
+  let factsPath: string | undefined;
+  let queriesPath: string | undefined;
+  let iterations = 0;
+  let useAgent = false;
+  let model: string | undefined;
+  for (let i = 1; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === "--store") store = args[++i] ?? store;
+    else if (arg === "--facts") factsPath = args[++i];
+    else if (arg === "--queries") queriesPath = args[++i];
+    else if (arg === "--iterations") iterations = Number(args[++i] ?? "0") || 0;
+    else if (arg === "--agent") useAgent = true;
+    else if (arg === "--model") model = args[++i];
+  }
+  if (!queriesPath || (!factsPath && !useAgent)) {
+    process.stderr.write("evolve memory: --queries is required (and --facts unless --agent)\n");
+    return 1;
+  }
+
+  const facts = factsPath ? (JSON.parse(readFileSync(factsPath, "utf8")) as MemoryEntry[]) : [];
+  const queries = JSON.parse(readFileSync(queriesPath, "utf8")) as RecallQuery[];
+  const rebuild = (snapshot: ArtifactSnapshot) =>
+    memoryArtifact(snapshot.id, snapshot.snapshot as unknown as MemoryEntry[]);
+
+  const root: Candidate = JsonStoreWorkspace.load(store, rebuild) ?? {
+    id: "root",
+    version: "root",
+    artifacts: [memoryArtifact("memory", [])],
+  };
+
+  const proposer = useAgent
+    ? createAgentMemoryProposer(queries, model)
+    : new RuleMemoryProposer(facts);
+
+  const loop = new SelfIterationLoop({
+    workspace: new JsonStoreWorkspace(store, root),
+    proposer,
+    evaluator: new FunctionEvaluator([recallTask(queries)]),
+    gates: new GateChain([memoryGate()]),
+    config: { maxIterations: iterations > 0 ? iterations : useAgent ? 1 : facts.length },
+  });
+  const result = await loop.run();
+
+  process.stdout.write("iter  child        gate   accepted  recall  noise\n");
+  for (const record of result.records) {
+    const recall = record.after?.find((signal) => signal.name === "recall")?.value ?? "-";
+    const noise = record.after?.find((signal) => signal.name === "noise")?.value ?? "-";
+    const gate = (record.gate?.passed ?? true) ? "pass" : "fail";
+    process.stdout.write(
+      `${String(record.iteration).padEnd(5)} ${record.childId.padEnd(12)} ${gate.padEnd(6)} ${(record.accepted ? "yes" : "no").padEnd(9)} ${String(recall).padEnd(7)} ${noise}\n`,
+    );
+  }
+  process.stdout.write(`\nstore: ${store}\nbest: ${result.best.id}\n`);
   return 0;
 }
 
@@ -492,6 +622,8 @@ export async function run(argv: string[]): Promise<number> {
       return runCommand(rest);
     case "loop":
       return loopCommand(rest);
+    case "evolve":
+      return evolveCommand(rest);
     case "iterate":
       return iterateCommand(rest);
     case "trace":
