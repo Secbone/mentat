@@ -32,6 +32,7 @@ import {
   AgentDataProposer,
   AgentProposer,
   type ArtifactSnapshot,
+  buildExperienceDigest,
   CheckEvaluator,
   commandGate,
   ExperienceStore,
@@ -54,7 +55,7 @@ Usage:
   mentat harness list
   mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--remember "<fact>"]... [--reflect] [--experience <dir>] [--permission <ask|auto|full>]
   mentat loop demo|memory
-  mentat evolve memory --queries <file> (--facts <file> | --agent) [--model <id>] [--store <dir>] [--iterations <n>]
+  mentat evolve memory --queries <file> (--facts <file> | --agent [--from-experience] [--experience <dir>] [--recent <n>]) [--model <id>] [--store <dir>] [--iterations <n>]
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
   mentat trace [<run-dir>] [--raw]
   mentat help
@@ -146,7 +147,11 @@ async function loopCommand(args: string[]): Promise<number> {
   return 0;
 }
 
-function createAgentMemoryProposer(queries: RecallQuery[], model: string | undefined): Proposer {
+function createAgentMemoryProposer(
+  queries: RecallQuery[],
+  model: string | undefined,
+  digest = "",
+): Proposer {
   const adapter = createDefaultRegistry("full").get("pi");
   const runner = async (prompt: string): Promise<string> => {
     const session = await adapter.createSession(
@@ -179,6 +184,9 @@ function createAgentMemoryProposer(queries: RecallQuery[], model: string | undef
         `Queries that must be answerable (query -> expected memory id): ${JSON.stringify(queries)}`,
         `Current memory entries: ${JSON.stringify(parent.artifacts[0]?.snapshot() ?? [])}`,
         `Current signals: ${JSON.stringify(signals)}`,
+        ...(digest
+          ? ["", "What actually happened recently (use it to decide what memory to add):", digest]
+          : []),
         'Return ONLY a JSON array of entries {"id":string,"text":string,"createdAt":number(epoch ms)}. Keep useful existing entries.',
       ].join("\n"),
     parse: (output) => {
@@ -192,7 +200,7 @@ function createAgentMemoryProposer(queries: RecallQuery[], model: string | undef
 async function evolveCommand(args: string[]): Promise<number> {
   if (args[0] !== "memory") {
     process.stderr.write(
-      "usage: mentat evolve memory --facts <file> --queries <file> [--store <dir>] [--iterations <n>]\n",
+      "usage: mentat evolve memory --queries <file> [--facts <file> | --agent [--from-experience]] [--model <id>] [--store <dir>] [--iterations <n>]\n",
     );
     return 1;
   }
@@ -203,6 +211,9 @@ async function evolveCommand(args: string[]): Promise<number> {
   let iterations = 0;
   let useAgent = false;
   let model: string | undefined;
+  let fromExperience = false;
+  let experienceDir = join(process.cwd(), ".mentat", "experience");
+  let recent = 20;
   for (let i = 1; i < args.length; i += 1) {
     const arg = args[i];
     if (arg === "--store") store = args[++i] ?? store;
@@ -211,9 +222,16 @@ async function evolveCommand(args: string[]): Promise<number> {
     else if (arg === "--iterations") iterations = Number(args[++i] ?? "0") || 0;
     else if (arg === "--agent") useAgent = true;
     else if (arg === "--model") model = args[++i];
+    else if (arg === "--from-experience") fromExperience = true;
+    else if (arg === "--experience") experienceDir = args[++i] ?? experienceDir;
+    else if (arg === "--recent") recent = Number(args[++i] ?? "20") || 20;
   }
   if (!queriesPath || (!factsPath && !useAgent)) {
     process.stderr.write("evolve memory: --queries is required (and --facts unless --agent)\n");
+    return 1;
+  }
+  if (fromExperience && !useAgent) {
+    process.stderr.write("evolve memory: --from-experience requires --agent\n");
     return 1;
   }
 
@@ -228,8 +246,11 @@ async function evolveCommand(args: string[]): Promise<number> {
     artifacts: [memoryArtifact("memory", [])],
   };
 
+  const digest = fromExperience
+    ? buildExperienceDigest(new ExperienceStore(experienceDir).recent(recent))
+    : "";
   const proposer = useAgent
-    ? createAgentMemoryProposer(queries, model)
+    ? createAgentMemoryProposer(queries, model, digest)
     : new RuleMemoryProposer(facts);
 
   const loop = new SelfIterationLoop({

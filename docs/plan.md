@@ -282,5 +282,10 @@ Archive 保留**非支配的多样变体**（开放探索），而非只留最�
     仅在 `run.settled === "done"` 时蒸馏并写入记忆。
 - 信号：在线仅用 `run.settled`（生命周期），不引入额外 `--check`。
 
-**下一步**：让离线 loop 直接消费 `ExperienceStore`（把失败簇蒸馏成候选记忆/代码提案）；
-以及用 `mentat iterate` 对 mentat 自身的 worktree 做更多 agent 自迭代任务。
+- **离线消费经验** 完成：`@mentat/iterate` 的 `buildExperienceDigest`（把 `ExperienceStore`
+  的近期记录压成可读摘要）；`mentat evolve memory --agent --from-experience [--experience <dir>]
+  [--recent <n>]` 把该摘要喂给 agent 提案器 → 离线 loop 评测/保留。实测：agent 依据经验摘要
+  产出命中 held-out 查询的记忆（recall 1）。
+
+**下一步**：用 `mentat iterate` 对 mentat 自身的 worktree 做更多 agent 自迭代任务；
+把"经验→提案"扩展到代码（不只是记忆）。
