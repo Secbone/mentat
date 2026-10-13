@@ -35,6 +35,26 @@ interface AcpConnectionOptions {
   onExit: (code: number | null) => void;
 }
 
+/** Concatenate the text of one ACP content block or an array of them. */
+function blockText(content: unknown): string {
+  const blocks = Array.isArray(content) ? content : content ? [content] : [];
+  let text = "";
+  for (const block of blocks) {
+    if (block && typeof block === "object" && (block as { type?: unknown }).type === "text") {
+      const value = (block as { text?: unknown }).text;
+      if (typeof value === "string") text += value;
+    }
+  }
+  return text;
+}
+
+function mapStopReason(stopReason: string): "done" | "aborted" | "length" | "error" {
+  if (stopReason === "cancelled") return "aborted";
+  if (stopReason === "max_tokens") return "length";
+  if (stopReason === "refusal") return "error";
+  return "done";
+}
+
 /**
  * Minimal newline-delimited JSON-RPC client for an Agent Client Protocol
  * child process. Framing is strict LF only (never readline, which also
@@ -158,7 +178,7 @@ class AcpConnection {
   async close(): Promise<void> {
     if (this.closed) return;
     this.closed = true;
-    this.pending.clear();
+    this.rejectAll(new Error("ACP connection closed"));
     this.child.stdin.end();
     await new Promise<void>((resolve) => {
       const timer = setTimeout(() => {
@@ -189,6 +209,7 @@ class AcpSession implements SessionHandle {
   private readonly listeners = new Set<AgentEventListener>();
   private wireSessionId = "";
   private accumulated = "";
+  private running = false;
   private disposed = false;
 
   constructor(id: string, spawnOptions: AcpSessionSpawn, deps: AdapterDeps) {
@@ -233,12 +254,50 @@ class AcpSession implements SessionHandle {
       return;
     }
     const update = params.update as Record<string, unknown> | undefined;
-    if (update?.sessionUpdate !== "agent_message_chunk") return;
-    const content = update.content as Record<string, unknown> | undefined;
-    if (content?.type !== "text") return;
-    const text = typeof content.text === "string" ? content.text : "";
-    this.accumulated += text;
-    this.emit({ type: "message.delta", sessionId: this.id, text });
+    if (!update) return;
+
+    switch (update.sessionUpdate) {
+      case "agent_message_chunk": {
+        const text = blockText(update.content);
+        if (text.length === 0) return;
+        this.accumulated += text;
+        this.emit({ type: "message.delta", sessionId: this.id, text });
+        return;
+      }
+      case "agent_thought_chunk": {
+        const text = blockText(update.content);
+        if (text.length === 0) return;
+        this.emit({ type: "message.reasoning", sessionId: this.id, text });
+        return;
+      }
+      case "tool_call":
+        this.emit({
+          type: "tool.start",
+          sessionId: this.id,
+          id: String(update.toolCallId ?? ""),
+          name: String(update.title ?? update.kind ?? "tool"),
+          input: (update.rawInput ?? null) as JsonValue,
+        });
+        if (update.status === "completed" || update.status === "failed")
+          this.emitToolResult(update);
+        return;
+      case "tool_call_update":
+        if (update.status === "completed" || update.status === "failed")
+          this.emitToolResult(update);
+        return;
+      default:
+        return;
+    }
+  }
+
+  private emitToolResult(update: Record<string, unknown>): void {
+    this.emit({
+      type: "tool.result",
+      sessionId: this.id,
+      id: String(update.toolCallId ?? ""),
+      output: blockText(update.content),
+      isError: update.status === "failed",
+    });
   }
 
   private handleRequest(
@@ -285,6 +344,8 @@ class AcpSession implements SessionHandle {
 
   async send(input: UserInput, _options?: SendOptions): Promise<void> {
     if (this.disposed) throw new Error("session disposed");
+    if (this.running) throw new Error("session busy: a run is already in flight");
+    this.running = true;
     this.accumulated = "";
     this.emit({ type: "run.started", sessionId: this.id });
     try {
@@ -298,11 +359,7 @@ class AcpSession implements SessionHandle {
         sessionId: this.id,
         message: { role: "assistant", text: this.accumulated },
       });
-      this.emit({
-        type: "run.settled",
-        sessionId: this.id,
-        reason: stopReason === "cancelled" ? "aborted" : "done",
-      });
+      this.emit({ type: "run.settled", sessionId: this.id, reason: mapStopReason(stopReason) });
     } catch (error) {
       this.emit({
         type: "run.settled",
@@ -311,6 +368,8 @@ class AcpSession implements SessionHandle {
         error: error instanceof Error ? error.message : String(error),
       });
       throw error;
+    } finally {
+      this.running = false;
     }
   }
 

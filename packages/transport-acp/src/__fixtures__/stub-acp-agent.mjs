@@ -22,6 +22,26 @@ function promptText(params) {
 
 function onPrompt(msg) {
   const sessionId = msg.params.sessionId;
+  if (process.env.STUB_ACP_TOOLING === "1") {
+    update(sessionId, {
+      sessionUpdate: "agent_thought_chunk",
+      content: { type: "text", text: "considering" },
+    });
+    update(sessionId, {
+      sessionUpdate: "tool_call",
+      toolCallId: "t1",
+      title: "read_file",
+      kind: "read",
+      status: "in_progress",
+      rawInput: { path: "x" },
+    });
+    update(sessionId, {
+      sessionUpdate: "tool_call_update",
+      toolCallId: "t1",
+      status: "completed",
+      content: [{ type: "text", text: "contents" }],
+    });
+  }
   const text = `acp:${promptText(msg.params)}`;
   const chunks = text.match(/.{1,3}/g) ?? [""];
   let index = 0;
