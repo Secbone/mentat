@@ -605,19 +605,22 @@ async function chatCommand(args: string[]): Promise<number> {
   let model: string | undefined;
   let cwd = process.cwd();
   let permission: PermissionMode = "full";
-  let memoryPath = join(process.cwd(), ".mentat", "memory.json");
-  let experienceDir = join(process.cwd(), ".mentat", "experience");
+  let memoryPath: string | undefined;
+  let experienceDir: string | undefined;
 
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
     if (arg === "--harness") harnessId = args[++i] ?? harnessId;
     else if (arg === "--model") model = args[++i];
     else if (arg === "--cwd") cwd = args[++i] ?? cwd;
-    else if (arg === "--memory") memoryPath = args[++i] ?? memoryPath;
-    else if (arg === "--experience") experienceDir = args[++i] ?? experienceDir;
+    else if (arg === "--memory") memoryPath = args[++i];
+    else if (arg === "--experience") experienceDir = args[++i];
     else if (arg === "--permission") permission = parsePermissionMode(args[++i]);
     else if (arg === "--yes" || arg === "-y") permission = "full";
   }
+
+  memoryPath ??= join(cwd, ".mentat", "memory.json");
+  experienceDir ??= join(cwd, ".mentat", "experience");
 
   const registry = createDefaultRegistry(permission);
   if (!registry.has(harnessId)) {
@@ -757,8 +760,8 @@ async function runCommand(args: string[]): Promise<number> {
   let model: string | undefined;
   let cwd = process.cwd();
   let permission: PermissionMode = "auto";
-  let memoryPath = join(process.cwd(), ".mentat", "memory.json");
-  let experienceDir = join(process.cwd(), ".mentat", "experience");
+  let memoryPath: string | undefined;
+  let experienceDir: string | undefined;
   const remember: string[] = [];
   let reflect = false;
   const promptParts: string[] = [];
@@ -804,6 +807,9 @@ async function runCommand(args: string[]): Promise<number> {
     }
     if (arg !== undefined) promptParts.push(arg);
   }
+
+  memoryPath ??= join(cwd, ".mentat", "memory.json");
+  experienceDir ??= join(cwd, ".mentat", "experience");
 
   const prompt = promptParts.join(" ").trim();
   if (!prompt) {
