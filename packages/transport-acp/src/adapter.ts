@@ -199,6 +199,7 @@ interface AcpSessionSpawn {
   args: string[];
   cwd: string;
   env?: Record<string, string>;
+  systemPrompt?: string;
 }
 
 class AcpSession implements SessionHandle {
@@ -207,6 +208,7 @@ class AcpSession implements SessionHandle {
   private readonly cwd: string;
   private readonly deps: AdapterDeps;
   private readonly listeners = new Set<AgentEventListener>();
+  private readonly systemContext: string;
   private wireSessionId = "";
   private accumulated = "";
   private running = false;
@@ -215,6 +217,7 @@ class AcpSession implements SessionHandle {
   constructor(id: string, spawnOptions: AcpSessionSpawn, deps: AdapterDeps) {
     this.id = id;
     this.cwd = spawnOptions.cwd;
+    this.systemContext = spawnOptions.systemPrompt ?? "";
     this.deps = deps;
     this.connection = new AcpConnection({
       binary: spawnOptions.binary,
@@ -349,9 +352,12 @@ class AcpSession implements SessionHandle {
     this.accumulated = "";
     this.emit({ type: "run.started", sessionId: this.id });
     try {
+      const blocks: Array<{ type: "text"; text: string }> = [];
+      if (this.systemContext) blocks.push({ type: "text", text: this.systemContext });
+      blocks.push({ type: "text", text: input.text });
       const result = await this.connection.request("session/prompt", {
         sessionId: this.wireSessionId,
-        prompt: [{ type: "text", text: input.text }],
+        prompt: blocks,
       });
       const stopReason = typeof result.stopReason === "string" ? result.stopReason : "";
       this.emit({
@@ -421,6 +427,7 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
           args: baseArgs,
           cwd: sessionOptions.cwd,
           env: options.env,
+          ...(sessionOptions.systemPrompt ? { systemPrompt: sessionOptions.systemPrompt } : {}),
         },
         deps,
       );

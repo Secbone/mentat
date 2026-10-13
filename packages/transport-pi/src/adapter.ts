@@ -168,6 +168,9 @@ export function createPiAdapter(options: PiAdapterOptions = {}): HarnessAdapter 
         "--no-session",
         ...(extensionPath ? ["--extension", extensionPath] : []),
         ...(sessionOptions.model ? ["--model", sessionOptions.model] : []),
+        ...(sessionOptions.systemPrompt
+          ? ["--append-system-prompt", sessionOptions.systemPrompt]
+          : []),
       ];
       const env: Record<string, string> = {
         ...options.env,

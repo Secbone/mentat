@@ -4,6 +4,7 @@ import { createInterface } from "node:readline/promises";
 import {
   AdapterRegistry,
   type AgentEvent,
+  buildMemoryContext,
   type Candidate,
   createFakeAdapter,
   FunctionEvaluator,
@@ -32,6 +33,7 @@ import {
   extractJson,
   GitWorkspace,
   JsonCommandEvaluator,
+  JsonFileMemoryStore,
   JsonlTracer,
   JsonStoreWorkspace,
   type SessionRunner,
@@ -42,7 +44,7 @@ const USAGE = `mentat — a self-iterating agent framework
 
 Usage:
   mentat harness list
-  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--permission <ask|auto|full>]
+  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--permission <ask|auto|full>]
   mentat loop demo|memory
   mentat evolve memory --queries <file> (--facts <file> | --agent) [--model <id>] [--store <dir>] [--iterations <n>]
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
@@ -526,6 +528,7 @@ async function runCommand(args: string[]): Promise<number> {
   let model: string | undefined;
   let cwd = process.cwd();
   let permission: PermissionMode = "auto";
+  let memoryPath = join(process.cwd(), ".mentat", "memory.json");
   const promptParts: string[] = [];
 
   for (let i = 0; i < args.length; i += 1) {
@@ -540,6 +543,10 @@ async function runCommand(args: string[]): Promise<number> {
     }
     if (arg === "--cwd") {
       cwd = args[++i] ?? cwd;
+      continue;
+    }
+    if (arg === "--memory") {
+      memoryPath = args[++i] ?? memoryPath;
       continue;
     }
     if (arg === "--permission") {
@@ -565,9 +572,12 @@ async function runCommand(args: string[]): Promise<number> {
     return 1;
   }
 
+  const memory = new JsonFileMemoryStore(memoryPath);
+  const memoryContext = buildMemoryContext(memory, prompt);
+
   const adapter = registry.get(harnessId);
   const session = await adapter.createSession(
-    { cwd, ...(model ? { model } : {}) },
+    { cwd, ...(model ? { model } : {}), ...(memoryContext ? { systemPrompt: memoryContext } : {}) },
     { onPermission: createPermissionHandler(permission) },
   );
 

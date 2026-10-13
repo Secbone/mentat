@@ -5,4 +5,5 @@ export * from "./data-proposer";
 export * from "./data-workspace";
 export * from "./evaluators";
 export * from "./git-workspace";
+export * from "./json-memory-store";
 export * from "./trace";
