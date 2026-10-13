@@ -11,7 +11,12 @@ export interface GitWorkspaceOptions {
 }
 
 function git(cwd: string, args: string[]): string {
-  return execFileSync("git", args, { cwd, encoding: "utf8", maxBuffer: 1 << 26 }).trim();
+  return execFileSync("git", args, {
+    cwd,
+    encoding: "utf8",
+    maxBuffer: 1 << 26,
+    stdio: ["ignore", "pipe", "pipe"],
+  }).trim();
 }
 
 /**

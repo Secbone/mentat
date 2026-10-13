@@ -278,7 +278,8 @@ async function iterateCommand(args: string[]): Promise<number> {
   const result = await loop.run();
 
   const recordsJson: JsonValue[] = result.records.map((record) => {
-    if (record.childId !== record.parentId && record.gate?.passed !== false) {
+    // only records that materialized a real candidate (evaluated) have a commit to diff
+    if (record.after !== undefined && record.childId !== record.parentId) {
       try {
         const diff = workspace.diffShas(record.parentId, record.childId);
         if (diff.length > 0) writeFileSync(join(runDir, `iter-${record.iteration}.diff`), diff);
