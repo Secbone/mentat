@@ -11,6 +11,7 @@ import {
   FunctionEvaluator,
   type Gate,
   GateChain,
+  type HarnessAdapter,
   type JsonValue,
   type McpServerSpec,
   type MemoryEntry,
@@ -40,6 +41,8 @@ import {
   JsonFileMemoryStore,
   JsonlTracer,
   JsonStoreWorkspace,
+  parseReflectedMemories,
+  reflectionPrompt,
   SessionRecorder,
   type SessionRunner,
 } from "@mentat/iterate";
@@ -49,7 +52,7 @@ const USAGE = `mentat — a self-iterating agent framework
 
 Usage:
   mentat harness list
-  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--remember "<fact>"]... [--experience <dir>] [--permission <ask|auto|full>]
+  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--remember "<fact>"]... [--reflect] [--experience <dir>] [--permission <ask|auto|full>]
   mentat loop demo|memory
   mentat evolve memory --queries <file> (--facts <file> | --agent) [--model <id>] [--store <dir>] [--iterations <n>]
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
@@ -528,6 +531,30 @@ function parsePermissionMode(value: string | undefined): PermissionMode {
   return "auto";
 }
 
+async function reflectMemories(
+  adapter: HarnessAdapter,
+  options: { cwd: string; model?: string; task: string; outcome: string; tools: string[] },
+): Promise<string[]> {
+  const session = await adapter.createSession(
+    { cwd: options.cwd, ...(options.model ? { model: options.model } : {}) },
+    { onPermission: createPermissionHandler("full") },
+  );
+  let text = "";
+  try {
+    const settled = new Promise<void>((resolve) => {
+      session.subscribe((event: AgentEvent) => {
+        if (event.type === "message.completed") text = event.message.text;
+        else if (event.type === "run.settled") resolve();
+      });
+    });
+    await session.send({ text: reflectionPrompt(options) });
+    await settled;
+  } finally {
+    await session.dispose();
+  }
+  return parseReflectedMemories(text);
+}
+
 async function runCommand(args: string[]): Promise<number> {
   let harnessId = "fake";
   let model: string | undefined;
@@ -536,6 +563,7 @@ async function runCommand(args: string[]): Promise<number> {
   let memoryPath = join(process.cwd(), ".mentat", "memory.json");
   let experienceDir = join(process.cwd(), ".mentat", "experience");
   const remember: string[] = [];
+  let reflect = false;
   const promptParts: string[] = [];
 
   for (let i = 0; i < args.length; i += 1) {
@@ -563,6 +591,10 @@ async function runCommand(args: string[]): Promise<number> {
     if (arg === "--remember") {
       const value = args[++i];
       if (value) remember.push(value);
+      continue;
+    }
+    if (arg === "--reflect") {
+      reflect = true;
       continue;
     }
     if (arg === "--permission") {
@@ -654,6 +686,19 @@ async function runCommand(args: string[]): Promise<number> {
   for (const fact of remember) if (rememberFact(memory, fact)) added += 1;
   if (remember.length > 0) {
     process.stderr.write(`memory: +${added} (${remember.length - added} duplicate)\n`);
+  }
+
+  if (reflect && reason === "done") {
+    const facts = await reflectMemories(adapter, {
+      cwd,
+      ...(model ? { model } : {}),
+      task: prompt,
+      outcome: reason,
+      tools: recorder.snapshot().tools,
+    });
+    let reflected = 0;
+    for (const fact of facts) if (rememberFact(memory, fact)) reflected += 1;
+    process.stderr.write(`reflect: +${reflected} (${facts.length - reflected} duplicate)\n`);
   }
   return reason === "done" ? 0 : 1;
 }

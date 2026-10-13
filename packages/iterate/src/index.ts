@@ -7,4 +7,5 @@ export * from "./evaluators";
 export * from "./experience";
 export * from "./git-workspace";
 export * from "./json-memory-store";
+export * from "./reflection";
 export * from "./trace";
