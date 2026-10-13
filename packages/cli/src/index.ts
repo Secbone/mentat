@@ -22,6 +22,7 @@ import {
   type RecallQuery,
   RuleMemoryProposer,
   recallTask,
+  rememberFact,
   runDemoLoop,
   runMemoryEvolutionDemo,
   SelfIterationLoop,
@@ -48,7 +49,7 @@ const USAGE = `mentat — a self-iterating agent framework
 
 Usage:
   mentat harness list
-  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--experience <dir>] [--permission <ask|auto|full>]
+  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--remember "<fact>"]... [--experience <dir>] [--permission <ask|auto|full>]
   mentat loop demo|memory
   mentat evolve memory --queries <file> (--facts <file> | --agent) [--model <id>] [--store <dir>] [--iterations <n>]
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
@@ -534,6 +535,7 @@ async function runCommand(args: string[]): Promise<number> {
   let permission: PermissionMode = "auto";
   let memoryPath = join(process.cwd(), ".mentat", "memory.json");
   let experienceDir = join(process.cwd(), ".mentat", "experience");
+  const remember: string[] = [];
   const promptParts: string[] = [];
 
   for (let i = 0; i < args.length; i += 1) {
@@ -556,6 +558,11 @@ async function runCommand(args: string[]): Promise<number> {
     }
     if (arg === "--experience") {
       experienceDir = args[++i] ?? experienceDir;
+      continue;
+    }
+    if (arg === "--remember") {
+      const value = args[++i];
+      if (value) remember.push(value);
       continue;
     }
     if (arg === "--permission") {
@@ -642,6 +649,12 @@ async function runCommand(args: string[]): Promise<number> {
     await session.dispose();
   }
   new ExperienceStore(experienceDir).append(recorder.snapshot());
+
+  let added = 0;
+  for (const fact of remember) if (rememberFact(memory, fact)) added += 1;
+  if (remember.length > 0) {
+    process.stderr.write(`memory: +${added} (${remember.length - added} duplicate)\n`);
+  }
   return reason === "done" ? 0 : 1;
 }
 
