@@ -32,12 +32,14 @@ import {
   type ArtifactSnapshot,
   CheckEvaluator,
   commandGate,
+  ExperienceStore,
   extractJson,
   GitWorkspace,
   JsonCommandEvaluator,
   JsonFileMemoryStore,
   JsonlTracer,
   JsonStoreWorkspace,
+  SessionRecorder,
   type SessionRunner,
 } from "@mentat/iterate";
 import { createPiAdapter, type PermissionMode } from "@mentat/transport-pi";
@@ -46,7 +48,7 @@ const USAGE = `mentat — a self-iterating agent framework
 
 Usage:
   mentat harness list
-  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--permission <ask|auto|full>]
+  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--experience <dir>] [--permission <ask|auto|full>]
   mentat loop demo|memory
   mentat evolve memory --queries <file> (--facts <file> | --agent) [--model <id>] [--store <dir>] [--iterations <n>]
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
@@ -531,6 +533,7 @@ async function runCommand(args: string[]): Promise<number> {
   let cwd = process.cwd();
   let permission: PermissionMode = "auto";
   let memoryPath = join(process.cwd(), ".mentat", "memory.json");
+  let experienceDir = join(process.cwd(), ".mentat", "experience");
   const promptParts: string[] = [];
 
   for (let i = 0; i < args.length; i += 1) {
@@ -549,6 +552,10 @@ async function runCommand(args: string[]): Promise<number> {
     }
     if (arg === "--memory") {
       memoryPath = args[++i] ?? memoryPath;
+      continue;
+    }
+    if (arg === "--experience") {
+      experienceDir = args[++i] ?? experienceDir;
       continue;
     }
     if (arg === "--permission") {
@@ -595,8 +602,15 @@ async function runCommand(args: string[]): Promise<number> {
   );
 
   let reason = "error";
+  const recorder = new SessionRecorder({
+    prompt,
+    cwd,
+    harness: harnessId,
+    ...(model ? { model } : {}),
+  });
   const settled = new Promise<void>((resolve) => {
     session.subscribe((event: AgentEvent) => {
+      recorder.handle(event);
       switch (event.type) {
         case "message.delta":
           process.stdout.write(event.text);
@@ -627,6 +641,7 @@ async function runCommand(args: string[]): Promise<number> {
   } finally {
     await session.dispose();
   }
+  new ExperienceStore(experienceDir).append(recorder.snapshot());
   return reason === "done" ? 0 : 1;
 }
 
