@@ -54,6 +54,7 @@ const USAGE = `mentat — a self-iterating agent framework
 Usage:
   mentat harness list
   mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--remember "<fact>"]... [--reflect] [--experience <dir>] [--permission <ask|auto|full>]
+  mentat chat [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--experience <dir>] [--permission <ask|auto|full>]
   mentat loop demo|memory
   mentat evolve memory --queries <file> (--facts <file> | --agent [--from-experience] [--experience <dir>] [--recent <n>]) [--model <id>] [--store <dir>] [--iterations <n>]
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
@@ -599,6 +600,158 @@ async function reflectMemories(
   return parseReflectedMemories(text);
 }
 
+async function chatCommand(args: string[]): Promise<number> {
+  let harnessId = "pi";
+  let model: string | undefined;
+  let cwd = process.cwd();
+  let permission: PermissionMode = "full";
+  let memoryPath = join(process.cwd(), ".mentat", "memory.json");
+  let experienceDir = join(process.cwd(), ".mentat", "experience");
+
+  for (let i = 0; i < args.length; i += 1) {
+    const arg = args[i];
+    if (arg === "--harness") harnessId = args[++i] ?? harnessId;
+    else if (arg === "--model") model = args[++i];
+    else if (arg === "--cwd") cwd = args[++i] ?? cwd;
+    else if (arg === "--memory") memoryPath = args[++i] ?? memoryPath;
+    else if (arg === "--experience") experienceDir = args[++i] ?? experienceDir;
+    else if (arg === "--permission") permission = parsePermissionMode(args[++i]);
+    else if (arg === "--yes" || arg === "-y") permission = "full";
+  }
+
+  const registry = createDefaultRegistry(permission);
+  if (!registry.has(harnessId)) {
+    process.stderr.write(`chat: unknown harness "${harnessId}"\n`);
+    return 1;
+  }
+
+  const memory = new JsonFileMemoryStore(memoryPath);
+  const memoryMcp: McpServerSpec = {
+    name: "memory",
+    command: process.execPath,
+    args: [fileURLToPath(new URL("../../memory-mcp/src/server.mjs", import.meta.url))],
+    env: { MENTAT_MEMORY_FILE: memoryPath },
+  };
+  const session = await registry.get(harnessId).createSession(
+    {
+      cwd,
+      ...(model ? { model } : {}),
+      systemPrompt:
+        "You can use the memory_search and memory_add tools to recall or store durable facts about this user and project.",
+      mcpServers: [memoryMcp],
+    },
+    { onPermission: createPermissionHandler(permission) },
+  );
+  const experience = new ExperienceStore(experienceDir);
+
+  let resolveSettled: (() => void) | undefined;
+  let lastOutcome = "error";
+  let recorder: SessionRecorder | undefined;
+
+  session.subscribe((event: AgentEvent) => {
+    recorder?.handle(event);
+    switch (event.type) {
+      case "message.delta":
+        process.stdout.write(event.text);
+        break;
+      case "message.reasoning":
+        process.stderr.write(event.text);
+        break;
+      case "tool.start":
+        process.stdout.write(`\n[tool] ${event.name}\n`);
+        break;
+      case "run.settled":
+        lastOutcome = event.reason;
+        resolveSettled?.();
+        break;
+      default:
+        break;
+    }
+  });
+
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+
+  // Buffer lines so input that arrives while a turn runs (piped scripts) is not
+  // lost; each turn is still awaited before the next prompt.
+  const queue: string[] = [];
+  let waiter: ((line: string | null) => void) | undefined;
+  rl.on("line", (line) => {
+    if (waiter) {
+      const resolve = waiter;
+      waiter = undefined;
+      resolve(line);
+    } else {
+      queue.push(line);
+    }
+  });
+  rl.on("close", () => {
+    waiter?.(null);
+    waiter = undefined;
+  });
+  const nextLine = async (): Promise<string | null> => {
+    const queued = queue.shift();
+    if (queued !== undefined) return queued;
+    return new Promise<string | null>((resolve) => {
+      waiter = resolve;
+    });
+  };
+
+  process.stdout.write("mentat chat — /exit, /remember <fact>, /reflect\n");
+
+  for (;;) {
+    process.stdout.write("> ");
+    const line = await nextLine();
+    if (line === null) break;
+    const text = line.trim();
+    if (text === "/exit" || text === "/quit") break;
+    if (text.startsWith("/remember ")) {
+      const entry = rememberFact(memory, text.slice("/remember ".length));
+      process.stdout.write(entry ? `stored ${entry.id}\n` : "duplicate or blank\n");
+      continue;
+    }
+    if (text === "/reflect") {
+      const facts = await reflectMemories(registry.get(harnessId), {
+        cwd,
+        ...(model ? { model } : {}),
+        task: "(interactive chat)",
+        outcome: lastOutcome,
+        tools: [],
+      });
+      let added = 0;
+      for (const fact of facts) if (rememberFact(memory, fact)) added += 1;
+      process.stdout.write(`reflect: +${added}\n`);
+      continue;
+    }
+    if (text.length === 0) continue;
+
+    recorder = new SessionRecorder({
+      prompt: text,
+      cwd,
+      harness: harnessId,
+      ...(model ? { model } : {}),
+    });
+    const settled = new Promise<void>((resolve) => {
+      resolveSettled = resolve;
+    });
+    process.stdout.write("\n");
+    try {
+      await session.send({ text });
+      await settled;
+    } catch (error) {
+      process.stdout.write(`\n${error instanceof Error ? error.message : String(error)}\n`);
+    } finally {
+      resolveSettled = undefined;
+      if (recorder) experience.append(recorder.snapshot());
+      recorder = undefined;
+    }
+    process.stdout.write("\n");
+  }
+
+  rl.close();
+  await session.dispose();
+  return 0;
+}
+
 async function runCommand(args: string[]): Promise<number> {
   let harnessId = "fake";
   let model: string | undefined;
@@ -760,6 +913,8 @@ export async function run(argv: string[]): Promise<number> {
       return harnessCommand(rest);
     case "run":
       return runCommand(rest);
+    case "chat":
+      return chatCommand(rest);
     case "loop":
       return loopCommand(rest);
     case "evolve":

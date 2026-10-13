@@ -94,6 +94,26 @@ mentat run "<task>" --reflect            # 任务后让 agent 蒸馏可复用记
 
 在线只写**数据**（记忆），过 schema 门 + 去重、可 forget；**代码变更仍只走离线 loop**。
 
+## 交互使用
+
+一次性任务用 `run`，多轮对话用 `chat`（REPL，带记忆工具）：
+
+```bash
+# 从仓库内运行（pnpm dev 等价）
+pnpm dev chat --harness pi --model opencode-go/deepseek-v4.1-flash --cwd ~/my-project
+# 或使用便捷启动器（可把它加进 PATH 或 alias）
+./mentat chat --harness pi --model opencode-go/deepseek-v4.1-flash --cwd ~/my-project
+```
+
+chat 里支持：`/remember <fact>`（写记忆）、`/reflect`（蒸馏本次对话的可复用记忆）、
+`/exit`。`chat` 复用与你 opencode 相同的模型（自动读取 `OPENCODE_API_KEY`）。
+
+只想跑一趟任务：
+
+```bash
+./mentat run "帮我重构这个函数并跑测试" --harness pi --cwd ~/my-project --permission full
+```
+
 > 状态：M0–M6 完成；M7（ACP/opencode 适配器）由 agent 自迭代实现并合并；
 > 在线"边干活边进化" P1–P4 完成（持久记忆 + systemPrompt/MCP 注入、经验落盘、
 > `--remember`、`--reflect`）。下一步：离线 loop 消费 `ExperienceStore`。
