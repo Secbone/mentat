@@ -74,6 +74,10 @@ iterate options:
   --eval "<cmd>"       evaluator command printing a Signal[] JSON array on stdout
   --iterations <n>     how many iterations to attempt (default: 1)
   --protect <glob>     被保护的路径，禁止 agent 修改（可重复；默认 packages/core/src/loop/**）
+  --from-experience    feed a digest of recent experiences into the proposer
+
+  --experience <dir>   experience store directory (default: .mentat/experience)
+  --recent <n>         how many recent experiences to feed (default: 20)
 `;
 
 export function createDefaultRegistry(permissionMode: PermissionMode = "auto"): AdapterRegistry {
@@ -285,6 +289,9 @@ async function iterateCommand(args: string[]): Promise<number> {
   let evalCmd: string | undefined;
   let iterations = 1;
   let logDir: string | undefined;
+  let fromExperience = false;
+  let experienceDir = join(process.cwd(), ".mentat", "experience");
+  let recent = 20;
   const protect: string[] = [];
   const positional: string[] = [];
 
@@ -313,6 +320,12 @@ async function iterateCommand(args: string[]): Promise<number> {
       if (value) protect.push(value);
     } else if (arg === "--log-dir") {
       logDir = args[++i];
+    } else if (arg === "--from-experience") {
+      fromExperience = true;
+    } else if (arg === "--experience") {
+      experienceDir = args[++i] ?? experienceDir;
+    } else if (arg === "--recent") {
+      recent = Number(args[++i] ?? "20") || 20;
     } else if (arg !== undefined) {
       positional.push(arg);
     }
@@ -427,9 +440,19 @@ async function iterateCommand(args: string[]): Promise<number> {
     ? new JsonCommandEvaluator({ cwd: target, shell: evalCmd })
     : new CheckEvaluator({ cwd: target, shell: check ?? "" }, "check");
 
+  const extraContext = fromExperience
+    ? buildExperienceDigest(new ExperienceStore(experienceDir).recent(recent))
+    : "";
+
   const loop = new SelfIterationLoop({
     workspace,
-    proposer: new AgentProposer({ task, cwd: target, runner, logDir: runDir }),
+    proposer: new AgentProposer({
+      task,
+      cwd: target,
+      runner,
+      logDir: runDir,
+      ...(extraContext ? { extraContext } : {}),
+    }),
     evaluator,
     gates: new GateChain(gates),
     config: { maxIterations: iterations },

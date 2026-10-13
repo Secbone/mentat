@@ -5,6 +5,8 @@ export interface ProposeContext {
   signals: Signal[];
   task: string;
   logDir?: string;
+  /** Extra context (e.g. a digest of recent experiences) appended to the prompt. */
+  extraContext?: string;
 }
 
 /** Runs an agent session that edits the workspace in place. */
@@ -17,6 +19,8 @@ export interface AgentProposerOptions {
   runner: SessionRunner;
   /** Previous run logs the agent may read to decide what to improve. */
   logDir?: string;
+  /** Extra context appended to the default prompt (ignored when buildPrompt is set). */
+  extraContext?: string;
   buildPrompt?: (context: ProposeContext) => string;
 }
 
@@ -37,6 +41,13 @@ export function defaultPrompt(context: ProposeContext): string {
   if (context.logDir) {
     lines.push("", `Execution logs from previous runs: ${context.logDir}`);
   }
+  if (context.extraContext) {
+    lines.push(
+      "",
+      "What actually happened recently (use it to decide what to change):",
+      context.extraContext,
+    );
+  }
   return lines.join("\n");
 }
 
@@ -56,6 +67,7 @@ export class AgentProposer implements Proposer {
       signals,
       task: this.options.task,
       ...(this.options.logDir ? { logDir: this.options.logDir } : {}),
+      ...(this.options.extraContext ? { extraContext: this.options.extraContext } : {}),
     });
     await this.options.runner(prompt, { cwd: this.options.cwd });
     this.counter += 1;

@@ -287,5 +287,8 @@ Archive 保留**非支配的多样变体**（开放探索），而非只留最�
   [--recent <n>]` 把该摘要喂给 agent 提案器 → 离线 loop 评测/保留。实测：agent 依据经验摘要
   产出命中 held-out 查询的记忆（recall 1）。
 
-**下一步**：用 `mentat iterate` 对 mentat 自身的 worktree 做更多 agent 自迭代任务；
-把"经验→提案"扩展到代码（不只是记忆）。
+- **经验驱动代码进化** 完成：`AgentProposer` 增加 `extraContext`；`mentat iterate
+  --from-experience [--experience <dir>] [--recent <n>]` 把经验摘要喂给代码提案 prompt。
+  实测：`iterate` 的 `agent.prompt` 里带上了经验摘要，任务仍被接受。
+
+**下一步**：用 `mentat iterate` 对 mentat 自身的 worktree 做更多 agent 自迭代任务。
