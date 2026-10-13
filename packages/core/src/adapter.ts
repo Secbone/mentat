@@ -15,10 +15,20 @@ export interface HarnessCapabilities {
   permissions: boolean;
 }
 
+/** A stdio MCP server a session should connect to. */
+export interface McpServerSpec {
+  name: string;
+  command: string;
+  args?: string[];
+  env?: Record<string, string>;
+}
+
 export interface SessionOptions {
   cwd: string;
   model?: string;
   systemPrompt?: string;
+  /** MCP servers the harness should connect for this session. */
+  mcpServers?: McpServerSpec[];
 }
 
 export interface UserInput {

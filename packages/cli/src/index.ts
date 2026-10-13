@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createInterface } from "node:readline/promises";
+import { fileURLToPath } from "node:url";
 import {
   AdapterRegistry,
   type AgentEvent,
@@ -11,6 +12,7 @@ import {
   type Gate,
   GateChain,
   type JsonValue,
+  type McpServerSpec,
   type MemoryEntry,
   memoryArtifact,
   memoryGate,
@@ -574,10 +576,21 @@ async function runCommand(args: string[]): Promise<number> {
 
   const memory = new JsonFileMemoryStore(memoryPath);
   const memoryContext = buildMemoryContext(memory, prompt);
+  const memoryMcp: McpServerSpec = {
+    name: "memory",
+    command: process.execPath,
+    args: [fileURLToPath(new URL("../../memory-mcp/src/server.mjs", import.meta.url))],
+    env: { MENTAT_MEMORY_FILE: memoryPath },
+  };
 
   const adapter = registry.get(harnessId);
   const session = await adapter.createSession(
-    { cwd, ...(model ? { model } : {}), ...(memoryContext ? { systemPrompt: memoryContext } : {}) },
+    {
+      cwd,
+      ...(model ? { model } : {}),
+      ...(memoryContext ? { systemPrompt: memoryContext } : {}),
+      mcpServers: [memoryMcp],
+    },
     { onPermission: createPermissionHandler(permission) },
   );
 

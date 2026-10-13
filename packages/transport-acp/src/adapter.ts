@@ -6,6 +6,7 @@ import type {
   HarnessAdapter,
   HarnessCapabilities,
   JsonValue,
+  McpServerSpec,
   PermissionRequest,
   SendOptions,
   SessionHandle,
@@ -200,6 +201,7 @@ interface AcpSessionSpawn {
   cwd: string;
   env?: Record<string, string>;
   systemPrompt?: string;
+  mcpServers?: McpServerSpec[];
 }
 
 class AcpSession implements SessionHandle {
@@ -209,6 +211,7 @@ class AcpSession implements SessionHandle {
   private readonly deps: AdapterDeps;
   private readonly listeners = new Set<AgentEventListener>();
   private readonly systemContext: string;
+  private readonly mcpServers: McpServerSpec[];
   private wireSessionId = "";
   private accumulated = "";
   private running = false;
@@ -218,6 +221,7 @@ class AcpSession implements SessionHandle {
     this.id = id;
     this.cwd = spawnOptions.cwd;
     this.systemContext = spawnOptions.systemPrompt ?? "";
+    this.mcpServers = spawnOptions.mcpServers ?? [];
     this.deps = deps;
     this.connection = new AcpConnection({
       binary: spawnOptions.binary,
@@ -241,7 +245,12 @@ class AcpSession implements SessionHandle {
     });
     const result = await this.connection.request("session/new", {
       cwd: this.cwd,
-      mcpServers: [],
+      mcpServers: this.mcpServers.map((server) => ({
+        name: server.name,
+        command: server.command,
+        args: server.args ?? [],
+        env: Object.entries(server.env ?? {}).map(([name, value]) => ({ name, value })),
+      })),
     });
     this.wireSessionId = typeof result.sessionId === "string" ? result.sessionId : "";
   }
@@ -428,6 +437,9 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
           cwd: sessionOptions.cwd,
           env: options.env,
           ...(sessionOptions.systemPrompt ? { systemPrompt: sessionOptions.systemPrompt } : {}),
+          ...(sessionOptions.mcpServers && sessionOptions.mcpServers.length > 0
+            ? { mcpServers: sessionOptions.mcpServers }
+            : {}),
         },
         deps,
       );

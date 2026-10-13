@@ -176,6 +176,9 @@ export function createPiAdapter(options: PiAdapterOptions = {}): HarnessAdapter 
         ...options.env,
         MENTAT_PERMISSION_MODE: permissionMode,
       };
+      if (sessionOptions.mcpServers && sessionOptions.mcpServers.length > 0) {
+        env.MENTAT_MCP_SERVERS = JSON.stringify(sessionOptions.mcpServers);
+      }
       if (isOpencodeModel(sessionOptions.model) && !env.OPENCODE_API_KEY) {
         const key = resolveOpencodeApiKey();
         if (key) env.OPENCODE_API_KEY = key;
