@@ -24,6 +24,22 @@ describe("InMemoryMemoryStore", () => {
     expect(store.forget("a")).toBe(true);
     expect(store.list().map((e) => e.id)).toEqual(["b"]);
   });
+
+  it("filters by effective status", () => {
+    const store = new InMemoryMemoryStore();
+    store.add(entry("active", "build note"));
+    store.add({ ...entry("candidate", "build guess"), status: "candidate" });
+    store.add({ ...entry("archived", "build old"), status: "archived" });
+
+    // Legacy (no status) and active only.
+    expect(store.search({ statuses: ["active"] }).map((e) => e.id)).toEqual(["active"]);
+    expect(
+      store
+        .search({ statuses: ["active", "candidate"] })
+        .map((e) => e.id)
+        .sort(),
+    ).toEqual(["active", "candidate"]);
+  });
 });
 
 describe("memoryArtifact", () => {

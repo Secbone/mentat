@@ -2,6 +2,7 @@ import type { AgentEvent } from "@mentat/core";
 import {
   buildMemoryContext,
   ExperienceStore,
+  experienceEvidence,
   JsonFileMemoryStore,
   JsonlMemoryAudit,
   MemoryService,
@@ -140,7 +141,9 @@ export async function runCommand(args: string[]): Promise<number> {
   } finally {
     await session.dispose();
   }
-  new ExperienceStore(experienceDir).append(recorder.snapshot());
+  const experienceRecord = recorder.snapshot();
+  new ExperienceStore(experienceDir).append(experienceRecord);
+  const evidence = experienceEvidence(experienceRecord);
 
   let added = 0;
   for (const fact of remember) {
@@ -149,6 +152,7 @@ export async function runCommand(args: string[]): Promise<number> {
       kind: "fact",
       basis: "user",
       speaker: "user",
+      evidence,
     });
     if (result.op === "add" || result.op === "update") added += 1;
   }
@@ -172,6 +176,7 @@ export async function runCommand(args: string[]): Promise<number> {
         kind: "fact",
         basis: "inference",
         speaker: "assistant",
+        evidence,
       });
       if (result.op === "add" || result.op === "update") reflected += 1;
     }

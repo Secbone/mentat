@@ -3,6 +3,7 @@ import { evolveCommand } from "./commands/evolve";
 import { harnessCommand } from "./commands/harness";
 import { iterateCommand } from "./commands/iterate";
 import { loopCommand } from "./commands/loop";
+import { memoryCommand } from "./commands/memory";
 import { runCommand } from "./commands/run";
 import { traceCommand } from "./commands/trace";
 import { USAGE } from "./usage";
@@ -26,6 +27,8 @@ export async function run(argv: string[]): Promise<number> {
       return chatCommand(rest);
     case "loop":
       return loopCommand(rest);
+    case "memory":
+      return memoryCommand(rest);
     case "evolve":
       return evolveCommand(rest);
     case "iterate":

@@ -9,7 +9,7 @@ import { dirname } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { decideWrite } from "../write-rules.mjs";
+import { decideWrite, isRetrievable } from "../write-rules.mjs";
 
 const file = process.env.MENTAT_MEMORY_FILE;
 if (!file) {
@@ -39,8 +39,10 @@ function tokenize(text) {
     .filter((token) => token.length > 0);
 }
 
-function search(query, limit) {
-  const entries = load();
+function search(query, limit, includeCandidates = false) {
+  // Filter first (status), then rank, so expired rules and model inferences
+  // cannot win on similarity alone.
+  const entries = load().filter((entry) => isRetrievable(entry, includeCandidates));
   const terms = tokenize(query ?? "");
   if (terms.length === 0) return entries.slice(0, limit ?? entries.length);
   const scored = [];
@@ -59,24 +61,31 @@ server.registerTool(
   "memory_search",
   {
     description: "Search the agent's persistent memory for entries relevant to a query.",
-    inputSchema: { query: z.string(), limit: z.number().int().positive().optional() },
+    inputSchema: {
+      query: z.string(),
+      limit: z.number().int().positive().optional(),
+      includeCandidates: z.boolean().optional(),
+    },
   },
-  async ({ query, limit }) => ({
-    content: [{ type: "text", text: JSON.stringify(search(query, limit)) }],
+  async ({ query, limit, includeCandidates }) => ({
+    content: [{ type: "text", text: JSON.stringify(search(query, limit, includeCandidates)) }],
   }),
 );
 
 server.registerTool(
   "memory_add",
   {
-    description: "Store a durable memory entry. Provide a stable id (upserts on id).",
+    description:
+      "Store a durable memory entry. Provide a stable id (upserts on id). " +
+      "`evidence` points at the message/tool that supports it.",
     inputSchema: {
       id: z.string(),
       text: z.string(),
       tags: z.array(z.string()).optional(),
+      evidence: z.string().optional(),
     },
   },
-  async ({ id, text, tags }) => {
+  async ({ id, text, tags, evidence }) => {
     const entries = load();
     // Route through the shared write rules so MCP writes obey the same
     // source/scope/key rules as the in-process MemoryService.
@@ -89,6 +98,7 @@ server.registerTool(
         basis: "user",
         speaker: "user",
         ...(tags ? { tags } : {}),
+        ...(evidence ? { evidence } : {}),
       },
       Date.now(),
     );

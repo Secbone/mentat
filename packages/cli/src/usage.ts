@@ -5,7 +5,8 @@ Usage:
   mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--remember "<fact>"]... [--reflect] [--experience <dir>] [--permission <ask|auto|full>]
   mentat chat [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--experience <dir>] [--permission <ask|auto|full>]
   mentat loop demo|memory
-  mentat evolve memory --queries <file> (--facts <file> | --agent [--from-experience] [--experience <dir>] [--recent <n>]) [--model <id>] [--store <dir>] [--iterations <n>]
+  mentat memory migrate [--memory <file>] [--snapshot <file>] [--audit <file>]
+  mentat evolve memory --queries <file> (--facts <file> | --agent [--from-experience] [--experience <dir>] [--recent <n>]) [--model <id>] [--store <dir>] [--memory <file>] [--iterations <n>]
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
   mentat trace [<run-dir>] [--raw]
   mentat help

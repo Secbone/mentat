@@ -3,7 +3,13 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { AgentEvent } from "@mentat/core";
 import { describe, expect, it } from "vitest";
-import { ExperienceStore, SessionRecorder } from "./experience";
+import {
+  ExperienceStore,
+  experienceEvidence,
+  messageEvidence,
+  SessionRecorder,
+  sessionEvidence,
+} from "./experience";
 
 describe("SessionRecorder + ExperienceStore", () => {
   it("records outcome, usage, tools and persists to JSONL", () => {
@@ -30,6 +36,31 @@ describe("SessionRecorder + ExperienceStore", () => {
     const all = store.list();
     expect(all).toHaveLength(1);
     expect(all[0]?.prompt).toBe("do a thing");
+  });
+
+  it("captures the session id and message-level evidence pointers", () => {
+    const recorder = new SessionRecorder({ prompt: "t", cwd: "/tmp", harness: "fake" });
+    recorder.handle({ type: "run.started", sessionId: "s1" });
+    recorder.handle({
+      type: "message.completed",
+      sessionId: "s1",
+      message: { role: "assistant", text: "hi" },
+    });
+    recorder.handle({
+      type: "message.completed",
+      sessionId: "s1",
+      message: { role: "assistant", text: "bye" },
+    });
+
+    const record = recorder.snapshot();
+    expect(record.sessionId).toBe("s1");
+    expect(record.messages).toEqual([
+      { role: "assistant", index: 0, text: "hi" },
+      { role: "assistant", index: 1, text: "bye" },
+    ]);
+    expect(experienceEvidence(record)).toBe(`exp:${record.id}`);
+    expect(messageEvidence(record, 1)).toBe(`exp:${record.id}#msg1`);
+    expect(sessionEvidence("s1")).toBe("session:s1");
   });
 
   it("returns an empty list for a missing directory", () => {

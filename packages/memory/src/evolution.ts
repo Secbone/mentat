@@ -8,6 +8,7 @@ import {
   SelfIterationLoop,
 } from "@mentat/core";
 import { MEMORY_SERVICE, memoryArtifact } from "./artifact";
+import type { MemoryService } from "./service";
 import type { InMemoryMemoryStore, MemoryEntry } from "./store";
 
 /** A held-out query with the memory id we expect retrieval to surface. */
@@ -54,6 +55,37 @@ export function recallTask(queries: RecallQuery[], topK = 1): EvalTask {
       ];
     },
   };
+}
+
+export type EvolveSource = "user" | "agent";
+
+/**
+ * Apply an offline-evolution result to the *live* memory through the same
+ * {@link MemoryService} as every other write, so evolved memories get the same
+ * source checks, key-based dedup/versioning and audit trail. User-supplied facts
+ * are trusted (active); agent proposals are stored as unconfirmed candidates.
+ * Returns the number of entries actually added or updated.
+ */
+export function applyEvolvedMemory(
+  service: MemoryService,
+  entries: MemoryEntry[],
+  source: EvolveSource,
+  evidence?: string,
+): number {
+  let applied = 0;
+  for (const entry of entries) {
+    const provenance =
+      source === "agent"
+        ? ({ kind: "method", basis: "inference", speaker: "assistant" } as const)
+        : ({ kind: "fact", basis: "user", speaker: "user" } as const);
+    const result = service.write({
+      text: entry.text,
+      ...provenance,
+      ...(evidence ? { evidence } : {}),
+    });
+    if (result.op === "add" || result.op === "update") applied += 1;
+  }
+  return applied;
 }
 
 function currentEntries(parent: Candidate): MemoryEntry[] {

@@ -1,9 +1,13 @@
 import { readFileSync } from "node:fs";
 import { type Candidate, FunctionEvaluator, GateChain, SelfIterationLoop } from "@mentat/core";
 import {
+  applyEvolvedMemory,
   buildExperienceDigest,
   ExperienceStore,
+  JsonFileMemoryStore,
+  JsonlMemoryAudit,
   type MemoryEntry,
+  MemoryService,
   memoryArtifact,
   memoryGate,
   type RecallQuery,
@@ -11,7 +15,7 @@ import {
   recallTask,
 } from "@mentat/memory";
 import { type ArtifactSnapshot, JsonStoreWorkspace } from "@mentat/runtime";
-import { defaultExperienceDir, defaultMemoryStoreDir } from "../lib/paths";
+import { defaultExperienceDir, defaultMemoryPath, defaultMemoryStoreDir } from "../lib/paths";
 import { createAgentMemoryProposer } from "../lib/proposers";
 
 export async function evolveCommand(args: string[]): Promise<number> {
@@ -23,6 +27,7 @@ export async function evolveCommand(args: string[]): Promise<number> {
   }
 
   let store = defaultMemoryStoreDir(process.cwd());
+  let memoryPath = defaultMemoryPath(process.cwd());
   let factsPath: string | undefined;
   let queriesPath: string | undefined;
   let iterations = 0;
@@ -34,6 +39,7 @@ export async function evolveCommand(args: string[]): Promise<number> {
   for (let i = 1; i < args.length; i += 1) {
     const arg = args[i];
     if (arg === "--store") store = args[++i] ?? store;
+    else if (arg === "--memory") memoryPath = args[++i] ?? memoryPath;
     else if (arg === "--facts") factsPath = args[++i];
     else if (arg === "--queries") queriesPath = args[++i];
     else if (arg === "--iterations") iterations = Number(args[++i] ?? "0") || 0;
@@ -89,5 +95,22 @@ export async function evolveCommand(args: string[]): Promise<number> {
     );
   }
   process.stdout.write(`\nstore: ${store}\nbest: ${result.best.id}\n`);
+
+  // Commit the selected entries to the live memory through the unified service
+  // (dedup/versioning + audit), rather than bypassing it via the artifact store.
+  const bestEntries = (result.best.artifacts[0]?.snapshot() ?? []) as unknown as MemoryEntry[];
+  const service = new MemoryService(
+    new JsonFileMemoryStore(memoryPath),
+    new JsonlMemoryAudit(`${memoryPath}.audit.jsonl`),
+  );
+  const applied = applyEvolvedMemory(
+    service,
+    bestEntries,
+    useAgent ? "agent" : "user",
+    `evolve:${store}`,
+  );
+  process.stdout.write(
+    `memory: ${applied} written via MemoryService (${bestEntries.length - applied} duplicate) -> ${memoryPath}\n`,
+  );
   return 0;
 }

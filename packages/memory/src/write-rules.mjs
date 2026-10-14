@@ -8,6 +8,21 @@ export function normalizeKey(text) {
   return String(text).trim().toLowerCase().replace(/\s+/g, " ");
 }
 
+/**
+ * Whether an entry should surface during retrieval. Legacy entries without a
+ * status are treated as active; candidates only when explicitly requested;
+ * superseded/expired/archived never.
+ *
+ * @param {object} entry
+ * @param {boolean} [includeCandidates]
+ */
+export function isRetrievable(entry, includeCandidates = false) {
+  const status = entry.status ?? "active";
+  if (status === "active") return true;
+  if (status === "candidate") return includeCandidates;
+  return false;
+}
+
 export function deriveId(key) {
   let hash = 0;
   for (let i = 0; i < key.length; i += 1) {

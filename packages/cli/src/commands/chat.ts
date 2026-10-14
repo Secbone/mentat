@@ -1,11 +1,14 @@
 import { createInterface } from "node:readline/promises";
 import type { AgentEvent } from "@mentat/core";
 import {
+  type ExperienceRecord,
   ExperienceStore,
+  experienceEvidence,
   JsonFileMemoryStore,
   JsonlMemoryAudit,
   MemoryService,
   SessionRecorder,
+  sessionEvidence,
 } from "@mentat/memory";
 import type { PermissionMode } from "@mentat/transport-pi";
 import { memoryMcpSpec } from "../lib/memory-mcp";
@@ -62,8 +65,11 @@ export async function chatCommand(args: string[]): Promise<number> {
   let resolveSettled: (() => void) | undefined;
   let lastOutcome = "error";
   let recorder: SessionRecorder | undefined;
+  let lastSessionId: string | undefined;
+  let lastRecord: ExperienceRecord | undefined;
 
   session.subscribe((event: AgentEvent) => {
+    lastSessionId = event.sessionId;
     recorder?.handle(event);
     switch (event.type) {
       case "message.delta":
@@ -120,11 +126,17 @@ export async function chatCommand(args: string[]): Promise<number> {
     const text = line.trim();
     if (text === "/exit" || text === "/quit") break;
     if (text.startsWith("/remember ")) {
+      const evidence = lastRecord
+        ? experienceEvidence(lastRecord)
+        : lastSessionId
+          ? sessionEvidence(lastSessionId)
+          : undefined;
       const result = memoryService.write({
         text: text.slice("/remember ".length),
         kind: "fact",
         basis: "user",
         speaker: "user",
+        ...(evidence ? { evidence } : {}),
       });
       process.stdout.write(
         result.op === "add" || result.op === "update"
@@ -141,6 +153,7 @@ export async function chatCommand(args: string[]): Promise<number> {
         outcome: lastOutcome,
         tools: [],
       });
+      const evidence = lastRecord ? experienceEvidence(lastRecord) : undefined;
       let added = 0;
       for (const fact of facts) {
         const result = memoryService.write({
@@ -148,6 +161,7 @@ export async function chatCommand(args: string[]): Promise<number> {
           kind: "fact",
           basis: "inference",
           speaker: "assistant",
+          ...(evidence ? { evidence } : {}),
         });
         if (result.op === "add" || result.op === "update") added += 1;
       }
@@ -173,7 +187,10 @@ export async function chatCommand(args: string[]): Promise<number> {
       process.stdout.write(`\n${error instanceof Error ? error.message : String(error)}\n`);
     } finally {
       resolveSettled = undefined;
-      if (recorder) experience.append(recorder.snapshot());
+      if (recorder) {
+        lastRecord = recorder.snapshot();
+        experience.append(lastRecord);
+      }
       recorder = undefined;
     }
     process.stdout.write("\n");

@@ -2,6 +2,13 @@ import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from
 import { join } from "node:path";
 import type { AgentEvent, StopReason, Usage } from "@mentat/core";
 
+/** Message-level pointer inside a trajectory: who said what, and where. */
+export interface MessageEvidence {
+  role: "assistant" | "user";
+  index: number;
+  text: string;
+}
+
 /** One finished task's trajectory summary; the fuel for offline evolution. */
 export interface ExperienceRecord {
   id: string;
@@ -15,6 +22,25 @@ export interface ExperienceRecord {
   usage?: Usage;
   toolErrors: number;
   tools: string[];
+  /** Harness session id, when the adapter reported one. */
+  sessionId?: string;
+  /** Completed messages in order, so a memory's source can be pointed at. */
+  messages?: MessageEvidence[];
+}
+
+/** Stable evidence pointer to a whole trajectory (message-level detail lives in it). */
+export function experienceEvidence(record: ExperienceRecord): string {
+  return `exp:${record.id}`;
+}
+
+/** Stable evidence pointer to one message within a trajectory. */
+export function messageEvidence(record: ExperienceRecord, index: number): string {
+  return `exp:${record.id}#msg${index}`;
+}
+
+/** Stable evidence pointer to a harness session (for interactive writes). */
+export function sessionEvidence(sessionId: string): string {
+  return `session:${sessionId}`;
 }
 
 export interface ExperienceBase {
@@ -41,15 +67,29 @@ export class SessionRecorder {
       outcome: "error",
       toolErrors: 0,
       tools: [],
+      messages: [],
     };
   }
 
   handle(event: AgentEvent): void {
     switch (event.type) {
+      case "run.started":
+        this.record.sessionId = event.sessionId;
+        break;
       case "run.settled":
         this.record.outcome = event.reason;
         if (event.error) this.record.error = event.error;
         break;
+      case "message.completed": {
+        const messages = this.record.messages ?? [];
+        messages.push({
+          role: event.message.role,
+          index: messages.length,
+          text: event.message.text,
+        });
+        this.record.messages = messages;
+        break;
+      }
       case "usage":
         this.record.usage = event.usage;
         break;
@@ -65,7 +105,11 @@ export class SessionRecorder {
   }
 
   snapshot(): ExperienceRecord {
-    return { ...this.record, tools: [...this.record.tools] };
+    return {
+      ...this.record,
+      tools: [...this.record.tools],
+      messages: [...(this.record.messages ?? [])],
+    };
   }
 }
 

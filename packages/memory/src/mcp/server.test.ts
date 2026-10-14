@@ -1,4 +1,4 @@
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -47,6 +47,41 @@ describe("memory MCP server", () => {
     expect(entries[0]?.text).toBe("the build takes 3 minutes");
     expect(entries[0]?.status).toBe("active");
     expect(entries[0]?.basis).toBe("user");
+
+    await client.close();
+  });
+
+  it("hides candidates from search unless includeCandidates is set", async () => {
+    const file = join(mkdtempSync(join(tmpdir(), "mentat-mcpmem-")), "memory.json");
+    writeFileSync(
+      file,
+      JSON.stringify([
+        { id: "a", text: "deploy target is staging", createdAt: 1, status: "active" },
+        { id: "c", text: "deploy maybe blue-green", createdAt: 2, status: "candidate" },
+      ]),
+    );
+    const transport = new StdioClientTransport({
+      command: process.execPath,
+      args: [server],
+      env: { ...process.env, MENTAT_MEMORY_FILE: file } as Record<string, string>,
+    });
+    const client = new Client({ name: "test", version: "0.0.0" });
+    await client.connect(transport);
+
+    const confirmed = JSON.parse(
+      readText(await client.callTool({ name: "memory_search", arguments: { query: "deploy" } })),
+    ) as Array<{ id: string }>;
+    expect(confirmed.map((entry) => entry.id)).toEqual(["a"]);
+
+    const all = JSON.parse(
+      readText(
+        await client.callTool({
+          name: "memory_search",
+          arguments: { query: "deploy", includeCandidates: true },
+        }),
+      ),
+    ) as Array<{ id: string }>;
+    expect(all.map((entry) => entry.id).sort()).toEqual(["a", "c"]);
 
     await client.close();
   });

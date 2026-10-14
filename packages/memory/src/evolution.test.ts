@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { runMemoryEvolutionDemo } from "./evolution";
-import type { MemoryEntry } from "./store";
+import { applyEvolvedMemory, memoryEntry, runMemoryEvolutionDemo } from "./evolution";
+import { MemoryService } from "./service";
+import { InMemoryMemoryStore, type MemoryEntry } from "./store";
 
 describe("memory evolution (offline, data artifact)", () => {
   it("accepts useful memories and rolls back noise", async () => {
@@ -17,5 +18,38 @@ describe("memory evolution (offline, data artifact)", () => {
 
     const recall = result.records[1]?.after?.find((signal) => signal.name === "recall")?.value;
     expect(recall).toBe(1);
+  });
+});
+
+describe("applyEvolvedMemory", () => {
+  it("routes results through MemoryService: user facts active, agent proposals candidate", () => {
+    const store = new InMemoryMemoryStore();
+    const service = new MemoryService(store);
+
+    expect(
+      applyEvolvedMemory(
+        service,
+        [memoryEntry("m1", "build takes 3 minutes")],
+        "user",
+        "evolve:test",
+      ),
+    ).toBe(1);
+    const fact = store.list().find((entry) => entry.text === "build takes 3 minutes");
+    expect(fact?.status).toBe("active");
+    expect(fact?.basis).toBe("user");
+    expect(fact?.evidence).toBe("evolve:test");
+
+    expect(
+      applyEvolvedMemory(service, [memoryEntry("m2", "maybe use blue-green deploys")], "agent"),
+    ).toBe(1);
+    const proposal = store.list().find((entry) => entry.text === "maybe use blue-green deploys");
+    expect(proposal?.status).toBe("candidate");
+    expect(proposal?.basis).toBe("inference");
+
+    // Re-applying the same fact dedups instead of duplicating.
+    expect(applyEvolvedMemory(service, [memoryEntry("m1", "build takes 3 minutes")], "user")).toBe(
+      0,
+    );
+    expect(store.list()).toHaveLength(2);
   });
 });

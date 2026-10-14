@@ -23,6 +23,7 @@ export interface WriteDecision {
 }
 
 export function normalizeKey(text: string): string;
+export function isRetrievable(entry: MemoryEntry, includeCandidates?: boolean): boolean;
 export function deriveId(key: string): string;
 export function decideWrite(
   entries: MemoryEntry[],

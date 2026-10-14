@@ -20,4 +20,25 @@ describe("buildMemoryContext", () => {
     const context = buildMemoryContext(store, "build", { maxChars: 20 });
     expect(context.length).toBeLessThanOrEqual(21);
   });
+
+  it("excludes candidates by default and marks them when included", () => {
+    const store = new InMemoryMemoryStore();
+    store.add({ id: "a", text: "deploy target is staging", createdAt: 0 });
+    store.add({
+      id: "c",
+      text: "deploy might use blue-green",
+      createdAt: 0,
+      status: "candidate",
+      basis: "inference",
+    });
+    store.add({ id: "x", text: "deploy old rule", createdAt: 0, status: "expired" });
+
+    const confirmed = buildMemoryContext(store, "deploy");
+    expect(confirmed).toContain("deploy target is staging");
+    expect(confirmed).not.toContain("blue-green");
+    expect(confirmed).not.toContain("expired");
+
+    const withCandidates = buildMemoryContext(store, "deploy", { includeCandidate: true });
+    expect(withCandidates).toContain("(unconfirmed) deploy might use blue-green");
+  });
 });

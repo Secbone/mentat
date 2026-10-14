@@ -1,7 +1,12 @@
 export type MemoryKind = "preference" | "constraint" | "fact" | "method" | "candidate";
-export type MemoryBasis = "user" | "tool" | "observation" | "inference";
+export type MemoryBasis = "user" | "tool" | "observation" | "inference" | "unknown";
 export type MemoryStatus = "candidate" | "active" | "superseded" | "expired" | "archived";
 export type MemorySpeaker = "user" | "assistant" | "tool" | "system";
+
+/** Effective status of an entry; legacy entries without one are treated as active. */
+export function memoryStatus(entry: MemoryEntry): MemoryStatus {
+  return entry.status ?? "active";
+}
 
 export interface MemoryEntry {
   id: string;
@@ -27,6 +32,8 @@ export interface MemoryQuery {
   text?: string;
   tags?: string[];
   limit?: number;
+  /** Only return entries whose effective status is in this set (undefined = any). */
+  statuses?: MemoryStatus[];
 }
 
 /** A store the agent (and the loop) can grow, query and forget. */
@@ -64,6 +71,7 @@ export class InMemoryMemoryStore implements MemoryStore {
     const terms = query.text ? tokenize(query.text) : [];
     const scored: Array<{ entry: MemoryEntry; score: number }> = [];
     for (const entry of this.entries.values()) {
+      if (query.statuses && !query.statuses.includes(memoryStatus(entry))) continue;
       if (query.tags && query.tags.length > 0) {
         const tags = entry.tags ?? [];
         if (!query.tags.every((tag) => tags.includes(tag))) continue;
