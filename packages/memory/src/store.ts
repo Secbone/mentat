@@ -1,6 +1,24 @@
+export type MemoryKind = "preference" | "constraint" | "fact" | "method" | "candidate";
+export type MemoryBasis = "user" | "tool" | "observation" | "inference";
+export type MemoryStatus = "candidate" | "active" | "superseded" | "expired" | "archived";
+export type MemorySpeaker = "user" | "assistant" | "tool" | "system";
+
 export interface MemoryEntry {
   id: string;
   text: string;
+  /** Stable rule key; wording changes don't create a new rule. Defaults to normalized text. */
+  key?: string;
+  kind?: MemoryKind;
+  /** Where the claim comes from: explicit user statement, tool observation, or inference. */
+  basis?: MemoryBasis;
+  /** Applicability: user / project / task-type / audience. */
+  scope?: string;
+  condition?: string;
+  status?: MemoryStatus;
+  /** Message id, tool-call id, or other evidence pointer. */
+  evidence?: string;
+  speaker?: MemorySpeaker;
+  revision?: number;
   tags?: string[];
   createdAt: number;
 }

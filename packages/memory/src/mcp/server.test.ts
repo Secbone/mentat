@@ -35,9 +35,18 @@ describe("memory MCP server", () => {
       name: "memory_search",
       arguments: { query: "build" },
     });
-    const entries = JSON.parse(readText(found)) as Array<{ id: string; text: string }>;
+    const entries = JSON.parse(readText(found)) as Array<{
+      id: string;
+      key: string;
+      text: string;
+      status: string;
+      basis: string;
+    }>;
     expect(entries).toHaveLength(1);
-    expect(entries[0]?.id).toBe("m1");
+    expect(entries[0]?.key).toBe("m1");
+    expect(entries[0]?.text).toBe("the build takes 3 minutes");
+    expect(entries[0]?.status).toBe("active");
+    expect(entries[0]?.basis).toBe("user");
 
     await client.close();
   });

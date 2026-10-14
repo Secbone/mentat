@@ -3,7 +3,8 @@ import {
   buildMemoryContext,
   ExperienceStore,
   JsonFileMemoryStore,
-  rememberFact,
+  JsonlMemoryAudit,
+  MemoryService,
   SessionRecorder,
 } from "@mentat/memory";
 import type { PermissionMode } from "@mentat/transport-pi";
@@ -82,6 +83,10 @@ export async function runCommand(args: string[]): Promise<number> {
   }
 
   const memory = new JsonFileMemoryStore(memoryPath);
+  const memoryService = new MemoryService(
+    memory,
+    new JsonlMemoryAudit(`${memoryPath}.audit.jsonl`),
+  );
   const memoryContext = buildMemoryContext(memory, prompt);
 
   const adapter = registry.get(harnessId);
@@ -138,7 +143,15 @@ export async function runCommand(args: string[]): Promise<number> {
   new ExperienceStore(experienceDir).append(recorder.snapshot());
 
   let added = 0;
-  for (const fact of remember) if (rememberFact(memory, fact)) added += 1;
+  for (const fact of remember) {
+    const result = memoryService.write({
+      text: fact,
+      kind: "fact",
+      basis: "user",
+      speaker: "user",
+    });
+    if (result.op === "add" || result.op === "update") added += 1;
+  }
   if (remember.length > 0) {
     process.stderr.write(`memory: +${added} (${remember.length - added} duplicate)\n`);
   }
@@ -152,7 +165,16 @@ export async function runCommand(args: string[]): Promise<number> {
       tools: recorder.snapshot().tools,
     });
     let reflected = 0;
-    for (const fact of facts) if (rememberFact(memory, fact)) reflected += 1;
+    for (const fact of facts) {
+      // Model-derived: basis=inference, speaker=assistant => stored as a candidate.
+      const result = memoryService.write({
+        text: fact,
+        kind: "fact",
+        basis: "inference",
+        speaker: "assistant",
+      });
+      if (result.op === "add" || result.op === "update") reflected += 1;
+    }
     process.stderr.write(`reflect: +${reflected} (${facts.length - reflected} duplicate)\n`);
   }
   return reason === "done" ? 0 : 1;

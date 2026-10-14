@@ -3,7 +3,8 @@ import type { AgentEvent } from "@mentat/core";
 import {
   ExperienceStore,
   JsonFileMemoryStore,
-  rememberFact,
+  JsonlMemoryAudit,
+  MemoryService,
   SessionRecorder,
 } from "@mentat/memory";
 import type { PermissionMode } from "@mentat/transport-pi";
@@ -42,6 +43,10 @@ export async function chatCommand(args: string[]): Promise<number> {
   }
 
   const memory = new JsonFileMemoryStore(memoryPath);
+  const memoryService = new MemoryService(
+    memory,
+    new JsonlMemoryAudit(`${memoryPath}.audit.jsonl`),
+  );
   const session = await registry.get(harnessId).createSession(
     {
       cwd,
@@ -115,8 +120,17 @@ export async function chatCommand(args: string[]): Promise<number> {
     const text = line.trim();
     if (text === "/exit" || text === "/quit") break;
     if (text.startsWith("/remember ")) {
-      const entry = rememberFact(memory, text.slice("/remember ".length));
-      process.stdout.write(entry ? `stored ${entry.id}\n` : "duplicate or blank\n");
+      const result = memoryService.write({
+        text: text.slice("/remember ".length),
+        kind: "fact",
+        basis: "user",
+        speaker: "user",
+      });
+      process.stdout.write(
+        result.op === "add" || result.op === "update"
+          ? `stored ${result.entry?.id}\n`
+          : `${result.op}${result.reason ? `: ${result.reason}` : ""}\n`,
+      );
       continue;
     }
     if (text === "/reflect") {
@@ -128,7 +142,15 @@ export async function chatCommand(args: string[]): Promise<number> {
         tools: [],
       });
       let added = 0;
-      for (const fact of facts) if (rememberFact(memory, fact)) added += 1;
+      for (const fact of facts) {
+        const result = memoryService.write({
+          text: fact,
+          kind: "fact",
+          basis: "inference",
+          speaker: "assistant",
+        });
+        if (result.op === "add" || result.op === "update") added += 1;
+      }
       process.stdout.write(`reflect: +${added}\n`);
       continue;
     }

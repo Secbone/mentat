@@ -9,6 +9,7 @@ import { dirname } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { decideWrite } from "../write-rules.mjs";
 
 const file = process.env.MENTAT_MEMORY_FILE;
 if (!file) {
@@ -77,12 +78,31 @@ server.registerTool(
   },
   async ({ id, text, tags }) => {
     const entries = load();
-    const entry = { id, text, ...(tags ? { tags } : {}), createdAt: Date.now() };
-    const index = entries.findIndex((item) => item.id === id);
-    if (index >= 0) entries[index] = entry;
-    else entries.push(entry);
-    save(entries);
-    return { content: [{ type: "text", text: `stored memory ${id}` }] };
+    // Route through the shared write rules so MCP writes obey the same
+    // source/scope/key rules as the in-process MemoryService.
+    const decision = decideWrite(
+      entries,
+      {
+        text,
+        key: id,
+        kind: "fact",
+        basis: "user",
+        speaker: "user",
+        ...(tags ? { tags } : {}),
+      },
+      Date.now(),
+    );
+    if (decision.op === "add" || decision.op === "update") {
+      const index = entries.findIndex((item) => item.id === decision.entry.id);
+      if (index >= 0) entries[index] = decision.entry;
+      else entries.push(decision.entry);
+      save(entries);
+      return { content: [{ type: "text", text: `stored memory ${id}` }] };
+    }
+    if (decision.op === "dedup") {
+      return { content: [{ type: "text", text: `already stored ${id}` }] };
+    }
+    return { content: [{ type: "text", text: `rejected: ${decision.reason ?? "invalid"}` }] };
   },
 );
 

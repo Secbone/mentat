@@ -8,4 +8,6 @@ export * from "./json-memory-store";
 export * from "./proposer";
 export * from "./reflection";
 export * from "./remember";
+export * from "./service";
 export * from "./store";
+export type { WriteDecision, WriteOp, WriteRequest } from "./write-rules.mjs";
