@@ -1,0 +1,241 @@
+{
+  "reviewMethod": "targeted non-blind manual semantic review; no overall accuracy score",
+  "counts": {
+    "firstAnswers": 104,
+    "revisions": 12,
+    "reflections": 12,
+    "hostPromptCalls": 128,
+    "wireSessions": 116,
+    "nativeAssistantMessages": 188,
+    "reflectionCandidates": 68
+  },
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "engineVersion": "2.0.25",
+  "nativeSessionCostUsd": 0.225603906,
+  "accountingNote": "reported session cost, not invoice",
+  "mainRecordKinds": {
+    "cold-control": 16,
+    "trajectory": 40,
+    "novel-probe": 32,
+    "pressure": 6
+  },
+  "sourceIdChecks": "all 12 reflections reference existing interaction records; endorsement NOT checked",
+  "memoryGrowthAfterReflections": {
+    "teacher": [7, 13, 18],
+    "finance": [6, 13, 19],
+    "retail": [7, 13, 21],
+    "designer": [8, 15, 22]
+  },
+  "observations": [
+    {
+      "category": "invented-action",
+      "artifact": "retail-learned-09",
+      "quote": "破损件已单独留存并拍照",
+      "finding": "材料只有数量与破损数，没有完成拍照、留存或附件的证据。"
+    },
+    {
+      "category": "unconfirmed-classification",
+      "artifact": "finance-learned-03",
+      "quote": "两项一次性支出",
+      "finding": "材料仅明确设备维护为一次性，招聘被自行归类。"
+    },
+    {
+      "category": "fraction-error",
+      "artifact": "teacher-parent-identity-learned-1",
+      "quote": "反而比 1/4 还小",
+      "finding": "2/6=1/3>1/4；同一错误也出现在 cold-1。"
+    },
+    {
+      "category": "rounding-consistency",
+      "artifact": "finance-cause-wanyuan",
+      "quote": "仍有0.2万元缺口",
+      "finding": "实际4.2万元减临时运费0.4万元=3.8万元，等于预算；摘要与后文矛盾。"
+    },
+    {
+      "category": "ratio-error",
+      "artifact": "designer-learned-01",
+      "quote": "9:16 竖版（1080×1440）",
+      "finding": "1080:1440=3:4，与9:16不同。"
+    },
+    {
+      "category": "integer-break-even",
+      "artifact": "retail-learned-01",
+      "quote": "约 24 件才能打平",
+      "finding": "170/7≈24.286；整件至少25件，且当前库存20件。"
+    },
+    {
+      "category": "discount-error",
+      "artifact": "teacher-cold-08",
+      "quote": "原价正好是 10 元",
+      "finding": "八折与减8元相等需0.8p=p-8，即p=40，不是10。"
+    },
+    {
+      "category": "missing-hard-constraint",
+      "artifact": "pressure-saturated-2",
+      "quote": "唯一固定约束是",
+      "finding": "规则仍在存储，但初始上下文遗漏11点硬约束；回答接受11:35结束。"
+    }
+  ],
+  "unconfirmedGeneralizations": [
+    {
+      "id": "mem-13nmwj",
+      "text": "Promotion/discount evaluation rule: first compute contribution margin (贡献毛利) after deducting variable costs — purchase/procurement, packaging, platform fees — then check inventory constraints. Do not judge by revenue (营业额) alone. This rule also applies to deciding on compensation/gifts for delayed orders.",
+      "createdAt": 1791963761057,
+      "evidenceIds": ["exp-mv7sunbk-m", "exp-mv7suel0-l", "exp-mv7svx9o-t", "exp-mv7sx567-z"]
+    },
+    {
+      "id": "mem-14juuc5",
+      "text": "Customer reply style preference: keep replies short and empathetic; do not promise shipping times that have not been confirmed, and do not fabricate courier/logistics status. Offer clear options (e.g., wait vs. full refund) instead of guessing.",
+      "createdAt": 1791963761057,
+      "evidenceIds": ["exp-mv7sv1ts-p", "exp-mv7suyl3-o"]
+    },
+    {
+      "id": "mem-j47zdc",
+      "text": "Supplier correspondence uses a detailed format — full quantities, itemized reconciliation checklists, and requested evidence — unlike the short customer-reply style.",
+      "createdAt": 1791963761058,
+      "evidenceIds": ["exp-mv7sy1u7-14"]
+    }
+  ],
+  "semanticDuplicateExample": [
+    {
+      "id": "pref-chenyue-missing-data",
+      "text": "陈悦（企业财务分析员）偏好：数据缺失时标注“待核对”，不默认按 0 计入，也不把已知部分当作完整总额/合计；未上报项保留空缺并注明不完整。",
+      "tags": ["preference", "constraint"],
+      "createdAt": 1791963432987
+    },
+    {
+      "id": "mem-lf4o2e",
+      "text": "陈悦要求：数据缺失时标注「待核对」，不得默认按 0 计入，也不得把已知部分的小计当作完整总额。",
+      "createdAt": 1791963466414,
+      "evidenceIds": ["exp-mv7srgxj-4", "exp-mv7sr8ti-2"]
+    },
+    {
+      "id": "mem-114eqri",
+      "text": "缺失数据规则：缺数据标「待核对」，不得默认按 0 计入，也不得把已知部分的小计当作完整总额。",
+      "createdAt": 1791963523198,
+      "evidenceIds": ["exp-mv7srgxj-4"]
+    },
+    {
+      "id": "mem-7zippy",
+      "text": "缺失数据须标注「待核对」，不得默认按 0 计入，也不得把已知部分的小计当作完整总额。",
+      "createdAt": 1791963551932,
+      "evidenceIds": ["exp-mv7srgxj-4", "exp-mv7ssbp2-9", "exp-mv7st4xh-f"]
+    }
+  ],
+  "pressureSelection": [
+    {
+      "id": "small",
+      "entries": 9,
+      "selectedChars": 1484,
+      "omittedCount": 0,
+      "targetId": "constraint-weekend-home-by-1100-gu-an",
+      "targetPresent": true
+    },
+    {
+      "id": "grown",
+      "entries": 89,
+      "selectedChars": 5980,
+      "omittedCount": 70,
+      "targetId": "constraint-weekend-home-by-1100-gu-an",
+      "targetPresent": true
+    },
+    {
+      "id": "tagged",
+      "entries": 89,
+      "selectedChars": 5938,
+      "omittedCount": 70,
+      "targetId": "constraint-weekend-home-by-1100-gu-an",
+      "targetPresent": true
+    },
+    {
+      "id": "same-priority-saturation",
+      "entries": 89,
+      "selectedChars": 5997,
+      "omittedCount": 72,
+      "targetId": "constraint-weekend-home-by-1100-gu-an",
+      "targetPresent": false
+    }
+  ],
+  "pressureManualReview": {
+    "small": [true, true],
+    "grown": [true, true],
+    "tagged": [true, true],
+    "same-priority-saturation": [true, false]
+  },
+  "nativeRecoveryTrace": [
+    {
+      "id": "pressure-saturated-1",
+      "name": "execute",
+      "input": {
+        "code": "const res = await tools.opencode.list_mcp_resources();\nreturn res;"
+      },
+      "targetInResult": false,
+      "resultChars": 54,
+      "resultPreview": "[{\"type\": \"text\", \"text\": \"Permission.DeclinedError\"}]"
+    },
+    {
+      "id": "pressure-saturated-1",
+      "name": "execute",
+      "input": {
+        "code": "const [r1, r2, r3] = await Promise.allSettled([\n  tools.memory.memory_search({ query: \"顾安 出行 规则 时间 出门 09:00\" , limit: 20}),\n  tools.memory.memory_search({ query: \"周六 取书 买菜 书店 菜场 营业时间\", limit: 20 }),\n  tools.memory.memory_search({ query: \"顾安 临时 规则 变更 例外\", limit: 20 }),\n]);\nreturn { r1, r2, r3 };"
+      },
+      "targetInResult": true,
+      "resultChars": 2169,
+      "resultPreview": "[{\"type\": \"text\", \"text\": \"{\\n  \\\"r1\\\": {\\n    \\\"status\\\": \\\"fulfilled\\\",\\n    \\\"value\\\": [\\n      {\\n        \\\"id\\\": \\\"project-sat-errand-c01\\\",\\n        \\\"text\\\": \\\"周六上午出门办事（household-C-01，第2天）：09:00–12:00 可用；取包裹20分钟、买菜40分钟；路程 家→取件点15分钟、取件点→市场10分钟、市场→家15分钟。核心耗时100分钟。\\\",\\n        \\\"tags\\\": [\\n     "
+    }
+  ],
+  "counterfactualProfileManualReview": [
+    {
+      "artifact": "teacher-example-first",
+      "targetStyleObserved": true,
+      "criterionAndCaveat": "实例先于规则"
+    },
+    {
+      "artifact": "teacher-definition-first",
+      "targetStyleObserved": true,
+      "criterionAndCaveat": "定义先于实例；额外的比例判断有错误"
+    },
+    {
+      "artifact": "finance-cause-wanyuan",
+      "targetStyleObserved": true,
+      "criterionAndCaveat": "原因先于表格、万元1位；摘要数字错误"
+    },
+    {
+      "artifact": "finance-table-yuan",
+      "targetStyleObserved": true,
+      "criterionAndCaveat": "表格先于原因、元2位"
+    },
+    {
+      "artifact": "retail-short-50",
+      "targetStyleObserved": true,
+      "criterionAndCaveat": "正文不超过50字"
+    },
+    {
+      "artifact": "retail-detailed-100-160",
+      "targetStyleObserved": true,
+      "criterionAndCaveat": "正文100至160字"
+    },
+    {
+      "artifact": "designer-one-direction",
+      "targetStyleObserved": true,
+      "criterionAndCaveat": "只给1个方向"
+    },
+    {
+      "artifact": "designer-two-directions",
+      "targetStyleObserved": true,
+      "criterionAndCaveat": "给2个方向"
+    }
+  ],
+  "retailReplyLengthsIncludingPunctuation": {
+    "retail-short-50": 43,
+    "retail-detailed-100-160": 113
+  },
+  "limits": [
+    "four synthetic single learning trajectories",
+    "frozen-memory probe repeats",
+    "manual profiles test responsiveness, not learning",
+    "artificial memory saturation",
+    "ACP only; no true Pi model evaluation",
+    "no external sending or purchasing"
+  ]
+}

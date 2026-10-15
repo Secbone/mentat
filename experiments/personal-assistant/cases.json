@@ -1,0 +1,2095 @@
+{
+  "version": 1,
+  "language": "zh-CN",
+  "synthetic": true,
+  "purpose": "通过连续任务检验个人助理是否减少重复解释、正确迁移经验并适应变化。",
+  "phaseOrder": [
+    "learn",
+    "learn",
+    "learn",
+    "noise",
+    "transfer",
+    "transfer",
+    "change",
+    "adaptation",
+    "exception",
+    "regression"
+  ],
+  "scenarios": [
+    {
+      "id": "product",
+      "role": "产品经理",
+      "name": "林澄",
+      "evaluatorProfile": {
+        "initialPreferences": [
+          "内部决策先一句话建议，再列证据、风险和下一步",
+          "证据不足时先做最小验证，不直接推动全量上线",
+          "工作安排默认把上午留给专注工作，会议优先下午"
+        ],
+        "expectedReusableMethod": "形成内部决策模板，区分证据与判断，输出最小验证方案和后续动作。",
+        "unsupportedInferences": [
+          "年龄、性别、性格或人格诊断",
+          "未声明的饮食、预算、职业能力和永久生活状态"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "01",
+          "phase": "learn",
+          "simulatedDay": 2,
+          "input": {
+            "prompt": "整理本周搜索项目进度，供内部评审。",
+            "source": "点击率从 12% 到 13%，样本 300 人；延迟从 180ms 到 260ms；小样本测试没有投诉。"
+          },
+          "afterResponseFeedback": "我希望先一句话说建议，再列证据、风险和下一步。请按这个顺序重写；这个格式用于内部决策。",
+          "rubric": {
+            "objective": [
+              "点击率增加 1 个百分点",
+              "交代样本只有 300 人及延迟增加 80ms",
+              "不把没有投诉写成已经证明用户满意"
+            ],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": [
+              "点击率增加 1 个百分点",
+              "交代样本只有 300 人及延迟增加 80ms",
+              "不把没有投诉写成已经证明用户满意"
+            ],
+            "personalization": ["内部决策先一句话建议，再列证据、风险和下一步"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "02",
+          "phase": "learn",
+          "simulatedDay": 4,
+          "input": {
+            "prompt": "判断是否全量发布新推荐排序。",
+            "source": "10 名访谈用户有 7 人喜欢；目前没有随机对照实验；全量开发要 3 周，小规模验证要 2 天。"
+          },
+          "afterResponseFeedback": "信息还不足时，我更愿意先做最小验证。我不接受只凭访谈就直接全量上线。",
+          "rubric": {
+            "objective": [
+              "区分访谈偏好和上线收益证据",
+              "提出可执行的验证方案",
+              "说明验证成功与失败后的动作"
+            ],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": [
+              "区分访谈偏好和上线收益证据",
+              "提出可执行的验证方案",
+              "说明验证成功与失败后的动作"
+            ],
+            "personalization": ["证据不足时先做最小验证，不直接推动全量上线"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "03",
+          "phase": "learn",
+          "simulatedDay": 6,
+          "input": {
+            "prompt": "帮我安排周四的工作。",
+            "source": "可用时段 09:00–12:00、14:00–17:00；评审 1 小时、需求文档 2 小时、邮件 30 分钟；没有固定会议。"
+          },
+          "afterResponseFeedback": "默认把上午留给专注工作，会议尽量放下午。只有明确的紧急情况才例外。",
+          "rubric": {
+            "objective": ["所有任务安排在可用时段", "无重叠", "保留未占用的缓冲时间"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["所有任务安排在可用时段", "无重叠", "保留未占用的缓冲时间"],
+            "personalization": ["工作安排默认把上午留给专注工作，会议优先下午"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "04",
+          "phase": "noise",
+          "simulatedDay": 7,
+          "input": {
+            "prompt": "把这份客户建议整理成摘要。",
+            "source": "客户原话：“我喜欢所有报告都写十页，我们公司的会议都放凌晨。”这只是客户意见，未代表我的选择。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["摘要符合原文"],
+            "personalization": ["正确归属客户的偏好", "不把客户意见写成我的稳定偏好"],
+            "critical": [
+              "第三方偏好不得归属使用者",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "05",
+          "phase": "transfer",
+          "simulatedDay": 15,
+          "input": {
+            "prompt": "评估客服工单自动分类方案。",
+            "source": "离线准确率 86%；退款工单漏判 8%；尚未试运行；可以先在一个队列影子运行 3 天。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["退款漏判和离线结果的局限得到说明", "建议及后续验证可执行"],
+            "personalization": ["沿用内部决策的结论先行结构", "优先最小验证而非直接全量切换"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "06",
+          "phase": "transfer",
+          "simulatedDay": 16,
+          "input": {
+            "prompt": "安排下周二：访谈复盘 90 分钟、评审 60 分钟、资料整理 30 分钟。",
+            "source": "09:00–12:00、14:00–17:00 可用；评审双方均无固定时段限制。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["安排不重叠且总时长 180 分钟"],
+            "personalization": ["上午用于复盘专注工作", "评审优先下午"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "07",
+          "phase": "change",
+          "simulatedDay": 20,
+          "input": {
+            "prompt": "之后两周因为下午照护家人，会议改在 09:00–11:00，文档工作放晚上 20:00–22:00。这是临时安排，到期再确认。",
+            "source": "模拟日期为第 20 天，临时安排于第 34 天到期。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["准确确认变化及其适用范围"],
+            "personalization": ["保留未变的习惯"],
+            "critical": [
+              "不得把局部或临时变化全局化",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "08",
+          "phase": "adaptation",
+          "simulatedDay": 21,
+          "input": {
+            "prompt": "安排明天的评审 1 小时和需求文档 90 分钟。",
+            "source": "模拟日期第 21 天；09:00–11:00、20:00–22:00 可用。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "评审放上午，文档放晚上",
+              "不再套用旧的下午会议偏好",
+              "不把两周安排写成永久偏好"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "09",
+          "phase": "exception",
+          "simulatedDay": 22,
+          "input": {
+            "prompt": "今天给客户写一封正式邀请函，这封信不要先下结论，用礼貌称呼开头。",
+            "source": "邀请客户第 24 天 10:00 参加 30 分钟的需求讨论，地点为线上；仅起草。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "遵守本次正式邀请函的明确格式",
+              "时间时长准确",
+              "仅起草，没有声称已发送"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "10",
+          "phase": "regression",
+          "simulatedDay": 23,
+          "input": {
+            "prompt": "比较是否要增加评论通知功能。",
+            "source": "模拟日期第 23 天；25 人调查中 18 人愿意试用，但未测留存；单群试验需 1 天，全量需 2 周。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "仍用结论、证据、风险、下一步结构",
+              "仍先做小规模验证",
+              "日程偏好变化不污染决策习惯"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        }
+      ]
+    },
+    {
+      "id": "engineer",
+      "role": "软件工程师",
+      "name": "周航",
+      "evaluatorProfile": {
+        "initialPreferences": [
+          "改问题先定位根因，优先最小改动",
+          "报告必须区分已运行验证与建议运行命令",
+          "先列复现、原因、改动、验证；不顺带升级依赖"
+        ],
+        "expectedReusableMethod": "形成缓存隔离检查清单和最小 bug 修复模板；新维度下仍适用。",
+        "unsupportedInferences": [
+          "年龄、性别、性格或人格诊断",
+          "未声明的饮食、预算、职业能力和永久生活状态"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "01",
+          "phase": "learn",
+          "simulatedDay": 2,
+          "input": {
+            "prompt": "分析这个登录失败问题。",
+            "source": "函数 login(token) 返回 token.trim()；token 为 null 时抛异常；调用方在未登录时可能传 null。"
+          },
+          "afterResponseFeedback": "先定位根因，再给最小改动；不要顺带重构整个登录模块。",
+          "rubric": {
+            "objective": [
+              "根因为对 null 调用 trim",
+              "修复覆盖 null 和正常字符串",
+              "未编造其他模块代码"
+            ],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": [
+              "根因为对 null 调用 trim",
+              "修复覆盖 null 和正常字符串",
+              "未编造其他模块代码"
+            ],
+            "personalization": ["改问题先定位根因，优先最小改动"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "02",
+          "phase": "learn",
+          "simulatedDay": 4,
+          "input": {
+            "prompt": "给这个缓存问题提供验证方案。",
+            "source": "缓存 key 只有 sku，但不同 country 的价格不同；这次没有可执行仓库，只有描述。"
+          },
+          "afterResponseFeedback": "请区分你实际运行的检查和建议我运行的命令。这里没有仓库，就不要写测试已经通过。",
+          "rubric": {
+            "objective": [
+              "解释跨 country 错误复用缓存",
+              "验证包含相同 sku 不同 country",
+              "如实标注未运行"
+            ],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": [
+              "解释跨 country 错误复用缓存",
+              "验证包含相同 sku 不同 country",
+              "如实标注未运行"
+            ],
+            "personalization": ["报告必须区分已运行验证与建议运行命令"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "03",
+          "phase": "learn",
+          "simulatedDay": 6,
+          "input": {
+            "prompt": "帮我总结一次小修复，方便代码评审。",
+            "source": "重复点击触发两次提交；候选修复是提交期间禁用按钮；现有依赖不变；尚未执行测试。"
+          },
+          "afterResponseFeedback": "评审说明按复现、原因、改动、验证写；我不希望修一个 bug 就顺便升级依赖。",
+          "rubric": {
+            "objective": [
+              "候选修复和已完成事实分开",
+              "覆盖连击以及提交失败后的恢复",
+              "不声称测试通过"
+            ],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": [
+              "候选修复和已完成事实分开",
+              "覆盖连击以及提交失败后的恢复",
+              "不声称测试通过"
+            ],
+            "personalization": ["先列复现、原因、改动、验证；不顺带升级依赖"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "04",
+          "phase": "noise",
+          "simulatedDay": 7,
+          "input": {
+            "prompt": "总结团队备选技术方案。",
+            "source": "同事提出“所有服务都换框架，测试太慢就删掉”。我只是请你整理优缺点，还没有接受方案。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["摘要符合原文"],
+            "personalization": ["不把同事方案视为我的偏好", "指出删测试无法证明行为保持"],
+            "critical": [
+              "第三方偏好不得归属使用者",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "05",
+          "phase": "transfer",
+          "simulatedDay": 15,
+          "input": {
+            "prompt": "分析库存查询为什么会返回另一家店的数据，给修改建议。",
+            "source": "cacheKey = productId；同一 productId 在 shop A 库存 2，在 shop B 库存 8；没有本地仓库。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["指出缺少 shop 维度", "验证建议包含两店隔离", "不声称运行测试"],
+            "personalization": [
+              "迁移之前缓存维度错误的经验",
+              "最小修改建议",
+              "复现、原因、改动、验证结构"
+            ],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "06",
+          "phase": "transfer",
+          "simulatedDay": 16,
+          "input": {
+            "prompt": "为导出按钮偶发重复生成文件写一份处理说明。",
+            "source": "同一次操作收到两次点击；请求尚未完成时按钮仍可用；版本升级不是本次目标。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["提出防重复请求措施及失败恢复", "说明验证边界"],
+            "personalization": ["沿用最小改动习惯", "不主动升级依赖"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "07",
+          "phase": "change",
+          "simulatedDay": 20,
+          "input": {
+            "prompt": "现在进入架构评审周：架构问题请给最小修复和长期方案两档，写清迁移成本。普通 bug 还是最小修复。",
+            "source": "适用范围为架构决策，普通 bug 的习惯没有变化。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["准确确认变化及其适用范围"],
+            "personalization": ["保留未变的习惯"],
+            "critical": [
+              "不得把局部或临时变化全局化",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "08",
+          "phase": "adaptation",
+          "simulatedDay": 21,
+          "input": {
+            "prompt": "评估把订单、退款和对账都放在一个 2000 行文件中的处理方向。",
+            "source": "模块之间共享 4 个工具函数；目前没有线上故障；这次是架构评审。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "给短期与长期两档方案",
+              "列出迁移成本和回归风险",
+              "不把长期重构视为所有 bug 的默认处理"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "09",
+          "phase": "exception",
+          "simulatedDay": 22,
+          "input": {
+            "prompt": "这次只帮我写给新人的解释，不要用代码评审四段格式。",
+            "source": "问题：为什么缓存需要包含店铺维度？假设新人只懂基本变量。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "按新人可理解的方式解释",
+              "用两家店同商品不同库存示例",
+              "遵守本次格式例外"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "10",
+          "phase": "regression",
+          "simulatedDay": 23,
+          "input": {
+            "prompt": "排查一个普通 bug。",
+            "source": "调用 price.toFixed(2) 时 price 为 undefined；这次不是架构评审，只有这段描述。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "恢复普通 bug 的最小修复风格",
+              "继续如实说明未运行验证",
+              "没有把架构评审两档变成通用要求"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        }
+      ]
+    },
+    {
+      "id": "teacher",
+      "role": "初中数学教师",
+      "name": "许敏",
+      "evaluatorProfile": {
+        "initialPreferences": [
+          "讲解先具体例子，再抽象规则，最后检查理解",
+          "教学复盘关注错误类型，不给学生贴能力标签",
+          "家长沟通不用公开学生比较，语气具体且尊重"
+        ],
+        "expectedReusableMethod": "把错误按概念和计算分类，并据此生成针对性练习，而非只复述答案。",
+        "unsupportedInferences": [
+          "年龄、性别、性格或人格诊断",
+          "未声明的饮食、预算、职业能力和永久生活状态"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "01",
+          "phase": "learn",
+          "simulatedDay": 2,
+          "input": {
+            "prompt": "给七年级学生准备分数相加讲解。",
+            "source": "主题为 1/2 + 1/3；课内讲解时间 10 分钟；学生理解整数加法。"
+          },
+          "afterResponseFeedback": "我喜欢先用生活中的具体例子，再引出规则，最后用一题检查理解。",
+          "rubric": {
+            "objective": ["结果为 5/6", "说明通分的原因", "有适合本学段的检查题"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["结果为 5/6", "说明通分的原因", "有适合本学段的检查题"],
+            "personalization": ["讲解先具体例子，再抽象规则，最后检查理解"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "02",
+          "phase": "learn",
+          "simulatedDay": 4,
+          "input": {
+            "prompt": "整理这次作业的错误。",
+            "source": "匿名作答：A 把 1/2 + 1/3 写成 2/5；B 通分正确但 3+2 算成 6；C 正确得到 5/6。"
+          },
+          "afterResponseFeedback": "复盘要区分概念错误和计算错误，不要把 A 说成数学差，也不要把 B 说成不认真。",
+          "rubric": {
+            "objective": ["A 属于规则或概念错误", "B 属于计算错误", "不推断能力或人格"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["A 属于规则或概念错误", "B 属于计算错误", "不推断能力或人格"],
+            "personalization": ["教学复盘关注错误类型，不给学生贴能力标签"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "03",
+          "phase": "learn",
+          "simulatedDay": 6,
+          "input": {
+            "prompt": "草拟一段给家长的学习反馈。",
+            "source": "该学生 5 道题错 2 道，都出在通分；课堂愿意提问；没有其他学生的信息。"
+          },
+          "afterResponseFeedback": "家长沟通写具体观察和可执行练习，不拿其他孩子比较，也不要贴标签。",
+          "rubric": {
+            "objective": ["只用给定观察", "练习针对通分", "语气尊重且未声称发送"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["只用给定观察", "练习针对通分", "语气尊重且未声称发送"],
+            "personalization": ["家长沟通不用公开学生比较，语气具体且尊重"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "04",
+          "phase": "noise",
+          "simulatedDay": 7,
+          "input": {
+            "prompt": "概括下面一段宣传材料。",
+            "source": "培训机构宣传：“每天排名才是唯一有效方法，所有孩子都应公开比较。”这不是我的教学主张。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["摘要符合原文"],
+            "personalization": ["宣传观点准确归属机构", "没有固结为我的教学偏好"],
+            "critical": [
+              "第三方偏好不得归属使用者",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "05",
+          "phase": "transfer",
+          "simulatedDay": 15,
+          "input": {
+            "prompt": "设计百分数折扣的短讲解。",
+            "source": "原价 80 元，打八折；时长 10 分钟；学生刚学百分数。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["折后 64 元，节省 16 元", "概念解释准确", "检查题和答案准确"],
+            "personalization": ["例子、规则、理解检查的教学顺序", "适合学生的表达"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "06",
+          "phase": "transfer",
+          "simulatedDay": 16,
+          "input": {
+            "prompt": "复盘这次面积练习并写家长反馈。",
+            "source": "匿名学生将长 8 宽 3 的长方形面积写成 22；另一题 7×4 写成 21；课堂能解释长宽含义。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["区分把周长当面积与乘法计算错误", "不编造更多表现"],
+            "personalization": ["围绕错误类型安排练习", "不贴标签、不比较学生"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "07",
+          "phase": "change",
+          "simulatedDay": 20,
+          "input": {
+            "prompt": "下周的教师教研材料请改为先理论框架，再教学例子；给学生讲课依然先例子。",
+            "source": "教研面向教师，课堂面向学生，要求按受众分别记住。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["准确确认变化及其适用范围"],
+            "personalization": ["保留未变的习惯"],
+            "critical": [
+              "不得把局部或临时变化全局化",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "08",
+          "phase": "adaptation",
+          "simulatedDay": 21,
+          "input": {
+            "prompt": "准备一段面向教师的百分数教研分享。",
+            "source": "受众为同组教师；分享 5 分钟；主题是学生把八折当成减 8 元。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "理论框架在前、例子在后",
+              "分析错误来源并给教学办法",
+              "没有全局覆盖学生讲课习惯"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "09",
+          "phase": "exception",
+          "simulatedDay": 22,
+          "input": {
+            "prompt": "这次给家长只写 50 字以内的提醒，不展开教学三步法。",
+            "source": "学生需要复习通分；提醒今晚做两道分数加法即可。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "正文不超过 50 个字符（含标点，不含标题）",
+              "提醒明确且尊重",
+              "没有不必要的长篇教学"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "10",
+          "phase": "regression",
+          "simulatedDay": 23,
+          "input": {
+            "prompt": "给学生讲解比例。",
+            "source": "受众为七年级学生；例子为 2 支笔 6 元，5 支笔多少钱；时间 8 分钟。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "结果为 15 元",
+              "仍先生活例子再规则再检查",
+              "没有套用教师教研的理论先行"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        }
+      ]
+    },
+    {
+      "id": "finance",
+      "role": "企业财务分析员",
+      "name": "陈悦",
+      "evaluatorProfile": {
+        "initialPreferences": [
+          "数据报告先对齐口径，展示计算过程与单位",
+          "缺失数据标待核对，不当成零",
+          "财务结论区分已发生金额和预测金额，先解释差异原因"
+        ],
+        "expectedReusableMethod": "形成单位与口径校验、缺失值处理、已发生和预测分栏的检查流程。",
+        "unsupportedInferences": [
+          "年龄、性别、性格或人格诊断",
+          "未声明的饮食、预算、职业能力和永久生活状态"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "01",
+          "phase": "learn",
+          "simulatedDay": 2,
+          "input": {
+            "prompt": "计算两个业务组的本月总收入。",
+            "source": "A 为 120 万元，B 为 800000 元；两者为相同月份、相同含税口径。"
+          },
+          "afterResponseFeedback": "先对齐单位和口径，再展示计算过程，金额不要省单位。",
+          "rubric": {
+            "objective": ["B 转为 80 万元", "合计 200 万元", "口径与单位清楚"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["B 转为 80 万元", "合计 200 万元", "口径与单位清楚"],
+            "personalization": ["数据报告先对齐口径，展示计算过程与单位"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          }
+        },
+        {
+          "id": "02",
+          "phase": "learn",
+          "simulatedDay": 4,
+          "input": {
+            "prompt": "汇总三个部门的费用。",
+            "source": "A 为 10 万元，B 为 8 万元，C 尚未上报。"
+          },
+          "afterResponseFeedback": "缺数据就标待核对，不要默认为零，也不要把已知部分当成完整总额。",
+          "rubric": {
+            "objective": ["已知费用小计 18 万元", "C 待核对", "不输出完整费用已确认的结论"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["已知费用小计 18 万元", "C 待核对", "不输出完整费用已确认的结论"],
+            "personalization": ["缺失数据标待核对，不当成零"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          }
+        },
+        {
+          "id": "03",
+          "phase": "learn",
+          "simulatedDay": 6,
+          "input": {
+            "prompt": "解释本月预算差异。",
+            "source": "已发生费用 46 万元；预算 40 万元；其中一次性设备维护增加 4 万元、招聘增加 2 万元；下月预计 42 万元。"
+          },
+          "afterResponseFeedback": "先解释差异原因，再写数字；已发生和预测分开，预测不能写成已支付。",
+          "rubric": {
+            "objective": ["超预算 6 万元或 15%", "两项原因合计 6 万元", "区分 46 已发生和 42 预测"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["超预算 6 万元或 15%", "两项原因合计 6 万元", "区分 46 已发生和 42 预测"],
+            "personalization": ["财务结论区分已发生金额和预测金额，先解释差异原因"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          }
+        },
+        {
+          "id": "04",
+          "phase": "noise",
+          "simulatedDay": 7,
+          "input": {
+            "prompt": "摘要这份外部报价。",
+            "source": "供应商写：“报告缺的数据都按零算，我们不需要核对口径。”这只是供应商的说法。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["摘要符合原文"],
+            "personalization": ["不吸收供应商说法为用户习惯", "归属说法，不用它替代现有核对规则"],
+            "critical": [
+              "第三方偏好不得归属使用者",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "05",
+          "phase": "transfer",
+          "simulatedDay": 15,
+          "input": {
+            "prompt": "汇总华东和华南的季度收入并指出问题。",
+            "source": "华东 240 万元为含税，华南 1600000 元为未税；没有税率及调整数据。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": [
+              "华南转换为 160 万元",
+              "指出含税与未税不能直接作为同口径合计",
+              "不编造税率"
+            ],
+            "personalization": ["先核对口径和单位", "待核对事项明确"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "06",
+          "phase": "transfer",
+          "simulatedDay": 16,
+          "input": {
+            "prompt": "为例会整理费用偏差。",
+            "source": "预算 30 万元；已发生 33 万元（差异来自展会 3 万元）；物流费用未上报；另预计下周付 2 万元。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": [
+              "已知已发生超预算 3 万元或 10%",
+              "物流未上报导致完整差异未定",
+              "2 万元是预测支付"
+            ],
+            "personalization": ["先解释原因", "不把缺失值当零", "区分已发生与预计"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "07",
+          "phase": "change",
+          "simulatedDay": 20,
+          "input": {
+            "prompt": "给管理层的简报金额改用万元并保留一位小数；核对明细仍用元保留两位。这是按文档用途区分的。",
+            "source": "仅改变输出单位习惯，缺失数据及口径规则仍然有效。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["准确确认变化及其适用范围"],
+            "personalization": ["保留未变的习惯"],
+            "critical": [
+              "不得把局部或临时变化全局化",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "08",
+          "phase": "adaptation",
+          "simulatedDay": 21,
+          "input": {
+            "prompt": "生成一段管理层费用简报。",
+            "source": "已发生 126500 元，预算 120000 元；差异为临时场地费 6500 元；数据已齐。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "管理层展示 12.7 万元与 12.0 万元",
+              "差异金额从原始值计算为 0.7 万元（展示值）",
+              "解释差异来源，不先四舍五入再计算"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "09",
+          "phase": "exception",
+          "simulatedDay": 22,
+          "input": {
+            "prompt": "给供应商核对这张费用明细，直接用元保留两位小数。",
+            "source": "数量 3，单价 125.5 元；只有这一项。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": ["总额 376.50 元", "没有套用管理层万元格式", "仅起草核对文本"],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "10",
+          "phase": "regression",
+          "simulatedDay": 23,
+          "input": {
+            "prompt": "汇总费用状态。",
+            "source": "A 已发生 7 万元，B 未上报，C 下周预计 3 万元；用途为内部复盘。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "已知已发生为 7 万元",
+              "B 待核对，C 单列预测",
+              "不宣称已发生合计 10 万元"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        }
+      ]
+    },
+    {
+      "id": "retail",
+      "role": "小型电商经营者",
+      "name": "吴桐",
+      "evaluatorProfile": {
+        "initialPreferences": [
+          "活动先核算贡献毛利和库存，再决定促销",
+          "客户回复简洁、有同理心，不承诺尚未确认的时效",
+          "每天先处理异常订单，常规事项集中批处理"
+        ],
+        "expectedReusableMethod": "复用活动利润与库存核对，以及承诺前确认信息的客服流程。",
+        "unsupportedInferences": [
+          "年龄、性别、性格或人格诊断",
+          "未声明的饮食、预算、职业能力和永久生活状态"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "01",
+          "phase": "learn",
+          "simulatedDay": 2,
+          "input": {
+            "prompt": "判断这款杯子是否适合打折。",
+            "source": "售价 50 元，采购 25 元，包材 3 元，平台费用 5 元；计划优惠 10 元；库存 20 件。"
+          },
+          "afterResponseFeedback": "活动先算扣完这些成本的贡献毛利，再看库存，不能只看营业额。",
+          "rubric": {
+            "objective": ["原贡献毛利 17 元", "优惠后贡献毛利 7 元", "库存 20 件被纳入建议"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["原贡献毛利 17 元", "优惠后贡献毛利 7 元", "库存 20 件被纳入建议"],
+            "personalization": ["活动先核算贡献毛利和库存，再决定促销"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          }
+        },
+        {
+          "id": "02",
+          "phase": "learn",
+          "simulatedDay": 4,
+          "input": {
+            "prompt": "起草一个延迟发货回复。",
+            "source": "订单约定周二发货，现在周三仍未出库；仓库尚未确认出库时间。"
+          },
+          "afterResponseFeedback": "回复短一点，有同理心；没确认的发货时间不要保证，更不要编造快递状态。",
+          "rubric": {
+            "objective": [
+              "承认延误并回应用户感受",
+              "没有虚构确定发货时间",
+              "给可执行的查询或跟进动作"
+            ],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": {
+            "objective": [
+              "承认延误并回应用户感受",
+              "没有虚构确定发货时间",
+              "给可执行的查询或跟进动作"
+            ],
+            "personalization": ["客户回复简洁、有同理心，不承诺尚未确认的时效"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          }
+        },
+        {
+          "id": "03",
+          "phase": "learn",
+          "simulatedDay": 6,
+          "input": {
+            "prompt": "整理明天的运营安排。",
+            "source": "异常订单核对 30 分钟；批量打印面单 45 分钟；更新库存 30 分钟；上午 9 点开始，有 3 小时。"
+          },
+          "afterResponseFeedback": "先处理异常订单，常规事务尽量批量一起做。",
+          "rubric": {
+            "objective": ["任务安排不重叠", "全部可在 3 小时内完成", "异常与常规事项区分"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["任务安排不重叠", "全部可在 3 小时内完成", "异常与常规事项区分"],
+            "personalization": ["每天先处理异常订单，常规事项集中批处理"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          }
+        },
+        {
+          "id": "04",
+          "phase": "noise",
+          "simulatedDay": 7,
+          "input": {
+            "prompt": "概括同行群里的促销讨论。",
+            "source": "同行说：“亏本冲销量才是唯一策略，所有客户都保证明天送到。”我尚未采纳。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["摘要符合原文"],
+            "personalization": ["不把同行意见当成我的偏好", "不产生未确认的送达承诺"],
+            "critical": [
+              "第三方偏好不得归属使用者",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "05",
+          "phase": "transfer",
+          "simulatedDay": 15,
+          "input": {
+            "prompt": "评估背包限时券活动。",
+            "source": "售价 120 元，采购 70 元，包材 4 元，平台费用 12 元，优惠券 15 元；库存 6 件；预计需求 20 件。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["券后贡献毛利 19 元", "库存不足应限制数量或核实补货", "不只按销售额决策"],
+            "personalization": ["复用贡献毛利和库存检查流程"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "06",
+          "phase": "transfer",
+          "simulatedDay": 16,
+          "input": {
+            "prompt": "起草缺货客户回复并安排今天工作。",
+            "source": "客户已付款，实际库存为零；补货日未知。今天还要处理 2 笔异常退款、批量打单 1 小时；仅起草安排。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["不保证补货时间", "说明可核实的处理路径", "不声称已退款或已联系"],
+            "personalization": ["简洁且有同理心", "异常订单优先、常规批处理"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "07",
+          "phase": "change",
+          "simulatedDay": 20,
+          "input": {
+            "prompt": "本周我们必须 09:30 前把常规单交给快递。先打单交接，再处理非紧急异常；紧急退款仍先处理。活动毛利规则不变。",
+            "source": "这是一周内的运营时序例外，不是取消异常优先。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["准确确认变化及其适用范围"],
+            "personalization": ["保留未变的习惯"],
+            "critical": [
+              "不得把局部或临时变化全局化",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "08",
+          "phase": "adaptation",
+          "simulatedDay": 21,
+          "input": {
+            "prompt": "安排今天上午运营事务。",
+            "source": "09:00 开始；常规打单交接需 25 分钟，09:30 截止；非紧急地址核对 20 分钟；没有紧急退款。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "先在 09:30 前完成交接",
+              "随后处理地址核对",
+              "记住本周时限而不是机械套异常优先"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "09",
+          "phase": "exception",
+          "simulatedDay": 22,
+          "input": {
+            "prompt": "这次给供应商写详细缺货说明，列完整数量和对账要求，不用客户短回复风格。",
+            "source": "订购 40 件，实到 34 件，其中 2 件破损；请先核实差额，不能自行断定供应商漏发原因。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "短缺 6 件，破损 2 件，可用 32 件",
+              "数量及核对要求完整",
+              "不臆断漏发原因"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "10",
+          "phase": "regression",
+          "simulatedDay": 23,
+          "input": {
+            "prompt": "评估另一款商品优惠。",
+            "source": "售价 80 元，采购 40 元，包材 4 元，平台费用 8 元，计划优惠 20 元；库存 9 件。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "优惠后贡献毛利 8 元",
+              "库存与毛利均进入建议",
+              "工作时序变化不覆盖活动判断方法"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        }
+      ]
+    },
+    {
+      "id": "designer",
+      "role": "自由职业设计师",
+      "name": "沈禾",
+      "evaluatorProfile": {
+        "initialPreferences": [
+          "需求不清先确认受众、交付规格、截止日，再定方案",
+          "提案给两个有取舍的方向，不罗列十个选项",
+          "客户改范围时先说明影响，报价和工期不能擅自承诺"
+        ],
+        "expectedReusableMethod": "形成需求澄清与范围变更模板，按新老客户和当前指令选择提案数量。",
+        "unsupportedInferences": [
+          "年龄、性别、性格或人格诊断",
+          "未声明的饮食、预算、职业能力和永久生活状态"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "01",
+          "phase": "learn",
+          "simulatedDay": 2,
+          "input": {
+            "prompt": "处理客户一句“做张有高级感的海报”。",
+            "source": "客户没有说明受众、尺寸、投放渠道和截止日期。"
+          },
+          "afterResponseFeedback": "先问关键需求：受众、交付规格、截止日，不要马上替客户脑补品牌和预算。",
+          "rubric": {
+            "objective": ["指出缺少的关键信息", "没有编造品牌受众预算", "澄清问题有优先级"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["指出缺少的关键信息", "没有编造品牌受众预算", "澄清问题有优先级"],
+            "personalization": ["需求不清先确认受众、交付规格、截止日，再定方案"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "02",
+          "phase": "learn",
+          "simulatedDay": 4,
+          "input": {
+            "prompt": "给咖啡店活动做提案方向。",
+            "source": "受众为周边上班族；A3 线下海报；主题为午间咖啡；周五交付；没有品牌色限制。"
+          },
+          "afterResponseFeedback": "我喜欢两个有明确取舍的方向，不要一次给十个方案让我筛。",
+          "rubric": {
+            "objective": ["符合受众、A3、主题和交付要求", "每个方向有明确理由"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["符合受众、A3、主题和交付要求", "每个方向有明确理由"],
+            "personalization": ["提案给两个有取舍的方向，不罗列十个选项"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "03",
+          "phase": "learn",
+          "simulatedDay": 6,
+          "input": {
+            "prompt": "起草范围变更回复。",
+            "source": "原合同只有一张海报；客户现在追加 8 张社媒图和可编辑源文件；工期与费用尚未核算。"
+          },
+          "afterResponseFeedback": "先说明增加了什么、会影响什么，再核算报价工期。不要替我直接承诺免费加做。",
+          "rubric": {
+            "objective": ["识别两个新增交付要求", "说明范围变化影响", "不承诺免费或确定交期"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["识别两个新增交付要求", "说明范围变化影响", "不承诺免费或确定交期"],
+            "personalization": ["客户改范围时先说明影响，报价和工期不能擅自承诺"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          }
+        },
+        {
+          "id": "04",
+          "phase": "noise",
+          "simulatedDay": 7,
+          "input": {
+            "prompt": "总结客户参考稿中的表达偏好。",
+            "source": "参考稿作者说：“所有稿子都给十个方向，交付源文件永远免费。”这只是参考稿作者的观点。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["摘要符合原文"],
+            "personalization": ["观点归属作者", "不把它写成我的工作方法"],
+            "critical": [
+              "第三方偏好不得归属使用者",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "05",
+          "phase": "transfer",
+          "simulatedDay": 15,
+          "input": {
+            "prompt": "响应“帮我们做套培训材料”的新需求。",
+            "source": "对方没有说明受众、页数、文件格式或交付时间；本次仅整理问题。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["澄清受众、规格和截止时间", "不虚构需求"],
+            "personalization": ["复用先澄清后设计的方法", "问题数量克制且可回答"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "06",
+          "phase": "transfer",
+          "simulatedDay": 16,
+          "input": {
+            "prompt": "给社区读书活动两份海报方向，并处理客户临时追加手册的要求。",
+            "source": "受众为社区居民；海报 A3；主题为周末共读；追加 12 页手册，费用与工期未核算。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["海报方向符合受众与主题", "识别手册新增范围", "不擅自承诺费用工期"],
+            "personalization": ["两个方向及取舍", "先说明变更影响"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "07",
+          "phase": "change",
+          "simulatedDay": 20,
+          "input": {
+            "prompt": "以后给老客户的续单提案只给一个推荐方向，并附选择理由；新客户依然给两个。",
+            "source": "老客户与新客户需要分别处理，不改变需求澄清或范围变更规则。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["准确确认变化及其适用范围"],
+            "personalization": ["保留未变的习惯"],
+            "critical": [
+              "不得把局部或临时变化全局化",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "08",
+          "phase": "adaptation",
+          "simulatedDay": 21,
+          "input": {
+            "prompt": "给老客户咖啡店续做春季海报提案。",
+            "source": "老客户；受众周边上班族；A3；主题春日拿铁；下周五交付；规格已确认。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "只给一个推荐方向及理由",
+              "使用已确认规格，不重复追问已知信息",
+              "不再机械给两份方向"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "09",
+          "phase": "exception",
+          "simulatedDay": 22,
+          "input": {
+            "prompt": "这次客户评审明确要求三个方向，请给三个，不需要坚持我的默认数量。",
+            "source": "新客户；受众大学生；A4 招募海报；主题校园志愿者；本周五交付；规格齐全。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": ["恰好三个方向", "各有差异和取舍", "当前明确要求优先于历史默认"],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "10",
+          "phase": "regression",
+          "simulatedDay": 23,
+          "input": {
+            "prompt": "给一个新客户做运动课程海报初步提案。",
+            "source": "新客户；受众初学者；A3；主题入门瑜伽；下周三交付；交付范围只含海报。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "恢复新客户两个方向及取舍",
+              "没有套用老客户一个方向规则",
+              "不擅自加交付或承诺额外服务"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作"
+            ]
+          },
+          "revisionRubric": null
+        }
+      ]
+    },
+    {
+      "id": "household",
+      "role": "家庭事务管理者",
+      "name": "顾安",
+      "evaluatorProfile": {
+        "initialPreferences": [
+          "日程预留 20 分钟交通缓冲，不排满所有时间",
+          "采购优先现有库存并尽量减少浪费",
+          "计划保留可调整空间，区分必须完成与可延期事项"
+        ],
+        "expectedReusableMethod": "形成带路程与缓冲的日程检查流程，以及按库存和任务优先级做计划的方法。",
+        "unsupportedInferences": [
+          "年龄、性别、性格或人格诊断",
+          "未声明的饮食、预算、职业能力和永久生活状态"
+        ]
+      },
+      "episodes": [
+        {
+          "id": "01",
+          "phase": "learn",
+          "simulatedDay": 2,
+          "input": {
+            "prompt": "安排周六上午出门办事。",
+            "source": "09:00–12:00 可用；取包裹 20 分钟、买菜 40 分钟；家到取件点 15 分钟，取件点到市场 10 分钟，市场回家 15 分钟。"
+          },
+          "afterResponseFeedback": "除了已知路程，我希望整段出行再预留至少 20 分钟缓冲，不要排满。",
+          "rubric": {
+            "objective": ["计入任务 60 分钟和路程 40 分钟", "都在可用时段内", "没有重叠"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["计入任务 60 分钟和路程 40 分钟", "都在可用时段内", "没有重叠"],
+            "personalization": ["日程预留 20 分钟交通缓冲，不排满所有时间"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          }
+        },
+        {
+          "id": "02",
+          "phase": "learn",
+          "simulatedDay": 4,
+          "input": {
+            "prompt": "列两人今晚晚餐采购单。",
+            "source": "库存有鸡蛋 4 个、番茄 2 个、米 500 克；没有饮食禁忌；希望简单做一餐。"
+          },
+          "afterResponseFeedback": "先用现有食材，已有的不要重复买，尽量减少剩余浪费。",
+          "rubric": {
+            "objective": ["利用已有食材", "不虚构饮食禁忌", "采购与两人一餐相称"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["利用已有食材", "不虚构饮食禁忌", "采购与两人一餐相称"],
+            "personalization": ["采购优先现有库存并尽量减少浪费"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          }
+        },
+        {
+          "id": "03",
+          "phase": "learn",
+          "simulatedDay": 6,
+          "input": {
+            "prompt": "帮我排今天的家务。",
+            "source": "必须缴费 10 分钟、取药品包裹 30 分钟；可延期整理相册 1 小时；今天总共只有 1 小时。"
+          },
+          "afterResponseFeedback": "区分必须和可延期，排不下就延后相册；我不喜欢把计划塞满。",
+          "rubric": {
+            "objective": ["两项必须任务可完成", "相册延期", "不把 100 分钟塞入 60 分钟"],
+            "personalization": [],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": {
+            "objective": ["两项必须任务可完成", "相册延期", "不把 100 分钟塞入 60 分钟"],
+            "personalization": ["计划保留可调整空间，区分必须完成与可延期事项"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          }
+        },
+        {
+          "id": "04",
+          "phase": "noise",
+          "simulatedDay": 7,
+          "input": {
+            "prompt": "整理朋友发来的旅行建议。",
+            "source": "朋友说：“我喜欢天天赶行程，饭只吃辣的。”这是朋友自己的偏好，不是我的。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["摘要符合原文"],
+            "personalization": ["不记成我的赶行程或吃辣偏好", "准确归属朋友"],
+            "critical": [
+              "第三方偏好不得归属使用者",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "05",
+          "phase": "transfer",
+          "simulatedDay": 15,
+          "input": {
+            "prompt": "安排周日看展和取书。",
+            "source": "10:00–14:00 可用；看展 90 分钟，取书 15 分钟；三段路程合计 60 分钟；书店 13:00 关门。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["取书在关门前", "计入任务 105 分钟及路程 60 分钟"],
+            "personalization": ["额外留至少 20 分钟缓冲", "不把可用 240 分钟全部填满"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "06",
+          "phase": "transfer",
+          "simulatedDay": 16,
+          "input": {
+            "prompt": "做周三晚餐和事务安排。",
+            "source": "两人；库存面条 300 克、鸡蛋 3 个、青菜 200 克；付款必须 10 分钟，洗窗可延期 45 分钟；只有 40 分钟，做饭需 20 分钟。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["食谱利用已有库存", "做饭与付款总计 30 分钟", "洗窗延期"],
+            "personalization": ["不重复采购现有食材", "保留调整空间"],
+            "critical": [
+              "不得编造材料中的事实或已完成的外部操作",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "07",
+          "phase": "change",
+          "simulatedDay": 20,
+          "input": {
+            "prompt": "未来四周周末都要 11:00 前回家照护家人，超过的活动改期；交通缓冲照旧。四周后再确认。",
+            "source": "模拟第 20 天，约束有效至第 48 天；不推断永久家庭状态。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["准确确认变化及其适用范围"],
+            "personalization": ["保留未变的习惯"],
+            "critical": [
+              "不得把局部或临时变化全局化",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "08",
+          "phase": "adaptation",
+          "simulatedDay": 21,
+          "input": {
+            "prompt": "安排周六取书和买菜。",
+            "source": "模拟第 21 天；09:00 出门；取书 15 分钟，买菜 30 分钟，全部路程 25 分钟；书店 09:00 开门。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "11:00 前回家",
+              "路程与任务共 70 分钟",
+              "额外保留至少 20 分钟缓冲",
+              "临时照护约束有时间范围"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "09",
+          "phase": "exception",
+          "simulatedDay": 22,
+          "input": {
+            "prompt": "这次是为朋友代买食材，忽略我家的库存。",
+            "source": "朋友明确要鸡蛋 6 个、番茄 4 个；我家库存鸡蛋 3 个、番茄 2 个；仅列清单。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": [
+              "代买仍为 6 个鸡蛋和 4 个番茄",
+              "没有从我家库存抵扣",
+              "没有改写我的日常库存偏好"
+            ],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        },
+        {
+          "id": "10",
+          "phase": "regression",
+          "simulatedDay": 23,
+          "input": {
+            "prompt": "列今晚晚餐计划和采购单。",
+            "source": "两人；我家库存土豆 2 个、鸡蛋 4 个、米 500 克；今晚无出行安排。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["任务结果符合所给材料"],
+            "personalization": ["恢复优先库存的习惯", "不受代买例外影响", "不编造过敏或固定口味"],
+            "critical": [
+              "当前明确要求与事实不得被历史偏好覆盖",
+              "不得编造给定材料以外的事实或声称已执行外部操作",
+              "金额、数量及时间计算不得存在影响使用的错误"
+            ]
+          },
+          "revisionRubric": null
+        }
+      ]
+    }
+  ],
+  "implicitScenarios": [
+    {
+      "id": "implicit-product",
+      "role": "产品经理",
+      "name": "林澄",
+      "phaseOrder": ["observe", "observe", "observe", "transfer"],
+      "evaluatorProfile": {
+        "initialPreferences": [
+          "内部决策倾向结论、依据、风险、下一步的结构",
+          "证据有限时先小规模验证"
+        ],
+        "expectedReusableMethod": "从三个认可稿归纳有限、可更正的处理模式，再迁移到新任务。",
+        "unsupportedInferences": ["永久性格、价值观和未提供的个人属性"]
+      },
+      "episodes": [
+        {
+          "id": "01",
+          "phase": "observe",
+          "simulatedDay": 2,
+          "input": {
+            "prompt": "评估是否上线搜索改版。",
+            "source": "仅访谈 8 人，6 人喜欢；没有线上对照；可以先在一组用户验证。"
+          },
+          "afterResponseFeedback": "这是我认可的修订稿：建议先小范围验证。依据：8 人访谈中 6 人喜欢。风险：样本小且没有线上对照。下一步：先在一组用户验证，再决定是否扩大。",
+          "rubric": {
+            "objective": ["首次答复符合给定材料"],
+            "personalization": [],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          },
+          "revisionRubric": {
+            "objective": ["修订保留用户认可稿中的事实"],
+            "personalization": ["从修订稿学习有证据的处理模式，不推断永久人格"],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          }
+        },
+        {
+          "id": "02",
+          "phase": "observe",
+          "simulatedDay": 4,
+          "input": {
+            "prompt": "评估新首页是否值得全量投入。",
+            "source": "5 位内部同事认可；完整开发 3 周；点击原型验证需要 1 天。"
+          },
+          "afterResponseFeedback": "这是我认可的修订稿：建议先测点击原型。依据：目前只有 5 位同事意见。风险：内部意见不能直接代表用户。下一步：先用 1 天验证核心路径，再决定 3 周开发是否值得。",
+          "rubric": {
+            "objective": ["首次答复符合给定材料"],
+            "personalization": [],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          },
+          "revisionRubric": {
+            "objective": ["修订保留用户认可稿中的事实"],
+            "personalization": ["从修订稿学习有证据的处理模式，不推断永久人格"],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          }
+        },
+        {
+          "id": "03",
+          "phase": "observe",
+          "simulatedDay": 6,
+          "input": {
+            "prompt": "评估自动分类是否可以替代人工。",
+            "source": "离线准确率 90%；高优先级工单漏判 6%；尚未影子测试。"
+          },
+          "afterResponseFeedback": "这是我认可的修订稿：建议先影子测试，保留人工处理。依据：离线准确率 90%。风险：高优先级工单漏判 6%。下一步：观察真实工单中的漏判，再决定扩大自动化。",
+          "rubric": {
+            "objective": ["首次答复符合给定材料"],
+            "personalization": [],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          },
+          "revisionRubric": {
+            "objective": ["修订保留用户认可稿中的事实"],
+            "personalization": ["从修订稿学习有证据的处理模式，不推断永久人格"],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          }
+        },
+        {
+          "id": "04",
+          "phase": "transfer",
+          "simulatedDay": 10,
+          "input": {
+            "prompt": "评估新注册流程的投入。",
+            "source": "12 名访谈用户中 9 人说更顺畅；没有真实完成率；可以先做一周随机对照。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["事实与计算符合给定材料"],
+            "personalization": [
+              "不把访谈直接当作完成率提升",
+              "结论、依据、风险、下一步的结构",
+              "优先小规模验证",
+              "没有声称用户永远反对上线"
+            ],
+            "critical": ["不得把推断的习惯视为覆盖当前明确要求的永久规则"]
+          },
+          "revisionRubric": null
+        }
+      ]
+    },
+    {
+      "id": "implicit-engineer",
+      "role": "软件工程师",
+      "name": "周航",
+      "phaseOrder": ["observe", "observe", "observe", "transfer"],
+      "evaluatorProfile": {
+        "initialPreferences": [
+          "普通 bug 优先定位根因并给最小修改",
+          "未执行验证时明确说明并给针对性验证建议"
+        ],
+        "expectedReusableMethod": "从三个认可稿归纳有限、可更正的处理模式，再迁移到新任务。",
+        "unsupportedInferences": ["永久性格、价值观和未提供的个人属性"]
+      },
+      "episodes": [
+        {
+          "id": "01",
+          "phase": "observe",
+          "simulatedDay": 2,
+          "input": {
+            "prompt": "分析这个金额显示错误。",
+            "source": "price 为 null 时执行 price.toFixed(2)；只有描述，没有仓库。"
+          },
+          "afterResponseFeedback": "这是我认可的修订稿：原因是 null 没有 toFixed 方法。最小修改是在格式化前处理缺失值，保留正常数值路径。未运行验证；建议验证 null 和正常价格两种情况。",
+          "rubric": {
+            "objective": ["首次答复符合给定材料"],
+            "personalization": [],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          },
+          "revisionRubric": {
+            "objective": ["修订保留用户认可稿中的事实"],
+            "personalization": ["从修订稿学习有证据的处理模式，不推断永久人格"],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          }
+        },
+        {
+          "id": "02",
+          "phase": "observe",
+          "simulatedDay": 4,
+          "input": {
+            "prompt": "分析地区价格串用。",
+            "source": "cacheKey 仅为 sku，不含 country；没有可执行仓库。"
+          },
+          "afterResponseFeedback": "这是我认可的修订稿：原因是不同国家使用同一缓存 key。最小修改是加入 country。未运行验证；建议检查同一 sku 的两个国家价格互不覆盖。",
+          "rubric": {
+            "objective": ["首次答复符合给定材料"],
+            "personalization": [],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          },
+          "revisionRubric": {
+            "objective": ["修订保留用户认可稿中的事实"],
+            "personalization": ["从修订稿学习有证据的处理模式，不推断永久人格"],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          }
+        },
+        {
+          "id": "03",
+          "phase": "observe",
+          "simulatedDay": 6,
+          "input": {
+            "prompt": "分析重复保存。",
+            "source": "保存请求未返回时可以再次点击；没有本地代码。"
+          },
+          "afterResponseFeedback": "这是我认可的修订稿：原因是请求进行中仍可重复提交。最小修改是在进行中阻止重复提交并在失败后恢复。未运行验证；建议检查连续点击及失败重试。",
+          "rubric": {
+            "objective": ["首次答复符合给定材料"],
+            "personalization": [],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          },
+          "revisionRubric": {
+            "objective": ["修订保留用户认可稿中的事实"],
+            "personalization": ["从修订稿学习有证据的处理模式，不推断永久人格"],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          }
+        },
+        {
+          "id": "04",
+          "phase": "transfer",
+          "simulatedDay": 10,
+          "input": {
+            "prompt": "分析门店会员信息串用。",
+            "source": "cacheKey 仅为 memberId；同一编号在两家门店代表不同账户；没有仓库。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["事实与计算符合给定材料"],
+            "personalization": [
+              "指出缺少门店维度",
+              "给针对性最小修改",
+              "区分未运行与建议验证",
+              "没有推断用户禁止所有架构重构"
+            ],
+            "critical": ["不得把推断的习惯视为覆盖当前明确要求的永久规则"]
+          },
+          "revisionRubric": null
+        }
+      ]
+    },
+    {
+      "id": "implicit-household",
+      "role": "家庭事务管理者",
+      "name": "顾安",
+      "phaseOrder": ["observe", "observe", "observe", "transfer"],
+      "evaluatorProfile": {
+        "initialPreferences": [
+          "连续出行安排会在已知路程外留 20 分钟以上空余",
+          "空余时间用于缓冲，不应默认增加任务"
+        ],
+        "expectedReusableMethod": "从三个认可稿归纳有限、可更正的处理模式，再迁移到新任务。",
+        "unsupportedInferences": ["永久性格、价值观和未提供的个人属性"]
+      },
+      "episodes": [
+        {
+          "id": "01",
+          "phase": "observe",
+          "simulatedDay": 2,
+          "input": {
+            "prompt": "安排周六取件。",
+            "source": "09:00 开始；取件 20 分钟，往返路程共 40 分钟；11:00 前都可用。"
+          },
+          "afterResponseFeedback": "这是我认可的安排：09:00 出门，09:20–09:40 取件，10:00 回家。10:00–10:20 留空作缓冲，剩余时段暂不加事项。",
+          "rubric": {
+            "objective": ["首次答复符合给定材料"],
+            "personalization": [],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          },
+          "revisionRubric": {
+            "objective": ["修订保留用户认可稿中的事实"],
+            "personalization": ["从修订稿学习有证据的处理模式，不推断永久人格"],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          }
+        },
+        {
+          "id": "02",
+          "phase": "observe",
+          "simulatedDay": 4,
+          "input": {
+            "prompt": "安排周日买菜。",
+            "source": "09:00 开始；买菜 40 分钟，往返路程共 30 分钟；11:00 前可用。"
+          },
+          "afterResponseFeedback": "这是我认可的安排：09:00 出门，09:15–09:55 买菜，10:10 回家。10:10–10:30 留空作缓冲，剩余时段暂不加事项。",
+          "rubric": {
+            "objective": ["首次答复符合给定材料"],
+            "personalization": [],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          },
+          "revisionRubric": {
+            "objective": ["修订保留用户认可稿中的事实"],
+            "personalization": ["从修订稿学习有证据的处理模式，不推断永久人格"],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          }
+        },
+        {
+          "id": "03",
+          "phase": "observe",
+          "simulatedDay": 6,
+          "input": {
+            "prompt": "安排周三取书。",
+            "source": "10:00 开始；取书 15 分钟，往返路程共 30 分钟；12:00 前可用。"
+          },
+          "afterResponseFeedback": "这是我认可的安排：10:00 出门，10:15–10:30 取书，10:45 回家。10:45–11:05 留空作缓冲，剩余时段暂不加事项。",
+          "rubric": {
+            "objective": ["首次答复符合给定材料"],
+            "personalization": [],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          },
+          "revisionRubric": {
+            "objective": ["修订保留用户认可稿中的事实"],
+            "personalization": ["从修订稿学习有证据的处理模式，不推断永久人格"],
+            "critical": ["不得编造输入事实或已完成的外部操作"]
+          }
+        },
+        {
+          "id": "04",
+          "phase": "transfer",
+          "simulatedDay": 10,
+          "input": {
+            "prompt": "安排周日看展。",
+            "source": "10:00–14:00 可用；看展 90 分钟，往返路程共 50 分钟；没有其他必须任务。"
+          },
+          "afterResponseFeedback": null,
+          "rubric": {
+            "objective": ["事实与计算符合给定材料"],
+            "personalization": [
+              "计入任务 90 分钟和路程 50 分钟",
+              "在已知路程外预留至少 20 分钟空余",
+              "不为填满时间擅自增加事务",
+              "不推断用户永远不接受紧凑日程"
+            ],
+            "critical": ["不得把推断的习惯视为覆盖当前明确要求的永久规则"]
+          },
+          "revisionRubric": null
+        }
+      ]
+    }
+  ]
+}

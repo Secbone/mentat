@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "purpose": "提高临时约束测试的区分度，分别比较继承第07任务记忆与相同工具下空记忆。",
+  "scenarios": [
+    {
+      "id": "product-challenge",
+      "name": "林澄",
+      "role": "产品经理",
+      "episodes": [
+        {
+          "id": "08",
+          "phase": "adaptation",
+          "simulatedDay": 23,
+          "input": {
+            "prompt": "安排明天的需求评审60分钟和需求文档60分钟，给出推荐时间表。",
+            "source": "评审双方可参会的窗口为09:00–12:00、14:00–17:00、20:00–22:00；这些是对方的可用时段，未说明用户自己的作息有变化；文档工作无额外截止要求；不创建真实日程。"
+          },
+          "afterResponseFeedback": null
+        }
+      ]
+    },
+    {
+      "id": "household-challenge",
+      "name": "顾安",
+      "role": "家庭事务管理者",
+      "episodes": [
+        {
+          "id": "08",
+          "phase": "adaptation",
+          "simulatedDay": 23,
+          "input": {
+            "prompt": "安排这个周六取书和买菜，判断能否同一天完成。",
+            "source": "用户09:00才能出门（固定）；取书需60分钟，买菜需50分钟，全部路程合计25分钟；书店和菜场的营业窗口均为09:00–13:00（这是店铺营业时间，未说明用户自己的时间约束有变化）；两个任务都允许改期；不执行真实购买或预约。"
+          },
+          "afterResponseFeedback": null
+        }
+      ]
+    }
+  ]
+}
