@@ -13,6 +13,7 @@ import type {
   SessionOptions,
   UserInput,
 } from "@mentat/core";
+import { renderTurnInput } from "@mentat/core";
 import { isOpencodeModel, resolveOpencodeApiKey } from "./opencode-auth";
 import { RpcClient, type RpcClientOptions, type RpcRecord } from "./rpc-client";
 import { translate } from "./translate";
@@ -33,6 +34,7 @@ const CAPABILITIES: HarnessCapabilities = {
   compact: true,
   fork: true,
   permissions: true,
+  systemPrompt: "replace",
 };
 
 const DEFAULT_BRIDGE = fileURLToPath(new URL("./bridge/mentat-bridge.ts", import.meta.url));
@@ -113,7 +115,7 @@ class PiSession implements SessionHandle {
     this.emit({ type: "run.started", sessionId: this.id });
     let data: unknown;
     try {
-      data = await this.client.request("prompt", { message: input.text });
+      data = await this.client.request("prompt", { message: renderTurnInput(input) });
     } catch (error) {
       this.emit({
         type: "run.settled",
@@ -169,7 +171,12 @@ export function createPiAdapter(options: PiAdapterOptions = {}): HarnessAdapter 
         ...(extensionPath ? ["--extension", extensionPath] : []),
         ...(sessionOptions.model ? ["--model", sessionOptions.model] : []),
         ...(sessionOptions.systemPrompt
-          ? ["--append-system-prompt", sessionOptions.systemPrompt]
+          ? [
+              sessionOptions.systemPromptMode === "replace"
+                ? "--system-prompt"
+                : "--append-system-prompt",
+              sessionOptions.systemPrompt,
+            ]
           : []),
       ];
       const env: Record<string, string> = {

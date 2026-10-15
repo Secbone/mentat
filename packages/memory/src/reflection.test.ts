@@ -1,5 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { parseReflectedMemories, reflectionPrompt } from "./reflection";
+import { parseReflectedMemories, parseReflectionCandidates, reflectionPrompt } from "./reflection";
+
+describe("evidence validation", () => {
+  it("distinguishes no new memories from invalid output and unknown evidence", () => {
+    expect(parseReflectionCandidates("[]", ["e1"]).status).toBe("ok");
+    for (const output of [
+      "bad",
+      '[{"text":"invented"}]',
+      '[{"text":"invented","evidenceIds":["future"]}]',
+    ]) {
+      expect(parseReflectionCandidates(output, ["e1"]).status).toBe("invalid");
+    }
+    expect(
+      parseReflectionCandidates('[{"text":"confirmed","evidenceIds":["e1"]}]', ["e1"]).candidates,
+    ).toHaveLength(1);
+  });
+});
 
 describe("parseReflectedMemories", () => {
   it("extracts non-empty text fields from a fenced JSON array", () => {

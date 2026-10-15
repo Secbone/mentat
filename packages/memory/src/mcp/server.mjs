@@ -4,7 +4,7 @@
 // persistent memory on demand ("fast weights"). Standalone JS on purpose: it is
 // spawned as a subprocess and must not depend on a TS loader.
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -76,8 +76,9 @@ server.registerTool(
   "memory_add",
   {
     description:
-      "Store a durable memory entry. Provide a stable id (upserts on id). " +
-      "`evidence` points at the message/tool that supports it.",
+      "Propose an unconfirmed memory candidate using a stable rule key as id. " +
+      "This tool cannot confirm user preferences or replace active rules. " +
+      "Evidence is a claimed reference, not verified user confirmation.",
     inputSchema: {
       id: z.string(),
       text: z.string(),
@@ -89,30 +90,40 @@ server.registerTool(
     const entries = load();
     // Route through the shared write rules so MCP writes obey the same
     // source/scope/key rules as the in-process MemoryService.
-    const decision = decideWrite(
-      entries,
-      {
-        text,
-        key: id,
-        kind: "fact",
-        basis: "user",
-        speaker: "user",
-        ...(tags ? { tags } : {}),
-        ...(evidence ? { evidence } : {}),
-      },
-      Date.now(),
-    );
+    const request = {
+      text,
+      key: id,
+      kind: "fact",
+      basis: "inference",
+      speaker: "assistant",
+      ...(tags ? { tags } : {}),
+      ...(evidence ? { evidence } : {}),
+    };
+    const now = Date.now();
+    const decision = decideWrite(entries, request, now);
+    mkdirSync(dirname(file), { recursive: true });
+    appendFileSync(`${file}.audit.jsonl`, `${JSON.stringify({ ts: now, request, ...decision })}\n`);
     if (decision.op === "add" || decision.op === "update") {
       const index = entries.findIndex((item) => item.id === decision.entry.id);
       if (index >= 0) entries[index] = decision.entry;
       else entries.push(decision.entry);
       save(entries);
-      return { content: [{ type: "text", text: `stored memory ${id}` }] };
+      return {
+        content: [
+          {
+            type: "text",
+            text: `stored candidate ${decision.entry.id}; user confirmation required`,
+          },
+        ],
+      };
     }
     if (decision.op === "dedup") {
       return { content: [{ type: "text", text: `already stored ${id}` }] };
     }
-    return { content: [{ type: "text", text: `rejected: ${decision.reason ?? "invalid"}` }] };
+    return {
+      isError: true,
+      content: [{ type: "text", text: `rejected: ${decision.reason ?? "invalid"}` }],
+    };
   },
 );
 

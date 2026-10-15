@@ -1,4 +1,65 @@
-import type { MemoryStore } from "./store";
+import { type MemoryStore, memoryStatus } from "./store";
+
+/** Build a bounded snapshot; selection policy can evolve without changing transports. */
+export function buildTurnContext(
+  store: MemoryStore,
+  taskText: string,
+  maxChars = 6000,
+): {
+  text: string;
+  omittedIds: string[];
+  requiredIds: string[];
+  omittedRequiredIds: string[];
+} {
+  if (!Number.isSafeInteger(maxChars) || maxChars < 0)
+    throw new RangeError("invalid context budget");
+  const all = store.list().filter((entry) => memoryStatus(entry) === "active");
+  // Until scope/condition evaluation exists, conservatively protect every
+  // active constraint in this memory file. Tags remain a legacy fallback.
+  const required = all.filter(
+    (entry) => entry.kind === "constraint" || entry.tags?.includes("constraint"),
+  );
+  const requiredIds = required.map((entry) => entry.id);
+  const pinned = all.filter((entry) =>
+    entry.tags?.some((tag) => ["profile", "preference", "constraint"].includes(tag)),
+  );
+  const candidates = [
+    ...required,
+    ...pinned,
+    ...store.search({ text: taskText, limit: 5, statuses: ["active"] }),
+    ...all.toSorted((a, b) => b.createdAt - a.createdAt),
+  ];
+  const seen = new Set<string>();
+  const lines: string[] = [];
+  const omittedIds: string[] = [];
+  let size = 0;
+  for (const entry of candidates) {
+    if (seen.has(entry.id)) continue;
+    seen.add(entry.id);
+    const line = JSON.stringify({
+      id: entry.id,
+      text: entry.text,
+      kind: entry.kind,
+      scope: entry.scope,
+      condition: entry.condition,
+      basis: entry.basis,
+      tags: entry.tags ?? [],
+    });
+    const addedChars = line.length + (lines.length === 0 ? 0 : 1);
+    if (size + addedChars > maxChars) {
+      omittedIds.push(entry.id);
+      continue;
+    }
+    lines.push(line);
+    size += addedChars;
+  }
+  return {
+    text: lines.join("\n"),
+    omittedIds,
+    requiredIds,
+    omittedRequiredIds: omittedIds.filter((id) => requiredIds.includes(id)),
+  };
+}
 
 export interface MemoryContextOptions {
   limit?: number;

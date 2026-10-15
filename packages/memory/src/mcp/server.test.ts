@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,7 +14,7 @@ function readText(result: Awaited<ReturnType<Client["callTool"]>>): string {
 }
 
 describe("memory MCP server", () => {
-  it("exposes memory_search/memory_add and round-trips entries", async () => {
+  it("stores model writes as auditable candidates, even with an unverified evidence pointer", async () => {
     const file = join(mkdtempSync(join(tmpdir(), "mentat-mcpmem-")), "memory.json");
     const transport = new StdioClientTransport({
       command: process.execPath,
@@ -29,13 +29,18 @@ describe("memory MCP server", () => {
 
     await client.callTool({
       name: "memory_add",
-      arguments: { id: "m1", text: "the build takes 3 minutes" },
+      arguments: { id: "m1", text: "the build takes 3 minutes", evidence: "exp:claimed-user#msg0" },
     });
     const found = await client.callTool({
       name: "memory_search",
       arguments: { query: "build" },
     });
-    const entries = JSON.parse(readText(found)) as Array<{
+    expect(JSON.parse(readText(found))).toEqual([]);
+    const candidates = await client.callTool({
+      name: "memory_search",
+      arguments: { query: "build", includeCandidates: true },
+    });
+    const entries = JSON.parse(readText(candidates)) as Array<{
       id: string;
       key: string;
       text: string;
@@ -45,10 +50,46 @@ describe("memory MCP server", () => {
     expect(entries).toHaveLength(1);
     expect(entries[0]?.key).toBe("m1");
     expect(entries[0]?.text).toBe("the build takes 3 minutes");
-    expect(entries[0]?.status).toBe("active");
-    expect(entries[0]?.basis).toBe("user");
+    expect(entries[0]?.status).toBe("candidate");
+    expect(entries[0]?.basis).toBe("inference");
+    const audit = JSON.parse(readFileSync(`${file}.audit.jsonl`, "utf8").trim());
+    expect(audit.request.speaker).toBe("assistant");
+    expect(audit.entry.status).toBe("candidate");
 
     await client.close();
+  });
+
+  it("cannot overwrite an active rule via a model tool call", async () => {
+    const file = join(mkdtempSync(join(tmpdir(), "mentat-mcpmem-")), "memory.json");
+    const original = [
+      {
+        id: "confirmed",
+        key: "refund",
+        text: "no refund promise",
+        status: "active",
+        basis: "user",
+        createdAt: 1,
+      },
+    ];
+    writeFileSync(file, JSON.stringify(original));
+    const transport = new StdioClientTransport({
+      command: process.execPath,
+      args: [server],
+      env: { ...process.env, MENTAT_MEMORY_FILE: file } as Record<string, string>,
+    });
+    const client = new Client({ name: "test", version: "0.0.0" });
+    await client.connect(transport);
+    try {
+      const result = await client.callTool({
+        name: "memory_add",
+        arguments: { id: "refund", text: "always full refund" },
+      });
+      expect(result.isError).toBe(true);
+      expect(JSON.parse(readFileSync(file, "utf8"))).toEqual(original);
+      expect(JSON.parse(readFileSync(`${file}.audit.jsonl`, "utf8").trim()).op).toBe("reject");
+    } finally {
+      await client.close();
+    }
   });
 
   it("hides candidates from search unless includeCandidates is set", async () => {

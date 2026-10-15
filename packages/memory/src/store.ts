@@ -26,6 +26,8 @@ export interface MemoryEntry {
   revision?: number;
   tags?: string[];
   createdAt: number;
+  /** Provenance for memories extracted from observable interactions. */
+  evidenceIds?: string[];
 }
 
 export interface MemoryQuery {

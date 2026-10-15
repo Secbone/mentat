@@ -1,21 +1,14 @@
 import { createInterface } from "node:readline/promises";
 import type { AgentEvent } from "@mentat/core";
-import {
-  type ExperienceRecord,
-  ExperienceStore,
-  experienceEvidence,
-  JsonFileMemoryStore,
-  JsonlMemoryAudit,
-  MemoryService,
-  SessionRecorder,
-  sessionEvidence,
-} from "@mentat/memory";
+import { type ExperienceRecord, ExperienceStore, SessionRecorder } from "@mentat/memory";
 import type { PermissionMode } from "@mentat/transport-pi";
 import { memoryMcpSpec } from "../lib/memory-mcp";
 import { defaultExperienceDir, defaultMemoryPath } from "../lib/paths";
 import { createPermissionHandler, parsePermissionMode } from "../lib/permission";
-import { reflectMemories } from "../lib/reflection";
+import { assistantPromptOptions, taskContext } from "../lib/prompt";
+import { reflectMemories, saveReflections } from "../lib/reflection";
 import { createDefaultRegistry } from "../lib/registry";
+import { rememberUserFact } from "../lib/remember";
 
 export async function chatCommand(args: string[]): Promise<number> {
   let harnessId = "pi";
@@ -45,17 +38,12 @@ export async function chatCommand(args: string[]): Promise<number> {
     return 1;
   }
 
-  const memory = new JsonFileMemoryStore(memoryPath);
-  const memoryService = new MemoryService(
-    memory,
-    new JsonlMemoryAudit(`${memoryPath}.audit.jsonl`),
-  );
-  const session = await registry.get(harnessId).createSession(
+  const adapter = registry.get(harnessId);
+  const session = await adapter.createSession(
     {
       cwd,
       ...(model ? { model } : {}),
-      systemPrompt:
-        "You can use the memory_search and memory_add tools to recall or store durable facts about this user and project.",
+      ...assistantPromptOptions(adapter),
       mcpServers: [memoryMcpSpec(memoryPath)],
     },
     { onPermission: createPermissionHandler(permission) },
@@ -65,11 +53,10 @@ export async function chatCommand(args: string[]): Promise<number> {
   let resolveSettled: (() => void) | undefined;
   let lastOutcome = "error";
   let recorder: SessionRecorder | undefined;
-  let lastSessionId: string | undefined;
-  let lastRecord: ExperienceRecord | undefined;
+  const interactions: ExperienceRecord[] = [];
+  let reflectedThrough = 0;
 
   session.subscribe((event: AgentEvent) => {
-    lastSessionId = event.sessionId;
     recorder?.handle(event);
     switch (event.type) {
       case "message.delta":
@@ -126,18 +113,12 @@ export async function chatCommand(args: string[]): Promise<number> {
     const text = line.trim();
     if (text === "/exit" || text === "/quit") break;
     if (text.startsWith("/remember ")) {
-      const evidence = lastRecord
-        ? experienceEvidence(lastRecord)
-        : lastSessionId
-          ? sessionEvidence(lastSessionId)
-          : undefined;
-      const result = memoryService.write({
-        text: text.slice("/remember ".length),
-        kind: "fact",
-        basis: "user",
-        speaker: "user",
-        ...(evidence ? { evidence } : {}),
-      });
+      const result = rememberUserFact(
+        memoryPath,
+        experienceDir,
+        text.slice("/remember ".length),
+        cwd,
+      );
       process.stdout.write(
         result.op === "add" || result.op === "update"
           ? `stored ${result.entry?.id}\n`
@@ -146,26 +127,32 @@ export async function chatCommand(args: string[]): Promise<number> {
       continue;
     }
     if (text === "/reflect") {
-      const facts = await reflectMemories(registry.get(harnessId), {
-        cwd,
-        ...(model ? { model } : {}),
-        task: "(interactive chat)",
-        outcome: lastOutcome,
-        tools: [],
-      });
-      const evidence = lastRecord ? experienceEvidence(lastRecord) : undefined;
-      let added = 0;
-      for (const fact of facts) {
-        const result = memoryService.write({
-          text: fact,
-          kind: "fact",
-          basis: "inference",
-          speaker: "assistant",
-          ...(evidence ? { evidence } : {}),
-        });
-        if (result.op === "add" || result.op === "update") added += 1;
+      const pending = interactions.slice(reflectedThrough);
+      if (!pending.length) {
+        process.stdout.write("reflect: no new interactions\n");
+        continue;
       }
-      process.stdout.write(`reflect: +${added}\n`);
+      try {
+        const result = await reflectMemories(createDefaultRegistry("ask").get(harnessId), {
+          cwd,
+          ...(model ? { model } : {}),
+          task: interactions.map((record) => record.prompt).join("\n"),
+          outcome: lastOutcome,
+          tools: [...new Set(interactions.flatMap((record) => record.tools))],
+          interactions,
+        });
+        if (result.status === "invalid") {
+          process.stdout.write("reflect: invalid output or missing evidence; nothing saved\n");
+        } else {
+          const added = saveReflections(memoryPath, result.candidates);
+          reflectedThrough = interactions.length;
+          process.stdout.write(`reflect: +${added}\n`);
+        }
+      } catch (error) {
+        process.stdout.write(
+          `reflect: ${error instanceof Error ? error.message : String(error)}\n`,
+        );
+      }
       continue;
     }
     if (text.length === 0) continue;
@@ -181,15 +168,23 @@ export async function chatCommand(args: string[]): Promise<number> {
     });
     process.stdout.write("\n");
     try {
-      await session.send({ text });
+      await session.send({ text, context: taskContext(memoryPath, text) });
       await settled;
     } catch (error) {
+      lastOutcome = "error";
+      recorder.handle({
+        type: "run.settled",
+        sessionId: session.id,
+        reason: "error",
+        error: String(error),
+      });
       process.stdout.write(`\n${error instanceof Error ? error.message : String(error)}\n`);
     } finally {
       resolveSettled = undefined;
       if (recorder) {
-        lastRecord = recorder.snapshot();
-        experience.append(lastRecord);
+        const record = recorder.snapshot();
+        interactions.push(record);
+        experience.append(record);
       }
       recorder = undefined;
     }

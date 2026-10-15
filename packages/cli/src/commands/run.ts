@@ -1,19 +1,13 @@
 import type { AgentEvent } from "@mentat/core";
-import {
-  buildMemoryContext,
-  ExperienceStore,
-  experienceEvidence,
-  JsonFileMemoryStore,
-  JsonlMemoryAudit,
-  MemoryService,
-  SessionRecorder,
-} from "@mentat/memory";
+import { ExperienceStore, SessionRecorder } from "@mentat/memory";
 import type { PermissionMode } from "@mentat/transport-pi";
 import { memoryMcpSpec } from "../lib/memory-mcp";
 import { defaultExperienceDir, defaultMemoryPath } from "../lib/paths";
 import { createPermissionHandler, parsePermissionMode } from "../lib/permission";
-import { reflectMemories } from "../lib/reflection";
+import { assistantPromptOptions, taskContext } from "../lib/prompt";
+import { reflectMemories, saveReflections } from "../lib/reflection";
 import { createDefaultRegistry } from "../lib/registry";
+import { rememberUserFact } from "../lib/remember";
 
 export async function runCommand(args: string[]): Promise<number> {
   let harnessId = "fake";
@@ -83,19 +77,12 @@ export async function runCommand(args: string[]): Promise<number> {
     return 1;
   }
 
-  const memory = new JsonFileMemoryStore(memoryPath);
-  const memoryService = new MemoryService(
-    memory,
-    new JsonlMemoryAudit(`${memoryPath}.audit.jsonl`),
-  );
-  const memoryContext = buildMemoryContext(memory, prompt);
-
   const adapter = registry.get(harnessId);
   const session = await adapter.createSession(
     {
       cwd,
       ...(model ? { model } : {}),
-      ...(memoryContext ? { systemPrompt: memoryContext } : {}),
+      ...assistantPromptOptions(adapter),
       mcpServers: [memoryMcpSpec(memoryPath)],
     },
     { onPermission: createPermissionHandler(permission) },
@@ -133,54 +120,52 @@ export async function runCommand(args: string[]): Promise<number> {
   });
 
   try {
-    await session.send({ text: prompt });
+    await session.send({ text: prompt, context: taskContext(memoryPath, prompt) });
     await settled;
   } catch (error) {
     process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
     reason = "error";
+    recorder.handle({
+      type: "run.settled",
+      sessionId: session.id,
+      reason: "error",
+      error: String(error),
+    });
   } finally {
     await session.dispose();
   }
-  const experienceRecord = recorder.snapshot();
-  new ExperienceStore(experienceDir).append(experienceRecord);
-  const evidence = experienceEvidence(experienceRecord);
+  new ExperienceStore(experienceDir).append(recorder.snapshot());
 
   let added = 0;
   for (const fact of remember) {
-    const result = memoryService.write({
-      text: fact,
-      kind: "fact",
-      basis: "user",
-      speaker: "user",
-      evidence,
-    });
+    const result = rememberUserFact(memoryPath, experienceDir, fact, cwd);
     if (result.op === "add" || result.op === "update") added += 1;
   }
   if (remember.length > 0) {
     process.stderr.write(`memory: +${added} (${remember.length - added} duplicate)\n`);
   }
 
-  if (reflect && reason === "done") {
-    const facts = await reflectMemories(adapter, {
-      cwd,
-      ...(model ? { model } : {}),
-      task: prompt,
-      outcome: reason,
-      tools: recorder.snapshot().tools,
-    });
-    let reflected = 0;
-    for (const fact of facts) {
-      // Model-derived: basis=inference, speaker=assistant => stored as a candidate.
-      const result = memoryService.write({
-        text: fact,
-        kind: "fact",
-        basis: "inference",
-        speaker: "assistant",
-        evidence,
+  if (reflect) {
+    try {
+      const result = await reflectMemories(createDefaultRegistry("ask").get(harnessId), {
+        cwd,
+        ...(model ? { model } : {}),
+        task: prompt,
+        outcome: reason,
+        tools: recorder.snapshot().tools,
+        interactions: [recorder.snapshot()],
       });
-      if (result.op === "add" || result.op === "update") reflected += 1;
+      if (result.status === "invalid") {
+        process.stderr.write("reflect: invalid output or missing evidence; nothing saved\n");
+      } else {
+        const reflected = saveReflections(memoryPath, result.candidates);
+        process.stderr.write(
+          `reflect: +${reflected} (${result.candidates.length - reflected} duplicate)\n`,
+        );
+      }
+    } catch (error) {
+      process.stderr.write(`reflect: ${error instanceof Error ? error.message : String(error)}\n`);
     }
-    process.stderr.write(`reflect: +${reflected} (${facts.length - reflected} duplicate)\n`);
   }
   return reason === "done" ? 0 : 1;
 }

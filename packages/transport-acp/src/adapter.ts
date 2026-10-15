@@ -13,6 +13,7 @@ import type {
   SessionOptions,
   UserInput,
 } from "@mentat/core";
+import { renderTurnInput } from "@mentat/core";
 
 export interface AcpAdapterOptions {
   binary: string;
@@ -363,7 +364,7 @@ class AcpSession implements SessionHandle {
     try {
       const blocks: Array<{ type: "text"; text: string }> = [];
       if (this.systemContext) blocks.push({ type: "text", text: this.systemContext });
-      blocks.push({ type: "text", text: input.text });
+      blocks.push({ type: "text", text: renderTurnInput(input) });
       const result = await this.connection.request("session/prompt", {
         sessionId: this.wireSessionId,
         prompt: blocks,
@@ -413,6 +414,7 @@ const CAPABILITIES: HarnessCapabilities = {
   compact: false,
   fork: false,
   permissions: true,
+  systemPrompt: "task-context",
 };
 
 let sessionSeq = 0;
@@ -429,6 +431,11 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
     label: "ACP",
     capabilities: () => CAPABILITIES,
     createSession: async (sessionOptions: SessionOptions, deps: AdapterDeps = {}) => {
+      if (sessionOptions.systemPromptMode === "replace") {
+        throw new Error(
+          "ACP adapter cannot replace the agent system prompt; use task-context delivery",
+        );
+      }
       const session = new AcpSession(
         `acp-${++sessionSeq}`,
         {

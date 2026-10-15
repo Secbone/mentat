@@ -11,9 +11,6 @@ export function rememberFact(
   text: string,
   now = Date.now(),
 ): MemoryEntry | undefined {
-  const result = new MemoryService(store).write(
-    { text, kind: "fact", basis: "user", speaker: "user" },
-    now,
-  );
+  const result = new MemoryService(store).write({ text, basis: "user", speaker: "user" }, now);
   return result.op === "add" || result.op === "update" ? result.entry : undefined;
 }

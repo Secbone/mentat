@@ -22,6 +22,19 @@ describe("memory evolution (offline, data artifact)", () => {
 });
 
 describe("applyEvolvedMemory", () => {
+  it("preserves scope and stable keys and cannot replace active rules with agent proposals", () => {
+    const store = new InMemoryMemoryStore();
+    const service = new MemoryService(store);
+    const rule = { ...memoryEntry("rule", "11点前回家"), key: "deadline", scope: "user:a" };
+    expect(applyEvolvedMemory(service, [rule], "user")).toBe(1);
+    expect(applyEvolvedMemory(service, [{ ...rule, text: "12点前回家" }], "agent")).toBe(0);
+    expect(store.list()[0]).toMatchObject({
+      key: "deadline",
+      scope: "user:a",
+      text: "11点前回家",
+      status: "active",
+    });
+  });
   it("routes results through MemoryService: user facts active, agent proposals candidate", () => {
     const store = new InMemoryMemoryStore();
     const service = new MemoryService(store);

@@ -6,6 +6,20 @@ import { createAcpAdapter } from "./adapter";
 const stub = fileURLToPath(new URL("./__fixtures__/stub-acp-agent.mjs", import.meta.url));
 
 describe("acp adapter maps rich session updates", () => {
+  it("declares task-context delivery and rejects system prompt replacement", async () => {
+    const adapter = createAcpAdapter({ binary: process.execPath, baseArgs: [stub] });
+    expect(adapter.capabilities().systemPrompt).toBe("task-context");
+    await expect(
+      adapter.createSession({ cwd: process.cwd(), systemPromptMode: "replace" }),
+    ).rejects.toThrow("cannot replace");
+    const session = await adapter.createSession({ cwd: process.cwd() });
+    const { events } = await runOnce(session, { text: "hi", context: "deadline:11" });
+    const completed = events.find((event) => event.type === "message.completed");
+    expect(completed?.type === "message.completed" ? completed.message.text : "").toContain(
+      "deadline:11",
+    );
+    await session.dispose();
+  });
   it("maps thoughts, tool calls and text", async () => {
     const adapter = createAcpAdapter({
       binary: process.execPath,

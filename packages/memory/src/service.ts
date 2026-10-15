@@ -30,9 +30,8 @@ export interface MemoryWriteResult {
 /**
  * The single entry point for writing memory. CLI manual writes, the MCP tool,
  * and online reflection all go through here, so every path applies the same
- * source/scope checks, key-based dedup and versioning, and records an audit
- * trail. (Offline evolution writes a versioned artifact through a workspace and
- * is not yet routed here.)
+ * source/state rules, scope-aware keys and versioning, and records an audit
+ * trail. Offline-evolution results enter the live store through this service.
  */
 export class MemoryService {
   constructor(

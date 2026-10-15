@@ -13,6 +13,8 @@ export interface HarnessCapabilities {
   fork: boolean;
   /** Surfaces pre-execution tool permission requests. */
   permissions: boolean;
+  /** Actual system-prompt channel support; absent means not declared. */
+  systemPrompt?: "replace" | "append" | "task-context";
 }
 
 /** A stdio MCP server a session should connect to. */
@@ -27,12 +29,16 @@ export interface SessionOptions {
   cwd: string;
   model?: string;
   systemPrompt?: string;
+  /** Defaults to append for compatibility. Unsupported replacement must fail. */
+  systemPromptMode?: "replace" | "append";
   /** MCP servers the harness should connect for this session. */
   mcpServers?: McpServerSpec[];
 }
 
 export interface UserInput {
   text: string;
+  /** Host-selected reference data for this turn, separate from user text. */
+  context?: string;
 }
 
 export interface SendOptions {

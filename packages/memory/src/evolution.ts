@@ -77,10 +77,14 @@ export function applyEvolvedMemory(
     const provenance =
       source === "agent"
         ? ({ kind: "method", basis: "inference", speaker: "assistant" } as const)
-        : ({ kind: "fact", basis: "user", speaker: "user" } as const);
+        : ({ basis: "user", speaker: "user" } as const);
     const result = service.write({
       text: entry.text,
       ...provenance,
+      ...(entry.key ? { key: entry.key } : {}),
+      ...(entry.scope ? { scope: entry.scope } : {}),
+      ...(entry.condition ? { condition: entry.condition } : {}),
+      ...(entry.tags ? { tags: entry.tags } : {}),
       ...(evidence ? { evidence } : {}),
     });
     if (result.op === "add" || result.op === "update") applied += 1;

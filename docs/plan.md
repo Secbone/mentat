@@ -6,6 +6,8 @@
 > 记忆 / 工具 / skill / 模型 / prompt / 策略 / 适配器 / 核心 / 迭代管线，
 > 并用客观信号证明「变好了」。
 
+2026-10-14 实施补充：[Prompt 与上下文管理](prompt-context.md)；后续专项：[记忆有效期、偏好更新、检索与审计](research/memory-optimization-backlog.md)。
+
 ---
 
 ## 0. 定位

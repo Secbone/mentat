@@ -7,8 +7,11 @@ export interface WriteRequest {
   basis?: MemoryEntry["basis"];
   scope?: string;
   condition?: string;
+  /** Only explicit host user directives may activate or change an established rule. */
   status?: MemoryEntry["status"];
   evidence?: string;
+  evidenceIds?: string[];
+  /** Host-origin identity; never copy it from model-supplied arguments. */
   speaker?: MemoryEntry["speaker"];
   tags?: string[];
 }

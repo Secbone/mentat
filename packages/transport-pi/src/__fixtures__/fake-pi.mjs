@@ -53,7 +53,11 @@ function onPrompt(command) {
     });
     return;
   }
-  emitText("pong");
+  emitText(
+    process.env.FAKE_PI_ECHO === "1"
+      ? JSON.stringify({ args: process.argv.slice(2), message: command.message })
+      : "pong",
+  );
 }
 
 function onUiResponse(record) {

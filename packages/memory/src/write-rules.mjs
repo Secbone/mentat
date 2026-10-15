@@ -36,6 +36,7 @@ function withOptional(target, request) {
   if (request.scope !== undefined) target.scope = request.scope;
   if (request.condition !== undefined) target.condition = request.condition;
   if (request.evidence !== undefined) target.evidence = request.evidence;
+  if (request.evidenceIds !== undefined) target.evidenceIds = [...request.evidenceIds];
   if (request.tags !== undefined) target.tags = request.tags;
 }
 
@@ -51,26 +52,69 @@ function withOptional(target, request) {
 export function decideWrite(entries, request, now) {
   const text = typeof request.text === "string" ? request.text.trim() : "";
   if (text.length === 0) return { op: "reject", reason: "empty text" };
-
-  let basis = request.basis;
-  let status = request.status;
-  if (request.speaker === "assistant" && basis === "user") {
-    basis = "inference"; // a model cannot self-attest that the user said it
-    if (status === undefined) status = "candidate";
+  if (request.key !== undefined && (typeof request.key !== "string" || !request.key.trim())) {
+    return { op: "reject", reason: "empty or invalid key" };
   }
-  if (status === undefined) status = request.speaker === "assistant" ? "candidate" : "active";
+  if (request.scope !== undefined && (typeof request.scope !== "string" || !request.scope.trim())) {
+    return { op: "reject", reason: "empty or invalid scope" };
+  }
+
+  // The caller is a host boundary, not a model-supplied source assertion.
+  // MCP must always pass speaker=assistant; a claimed evidence pointer alone
+  // neither verifies a user statement nor grants the right to activate a rule.
+  const confirmed = request.speaker === "user" && request.basis === "user";
+  const basis = confirmed
+    ? "user"
+    : request.basis === "user"
+      ? "inference"
+      : (request.basis ?? "unknown");
+  const status = confirmed ? (request.status ?? "active") : "candidate";
+  if (!["candidate", "active", "superseded", "expired", "archived"].includes(status)) {
+    return { op: "reject", reason: "invalid status" };
+  }
 
   const key = request.key !== undefined ? normalizeKey(request.key) : normalizeKey(text);
+  const scope = request.scope?.trim();
+  const scoped = entries.filter((entry) => entry.scope === scope);
   const existing =
-    entries.find((e) => typeof e.key === "string" && normalizeKey(e.key) === key) ??
-    entries.find((e) => e.text === text);
+    scoped.find((e) => typeof e.key === "string" && normalizeKey(e.key) === key) ??
+    scoped.find((e) => e.text === text && (request.key === undefined || e.key === undefined));
 
-  const base = { id: deriveId(key), text, key, status, ...(basis !== undefined ? { basis } : {}) };
+  if (existing && (existing.status ?? "active") !== "candidate" && !confirmed) {
+    if (existing.text === text) return { op: "dedup", entry: existing };
+    return {
+      op: "reject",
+      previous: existing,
+      reason: "unconfirmed proposal cannot replace an established rule",
+    };
+  }
+
+  const stableKey = request.key === undefined && existing?.key ? existing.key : key;
+  const base = {
+    ...existing,
+    id: existing?.id ?? deriveId(scope === undefined ? stableKey : `${scope}\0${stableKey}`),
+    text,
+    key: stableKey,
+    kind: request.kind ?? existing?.kind ?? "fact",
+    status,
+    basis,
+  };
+  if (existing && existing.text !== text) {
+    delete base.evidence;
+    delete base.evidenceIds;
+  }
+  if (confirmed && existing?.basis !== "user" && request.evidence === undefined) {
+    delete base.evidence;
+  }
   if (request.speaker !== undefined) base.speaker = request.speaker;
   withOptional(base, request);
+  if (scope !== undefined) base.scope = scope;
 
   if (existing) {
-    if (existing.text === text) return { op: "dedup", entry: existing };
+    const changed = Object.keys(base).some(
+      (field) => JSON.stringify(base[field]) !== JSON.stringify(existing[field]),
+    );
+    if (!changed) return { op: "dedup", entry: existing };
     const revision = (existing.revision ?? 1) + 1;
     return {
       op: "update",

@@ -1,11 +1,25 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { AgentEvent, StopReason, Usage } from "@mentat/core";
+import type { AgentEvent, JsonValue, StopReason, Usage } from "@mentat/core";
+
+export type RecordedToolCall =
+  | {
+      kind: "call";
+      id: string;
+      name: string;
+      input: JsonValue;
+    }
+  | {
+      kind: "result";
+      id: string;
+      output: string;
+      isError: boolean;
+    };
 
 /** Message-level pointer inside a trajectory: who said what, and where. */
 export interface MessageEvidence {
   role: "assistant" | "user";
-  index: number;
+  index?: number;
   text: string;
 }
 
@@ -26,6 +40,8 @@ export interface ExperienceRecord {
   sessionId?: string;
   /** Completed messages in order, so a memory's source can be pointed at. */
   messages?: MessageEvidence[];
+  /** Observable tool inputs and results; no private reasoning. */
+  toolCalls?: RecordedToolCall[];
 }
 
 /** Stable evidence pointer to a whole trajectory (message-level detail lives in it). */
@@ -67,7 +83,8 @@ export class SessionRecorder {
       outcome: "error",
       toolErrors: 0,
       tools: [],
-      messages: [],
+      messages: [{ role: "user", index: 0, text: base.prompt }],
+      toolCalls: [],
     };
   }
 
@@ -95,9 +112,21 @@ export class SessionRecorder {
         break;
       case "tool.start":
         if (!this.record.tools.includes(event.name)) this.record.tools.push(event.name);
+        this.record.toolCalls?.push({
+          kind: "call",
+          id: event.id,
+          name: event.name,
+          input: structuredClone(event.input),
+        });
         break;
       case "tool.result":
         if (event.isError) this.record.toolErrors += 1;
+        this.record.toolCalls?.push({
+          kind: "result",
+          id: event.id,
+          output: event.output,
+          isError: event.isError,
+        });
         break;
       default:
         break;
@@ -105,11 +134,7 @@ export class SessionRecorder {
   }
 
   snapshot(): ExperienceRecord {
-    return {
-      ...this.record,
-      tools: [...this.record.tools],
-      messages: [...(this.record.messages ?? [])],
-    };
+    return structuredClone(this.record);
   }
 }
 

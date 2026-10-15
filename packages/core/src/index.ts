@@ -9,6 +9,7 @@ export * from "./kernel/kernel";
 export * from "./kernel/plugin";
 export * from "./loop";
 export * from "./model";
+export * from "./prompt";
 export * from "./services";
 export * from "./trace";
 export * from "./types";

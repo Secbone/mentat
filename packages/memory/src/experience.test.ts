@@ -12,6 +12,23 @@ import {
 } from "./experience";
 
 describe("SessionRecorder + ExperienceStore", () => {
+  it("captures authoritative answers without reasoning and returns isolated snapshots", () => {
+    const recorder = new SessionRecorder({ prompt: "task", cwd: "/tmp", harness: "fake" });
+    recorder.handle({ type: "message.reasoning", sessionId: "s", text: "private reasoning" });
+    recorder.handle({ type: "message.delta", sessionId: "s", text: "partial" });
+    recorder.handle({
+      type: "message.completed",
+      sessionId: "s",
+      message: { role: "assistant", text: "final answer" },
+    });
+    const copy = recorder.snapshot();
+    copy.messages?.push({ role: "user", text: "mutation" });
+    expect(recorder.snapshot().messages).toEqual([
+      { role: "user", index: 0, text: "task" },
+      { role: "assistant", index: 1, text: "final answer" },
+    ]);
+    expect(JSON.stringify(recorder.snapshot())).not.toContain("private reasoning");
+  });
   it("records outcome, usage, tools and persists to JSONL", () => {
     const dir = mkdtempSync(join(tmpdir(), "mentat-exp-"));
     const store = new ExperienceStore(dir);
@@ -55,8 +72,9 @@ describe("SessionRecorder + ExperienceStore", () => {
     const record = recorder.snapshot();
     expect(record.sessionId).toBe("s1");
     expect(record.messages).toEqual([
-      { role: "assistant", index: 0, text: "hi" },
-      { role: "assistant", index: 1, text: "bye" },
+      { role: "user", index: 0, text: "t" },
+      { role: "assistant", index: 1, text: "hi" },
+      { role: "assistant", index: 2, text: "bye" },
     ]);
     expect(experienceEvidence(record)).toBe(`exp:${record.id}`);
     expect(messageEvidence(record, 1)).toBe(`exp:${record.id}#msg1`);
