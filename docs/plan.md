@@ -81,15 +81,23 @@ interface IterableArtifact {
 
 | 包 | 职责 |
 |---|---|
-| `@mentat/core` | kernel、artifact 契约、`AgentEvent`、自迭代 loop、eval、archive、model；零 workspace 依赖、无 `node:` |
-| `@mentat/memory` | 记忆域：store、memory artifact、离线演化、experience、reflection、memory MCP server |
-| `@mentat/runtime` | 引擎无关执行件：git/data workspace、命令门、评测器、proposer、tracer |
-| `@mentat/transport-pi` | Pi 原生 RPC adapter（`pi --mode rpc`）+ 注入的 bridge 扩展（权限门控） |
-| `@mentat/transport-acp` | 通用 ACP client（opencode 及未来 claude/codex） |
-| `@mentat/cli` | CLI（bin: `mentat`），负责装配 |
+| `@mentat/core` | 协议、事件、制品契约、JSON工具与harness测试契约 |
+| `@mentat/kernel` | 服务容器、插件生命周期与作用域 |
+| `@mentat/evolution` | 提案、门、评测接口、选择、归档和演化循环 |
+| `@mentat/models` | 模型目录、模型选择与模型制品 |
+| `@mentat/memory` | 纯记忆领域规则、状态转换、检索与上下文选择 |
+| `@mentat/memory-file` | 记忆文件、审计与迁移 |
+| `@mentat/memory-mcp` | 记忆MCP服务与启动配置 |
+| `@mentat/memory-evolution` | 记忆制品、演化提案与评测 |
+| `@mentat/observability` | 经验、交互轨迹、摘要与JSONL日志 |
+| `@mentat/workspace` | Git及JSON候选工作区、持久化与回滚 |
+| `@mentat/evaluation` | 本地命令、容器、外部评测与执行门 |
+| `@mentat/assistant` | 个人助理策略、动态上下文、完整反思与显式确认 |
+| `@mentat/transport-pi` | Pi RPC适配器与权限bridge |
+| `@mentat/transport-acp` | 通用ACP适配器 |
+| `@mentat/cli` | 命令、终端交互和引擎装配 |
 
-依赖方向：`cli → memory / runtime / transport-* → core`；`core` 不依赖任何 adapter（注册表反向注入）。
-分层规则与自动校验见 [`dev-rules/layering.md`](dev-rules/layering.md)。
+依赖方向与导入迁移见 [子包职责与依赖规则](dev-rules/layering.md)。core与memory是独立基础包，kernel与evolution提供通用机制，文件存储、MCP、观测、评测和领域演化各自独立；CLI负责最终装配。
 
 ---
 

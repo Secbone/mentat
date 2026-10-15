@@ -1,0 +1,23 @@
+{
+  "name": "@mentat/memory-evolution",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mentat/core": "workspace:*",
+    "@mentat/evolution": "workspace:*",
+    "@mentat/memory": "workspace:*"
+  },
+  "devDependencies": {
+    "@mentat/kernel": "workspace:*"
+  },
+  "description": "Memory artifacts, mutation proposals and evolution evaluation"
+}

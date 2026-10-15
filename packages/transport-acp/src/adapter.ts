@@ -32,6 +32,8 @@ interface AcpConnectionOptions {
   args: string[];
   cwd: string;
   env?: Record<string, string>;
+  onDiagnostic?: AdapterDeps["onDiagnostic"];
+  onProtocol?: AdapterDeps["onProtocol"];
   onNotification: (method: string, params: Record<string, unknown>) => void;
   onRequest: (id: number | string, method: string, params: Record<string, unknown>) => void;
   onExit: (code: number | null) => void;
@@ -79,8 +81,8 @@ class AcpConnection {
     this.child.stdout.setEncoding("utf8");
     this.child.stdout.on("data", (chunk: string) => this.handleChunk(chunk));
     this.child.stderr.setEncoding("utf8");
-    this.child.stderr.on("data", () => {
-      /* diagnostics are not part of the normalized event stream */
+    this.child.stderr.on("data", (chunk: string) => {
+      options.onDiagnostic?.({ code: "ACP_STDERR", message: chunk });
     });
 
     this.child.on("exit", (code) => {
@@ -116,8 +118,10 @@ class AcpConnection {
     try {
       parsed = JSON.parse(line);
     } catch {
+      this.options.onDiagnostic?.({ code: "ACP_MALFORMED_FRAME", message: line });
       return;
     }
+    this.options.onProtocol?.({ direction: "in", data: parsed });
     if (!parsed || typeof parsed !== "object") return;
     const record = parsed as Record<string, unknown>;
     const method = record.method;
@@ -173,6 +177,7 @@ class AcpConnection {
   }
 
   private write(record: Record<string, unknown>): void {
+    this.options.onProtocol?.({ direction: "out", data: record });
     if (this.closed) return;
     this.child.stdin.write(`${JSON.stringify(record)}\n`);
   }
@@ -197,6 +202,7 @@ class AcpConnection {
 }
 
 interface AcpSessionSpawn {
+  model?: string;
   binary: string;
   args: string[];
   cwd: string;
@@ -214,6 +220,7 @@ class AcpSession implements SessionHandle {
   private readonly systemContext: string;
   private readonly mcpServers: McpServerSpec[];
   private wireSessionId = "";
+  private readonly requestedModel?: string;
   private accumulated = "";
   private running = false;
   private disposed = false;
@@ -221,6 +228,7 @@ class AcpSession implements SessionHandle {
   constructor(id: string, spawnOptions: AcpSessionSpawn, deps: AdapterDeps) {
     this.id = id;
     this.cwd = spawnOptions.cwd;
+    this.requestedModel = spawnOptions.model;
     this.systemContext = spawnOptions.systemPrompt ?? "";
     this.mcpServers = spawnOptions.mcpServers ?? [];
     this.deps = deps;
@@ -229,6 +237,8 @@ class AcpSession implements SessionHandle {
       args: spawnOptions.args,
       cwd: spawnOptions.cwd,
       env: spawnOptions.env,
+      onDiagnostic: deps.onDiagnostic,
+      onProtocol: deps.onProtocol,
       onNotification: (method, params) => this.handleNotification(method, params),
       onRequest: (id, method, params) => this.handleRequest(id, method, params),
       onExit: () => {
@@ -254,6 +264,24 @@ class AcpSession implements SessionHandle {
       })),
     });
     this.wireSessionId = typeof result.sessionId === "string" ? result.sessionId : "";
+    const configOptions = Array.isArray(result.configOptions)
+      ? (result.configOptions as Array<{ category?: string; id?: string; currentValue?: string }>)
+      : [];
+    const currentModel =
+      configOptions.find((option) => option.category === "model" || option.id === "model")
+        ?.currentValue ??
+      (result.models as { currentModelId?: string } | undefined)?.currentModelId;
+    this.deps.onDiagnostic?.({
+      code: currentModel ? "ACP_MODEL_CONFIRMED" : "ACP_MODEL_UNVERIFIED",
+      message: JSON.stringify({
+        requested: this.requestedModel ?? null,
+        effective: currentModel ?? null,
+      }),
+    });
+    if (currentModel && this.requestedModel && currentModel !== this.requestedModel)
+      throw new Error(
+        `ACP model mismatch: requested ${this.requestedModel}, engine selected ${currentModel}; configure the engine model explicitly`,
+      );
   }
 
   private emit(event: AgentEvent): void {
@@ -442,6 +470,7 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
           binary: options.binary,
           args: baseArgs,
           cwd: sessionOptions.cwd,
+          model: sessionOptions.model,
           env: options.env,
           ...(sessionOptions.systemPrompt ? { systemPrompt: sessionOptions.systemPrompt } : {}),
           ...(sessionOptions.mcpServers && sessionOptions.mcpServers.length > 0

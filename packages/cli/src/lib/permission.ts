@@ -1,6 +1,5 @@
 import { createInterface } from "node:readline/promises";
-import type { PermissionHandler } from "@mentat/core";
-import type { PermissionMode } from "@mentat/transport-pi";
+import type { PermissionHandler, PermissionMode } from "@mentat/core";
 
 /** Build a permission handler: prompt on stdin (`ask`) or allow everything. */
 export function createPermissionHandler(mode: PermissionMode): PermissionHandler {

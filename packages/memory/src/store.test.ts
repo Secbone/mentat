@@ -1,6 +1,4 @@
-import { Context } from "@mentat/core";
 import { describe, expect, it } from "vitest";
-import { MEMORY_SERVICE, memoryArtifact } from "./artifact";
 import { InMemoryMemoryStore, type MemoryEntry } from "./store";
 
 function entry(id: string, text: string, tags?: string[]): MemoryEntry {
@@ -39,16 +37,5 @@ describe("InMemoryMemoryStore", () => {
         .map((e) => e.id)
         .sort(),
     ).toEqual(["active", "candidate"]);
-  });
-});
-
-describe("memoryArtifact", () => {
-  it("provides a memory store when applied", async () => {
-    const runtime = new Context();
-    const artifact = memoryArtifact("mem", [{ id: "a", text: "hello world", createdAt: 1 }]);
-    await artifact.apply(runtime);
-    const store = runtime.get<InMemoryMemoryStore>(MEMORY_SERVICE);
-    expect(store.search({ text: "hello" })).toHaveLength(1);
-    await runtime.dispose();
   });
 });

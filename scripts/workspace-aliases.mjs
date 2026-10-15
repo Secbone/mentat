@@ -4,11 +4,23 @@ import { fileURLToPath } from "node:url";
 const resolve = (relative) => fileURLToPath(new URL(`../${relative}`, import.meta.url));
 
 export const workspaceAliases = {
+  "@mentat/memory/write-rules": resolve("packages/memory/src/write-rules.mjs"),
+  "@mentat/memory-evolution": resolve("packages/memory-evolution/src/index.ts"),
+  "@mentat/observability": resolve("packages/observability/src/index.ts"),
   "@mentat/transport-acp": resolve("packages/transport-acp/src/index.ts"),
   "@mentat/core/testing": resolve("packages/core/src/testing/contract.ts"),
   "@mentat/transport-pi": resolve("packages/transport-pi/src/index.ts"),
-  "@mentat/runtime": resolve("packages/runtime/src/index.ts"),
+  "@mentat/memory-file": resolve("packages/memory-file/src/index.ts"),
+  "@mentat/evaluation": resolve("packages/evaluation/src/index.ts"),
+  "@mentat/memory-mcp": resolve("packages/memory-mcp/src/index.ts"),
+  "@mentat/assistant": resolve("packages/assistant/src/index.ts"),
+  "@mentat/evolution": resolve("packages/evolution/src/index.ts"),
+  "@mentat/workspace": resolve("packages/workspace/src/index.ts"),
+  "@mentat/session": resolve("packages/session/src/index.ts"),
+  "@mentat/kernel": resolve("packages/kernel/src/index.ts"),
   "@mentat/memory": resolve("packages/memory/src/index.ts"),
+  "@mentat/models": resolve("packages/models/src/index.ts"),
   "@mentat/core": resolve("packages/core/src/index.ts"),
+  "@mentat/host": resolve("packages/host/src/index.ts"),
   "@mentat/cli": resolve("packages/cli/src/index.ts"),
 };

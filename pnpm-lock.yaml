@@ -24,7 +24,7 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@24.19.2)(tsx@4.23.15)
 
-  packages/cli:
+  packages/assistant:
     dependencies:
       '@mentat/core':
         specifier: workspace:*
@@ -32,9 +32,92 @@ importers:
       '@mentat/memory':
         specifier: workspace:*
         version: link:../memory
-      '@mentat/runtime':
+      '@mentat/session':
         specifier: workspace:*
-        version: link:../runtime
+        version: link:../session
+
+  packages/cli:
+    dependencies:
+      '@mentat/assistant':
+        specifier: workspace:*
+        version: link:../assistant
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/evaluation':
+        specifier: workspace:*
+        version: link:../evaluation
+      '@mentat/evolution':
+        specifier: workspace:*
+        version: link:../evolution
+      '@mentat/host':
+        specifier: workspace:*
+        version: link:../host
+      '@mentat/memory':
+        specifier: workspace:*
+        version: link:../memory
+      '@mentat/memory-evolution':
+        specifier: workspace:*
+        version: link:../memory-evolution
+      '@mentat/memory-file':
+        specifier: workspace:*
+        version: link:../memory-file
+      '@mentat/observability':
+        specifier: workspace:*
+        version: link:../observability
+      '@mentat/session':
+        specifier: workspace:*
+        version: link:../session
+      '@mentat/transport-pi':
+        specifier: workspace:*
+        version: link:../transport-pi
+      '@mentat/workspace':
+        specifier: workspace:*
+        version: link:../workspace
+
+  packages/core: {}
+
+  packages/evaluation:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/evolution':
+        specifier: workspace:*
+        version: link:../evolution
+
+  packages/evolution:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/kernel':
+        specifier: workspace:*
+        version: link:../kernel
+
+  packages/host:
+    dependencies:
+      '@mentat/assistant':
+        specifier: workspace:*
+        version: link:../assistant
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/memory':
+        specifier: workspace:*
+        version: link:../memory
+      '@mentat/memory-file':
+        specifier: workspace:*
+        version: link:../memory-file
+      '@mentat/memory-mcp':
+        specifier: workspace:*
+        version: link:../memory-mcp
+      '@mentat/observability':
+        specifier: workspace:*
+        version: link:../observability
+      '@mentat/session':
+        specifier: workspace:*
+        version: link:../session
       '@mentat/transport-acp':
         specifier: workspace:*
         version: link:../transport-acp
@@ -42,21 +125,77 @@ importers:
         specifier: workspace:*
         version: link:../transport-pi
 
-  packages/core: {}
-
-  packages/memory:
+  packages/kernel:
     dependencies:
       '@mentat/core':
         specifier: workspace:*
         version: link:../core
+
+  packages/memory: {}
+
+  packages/memory-evolution:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/evolution':
+        specifier: workspace:*
+        version: link:../evolution
+      '@mentat/memory':
+        specifier: workspace:*
+        version: link:../memory
+    devDependencies:
+      '@mentat/kernel':
+        specifier: workspace:*
+        version: link:../kernel
+
+  packages/memory-file:
+    dependencies:
+      '@mentat/memory':
+        specifier: workspace:*
+        version: link:../memory
+
+  packages/memory-mcp:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/memory':
+        specifier: workspace:*
+        version: link:../memory
+      '@mentat/memory-file':
+        specifier: workspace:*
+        version: link:../memory-file
       '@modelcontextprotocol/sdk':
         specifier: ^1.32.1
         version: 1.32.1(zod@4.6.7)
+      tsx:
+        specifier: ^4.20.6
+        version: 4.23.15
       zod:
         specifier: ^4.6.7
         version: 4.6.7
 
-  packages/runtime:
+  packages/models:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@mentat/kernel':
+        specifier: workspace:*
+        version: link:../kernel
+
+  packages/observability:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/session':
+        specifier: workspace:*
+        version: link:../session
+
+  packages/session:
     dependencies:
       '@mentat/core':
         specifier: workspace:*
@@ -73,6 +212,15 @@ importers:
       '@mentat/core':
         specifier: workspace:*
         version: link:../core
+
+  packages/workspace:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/evolution':
+        specifier: workspace:*
+        version: link:../evolution
 
 packages:
 

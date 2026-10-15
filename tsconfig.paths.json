@@ -2,6 +2,15 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@mentat/memory/write-rules": [
+        "packages/memory/src/write-rules.mjs"
+      ],
+      "@mentat/memory-evolution": [
+        "packages/memory-evolution/src/index.ts"
+      ],
+      "@mentat/observability": [
+        "packages/observability/src/index.ts"
+      ],
       "@mentat/transport-acp": [
         "packages/transport-acp/src/index.ts"
       ],
@@ -11,14 +20,41 @@
       "@mentat/transport-pi": [
         "packages/transport-pi/src/index.ts"
       ],
-      "@mentat/runtime": [
-        "packages/runtime/src/index.ts"
+      "@mentat/memory-file": [
+        "packages/memory-file/src/index.ts"
+      ],
+      "@mentat/evaluation": [
+        "packages/evaluation/src/index.ts"
+      ],
+      "@mentat/memory-mcp": [
+        "packages/memory-mcp/src/index.ts"
+      ],
+      "@mentat/assistant": [
+        "packages/assistant/src/index.ts"
+      ],
+      "@mentat/evolution": [
+        "packages/evolution/src/index.ts"
+      ],
+      "@mentat/workspace": [
+        "packages/workspace/src/index.ts"
+      ],
+      "@mentat/session": [
+        "packages/session/src/index.ts"
+      ],
+      "@mentat/kernel": [
+        "packages/kernel/src/index.ts"
       ],
       "@mentat/memory": [
         "packages/memory/src/index.ts"
       ],
+      "@mentat/models": [
+        "packages/models/src/index.ts"
+      ],
       "@mentat/core": [
         "packages/core/src/index.ts"
+      ],
+      "@mentat/host": [
+        "packages/host/src/index.ts"
       ],
       "@mentat/cli": [
         "packages/cli/src/index.ts"

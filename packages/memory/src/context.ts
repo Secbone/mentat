@@ -10,6 +10,9 @@ export function buildTurnContext(
   omittedIds: string[];
   requiredIds: string[];
   omittedRequiredIds: string[];
+  selectedIds: string[];
+  decisions: Array<{ id: string; selected: boolean; reason: string }>;
+  budget: { maxChars: number; usedChars: number };
 } {
   if (!Number.isSafeInteger(maxChars) || maxChars < 0)
     throw new RangeError("invalid context budget");
@@ -23,12 +26,15 @@ export function buildTurnContext(
   const pinned = all.filter((entry) =>
     entry.tags?.some((tag) => ["profile", "preference", "constraint"].includes(tag)),
   );
+  const relevant = store.search({ text: taskText, limit: 5, statuses: ["active"] });
   const candidates = [
     ...required,
     ...pinned,
-    ...store.search({ text: taskText, limit: 5, statuses: ["active"] }),
+    ...relevant,
     ...all.toSorted((a, b) => b.createdAt - a.createdAt),
   ];
+  const decisions: Array<{ id: string; selected: boolean; reason: string }> = [];
+  const selectedIds: string[] = [];
   const seen = new Set<string>();
   const lines: string[] = [];
   const omittedIds: string[] = [];
@@ -48,13 +54,29 @@ export function buildTurnContext(
     const addedChars = line.length + (lines.length === 0 ? 0 : 1);
     if (size + addedChars > maxChars) {
       omittedIds.push(entry.id);
+      decisions.push({ id: entry.id, selected: false, reason: "budget" });
       continue;
     }
+    selectedIds.push(entry.id);
+    decisions.push({
+      id: entry.id,
+      selected: true,
+      reason: requiredIds.includes(entry.id)
+        ? "required"
+        : pinned.some((e) => e.id === entry.id)
+          ? "pinned"
+          : relevant.some((e) => e.id === entry.id)
+            ? "retrieved"
+            : "recent",
+    });
     lines.push(line);
     size += addedChars;
   }
   return {
     text: lines.join("\n"),
+    selectedIds,
+    decisions,
+    budget: { maxChars, usedChars: size },
     omittedIds,
     requiredIds,
     omittedRequiredIds: omittedIds.filter((id) => requiredIds.includes(id)),

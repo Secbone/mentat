@@ -1,24 +1,18 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import {
-  type AgentEvent,
-  type Gate,
-  GateChain,
-  type JsonValue,
-  pathGuardGate,
-  SelfIterationLoop,
-} from "@mentat/core";
-import { buildExperienceDigest, ExperienceStore } from "@mentat/memory";
+import type { JsonValue, PermissionMode } from "@mentat/core";
+import { CheckEvaluator, commandGate, JsonCommandEvaluator } from "@mentat/evaluation";
 import {
   AgentProposer,
-  CheckEvaluator,
-  commandGate,
-  GitWorkspace,
-  JsonCommandEvaluator,
-  JsonlTracer,
+  type Gate,
+  GateChain,
+  pathGuardGate,
+  SelfIterationLoop,
   type SessionRunner,
-} from "@mentat/runtime";
-import type { PermissionMode } from "@mentat/transport-pi";
+} from "@mentat/evolution";
+import { buildExperienceDigest, ExperienceStore, FileTrajectoryStore } from "@mentat/observability";
+import { runOnce } from "@mentat/session";
+import { GitWorkspace } from "@mentat/workspace";
 import { defaultExperienceDir } from "../lib/paths";
 import { createPermissionHandler, parsePermissionMode } from "../lib/permission";
 import { createDefaultRegistry } from "../lib/registry";
@@ -84,7 +78,7 @@ export async function iterateCommand(args: string[]): Promise<number> {
     process.stderr.write("iterate: provide --check or --eval\n");
     return 1;
   }
-  if (protect.length === 0) protect.push("packages/core/src/loop/**");
+  if (protect.length === 0) protect.push("packages/evolution/src/**");
 
   const registry = createDefaultRegistry(permission);
   if (!registry.has(harnessId)) {
@@ -106,41 +100,11 @@ export async function iterateCommand(args: string[]): Promise<number> {
     .slice(2, 8)}`;
   const runDir = logDir ? join(logDir, runId) : join(process.cwd(), ".mentat", "runs", runId);
   mkdirSync(runDir, { recursive: true });
-  const tracer = new JsonlTracer(join(runDir, "trace.jsonl"), { runId });
-
-  const summarize = (event: AgentEvent): JsonValue => {
-    switch (event.type) {
-      case "tool.start":
-        return { type: event.type, name: event.name, input: event.input };
-      case "tool.result":
-        return {
-          type: event.type,
-          id: event.id,
-          isError: event.isError,
-          output: event.output.slice(0, 4000),
-        };
-      case "message.completed":
-        return { type: event.type, text: event.message.text };
-      case "message.delta":
-      case "message.reasoning":
-        return { type: event.type, text: event.text.slice(0, 2000) };
-      case "run.settled":
-        return { type: event.type, reason: event.reason };
-      case "permission.request":
-        return { type: event.type, toolName: event.request.toolName };
-      case "permission.resolved":
-        return { type: event.type, decision: event.decision };
-      case "usage":
-        return {
-          type: event.type,
-          inputTokens: event.usage.inputTokens,
-          outputTokens: event.usage.outputTokens,
-          costUsd: event.usage.costUsd ?? 0,
-        };
-      default:
-        return { type: event.type };
-    }
-  };
+  const tracer = new FileTrajectoryStore(
+    runDir,
+    { metadata: { runId, target, task, harness: harnessId, model: model ?? null } },
+    runId,
+  );
 
   tracer.emit("run.start", {
     target,
@@ -155,34 +119,30 @@ export async function iterateCommand(args: string[]): Promise<number> {
 
   const runner: SessionRunner = async (prompt) => {
     tracer.emit("agent.prompt", { prompt });
-    const session = await adapter.createSession(
+    const result = await runOnce(
+      adapter,
       { cwd: target, ...(model ? { model } : {}) },
-      { onPermission: createPermissionHandler(permission) },
-    );
-    try {
-      const settled = new Promise<void>((resolve) => {
-        session.subscribe((event: AgentEvent) => {
-          tracer.emit("agent.event", summarize(event));
-          if (event.type === "run.settled") resolve();
-          else if (event.type === "message.delta") process.stdout.write(event.text);
+      { text: prompt },
+      {
+        tracer,
+        deps: { onPermission: createPermissionHandler(permission) },
+        onEvent: (event) => {
+          if (event.type === "message.delta") process.stdout.write(event.text);
           else if (event.type === "tool.start") process.stdout.write(`\n[tool] ${event.name}\n`);
-        });
-      });
-      await session.send({ text: prompt });
-      await settled;
-    } finally {
-      await session.dispose();
-    }
+        },
+      },
+    );
+    if (result.reason !== "done") throw new Error(result.error ?? `agent ended: ${result.reason}`);
   };
 
   const gates: Gate[] = [
     pathGuardGate("protected", protect, (candidate) => workspace.changedFiles(candidate)),
   ];
-  if (check) gates.push(commandGate("check", { cwd: target, shell: check }));
+  if (check) gates.push(commandGate("check", { cwd: target, shell: check, tracer }));
 
   const evaluator = evalCmd
-    ? new JsonCommandEvaluator({ cwd: target, shell: evalCmd })
-    : new CheckEvaluator({ cwd: target, shell: check ?? "" }, "check");
+    ? new JsonCommandEvaluator({ cwd: target, shell: evalCmd, tracer })
+    : new CheckEvaluator({ cwd: target, shell: check ?? "", tracer }, "check");
 
   const extraContext = fromExperience
     ? buildExperienceDigest(new ExperienceStore(experienceDir).recent(recent))
@@ -203,7 +163,14 @@ export async function iterateCommand(args: string[]): Promise<number> {
     tracer,
   });
 
-  const result = await loop.run();
+  let result: Awaited<ReturnType<typeof loop.run>>;
+  try {
+    result = await loop.run();
+  } catch (error) {
+    tracer.emit("run.error", { error: String(error) });
+    await tracer.close("error");
+    throw error;
+  }
 
   const recordsJson: JsonValue[] = result.records.map((record) => {
     // only records that materialized a real candidate (evaluated) have a commit to diff
@@ -244,6 +211,7 @@ export async function iterateCommand(args: string[]): Promise<number> {
 
   writeFileSync(join(runDir, "run.json"), `${JSON.stringify(summary, null, 2)}\n`);
   tracer.emit("run.end", { best: result.best.id, records: result.records.length });
+  await tracer.close();
 
   process.stdout.write("\niteration  gate   accepted  reason\n");
   for (const record of result.records) {

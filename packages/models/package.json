@@ -1,0 +1,21 @@
+{
+  "name": "@mentat/models",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mentat/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@mentat/kernel": "workspace:*"
+  },
+  "description": "Model catalog and model artifacts"
+}

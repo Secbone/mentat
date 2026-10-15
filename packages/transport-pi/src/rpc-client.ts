@@ -11,6 +11,8 @@ export interface RpcClientOptions {
   env?: NodeJS.ProcessEnv;
   onRecord: (record: RpcRecord) => void;
   onStderr?: (chunk: string) => void;
+  onProtocol?: (record: { direction: "in" | "out"; data: unknown }) => void;
+  onDiagnostic?: (record: { code: string; message: string }) => void;
   onExit?: (code: number | null) => void;
 }
 
@@ -30,7 +32,7 @@ export class RpcClient {
   private nextId = 0;
   private closed = false;
 
-  constructor(options: RpcClientOptions) {
+  constructor(private readonly options: RpcClientOptions) {
     this.child = spawn(options.binary, options.args, {
       cwd: options.cwd,
       env: { ...process.env, ...options.env },
@@ -42,10 +44,8 @@ export class RpcClient {
       this.handleChunk(chunk, options.onRecord);
     });
 
-    if (options.onStderr) {
-      this.child.stderr.setEncoding("utf8");
-      this.child.stderr.on("data", options.onStderr);
-    }
+    this.child.stderr.setEncoding("utf8");
+    this.child.stderr.on("data", (chunk: string) => options.onStderr?.(chunk));
 
     this.child.on("exit", (code) => {
       this.closed = true;
@@ -77,9 +77,11 @@ export class RpcClient {
       try {
         record = JSON.parse(line) as RpcRecord;
       } catch {
+        this.options.onDiagnostic?.({ code: "PI_MALFORMED_FRAME", message: line });
         continue;
       }
 
+      this.options.onProtocol?.({ direction: "in", data: record });
       if (record.type === "response" && typeof record.id === "string") {
         const pending = this.pending.get(record.id);
         if (pending) {
@@ -105,6 +107,7 @@ export class RpcClient {
   }
 
   write(record: Record<string, unknown>): void {
+    this.options.onProtocol?.({ direction: "out", data: record });
     if (this.closed) return;
     this.child.stdin.write(`${JSON.stringify(record)}\n`);
   }

@@ -7,6 +7,7 @@ import type {
   HarnessCapabilities,
   JsonValue,
   PermissionDecision,
+  PermissionMode,
   PermissionRequest,
   SendOptions,
   SessionHandle,
@@ -18,7 +19,7 @@ import { isOpencodeModel, resolveOpencodeApiKey } from "./opencode-auth";
 import { RpcClient, type RpcClientOptions, type RpcRecord } from "./rpc-client";
 import { translate } from "./translate";
 
-export type PermissionMode = "ask" | "auto" | "full";
+export type { PermissionMode } from "@mentat/core";
 
 export interface PiAdapterOptions {
   id?: string;
@@ -66,6 +67,9 @@ class PiSession implements SessionHandle {
     this.deps = deps;
     this.client = new RpcClient({
       ...spawn,
+      onStderr: (chunk) => deps.onDiagnostic?.({ code: "PI_STDERR", message: chunk }),
+      onDiagnostic: deps.onDiagnostic,
+      onProtocol: deps.onProtocol,
       onRecord: (record) => this.handleRecord(record),
     });
   }

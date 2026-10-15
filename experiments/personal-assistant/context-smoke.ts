@@ -2,10 +2,10 @@ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ExperienceStore, SessionRecorder } from "@mentat/memory";
+import { assistantPromptOptions, reflectMemories } from "@mentat/assistant";
+import { saveReflections, taskContext } from "@mentat/host";
+import { ExperienceStore, SessionRecorder } from "@mentat/observability";
 import { createAcpAdapter } from "@mentat/transport-acp";
-import { assistantPromptOptions, taskContext } from "../../packages/cli/src/lib/prompt";
-import { reflectMemories, saveReflections } from "../../packages/cli/src/lib/reflection";
 
 // Two model calls: one frozen held-out constraint probe, one reflection replay.
 // This is a smoke check, not a new benchmark score. Historical trial files stay intact.
@@ -91,7 +91,7 @@ const reflection = await reflectMemories(adapter, {
   tools: [],
   interactions,
 });
-const added = saveReflections(memory, reflection.candidates);
+const added = await saveReflections(memory, reflection.candidates);
 writeFileSync(
   join(out, "reflection.json"),
   JSON.stringify({ replaySource: "household-C-v4/household-C-03", reflection, added }, null, 2),

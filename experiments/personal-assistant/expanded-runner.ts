@@ -3,22 +3,18 @@ import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } f
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AgentEvent, HarnessAdapter, SessionHandle } from "@mentat/core";
-import {
-  buildTurnContext,
-  type ExperienceRecord,
-  JsonFileMemoryStore,
-  type MemoryEntry,
-  SessionRecorder,
-} from "@mentat/memory";
-import { createAcpAdapter } from "@mentat/transport-acp";
-import { memoryMcpSpec } from "../../packages/cli/src/lib/memory-mcp";
 import {
   ASSISTANT_PROMPT_VERSION,
   assistantPromptOptions,
-  taskContext,
-} from "../../packages/cli/src/lib/prompt";
-import { reflectMemories, saveReflections } from "../../packages/cli/src/lib/reflection";
+  reflectMemories,
+} from "@mentat/assistant";
+import type { AgentEvent, HarnessAdapter, SessionHandle } from "@mentat/core";
+import { saveReflections, taskContext } from "@mentat/host";
+import { buildTurnContext, type MemoryEntry } from "@mentat/memory";
+import { JsonFileMemoryStore } from "@mentat/memory-file";
+import { memoryMcpSpec } from "@mentat/memory-mcp";
+import { type ExperienceRecord, SessionRecorder } from "@mentat/observability";
+import { createAcpAdapter } from "@mentat/transport-acp";
 import { acpPermission, parentCheckpoint, sendTurn, taskInput } from "./runner";
 
 interface Episode {
@@ -244,7 +240,7 @@ async function runCase(
       tools: [...new Set(interactions.flatMap((r) => r.tools))],
       interactions,
     });
-    saveReflections(memoryPath, reflectionResult.candidates);
+    await saveReflections(memoryPath, reflectionResult.candidates);
     const message = events.filter((event) => event.type === "message.completed").at(-1);
     const settled = events.filter((event) => event.type === "run.settled").at(-1);
     reflection = {

@@ -2,7 +2,8 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createFakeAdapter } from "@mentat/core";
-import { ExperienceStore, JsonFileMemoryStore } from "@mentat/memory";
+import { JsonFileMemoryStore } from "@mentat/memory-file";
+import { ExperienceStore } from "@mentat/observability";
 import { afterEach, expect, it, vi } from "vitest";
 import { runCommand } from "./run";
 

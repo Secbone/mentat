@@ -1,8 +1,7 @@
-import { type AgentEvent, extractJson, type Proposer } from "@mentat/core";
-import { type MemoryEntry, memoryArtifact, type RecallQuery } from "@mentat/memory";
-import { AgentDataProposer } from "@mentat/runtime";
-import { createPermissionHandler } from "./permission";
-import { createDefaultRegistry } from "./registry";
+import { extractJson } from "@mentat/core";
+import { AgentDataProposer, type Proposer } from "@mentat/evolution";
+import type { MemoryEntry } from "@mentat/memory";
+import { memoryArtifact, type RecallQuery } from "@mentat/memory-evolution";
 
 /**
  * Build an agent-backed proposer for the memory artifact: it asks the Pi
@@ -10,31 +9,9 @@ import { createDefaultRegistry } from "./registry";
  */
 export function createAgentMemoryProposer(
   queries: RecallQuery[],
-  model: string | undefined,
+  runner: (prompt: string) => Promise<string>,
   digest = "",
 ): Proposer {
-  const adapter = createDefaultRegistry("full").get("pi");
-  const runner = async (prompt: string): Promise<string> => {
-    const session = await adapter.createSession(
-      { cwd: process.cwd(), ...(model ? { model } : {}) },
-      { onPermission: createPermissionHandler("full") },
-    );
-    let text = "";
-    try {
-      const settled = new Promise<void>((resolve) => {
-        session.subscribe((event: AgentEvent) => {
-          if (event.type === "message.completed") text = event.message.text;
-          else if (event.type === "run.settled") resolve();
-        });
-      });
-      await session.send({ text: prompt });
-      await settled;
-    } finally {
-      await session.dispose();
-    }
-    return text;
-  };
-
   return new AgentDataProposer({
     task: "evolve memory",
     cwd: process.cwd(),
@@ -52,7 +29,8 @@ export function createAgentMemoryProposer(
       ].join("\n"),
     parse: (output) => {
       const parsed = extractJson(output);
-      const entries = Array.isArray(parsed) ? (parsed as unknown as MemoryEntry[]) : [];
+      if (!Array.isArray(parsed)) throw new Error("memory proposer returned invalid entries");
+      const entries = parsed as unknown as MemoryEntry[];
       return [memoryArtifact("memory", entries)];
     },
   });

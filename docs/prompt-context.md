@@ -1,6 +1,10 @@
+> 2026-10-15 执行、记忆与可观测性已重构，当前边界和迁移请参见[重构文档](refactor-execution-observability.md)。下文保留前期设计背景。
+
 # Prompt 与上下文管理
 
-Mentat 管理个人助理策略与每轮记忆快照，harness 负责模型调用、工具循环和会话历史。策略位于 `packages/cli/src/lib/prompt.ts`，版本为 `personal-assistant-v2`。修改行为规则时升级版本，并复测既有约束案例。
+`@mentat/assistant` 管理个人助理策略与每轮记忆快照，harness 负责模型调用、工具循环和会话历史。策略位于 `packages/assistant/src/prompt.ts`，版本为 `personal-assistant-v2`。修改行为规则时升级版本，并复测既有约束案例。
+
+个人助理反思与显式确认也归assistant；记忆规则归memory，文件与审计归memory-file，经验轨迹归observability，MCP服务归memory-mcp。CLI只装配这些公开接口。
 
 ## 调用链与能力边界
 

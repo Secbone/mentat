@@ -40,6 +40,11 @@ export interface MemoryQuery {
 
 /** A store the agent (and the loop) can grow, query and forget. */
 export interface MemoryStore {
+  atomicWrite?(
+    request: import("./write-rules.mjs").WriteRequest,
+    now: number,
+    audit?: import("./service").MemoryAudit,
+  ): import("./service").MemoryWriteResult;
   add(entry: MemoryEntry): void;
   search(query: MemoryQuery): MemoryEntry[];
   forget(id: string): boolean;

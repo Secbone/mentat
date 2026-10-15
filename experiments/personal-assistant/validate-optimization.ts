@@ -3,21 +3,19 @@ import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } f
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AgentEvent, HarnessAdapter, SessionHandle } from "@mentat/core";
-import {
-  JsonFileMemoryStore,
-  parseReflectedMemories,
-  rememberFact,
-  SessionRecorder,
-} from "@mentat/memory";
-import { createAcpAdapter } from "@mentat/transport-acp";
-import { memoryMcpSpec } from "../../packages/cli/src/lib/memory-mcp";
 import {
   ASSISTANT_PROMPT_VERSION,
   assistantPromptOptions,
-  taskContext,
-} from "../../packages/cli/src/lib/prompt";
-import { reflectMemories, saveReflections } from "../../packages/cli/src/lib/reflection";
+  parseReflectedMemories,
+  reflectMemories,
+} from "@mentat/assistant";
+import type { AgentEvent, HarnessAdapter, SessionHandle } from "@mentat/core";
+import { saveReflections, taskContext } from "@mentat/host";
+import { rememberFact } from "@mentat/memory";
+import { JsonFileMemoryStore } from "@mentat/memory-file";
+import { memoryMcpSpec } from "@mentat/memory-mcp";
+import { SessionRecorder } from "@mentat/observability";
+import { createAcpAdapter } from "@mentat/transport-acp";
 import { acpPermission } from "./runner";
 
 const root = resolve(".mentat/experiments/personal-assistant");
@@ -348,7 +346,7 @@ async function reflectionTrial(scenario: string, arm: Arm, repetition: number) {
       tools: [...new Set(interactions.flatMap((record) => record.tools))],
       interactions,
     });
-    saveReflections(memoryPath, parsed.candidates);
+    await saveReflections(memoryPath, parsed.candidates);
     const completed = events.filter((event) => event.type === "message.completed").at(-1);
     const settled = events.filter((event) => event.type === "run.settled").at(-1);
     reflection = {

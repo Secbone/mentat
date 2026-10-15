@@ -1,5 +1,3 @@
-import { appendFileSync, mkdirSync } from "node:fs";
-import { dirname } from "node:path";
 import type { MemoryEntry, MemoryStore } from "./store";
 import {
   decideWrite,
@@ -22,16 +20,17 @@ export interface MemoryAudit {
 }
 
 export interface MemoryWriteResult {
+  transactionId?: string;
+  previous?: MemoryEntry;
   op: WriteOp;
   entry?: MemoryEntry;
   reason?: string;
 }
 
 /**
- * The single entry point for writing memory. CLI manual writes, the MCP tool,
- * and online reflection all go through here, so every path applies the same
- * source/state rules, scope-aware keys and versioning, and records an audit
- * trail. Offline-evolution results enter the live store through this service.
+ * Compatibility service for synchronous views and offline evolution.
+ * Durable stores implement atomicWrite; async callers use MemoryAccess and
+ * MemoryRepository. All paths share decideWrite, including MCP.
  */
 export class MemoryService {
   constructor(
@@ -40,37 +39,36 @@ export class MemoryService {
   ) {}
 
   write(request: WriteRequest, now = Date.now()): MemoryWriteResult {
+    if (this.store.atomicWrite) return this.store.atomicWrite(request, now, this.audit);
     const decision: WriteDecision = decideWrite(this.store.list(), request, now);
     if ((decision.op === "add" || decision.op === "update") && decision.entry) {
       this.store.add(decision.entry);
     }
-    this.audit?.record({
-      ts: now,
-      op: decision.op,
-      request,
-      ...(decision.entry ? { entry: decision.entry } : {}),
-      ...(decision.previous ? { previous: decision.previous } : {}),
-      ...(decision.reason ? { reason: decision.reason } : {}),
-    });
+    try {
+      this.audit?.record({
+        ts: now,
+        op: decision.op,
+        request,
+        ...(decision.entry ? { entry: decision.entry } : {}),
+        ...(decision.previous ? { previous: decision.previous } : {}),
+        ...(decision.reason ? { reason: decision.reason } : {}),
+      });
+    } catch (error) {
+      if (decision.entry && (decision.op === "add" || decision.op === "update")) {
+        if (decision.previous) this.store.add(decision.previous);
+        else this.store.forget(decision.entry.id);
+      }
+      throw error;
+    }
     return {
       op: decision.op,
       ...(decision.entry ? { entry: decision.entry } : {}),
+      ...(decision.previous ? { previous: decision.previous } : {}),
       ...(decision.reason ? { reason: decision.reason } : {}),
     };
   }
 
   list(): MemoryEntry[] {
     return this.store.list();
-  }
-}
-
-/** Append-only JSONL audit trail for memory writes (versions + reasons). */
-export class JsonlMemoryAudit implements MemoryAudit {
-  constructor(private readonly path: string) {
-    mkdirSync(dirname(path), { recursive: true });
-  }
-
-  record(record: MemoryAuditRecord): void {
-    appendFileSync(this.path, `${JSON.stringify(record)}\n`);
   }
 }

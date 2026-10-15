@@ -10,18 +10,13 @@ import {
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseReflectedMemories, reflectionPrompt } from "@mentat/assistant";
 import type { AgentEvent, SessionHandle } from "@mentat/core";
-import {
-  buildMemoryContext,
-  InMemoryMemoryStore,
-  JsonFileMemoryStore,
-  parseReflectedMemories,
-  reflectionPrompt,
-  rememberFact,
-  SessionRecorder,
-} from "@mentat/memory";
+import { buildMemoryContext, InMemoryMemoryStore, rememberFact } from "@mentat/memory";
+import { JsonFileMemoryStore } from "@mentat/memory-file";
+import { memoryMcpSpec } from "@mentat/memory-mcp";
+import { SessionRecorder } from "@mentat/observability";
 import { createAcpAdapter } from "@mentat/transport-acp";
-import { memoryMcpSpec } from "../../packages/cli/src/lib/memory-mcp";
 
 export type Arm = "A" | "B" | "C" | "C0";
 export function acpPermission(arm: Arm): Record<string, string> {

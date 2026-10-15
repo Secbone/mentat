@@ -1,5 +1,5 @@
-import { runDemoLoop } from "@mentat/core";
-import { runMemoryEvolutionDemo } from "@mentat/memory";
+import { runDemoLoop } from "@mentat/evolution";
+import { runMemoryEvolutionDemo } from "@mentat/memory-evolution";
 
 export async function loopCommand(args: string[]): Promise<number> {
   const kind = args[0];

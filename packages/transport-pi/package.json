@@ -10,5 +10,9 @@
   },
   "dependencies": {
     "@mentat/core": "workspace:*"
+  },
+  "description": "Pi RPC transport and permission bridge",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   }
 }

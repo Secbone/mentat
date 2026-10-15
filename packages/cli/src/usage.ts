@@ -8,7 +8,9 @@ Usage:
   mentat memory migrate [--memory <file>] [--snapshot <file>] [--audit <file>]
   mentat evolve memory --queries <file> (--facts <file> | --agent [--from-experience] [--experience <dir>] [--recent <n>]) [--model <id>] [--store <dir>] [--memory <file>] [--iterations <n>]
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
-  mentat trace [<run-dir>] [--raw]
+  mentat trace [<run-dir>] [--raw|--all|--tree|--follow|--summary|--check|--errors|--context|--memory] [--tool <id>]
+  mentat trace compare <before-dir> <after-dir>
+  mentat trace feedback <run-dir> --turn <id> [--score <0..1>] [--correction "<text>"]
   mentat help
 
 Options:
@@ -16,6 +18,9 @@ Options:
   --model <id>         model id passed to the harness
   --cwd <path>         working directory (default: process.cwd())
   --permission <mode>  ask | auto | full (default: auto)
+  --log-dir <dir>     trajectory root directory (default: .mentat/runs)
+  --timeout-ms <ms>   startup/turn timeout for run and chat (default: 120000)
+  --log-protocol      capture redacted engine RPC diagnostics (run/chat)
   --yes                shorthand for --permission full
 
 iterate options:
@@ -24,7 +29,7 @@ iterate options:
   --check "<cmd>"      gate + default evaluator: pass=1, fail=0 (required unless --eval)
   --eval "<cmd>"       evaluator command printing a Signal[] JSON array on stdout
   --iterations <n>     how many iterations to attempt (default: 1)
-  --protect <glob>     被保护的路径，禁止 agent 修改（可重复；默认 packages/core/src/loop/**）
+  --protect <glob>     被保护的路径，禁止 agent 修改（可重复；默认 packages/evolution/src/**）
   --from-experience    feed a digest of recent experiences into the proposer
 
   --experience <dir>   experience store directory (default: .mentat/experience)

@@ -1,117 +1,231 @@
 #!/usr/bin/env node
-// Enforce the layering invariants documented in docs/dev-rules/layering.md.
-//
-//   1. @mentat/core:            zero workspace deps, no `node:` imports (pure engine)
-//   2. transport-*:             only @mentat/core
-//   3. @mentat/runtime:         only @mentat/core (engine-agnostic: no transport)
-//   4. @mentat/memory:          only @mentat/core
-//   5. @mentat/cli:             may depend on core / memory / runtime / transport-*
-//
-// It also checks that declared workspace dependencies and actual `@mentat/*`
-// imports agree, so a stale dependency (the old `iterate → transport-pi`) or a
-// missing one fails the check.
-
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { dirname, join } from "node:path";
+// Validate public package boundaries, runtime/test dependencies, and the DAG.
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { isBuiltin } from "node:module";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const packagesDir = join(root, "packages");
-
-const ALLOWED_WORKSPACE_DEPS = {
+export const ALLOWED_WORKSPACE_DEPS = {
   "@mentat/core": [],
-  "@mentat/memory": ["@mentat/core"],
-  "@mentat/runtime": ["@mentat/core"],
+  "@mentat/session": ["@mentat/core"],
+  "@mentat/host": [
+    "@mentat/core",
+    "@mentat/session",
+    "@mentat/assistant",
+    "@mentat/memory",
+    "@mentat/memory-file",
+    "@mentat/memory-mcp",
+    "@mentat/observability",
+    "@mentat/transport-pi",
+    "@mentat/transport-acp",
+  ],
+  "@mentat/kernel": ["@mentat/core"],
+  "@mentat/evolution": ["@mentat/core", "@mentat/kernel"],
+  "@mentat/models": ["@mentat/core"],
+  "@mentat/memory": [],
+  "@mentat/memory-file": ["@mentat/memory"],
+  "@mentat/observability": ["@mentat/core", "@mentat/session"],
+  "@mentat/memory-mcp": ["@mentat/core", "@mentat/memory", "@mentat/memory-file"],
+  "@mentat/memory-evolution": ["@mentat/core", "@mentat/evolution", "@mentat/memory"],
+  "@mentat/evaluation": ["@mentat/core", "@mentat/evolution"],
+  "@mentat/workspace": ["@mentat/core", "@mentat/evolution"],
+  "@mentat/assistant": [
+    "@mentat/session",
+    "@mentat/core",
+    "@mentat/memory",
+    "@mentat/memory-file",
+    "@mentat/observability",
+  ],
   "@mentat/transport-pi": ["@mentat/core"],
   "@mentat/transport-acp": ["@mentat/core"],
   "@mentat/cli": [
+    "@mentat/session",
+    "@mentat/host",
+    "@mentat/assistant",
     "@mentat/core",
+    "@mentat/evaluation",
+    "@mentat/evolution",
+    "@mentat/kernel",
     "@mentat/memory",
-    "@mentat/runtime",
+    "@mentat/memory-evolution",
+    "@mentat/memory-file",
+    "@mentat/memory-mcp",
+    "@mentat/models",
+    "@mentat/observability",
+    "@mentat/workspace",
     "@mentat/transport-pi",
     "@mentat/transport-acp",
   ],
 };
 
-const violations = [];
-const fail = (message) => violations.push(message);
+const TEST_ONLY_DEPS = {
+  "@mentat/models": ["@mentat/kernel"],
+  "@mentat/memory-evolution": ["@mentat/kernel"],
+};
+const PURE_PACKAGES = new Set([
+  "@mentat/session",
+  "@mentat/assistant",
+  "@mentat/core",
+  "@mentat/kernel",
+  "@mentat/evolution",
+  "@mentat/models",
+  "@mentat/memory",
+  "@mentat/memory-evolution",
+]);
 
 function* walk(dir) {
-  for (const name of readdirSync(dir)) {
-    if (name === "node_modules") continue;
+  if (!existsSync(dir)) return;
+  for (const name of readdirSync(dir).sort()) {
+    if (["node_modules", "dist"].includes(name)) continue;
     const path = join(dir, name);
     if (statSync(path).isDirectory()) yield* walk(path);
-    else if (/\.(ts|mjs)$/.test(name)) yield path;
+    else if (/\.(?:ts|mts|mjs|js)$/.test(name)) yield path;
   }
 }
 
-const packages = readdirSync(packagesDir)
-  .map((pkgDir) => {
-    const manifestPath = join(packagesDir, pkgDir, "package.json");
-    let manifest;
-    try {
-      manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-    } catch {
-      return undefined;
-    }
-    return manifest.name?.startsWith("@mentat/") ? { pkgDir, manifest } : undefined;
-  })
-  .filter(Boolean);
-
-const names = new Set(packages.map((pkg) => pkg.manifest.name));
-
-for (const { pkgDir, manifest } of packages) {
-  const allowed = ALLOWED_WORKSPACE_DEPS[manifest.name];
-  if (!allowed) {
-    fail(`unknown package ${manifest.name}: add it to ALLOWED_WORKSPACE_DEPS`);
-    continue;
-  }
-
-  const declared = new Set(
-    Object.keys(manifest.dependencies ?? {}).filter((dep) => names.has(dep)),
+/** Read actual syntax, including re-exports, dynamic imports and import types. */
+function moduleSpecifiers(path) {
+  const source = ts.createSourceFile(
+    path,
+    readFileSync(path, "utf8"),
+    ts.ScriptTarget.Latest,
+    true,
   );
-  const used = new Set();
-  let hasNodeImport = false;
+  const specifiers = [];
+  function visit(node) {
+    let spec;
+    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) spec = node.moduleSpecifier;
+    else if (
+      ts.isCallExpression(node) &&
+      (node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+        (ts.isIdentifier(node.expression) && node.expression.text === "require"))
+    )
+      spec = node.arguments[0];
+    else if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument))
+      spec = node.argument.literal;
+    if (spec && ts.isStringLiteralLike(spec)) specifiers.push(spec.text);
+    ts.forEachChild(node, visit);
+  }
+  visit(source);
+  return specifiers;
+}
 
-  for (const file of walk(join(packagesDir, pkgDir, "src"))) {
-    const source = readFileSync(file, "utf8");
-    if (/(?:from|import)\s*\(?["']node:/.test(source)) hasNodeImport = true;
-    for (const match of source.matchAll(/["'](@mentat\/[^"']+)["']/g)) {
-      const alias = match[1];
-      for (const name of names) {
-        // A package importing its own subpath (e.g. @mentat/core/testing from
-        // within @mentat/core) is not a dependency.
-        if (name === manifest.name) continue;
-        if (alias === name || alias.startsWith(`${name}/`)) used.add(name);
+export function checkLayering(root) {
+  const violations = [];
+  const packagesDir = join(root, "packages");
+  const packages = new Map();
+  for (const dir of readdirSync(packagesDir).sort()) {
+    const pkgDir = join(packagesDir, dir);
+    const manifestPath = join(pkgDir, "package.json");
+    if (!existsSync(manifestPath)) continue;
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    if (!manifest.name?.startsWith("@mentat/")) continue;
+    packages.set(manifest.name, { pkgDir, manifest });
+  }
+  const names = [...packages.keys()].sort((a, b) => b.length - a.length);
+  const graph = new Map();
+  for (const [name, { pkgDir, manifest }] of packages) {
+    const allowed = ALLOWED_WORKSPACE_DEPS[name];
+    if (!allowed) {
+      violations.push(
+        `unknown package ${name}: define its responsibility and allowed dependencies`,
+      );
+      continue;
+    }
+    const declared = new Set(
+      Object.keys(manifest.dependencies ?? {}).filter((dep) => dep.startsWith("@mentat/")),
+    );
+    const dev = new Set(
+      Object.keys(manifest.devDependencies ?? {}).filter((dep) => dep.startsWith("@mentat/")),
+    );
+    const used = new Set();
+    const production = new Set();
+    for (const [subpath, target] of Object.entries(manifest.exports ?? {})) {
+      if (typeof target !== "string" || !existsSync(join(pkgDir, target))) {
+        violations.push(`${name}: invalid export ${subpath}`);
       }
     }
-  }
-
-  for (const dep of declared) {
-    if (!allowed.includes(dep)) {
-      fail(`${manifest.name}: declared dependency "${dep}" is not allowed by the layering rules`);
+    for (const file of walk(join(pkgDir, "src"))) {
+      const test = /\.test\.[^.]+$/.test(file) || file.includes(`${sep}testing${sep}`);
+      for (const alias of moduleSpecifiers(file)) {
+        const label = relative(root, file);
+        if (alias.startsWith(".")) {
+          const target = resolve(dirname(file), alias);
+          if (relative(pkgDir, target).startsWith(`..${sep}`) || target === dirname(pkgDir)) {
+            violations.push(
+              `${label}: cross-package relative import ${alias}; use a public export`,
+            );
+          }
+          continue;
+        }
+        if (PURE_PACKAGES.has(name) && !test && isBuiltin(alias)) {
+          violations.push(`${label}: ${name} must stay pure; cannot import ${alias}`);
+        }
+        if (!alias.startsWith("@mentat/")) continue;
+        const dependency = names.find(
+          (candidate) => alias === candidate || alias.startsWith(`${candidate}/`),
+        );
+        if (!dependency) {
+          violations.push(`${label}: unknown workspace import ${alias}`);
+          continue;
+        }
+        const subpath = alias === dependency ? "." : `.${alias.slice(dependency.length)}`;
+        if (!Object.hasOwn(packages.get(dependency).manifest.exports ?? {}, subpath)) {
+          violations.push(`${label}: non-public import ${alias}`);
+        }
+        if (dependency === name) continue;
+        used.add(dependency);
+        if (!test) production.add(dependency);
+        if (!declared.has(dependency) && !(test && dev.has(dependency))) {
+          violations.push(
+            `${label}: ${dependency} is not declared for ${test ? "tests" : "production"}`,
+          );
+        }
+      }
     }
-    if (!used.has(dep)) {
-      fail(`${manifest.name}: stale dependency "${dep}" is declared but never imported`);
+    for (const dependency of declared) {
+      if (!allowed.includes(dependency))
+        violations.push(`${name}: dependency ${dependency} is not allowed`);
+      if (!used.has(dependency)) violations.push(`${name}: stale dependency ${dependency}`);
     }
-  }
-  for (const dep of used) {
-    if (!declared.has(dep)) {
-      fail(`${manifest.name}: uses "${dep}" but does not declare it in package.json`);
+    for (const dependency of dev) {
+      if (![...allowed, ...(TEST_ONLY_DEPS[name] ?? [])].includes(dependency)) {
+        violations.push(`${name}: test dependency ${dependency} is not allowed`);
+      }
+      if (!used.has(dependency)) violations.push(`${name}: stale test dependency ${dependency}`);
+      if (production.has(dependency) && !declared.has(dependency)) {
+        violations.push(`${name}: production dependency ${dependency} is declared only for tests`);
+      }
     }
+    graph.set(name, used);
   }
-
-  if (manifest.name === "@mentat/core") {
-    if (declared.size > 0) fail("@mentat/core must not depend on any workspace package");
-    if (hasNodeImport) fail("@mentat/core must stay pure: no `node:` imports allowed");
+  const done = new Set();
+  const active = [];
+  function visit(name) {
+    if (active.includes(name)) {
+      violations.push(
+        `workspace cycle: ${[...active.slice(active.indexOf(name)), name].join(" -> ")}`,
+      );
+      return;
+    }
+    if (done.has(name)) return;
+    active.push(name);
+    for (const dep of graph.get(name) ?? []) visit(dep);
+    active.pop();
+    done.add(name);
   }
+  for (const name of graph.keys()) visit(name);
+  return { violations, packages: packages.size };
 }
 
-if (violations.length > 0) {
-  console.error("layering check failed:\n");
-  for (const violation of violations) console.error(`  ✗ ${violation}`);
-  console.error("\nSee docs/dev-rules/layering.md");
-  process.exit(1);
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+  const result = checkLayering(root);
+  if (result.violations.length) {
+    console.error(
+      `layering check failed:\n${result.violations.map((item) => `  ✗ ${item}`).join("\n")}\nSee docs/dev-rules/layering.md`,
+    );
+    process.exitCode = 1;
+  } else console.log(`layering check passed (${result.packages} packages)`);
 }
-
-console.log(`layering check passed (${packages.length} packages)`);

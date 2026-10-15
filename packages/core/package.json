@@ -10,6 +10,7 @@
     "./testing": "./src/testing/contract.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
-  }
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "description": "Shared contracts, normalized events and harness protocol helpers"
 }

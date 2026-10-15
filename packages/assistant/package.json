@@ -1,0 +1,20 @@
+{
+  "name": "@mentat/assistant",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mentat/core": "workspace:*",
+    "@mentat/memory": "workspace:*",
+    "@mentat/session": "workspace:*"
+  },
+  "description": "Personal-assistant policy, reflection and explicit memory confirmation"
+}

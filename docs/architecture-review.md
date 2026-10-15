@@ -1,4 +1,8 @@
+> 2026-10-15 执行、记忆与可观测性已重构，当前边界和迁移请参见[重构文档](refactor-execution-observability.md)。下文保留前期设计背景。
+
 # 架构与包结构评审
+
+2026-10-15结构更新：以下保留原评审或方案的时间点描述；包职责、代码迁移位置与当前依赖方向见[子包规则](dev-rules/layering.md)。
 
 > 状态：**档 A + 档 B 已实施**。落地后的分层规则见
 > [`docs/dev-rules/layering.md`](dev-rules/layering.md)，由 `pnpm check:layering` 自动校验。

@@ -1,13 +1,8 @@
-import type { AgentEvent } from "@mentat/core";
-import { ExperienceStore, SessionRecorder } from "@mentat/memory";
-import type { PermissionMode } from "@mentat/transport-pi";
-import { memoryMcpSpec } from "../lib/memory-mcp";
+import type { AgentEvent, PermissionMode } from "@mentat/core";
+import { createAssistantHost } from "@mentat/host";
 import { defaultExperienceDir, defaultMemoryPath } from "../lib/paths";
 import { createPermissionHandler, parsePermissionMode } from "../lib/permission";
-import { assistantPromptOptions, taskContext } from "../lib/prompt";
-import { reflectMemories, saveReflections } from "../lib/reflection";
 import { createDefaultRegistry } from "../lib/registry";
-import { rememberUserFact } from "../lib/remember";
 
 export async function runCommand(args: string[]): Promise<number> {
   let harnessId = "fake";
@@ -18,10 +13,21 @@ export async function runCommand(args: string[]): Promise<number> {
   let experienceDir: string | undefined;
   const remember: string[] = [];
   let reflect = false;
+  let logDir: string | undefined;
+  let timeoutMs = 120_000;
   const promptParts: string[] = [];
 
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
+    if (arg === "--log-protocol") continue;
+    if (arg === "--log-dir") {
+      logDir = args[++i];
+      continue;
+    }
+    if (arg === "--timeout-ms") {
+      timeoutMs = Number(args[++i]);
+      continue;
+    }
     if (arg === "--harness") {
       harnessId = args[++i] ?? "";
       continue;
@@ -78,94 +84,56 @@ export async function runCommand(args: string[]): Promise<number> {
   }
 
   const adapter = registry.get(harnessId);
-  const session = await adapter.createSession(
+  const host = createAssistantHost(
     {
       cwd,
-      ...(model ? { model } : {}),
-      ...assistantPromptOptions(adapter),
-      mcpServers: [memoryMcpSpec(memoryPath)],
+      adapter,
+      model,
+      memoryPath,
+      experienceDir,
+      logDir,
+      timeoutMs,
+      permissionMode: permission,
+      protocolLog: args.includes("--log-protocol"),
+      reflectionAdapter: createDefaultRegistry("ask").get(harnessId),
+      permission: createPermissionHandler(permission),
     },
-    { onPermission: createPermissionHandler(permission) },
+    { onDiagnostic: (d) => process.stderr.write(`[${d.code}] ${d.message}\n`) },
   );
-
-  let reason = "error";
-  const recorder = new SessionRecorder({
-    prompt,
-    cwd,
-    harness: harnessId,
-    ...(model ? { model } : {}),
-  });
-  const settled = new Promise<void>((resolve) => {
-    session.subscribe((event: AgentEvent) => {
-      recorder.handle(event);
-      switch (event.type) {
-        case "message.delta":
-          process.stdout.write(event.text);
-          break;
-        case "message.reasoning":
-          process.stderr.write(event.text);
-          break;
-        case "tool.start":
-          process.stdout.write(`\n[tool] ${event.name}\n`);
-          break;
-        case "run.settled":
-          reason = event.reason;
-          process.stdout.write("\n");
-          resolve();
-          break;
-        default:
-          break;
-      }
-    });
-  });
-
+  process.stderr.write(`trace: ${host.logDir ?? host.traceId}\n`);
   try {
-    await session.send({ text: prompt, context: taskContext(memoryPath, prompt) });
-    await settled;
-  } catch (error) {
-    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-    reason = "error";
-    recorder.handle({
-      type: "run.settled",
-      sessionId: session.id,
-      reason: "error",
-      error: String(error),
-    });
-  } finally {
-    await session.dispose();
-  }
-  new ExperienceStore(experienceDir).append(recorder.snapshot());
-
-  let added = 0;
-  for (const fact of remember) {
-    const result = rememberUserFact(memoryPath, experienceDir, fact, cwd);
-    if (result.op === "add" || result.op === "update") added += 1;
-  }
-  if (remember.length > 0) {
-    process.stderr.write(`memory: +${added} (${remember.length - added} duplicate)\n`);
-  }
-
-  if (reflect) {
-    try {
-      const result = await reflectMemories(createDefaultRegistry("ask").get(harnessId), {
-        cwd,
-        ...(model ? { model } : {}),
-        task: prompt,
-        outcome: reason,
-        tools: recorder.snapshot().tools,
-        interactions: [recorder.snapshot()],
-      });
-      if (result.status === "invalid") {
-        process.stderr.write("reflect: invalid output or missing evidence; nothing saved\n");
-      } else {
-        const reflected = saveReflections(memoryPath, result.candidates);
-        process.stderr.write(
-          `reflect: +${reflected} (${result.candidates.length - reflected} duplicate)\n`,
-        );
-      }
-    } catch (error) {
-      process.stderr.write(`reflect: ${error instanceof Error ? error.message : String(error)}\n`);
+    const session = await host.open();
+    const { result, record } = await host.turn(session, prompt, { timeoutMs, onEvent: printEvent });
+    if (result.error) process.stderr.write(`${result.error}\n`);
+    let added = 0;
+    for (const fact of remember) {
+      const saved = await host.remember(fact);
+      if (saved.op === "add" || saved.op === "update") added++;
     }
+    if (remember.length)
+      process.stderr.write(`memory: +${added} (${remember.length - added} duplicate)\n`);
+    if (reflect) {
+      try {
+        const reflected = await host.reflect(
+          { task: prompt, outcome: result.reason, tools: record.tools, interactions: [record] },
+          { timeoutMs },
+        );
+        process.stderr.write(`reflect: ${reflected.status} +${reflected.added}\n`);
+      } catch (error) {
+        process.stderr.write(`reflect: ${String(error)}\n`);
+      }
+    }
+    return result.reason === "done" ? 0 : 1;
+  } catch (error) {
+    process.stderr.write(`${String(error)}\n`);
+    return 1;
+  } finally {
+    await host.close();
   }
-  return reason === "done" ? 0 : 1;
+}
+export function printEvent(event: AgentEvent): void {
+  if (event.type === "message.delta") process.stdout.write(event.text);
+  else if (event.type === "message.reasoning") process.stderr.write(event.text);
+  else if (event.type === "tool.start") process.stdout.write(`\n[tool] ${event.name}\n`);
+  else if (event.type === "run.settled") process.stdout.write("\n");
 }

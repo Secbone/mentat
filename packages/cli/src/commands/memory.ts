@@ -1,4 +1,4 @@
-import { JsonFileMemoryStore, JsonlMemoryAudit, migrateLegacyMemory } from "@mentat/memory";
+import { JsonFileMemoryStore, JsonlMemoryAudit, migrateLegacyMemory } from "@mentat/memory-file";
 import { defaultMemoryPath } from "../lib/paths";
 
 export async function memoryCommand(args: string[]): Promise<number> {

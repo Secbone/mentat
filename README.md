@@ -26,12 +26,21 @@ pnpm dev harness list
 
 | 包 | 职责 |
 |---|---|
-| `@mentat/core` | 纯引擎：kernel、artifact 契约、`AgentEvent`、自迭代 loop、eval、archive、model（零 workspace 依赖、无 `node:`） |
-| `@mentat/memory` | 记忆域：store、memory artifact、离线演化、experience、reflection、memory MCP server |
-| `@mentat/runtime` | 引擎无关的执行件：`GitWorkspace`、data workspace、命令门、评测器、proposer、tracer |
-| `@mentat/transport-pi` | Pi 原生 RPC 适配器（`pi --mode rpc`）+ 权限 bridge 扩展 |
-| `@mentat/transport-acp` | 通用 ACP 适配器（opencode 及未来 claude/codex） |
-| `@mentat/cli` | CLI（bin: `mentat`），负责装配 |
+| `@mentat/core` | 协议、事件、制品契约、JSON工具与harness测试契约 |
+| `@mentat/kernel` | 服务容器、插件生命周期与作用域 |
+| `@mentat/evolution` | 提案、门、评测接口、选择、归档和演化循环 |
+| `@mentat/models` | 模型目录、模型选择与模型制品 |
+| `@mentat/memory` | 纯记忆领域规则、状态转换、检索与上下文选择 |
+| `@mentat/memory-file` | 记忆文件、审计与迁移 |
+| `@mentat/memory-mcp` | 记忆MCP服务与启动配置 |
+| `@mentat/memory-evolution` | 记忆制品、演化提案与评测 |
+| `@mentat/observability` | 经验、交互轨迹、摘要与JSONL日志 |
+| `@mentat/workspace` | Git及JSON候选工作区、持久化与回滚 |
+| `@mentat/evaluation` | 本地命令、容器、外部评测与执行门 |
+| `@mentat/assistant` | 个人助理策略、动态上下文、完整反思与显式确认 |
+| `@mentat/transport-pi` | Pi RPC适配器与权限bridge |
+| `@mentat/transport-acp` | 通用ACP适配器 |
+| `@mentat/cli` | 命令、终端交互和引擎装配 |
 
 分层规则与依赖方向见 [`docs/dev-rules/layering.md`](docs/dev-rules/layering.md)，
 由 `pnpm check:layering` 校验；workspace 别名由 `pnpm gen` 从各包 `package.json`
@@ -88,9 +97,9 @@ mentat trace --raw      # 原始 JSONL
 
 `mentat run` 现在的一趟任务会**读记忆 → 干活 → 写记忆**：
 
-- **任务前**：从 `.mentat/memory.json` 检索相关记忆，注入 system prompt；
-  同时挂载**记忆 MCP server**（`@mentat/memory` 的 `memory_search`/`memory_add`），
-  agent 可按需读写。
+- **任务前**：从 `.mentat/memory.json` 提供每轮有效记忆快照，优先保留约束；
+  同时挂载**记忆MCP服务**（`@mentat/memory-mcp` 的 `memory_search`/`memory_add`）。
+  模型写入只成为候选，显式用户确认经主机生效；必要约束放不下时停止发送任务。
 - **任务后**：把本次运行落盘为经验（`.mentat/experience/*.jsonl`：outcome/usage/tools），
   并可选写入记忆。
 
@@ -100,7 +109,8 @@ mentat run "<task>" --harness pi --model <id> --permission full \
 mentat run "<task>" --reflect            # 任务后让 agent 蒸馏可复用记忆
 ```
 
-在线只写**数据**（记忆），过 schema 门 + 去重、可 forget；**代码变更仍只走离线 loop**。
+在线记忆写入统一经过来源与状态规则，支持去重、版本和审计；**代码演化走离线loop**。
+当前策略与边界见 [`docs/prompt-context.md`](docs/prompt-context.md)。
 
 ## 交互使用
 
@@ -123,5 +133,9 @@ chat 里支持：`/remember <fact>`（写记忆）、`/reflect`（蒸馏本次�
 ```
 
 > 状态：M0–M6 完成；M7（ACP/opencode 适配器）由 agent 自迭代实现并合并；
-> 在线"边干活边进化" P1–P4 完成（持久记忆 + systemPrompt/MCP 注入、经验落盘、
-> `--remember`、`--reflect`）。下一步：离线 loop 消费 `ExperienceStore`。
+> 在线记忆、完整交互反思、经验落盘和离线经验摘要已接入；当前拆为15个功能包。
+> 自动有效期、语义合并和经验质量验证仍在后续优化范围。
+
+### 执行轨迹与宿主装配
+
+当前17个功能包，新增`@mentat/session`统一会话执行、`@mentat/host`装配个人助手。run/chat默认持续记录轨迹；`pnpm dev trace <run-dir> --summary`查看摘要，`--check`检查完整度，`--all`查看详细事件。上下文、反思、记忆事务和演化结果可关联追查。完整职责、迁移与命令见[重构文档](docs/refactor-execution-observability.md)。

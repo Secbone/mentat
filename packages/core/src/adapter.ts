@@ -51,6 +51,9 @@ export interface PermissionHandler {
 
 /** Dependencies the runtime injects into a harness session. */
 export interface AdapterDeps {
+  onDiagnostic?: (record: { code: string; message: string }) => void;
+  /** Explicit diagnostic capture, separate from normalized execution events. */
+  onProtocol?: (record: { direction: "in" | "out"; data: unknown }) => void;
   onPermission?: PermissionHandler;
 }
 
@@ -72,3 +75,6 @@ export interface HarnessAdapter {
   capabilities(): HarnessCapabilities;
   createSession(options: SessionOptions, deps?: AdapterDeps): Promise<SessionHandle>;
 }
+
+/** Host permission policy, mapped by each engine adapter. */
+export type PermissionMode = "ask" | "auto" | "full";
