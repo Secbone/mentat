@@ -8,6 +8,41 @@ function collector(): { records: MemoryAuditRecord[]; audit: MemoryAudit } {
 }
 
 describe("MemoryService", () => {
+  it("retains resolved sources but drops stale source excerpts when the claim changes", () => {
+    const store = new InMemoryMemoryStore();
+    const service = new MemoryService(store);
+    const request = {
+      text: "leave five minutes",
+      key: "buffer",
+      evidence: "exp:old#msg0/part0",
+      evidenceSources: [
+        { pointer: "exp:old#msg0/part0", origin: "user", excerpt: "leave five minutes" },
+      ],
+    };
+    expect(service.write(request).entry?.evidenceSources).toEqual(request.evidenceSources);
+    expect(service.write(request).op).toBe("dedup");
+    const updated = service.write({ text: "leave ten minutes", key: "buffer" });
+    expect(updated.entry?.evidenceSources).toBeUndefined();
+    expect(updated.previous?.evidenceSources).toEqual(request.evidenceSources);
+  });
+  it("rejects malformed source metadata without writing", () => {
+    const store = new InMemoryMemoryStore();
+    const result = new MemoryService(store).write({
+      text: "x",
+      evidenceSources: [{ pointer: "p", origin: "user", excerpt: "" }],
+    });
+    expect(result).toMatchObject({ op: "reject", reason: "invalid evidence sources" });
+    expect(store.list()).toEqual([]);
+  });
+  it("rejects invalid kinds at the shared writer boundary", () => {
+    const store = new InMemoryMemoryStore();
+    const service = new MemoryService(store);
+    expect(service.write({ text: "bad", kind: "invalid" as "fact" })).toMatchObject({
+      op: "reject",
+      reason: "invalid kind",
+    });
+    expect(store.list()).toEqual([]);
+  });
   it("does not carry old evidence onto a different confirmed statement", () => {
     const store = new InMemoryMemoryStore();
     store.add({

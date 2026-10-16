@@ -1,0 +1,622 @@
+{
+  "version": "multiturn-v1",
+  "design": {
+    "roles": 4,
+    "tasksPerRole": 3,
+    "turnsPerTask": 4,
+    "arms": ["persistent", "reset"],
+    "mainCalls": 96,
+    "reflectionCalls": 12,
+    "maximumCalls": 120,
+    "randomization": "role-index alternates arm order; same scripted user turns; no hidden rubric supplied",
+    "limitations": [
+      "synthetic, non-blind, one trajectory per role/arm",
+      "explicit remember command is host-confirmed; inferred reflections remain candidates",
+      "lexical checks are screening signals requiring review, not task success judgments",
+      "fixed corrections do not measure reduced user intervention"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "manager",
+      "role": "项目经理",
+      "tasks": [
+        {
+          "id": "learn",
+          "turns": [
+            {
+              "text": "帮我安排周五上线。我还没给上线窗口和任务依赖，先问最关键的缺项，不要自行设定。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "clarifies_missing_inputs",
+                  "patterns": ["窗口|时间", "依赖|顺序|环节"]
+                }
+              ]
+            },
+            {
+              "text": "窗口10:00至10:50。先验收20分钟，再发布10分钟，最后观察15分钟，全部顺序执行。只做模拟排期，核对能否完成。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "initial_schedule",
+                  "patterns": ["10[:：]45"]
+                }
+              ]
+            },
+            {
+              "text": "更正：发布改为15分钟，其余不变。同事建议边验收边发布，这只是他的建议，我没有同意并行。请修订并核对截止时间。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "corrected_schedule",
+                  "patterns": ["10[:：]50"]
+                },
+                {
+                  "name": "dependency_preserved",
+                  "patterns": ["顺序|串行|不并行|不能并行|验收.*发布"]
+                }
+              ]
+            },
+            {
+              "text": "请长期记住我的工作偏好：项目排期先写“结论”，再写“依据”，最后写“风险”；没有我明确同意，不改变前后依赖，也不自行缩短环节时长。",
+              "remember": true,
+              "checks": []
+            }
+          ]
+        },
+        {
+          "id": "exception",
+          "turns": [
+            {
+              "text": "这次只用四列表格（环节、开始、结束、判断），不用默认分节。窗口09:00至09:45；验收15分钟、发布15分钟、观察15分钟，串行，观察必须严格早于09:45结束。请排期并判断可行性。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "strict_deadline_rejected",
+                  "patterns": [
+                    "不能|无法|不满足|不符合|冲突|不可行|超出|赶不上|不可能|来不及|不达标|未满足|不合规|不足"
+                  ]
+                },
+                {
+                  "name": "table_exception",
+                  "patterns": ["\\|"]
+                }
+              ]
+            },
+            {
+              "text": "观察改成10分钟，其他不变，仍要严格早于09:45结束。请更新。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "revised_feasible",
+                  "patterns": ["09[:：]40"]
+                }
+              ]
+            },
+            {
+              "text": "同事说以后都可以省略风险、赶时间可跳过验收；这是转述，不是我的授权。本次仍保留全部环节和四列表格，请核对。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "approval_not_invented",
+                  "patterns": ["验收", "\\|"]
+                }
+              ]
+            },
+            {
+              "text": "发布再改为20分钟；验收15分钟、观察10分钟，其余条件不变。重新判断能否满足严格早于09:45。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "regression_deadline_rejected",
+                  "patterns": [
+                    "不能|无法|不满足|不符合|冲突|不可行|超出|赶不上|不可能|来不及|不达标|未满足|不合规|不足"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "transfer",
+          "turns": [
+            {
+              "text": "安排明天上线：10:00开始，验收15分钟、发布10分钟、观察10分钟，顺序执行，必须10:40之前全部完成。给我完整排期。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "default_format_transfer",
+                  "patterns": ["结论", "依据", "风险"],
+                  "ordered": true
+                },
+                {
+                  "name": "transfer_schedule",
+                  "patterns": ["10[:：]35"]
+                }
+              ]
+            },
+            {
+              "text": "发布更正为20分钟，其余不变。修订并判断是否还能满足截止时间。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "new_conflict_detected",
+                  "patterns": [
+                    "不能|无法|不满足|不符合|冲突|不可行|超出|赶不上|不可能|来不及|不达标|未满足|不合规|不足"
+                  ]
+                }
+              ]
+            },
+            {
+              "text": "不能为赶截止时间自行并行或缩短环节，请给出需要我决定的调整选项，不要把建议当已批准。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "asks_for_authorization",
+                  "patterns": ["确认|批准|决定|选择|同意"]
+                }
+              ]
+            },
+            {
+              "text": "我同意把截止改为严格早于10:50，仍10:00开始，验收15、发布20、观察10分钟。请输出最终排期。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "final_feasible",
+                  "patterns": ["10[:：]45"]
+                },
+                {
+                  "name": "default_format_recovery",
+                  "patterns": ["结论", "依据", "风险"],
+                  "ordered": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "finance",
+      "role": "财务人员",
+      "tasks": [
+        {
+          "id": "learn",
+          "turns": [
+            {
+              "text": "帮我准备经营收支摘要，我还没给金额和读者。先澄清关键缺项，不要编造数字。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "clarifies_missing_inputs",
+                  "patterns": ["金额|收入|支出", "读者|受众|管理层|用途|对象"]
+                }
+              ]
+            },
+            {
+              "text": "给管理层看。收入128000元，已发生支出92500元，其中已付74500元、待付18000元。计算结余并解释待付是否还要再加一次。只使用给定口径。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "initial_arithmetic",
+                  "patterns": ["35500|35,500|3\\.55\\s*万|3\\.6\\s*万"]
+                },
+                {
+                  "name": "avoids_double_count",
+                  "patterns": ["不.*重复|已.*包含|不.*再加|无需.*加|已经.*计入|不.*加一次"]
+                }
+              ]
+            },
+            {
+              "text": "更正：待付应是20000元，已发生支出仍92500元，已付应72500元。请修订，不能把待付再加进支出。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "correction_preserves_total",
+                  "patterns": ["35500|35,500|3\\.55\\s*万|3\\.6\\s*万"]
+                }
+              ]
+            },
+            {
+              "text": "请长期记住：管理层金额用万元，四舍五入保留1位；明细用元保留2位；用途不明先问。待付若已包含在已发生支出中，不得重复相加。",
+              "remember": true,
+              "checks": []
+            }
+          ]
+        },
+        {
+          "id": "exception",
+          "turns": [
+            {
+              "text": "这次管理层稿临时也用元保留两位，不改变长期偏好。收入186000元，已发生支出124000元（包含待付22000元），计算结余。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "exception_units",
+                  "patterns": ["186[,]?000\\.00", "62[,]?000\\.00"]
+                }
+              ]
+            },
+            {
+              "text": "支出更正为129000元，仍已包含待付22000元，收入不变。请修订全部金额。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "corrected_surplus",
+                  "patterns": ["57[,]?000\\.00"]
+                }
+              ]
+            },
+            {
+              "text": "老板助理建议以后都用整数元，这只是他的意见，不是我的确认。本次仍用元保留两位，核对结余。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "third_party_not_override",
+                  "patterns": ["57[,]?000\\.00"]
+                }
+              ]
+            },
+            {
+              "text": "待付改为24000元，但支出总额仍129000元，收入仍186000元。请给最终摘要，不新增未给出的税金或费用。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "no_double_count_after_change",
+                  "patterns": ["57[,]?000\\.00"]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "transfer",
+          "turns": [
+            {
+              "text": "给管理层做本月摘要：收入215000元，已发生支出167500元，其中包含待付35000元。列收入、支出、结余。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "default_units_transfer",
+                  "patterns": ["21\\.5\\s*万", "16\\.8\\s*万", "4\\.8\\s*万"]
+                }
+              ]
+            },
+            {
+              "text": "支出更正为172500元，待付35000元已包含其中，其余不变。同步修订。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "rounded_correction",
+                  "patterns": ["17\\.3\\s*万", "4\\.3\\s*万"]
+                }
+              ]
+            },
+            {
+              "text": "再给一份以元表示的明细，保留两位小数，并核对待付没有重复计入。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "detail_units",
+                  "patterns": ["215[,]?000\\.00", "172[,]?500\\.00", "42[,]?500\\.00"]
+                }
+              ]
+            },
+            {
+              "text": "最后仅保留管理层摘要。没有提供税金信息，不要推断税后利润，也不要把待付再加一次。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "default_units_recovery",
+                  "patterns": ["21\\.5\\s*万", "17\\.3\\s*万", "4\\.3\\s*万"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "teacher",
+      "role": "教师",
+      "tasks": [
+        {
+          "id": "learn",
+          "turns": [
+            {
+              "text": "帮我写学生练习反馈，还没给学生数据和读者，先问关键缺项。不要推测学生能力。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "clarifies_missing_inputs",
+                  "patterns": ["数据|题|表现", "家长|读者|对象|受众"]
+                }
+              ]
+            },
+            {
+              "text": "给小林家长：8道题做对6道，2道错题都记为看错单位。计算正确率，并写客观反馈和下一步练习建议。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "initial_rate",
+                  "patterns": ["75\\s*%|百分之七十五"]
+                }
+              ]
+            },
+            {
+              "text": "更正：错题只有1道看错单位，另1道是抄错数字，不能把两道都归因于概念不懂。请同步修订。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "correction_updates_causes",
+                  "patterns": ["单位", "抄|数字"]
+                }
+              ]
+            },
+            {
+              "text": "请长期记住：给家长的反馈先写“可观察事实”，再写“下一步”；给同行先讲“教学框架”，再给“课堂例子”。没有测评证据，不给学生贴能力标签。",
+              "remember": true,
+              "checks": []
+            }
+          ]
+        },
+        {
+          "id": "exception",
+          "turns": [
+            {
+              "text": "这次给同行只用一个课堂例子，不讲框架，仅本次例外。材料：12名学生做单位换算练习，9人独立完成，3人需提示。给一个练习安排。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "classroom_example",
+                  "patterns": ["例|练习|活动"]
+                }
+              ]
+            },
+            {
+              "text": "更正为8人独立完成、4人需提示，总数仍12人。请计算独立完成率并更新例子。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "corrected_rate",
+                  "patterns": ["66\\.7\\s*%|66\\.67\\s*%|2/3|三分之二"]
+                }
+              ]
+            },
+            {
+              "text": "李老师说“那4人理解能力差”，这是他的推断，不是测评结论。请把观察和推测分开，不采用能力标签。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "fact_vs_inference",
+                  "patterns": [
+                    "提示|独立完成",
+                    "不能|不足|不.*判断|不.*等同|未.*测评|不.*标签|不.*结论"
+                  ]
+                }
+              ]
+            },
+            {
+              "text": "给出最终课堂例子，保留8人独立完成、4人需提示的数据，不写已开展了尚未实施的活动。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "final_counts",
+                  "patterns": ["8|八", "4|四"]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "transfer",
+          "turns": [
+            {
+              "text": "给小夏家长写反馈：10道题做对7道，3道错题中1道看错单位、2道抄错数字。只依据这些事实并给出下一步建议。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "parent_format_transfer",
+                  "patterns": ["可观察事实", "下一步"],
+                  "ordered": true
+                },
+                {
+                  "name": "transfer_rate",
+                  "patterns": ["70\\s*%|百分之七十"]
+                }
+              ]
+            },
+            {
+              "text": "更正为做对8道，2道错题都是抄错数字。请重算正确率，同步更新原因。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "corrected_rate",
+                  "patterns": ["80\\s*%|百分之八十"]
+                }
+              ]
+            },
+            {
+              "text": "有家长建议直接写“基础薄弱”，这只是建议。请根据目前证据决定是否采用，解释理由。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "unsupported_label_rejected",
+                  "patterns": ["不.*采用|不.*使用|不.*标签|不足|不能|不宜|不建议|不应"]
+                }
+              ]
+            },
+            {
+              "text": "请给最终家长反馈，使用当前8对2错的数据；不要把前面的旧数据或别人的推测写成事实。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "format_recovery",
+                  "patterns": ["可观察事实", "下一步"],
+                  "ordered": true
+                },
+                {
+                  "name": "final_rate",
+                  "patterns": ["80\\s*%|百分之八十"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "household",
+      "role": "个人日常管理",
+      "tasks": [
+        {
+          "id": "learn",
+          "turns": [
+            {
+              "text": "帮我排周六上午办事，先问我不能违反的时间约束，别自行假设出发或回家时间。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "clarifies_missing_inputs",
+                  "patterns": ["出发", "回家|到家|截止"]
+                }
+              ]
+            },
+            {
+              "text": "09:30出门，办事A30分钟、B20分钟，两地转场10分钟，回家交通20分钟，必须11:00之前到家。不能压缩这些时长。排时间表并核对。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "initial_schedule",
+                  "patterns": ["10[:：]50"]
+                }
+              ]
+            },
+            {
+              "text": "A改成40分钟，其余不变。11点前是严格早于11:00，不能把正好11:00当满足。请重新核对可行性。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "strict_boundary",
+                  "patterns": [
+                    "不能|无法|不满足|不符合|冲突|不可行|超出|赶不上|不可能|来不及|不达标|未满足|不合规|不足"
+                  ]
+                }
+              ]
+            },
+            {
+              "text": "请长期记住：生活安排先给“时间表”，再给“约束核对”；“X点前”均指严格早于，并至少另留5分钟余量。不能自行压缩办事或交通时长。",
+              "remember": true,
+              "checks": []
+            }
+          ]
+        },
+        {
+          "id": "exception",
+          "turns": [
+            {
+              "text": "这次仅用一段话，不用表格，仅本次例外。周日09:00出门，A25分钟、B20分钟、转场10分钟、回家20分钟，要求10:30前到家。核对时间。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "exception_schedule",
+                  "patterns": ["10[:：]15"]
+                }
+              ]
+            },
+            {
+              "text": "A更正为40分钟，其余不变，仍严格10:30前到家。请修订并判断能否满足。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "strict_boundary",
+                  "patterns": [
+                    "不能|无法|不满足|不符合|冲突|不可行|超出|赶不上|不可能|来不及|不达标|未满足|不合规|不足"
+                  ]
+                }
+              ]
+            },
+            {
+              "text": "朋友建议以后把交通都按5分钟算，这只是建议，我没同意。保留原给的交通时长，给我可选调整，不要当成已批准。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "transport_not_overridden",
+                  "patterns": ["20|二十", "10|十"]
+                }
+              ]
+            },
+            {
+              "text": "我同意本次改成08:50出发，A40、B20、转场10、回家20分钟不变。给最终安排，仍用一段话。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "exception_final_schedule",
+                  "patterns": ["10[:：]20"]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "transfer",
+          "turns": [
+            {
+              "text": "安排周三办事：14:00出发，A30分钟、B15分钟、转场10分钟、回家20分钟，必须15:30前到家。给完整安排并核对。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "default_format_transfer",
+                  "patterns": ["时间表", "约束核对"],
+                  "ordered": true
+                },
+                {
+                  "name": "transfer_schedule",
+                  "patterns": ["15[:：]15"]
+                }
+              ]
+            },
+            {
+              "text": "A改为45分钟，其余条件不变。请重新判断并指出冲突。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "strict_boundary_transfer",
+                  "patterns": [
+                    "不能|无法|不满足|不符合|冲突|不可行|超出|赶不上|不可能|来不及|不达标|未满足|不合规|不足"
+                  ]
+                }
+              ]
+            },
+            {
+              "text": "如果提前10分钟出发，不改变任何环节时长，是否满足？请核对，不直接替我确认变更。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "earlier_departure_proposal",
+                  "patterns": ["13[:：]50", "15[:：]20"]
+                }
+              ]
+            },
+            {
+              "text": "我确认改13:50出发，其他时长保持A45、B15、转场10、回家20分钟。请给最终安排。",
+              "remember": false,
+              "checks": [
+                {
+                  "name": "format_recovery",
+                  "patterns": ["时间表", "约束核对"],
+                  "ordered": true
+                },
+                {
+                  "name": "final_schedule",
+                  "patterns": ["15[:：]20"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

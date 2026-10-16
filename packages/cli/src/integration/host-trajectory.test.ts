@@ -69,7 +69,7 @@ describe("host orchestration and observability", () => {
     const events = readTrajectory(required(host.logDir));
     const input = required(events.find((e) => e.type === "prompt.assembled"));
     expect(resolveEventData(required(host.logDir), input)).toMatchObject({
-      version: "personal-assistant-v2",
+      version: "personal-assistant-v3",
       delivery: "undeclared",
     });
     expect(await traceCommand([required(host.logDir), "--check"])).toBe(0);

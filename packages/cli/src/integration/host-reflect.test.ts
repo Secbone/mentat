@@ -33,6 +33,7 @@ describe("full interaction reflection", () => {
     first.handle({ type: "run.settled", sessionId: "s", reason: "done" });
     const second = new SessionRecorder({
       prompt: "我需要11点前回家",
+      input: { text: "我需要11点前回家" },
       cwd: "/tmp",
       harness: "test",
     });
@@ -60,14 +61,22 @@ describe("full interaction reflection", () => {
           },
           send: async (message) => {
             input = message.text;
+            const batch = JSON.parse(input.match(/Evidence batch: (.*)\n/)?.[1] ?? "{}");
             listener({
               type: "message.completed",
               sessionId: "reflection",
               message: {
                 role: "assistant",
-                text: JSON.stringify([
-                  { text: "周末11点前回家", evidenceIds: [second.snapshot().id] },
-                ]),
+                text: JSON.stringify({
+                  batchId: batch.batchId,
+                  candidates: [
+                    {
+                      text: "周末11点前回家",
+                      kind: "constraint",
+                      evidenceRefs: [{ ref: "E2.M1.P1", excerpt: "我需要11点前回家" }],
+                    },
+                  ],
+                }),
               },
             });
             listener({ type: "run.settled", sessionId: "reflection", reason: "done" });
@@ -105,7 +114,9 @@ describe("full interaction reflection", () => {
       status: "candidate",
       basis: "inference",
       speaker: "assistant",
-      evidence: `exp:${second.snapshot().id}`,
+      kind: "constraint",
+      evidence: `exp:${second.snapshot().id}#msg0/part0`,
+      evidenceSources: [{ origin: "user", excerpt: "我需要11点前回家" }],
     });
     expect(await saveReflections(path, result.candidates)).toBe(0);
   });

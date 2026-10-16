@@ -1,3 +1,4 @@
+import type { RememberInput } from "@mentat/assistant";
 import type { AgentEvent, PermissionMode } from "@mentat/core";
 import { createAssistantHost } from "@mentat/host";
 import { defaultExperienceDir, defaultMemoryPath } from "../lib/paths";
@@ -11,7 +12,7 @@ export async function runCommand(args: string[]): Promise<number> {
   let permission: PermissionMode = "auto";
   let memoryPath: string | undefined;
   let experienceDir: string | undefined;
-  const remember: string[] = [];
+  const remember: RememberInput[] = [];
   let reflect = false;
   let logDir: string | undefined;
   let timeoutMs = 120_000;
@@ -51,6 +52,28 @@ export async function runCommand(args: string[]): Promise<number> {
     if (arg === "--remember") {
       const value = args[++i];
       if (value) remember.push(value);
+      continue;
+    }
+    if (
+      arg &&
+      [
+        "--remember-constraint",
+        "--remember-preference",
+        "--remember-fact",
+        "--remember-method",
+      ].includes(arg)
+    ) {
+      const value = args[++i];
+      if (!value || value.startsWith("--")) {
+        process.stderr.write(`${arg}: missing rule text\n`);
+        return 1;
+      }
+      const kind = arg.slice("--remember-".length) as
+        | "constraint"
+        | "preference"
+        | "fact"
+        | "method";
+      remember.push({ text: value, kind });
       continue;
     }
     if (arg === "--reflect") {
@@ -119,6 +142,17 @@ export async function runCommand(args: string[]): Promise<number> {
           { timeoutMs },
         );
         process.stderr.write(`reflect: ${reflected.status} +${reflected.added}\n`);
+        process.stderr.write(
+          `reflect: merged ${reflected.merged}, skipped ${reflected.skipped}, rejected ${reflected.rejected}\n`,
+        );
+        for (const decision of reflected.decisions
+          .filter((decision) => decision.op === "reject")
+          .slice(0, 5))
+          process.stderr.write(`reflect: rejected[${decision.index}]: ${decision.reason}\n`);
+        for (const issue of reflected.issues.slice(0, 5))
+          process.stderr.write(
+            `reflect: ${issue.code}${issue.index !== undefined ? `[${issue.index}]` : ""}: ${issue.message}\n`,
+          );
       } catch (error) {
         process.stderr.write(`reflect: ${String(error)}\n`);
       }

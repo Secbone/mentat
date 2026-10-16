@@ -180,3 +180,15 @@ node experiments/personal-assistant/prepare.mjs prepare /tmp/mentat-product-01 p
 01–03 的给定反馈由操作者在首次答复后另行发送。CLI `run` 不能在原 session 里追加一轮反馈，所以完整的训练回合用受控 `chat` 或直接 adapter runner；此命令只演示单次 C 的输入路径。它不是 A/B/D/E 通用执行器，也没有自动实现评分、冻结快照或工具访问边界。
 
 保存输出和评分到 agent 不可读的评测位置；下一任务复制该组允许的学习制品到新的工作目录。正式结果填写 `evaluator/score.json`，空值表示未评分，不能用零代替缺失。准备成功或 fake adapter 演示只能验证材料流程，不能证明个人助理学习有效。
+
+## 2026-10-15 新宿主多轮对照
+
+[多轮实验报告](REPORT-multiturn-2026-10-15.md)覆盖4类用户、两组、24任务、96轮交互与12次反思，全部通过`createAssistantHost()`运行。案例在`multiturn-cases.json`，结果与非盲复核索引在`results/multiturn-analysis-2026-10-15.json`。词法筛查不等于任务成功，报告保留了误报、漏报和初次权限预检失败。
+
+`multiturn.ts --fake`先检验调度；真实运行需本机已授权OpenCode。`multiturn.test.ts`验证输入不泄漏检查项、组间记忆边界和评分基本语义；`multiturn-pressure.ts`仅在内存副本中复现类型/预算问题，不修改线上记忆。
+
+后续改造见[多轮实验优化报告](../../docs/research/multiturn-optimization-report-2026-10-15.md)，包含根因、包职责、分阶段交付和验收标准，并链接各阶段实际进度；设计目标不能视为已验证能力。
+
+来源分段与证据批次改造后，`multiturn.ts` 将用户原文与运行包装分开发送，并记录input/reflection schema及prompt版本。恢复运行同时校验执行器哈希与这些版本，不能向旧v2目录追加新策略结果，必须使用新输出目录。旧报告及旧轨迹保留其原始实验条件；当前实现进度见[阶段B验证](../../docs/research/stage-b-validation-2026-10-15.md)。
+
+范围与候选操作版本将显式remember回合标为reusable，其余回合标为task；标注来自既有明确指令，不来自评分规则。`reflection-operations.ts --source=<完整运行目录> --out=<新目录>`可在隔离候选分支上读取三段累计交互，最多调用模型3次，不重新生成业务答案。输入/反思schema现为 `source-scope-v2` / `evidence-operations-v3`；验证与边界见[范围与候选验证](../../docs/research/scope-merge-validation-2026-10-15.md)。

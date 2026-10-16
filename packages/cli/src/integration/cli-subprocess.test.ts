@@ -38,9 +38,21 @@ it("runs actual CLI task, chat, trace, feedback and evolution commands", async (
     logs,
     "--remember",
     "short answers",
+    "--remember-constraint",
+    "always reserve five minutes",
+    "--remember-preference",
+    "tables first",
     "--reflect",
     "hello",
   ]);
+  const initialMemory = JSON.parse(readFileSync(memory, "utf8")) as Array<{
+    text: string;
+    kind: string;
+  }>;
+  expect(initialMemory.find((entry) => entry.text === "always reserve five minutes")?.kind).toBe(
+    "constraint",
+  );
+  expect(initialMemory.find((entry) => entry.text === "tables first")?.kind).toBe("preference");
   const first = join(logs, readdirSync(logs)[0] ?? "missing");
   expect(inspectTrajectory(first)).toMatchObject({ status: "complete", gaps: 0, violations: [] });
   expect((await cli(["trace", first, "--context"])).stdout).toContain("prompt.assembled");
@@ -60,7 +72,14 @@ it("runs actual CLI task, chat, trace, feedback and evolution commands", async (
       "--log-dir",
       logs,
     ],
-    "hello\n/remember reserve travel time\n/reflect\n/exit\n",
+    "hello\n/remember reserve travel time\n/remember-constraint never shorten travel durations\n/reflect\n/exit\n",
+  );
+  const chatMemory = JSON.parse(readFileSync(memory, "utf8")) as Array<{
+    text: string;
+    kind: string;
+  }>;
+  expect(chatMemory.find((entry) => entry.text === "never shorten travel durations")?.kind).toBe(
+    "constraint",
   );
   const summary = JSON.parse((await cli(["trace", first, "--summary"])).stdout) as {
     traceId: string;

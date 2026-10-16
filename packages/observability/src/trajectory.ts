@@ -15,6 +15,7 @@ import { join, resolve } from "node:path";
 import type { JsonValue } from "@mentat/core";
 import {
   type ExperienceBase,
+  normalizeTaskInput,
   SessionRecorder,
   type TrajectoryEvent,
   type TrajectoryStore,
@@ -23,6 +24,7 @@ import {
 export { redact } from "@mentat/core";
 
 import { redact } from "@mentat/core";
+import { auditAcpCapture } from "./capture-audit";
 export interface TrajectoryOptions {
   maxBytes?: number;
   artifactThreshold?: number;
@@ -254,13 +256,32 @@ export function resolveEventData(dir: string, event: TrajectoryEvent): JsonValue
   return data;
 }
 export function projectExperience(dir: string, base: ExperienceBase, turnId: string) {
-  const recorder = new SessionRecorder(base);
-  for (const event of readTrajectory(dir))
+  const events = readTrajectory(dir);
+  const source = events.find((event) => event.type === "task.input" && event.turnId === turnId);
+  const data = source
+    ? (resolveEventData(dir, source) as { input?: import("@mentat/session").TaskInput })
+    : undefined;
+  const input = data?.input ? normalizeTaskInput(data.input) : base.input;
+  const recorder = new SessionRecorder({
+    ...base,
+    ...(input ? { prompt: input.text, input } : {}),
+  });
+  const saved = events.find(
+    (event) => event.type === "experience.saved" && event.turnId === turnId,
+  );
+  const savedData = saved ? (resolveEventData(dir, saved) as { evidenceId?: string }) : undefined;
+  for (const event of events)
     if (event.type === "agent.event" && event.turnId === turnId)
       recorder.handle(resolveEventData(dir, event) as unknown as import("@mentat/core").AgentEvent);
   return {
     ...recorder.snapshot(),
-    traceId: readTrajectory(dir)[0]?.traceId,
+    id:
+      savedData?.evidenceId ??
+      `exp-${createHash("sha256")
+        .update(`${events[0]?.traceId ?? "unknown"}#${turnId}`)
+        .digest("hex")
+        .slice(0, 32)}`,
+    traceId: events[0]?.traceId,
     turnId,
     trajectoryDir: dir,
   };
@@ -269,6 +290,8 @@ export function inspectTrajectory(dir: string) {
   const events = readTrajectory(dir);
   const violations: string[] = [];
   const turns = new Map<string, { ends: number; calls: Set<string> }>();
+  const permissions = new Map<string, boolean>();
+  let nonTextToolResults = 0;
   const selected = new Set<string>(),
     committed = new Set<string>();
   for (const event of events) {
@@ -285,7 +308,27 @@ export function inspectTrajectory(dir: string) {
         !state.calls.has(String(data.id))
       )
         violations.push(`orphan tool result: ${data.id}`);
+      if (
+        event.type === "agent.event" &&
+        data?.type === "tool.update" &&
+        !state.calls.has(String(data.id))
+      )
+        violations.push(`orphan tool update: ${data.id}`);
     }
+    if (event.type === "agent.event" && data?.type === "permission.request")
+      permissions.set(`${data.sessionId}:${data.id}`, false);
+    if (event.type === "agent.event" && data?.type === "permission.resolved") {
+      const id = `${data.sessionId}:${data.id}`;
+      if (!permissions.has(id)) violations.push(`orphan permission decision: ${data.id}`);
+      else if (permissions.get(id)) violations.push(`duplicate permission decision: ${data.id}`);
+      permissions.set(id, true);
+    }
+    if (
+      event.type === "agent.event" &&
+      data?.type === "tool.result" &&
+      ["partial", "unsupported"].includes(String(data.outputCoverage))
+    )
+      nonTextToolResults++;
     if (event.type === "iteration.select" && data?.accepted === true)
       selected.add(String(data.childId));
     if (event.type === "workspace.commit.end") committed.add(String(data?.candidateId));
@@ -296,6 +339,11 @@ export function inspectTrajectory(dir: string) {
       violations.push(`accepted candidate ${candidate} has no successful commit`);
   for (const [turn, state] of turns)
     if (state.ends !== 1) violations.push(`turn ${turn}: ${state.ends} terminal events`);
+  for (const [id, resolved] of permissions)
+    if (!resolved) violations.push(`unresolved permission: ${id}`);
+  const capture = auditAcpCapture(
+    events.map((event) => ({ type: event.type, data: resolveEventData(dir, event) })),
+  );
   const manifest = JSON.parse(readFileSync(join(dir, "manifest.json"), "utf8")) as {
     status: string;
     pid?: number;
@@ -314,6 +362,7 @@ export function inspectTrajectory(dir: string) {
     turns: turns.size,
     gaps: events.filter((e) => e.type === "capture.gap").length,
     violations,
+    capture: { ...capture, nonTextToolResults },
   };
 }
 /** Explicit maintenance; never runs while creating a trace or against running traces. */

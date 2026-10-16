@@ -2,6 +2,7 @@
 import {
   taskContext as context,
   type ReflectedCandidate,
+  type RememberInput,
   rememberUserFact as remember,
   saveReflections as save,
 } from "@mentat/assistant";
@@ -11,7 +12,12 @@ import { ExperienceStore } from "@mentat/observability";
 export function taskContext(path: string, task: string) {
   return context(new JsonFileMemoryStore(path), task);
 }
-export function rememberUserFact(path: string, dir: string, text: string, cwd = process.cwd()) {
+export function rememberUserFact(
+  path: string,
+  dir: string,
+  text: RememberInput,
+  cwd = process.cwd(),
+) {
   return remember(
     createMemoryAccess(new FileMemoryRepository(path)),
     new ExperienceStore(dir),

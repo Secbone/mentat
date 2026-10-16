@@ -90,7 +90,9 @@ export async function chatCommand(args: string[]): Promise<number> {
     });
   };
 
-  process.stdout.write("mentat chat — /exit, /remember <fact>, /reflect\n");
+  process.stdout.write(
+    "mentat chat — /exit, /remember <text>, /remember-constraint|preference|fact|method <text>, /reflect\n",
+  );
 
   try {
     for (;;) {
@@ -99,8 +101,11 @@ export async function chatCommand(args: string[]): Promise<number> {
       if (line === null) break;
       const text = line.trim();
       if (text === "/exit" || text === "/quit") break;
-      if (text.startsWith("/remember ")) {
-        const result = await host.remember(text.slice("/remember ".length));
+      const remember = /^\/remember(?:-(constraint|preference|fact|method))?\s+(.+)$/.exec(text);
+      if (remember) {
+        const kind = remember[1] as "constraint" | "preference" | "fact" | "method" | undefined;
+        const rule = remember[2] ?? "";
+        const result = await host.remember(kind ? { text: rule, kind } : rule);
         process.stdout.write(
           result.op === "add" || result.op === "update"
             ? `stored ${result.entry?.id}\n`
@@ -125,11 +130,25 @@ export async function chatCommand(args: string[]): Promise<number> {
             { timeoutMs },
           );
           if (result.status === "invalid") {
-            process.stdout.write("reflect: invalid output or missing evidence; nothing saved\n");
+            process.stdout.write(
+              `reflect: nothing saved; ${result.issues
+                .slice(0, 5)
+                .map(
+                  (issue) =>
+                    `${issue.code}${issue.index !== undefined ? `[${issue.index}]` : ""}${issue.ref ? ` ${issue.ref}` : ""}: ${issue.message}`,
+                )
+                .join("; ")}\n`,
+            );
           } else {
             const added = result.added;
             reflectedThrough = interactions.length;
-            process.stdout.write(`reflect: +${added}\n`);
+            process.stdout.write(
+              `reflect: +${added}, merged ${result.merged}, skipped ${result.skipped}, rejected ${result.rejected}\n`,
+            );
+            for (const decision of result.decisions
+              .filter((decision) => decision.op === "reject")
+              .slice(0, 5))
+              process.stdout.write(`reflect: rejected[${decision.index}]: ${decision.reason}\n`);
           }
         } catch (error) {
           process.stdout.write(

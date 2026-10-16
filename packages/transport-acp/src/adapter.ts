@@ -39,17 +39,44 @@ interface AcpConnectionOptions {
   onExit: (code: number | null) => void;
 }
 
-/** Concatenate the text of one ACP content block or an array of them. */
-function blockText(content: unknown): string {
-  const blocks = Array.isArray(content) ? content : content ? [content] : [];
-  let text = "";
-  for (const block of blocks) {
-    if (block && typeof block === "object" && (block as { type?: unknown }).type === "text") {
-      const value = (block as { text?: unknown }).text;
-      if (typeof value === "string") text += value;
+/** Extract known text without pretending images, diffs or unknown content are empty text. */
+function readContent(content: unknown): {
+  output: string;
+  outputCoverage: "complete" | "partial" | "unsupported";
+} {
+  let output = "";
+  let unsupported = false;
+  const visit = (value: unknown): void => {
+    if (value === undefined || value === null) return;
+    if (Array.isArray(value)) {
+      for (const block of value) visit(block);
+      return;
     }
-  }
-  return text;
+    if (typeof value !== "object") {
+      unsupported = true;
+      return;
+    }
+    const block = value as Record<string, unknown>;
+    if (block.type === "text" && typeof block.text === "string") output += block.text;
+    else if (block.type === "content" && block.content !== undefined) visit(block.content);
+    else if (
+      block.type === "resource" &&
+      block.resource &&
+      typeof block.resource === "object" &&
+      typeof (block.resource as Record<string, unknown>).text === "string"
+    )
+      output += (block.resource as { text: string }).text;
+    else unsupported = true;
+  };
+  visit(content);
+  return {
+    output,
+    outputCoverage: unsupported ? (output ? "partial" : "unsupported") : "complete",
+  };
+}
+
+function blockText(content: unknown): string {
+  return readContent(content).output;
 }
 
 function mapStopReason(stopReason: string): "done" | "aborted" | "length" | "error" {
@@ -224,6 +251,7 @@ class AcpSession implements SessionHandle {
   private accumulated = "";
   private running = false;
   private disposed = false;
+  private readonly toolContent = new Map<string, JsonValue>();
 
   constructor(id: string, spawnOptions: AcpSessionSpawn, deps: AdapterDeps) {
     this.id = id;
@@ -312,17 +340,21 @@ class AcpSession implements SessionHandle {
         return;
       }
       case "tool_call":
+        this.toolContent.delete(String(update.toolCallId ?? ""));
         this.emit({
           type: "tool.start",
           sessionId: this.id,
           id: String(update.toolCallId ?? ""),
-          name: String(update.title ?? update.kind ?? "tool"),
+          name: String(update.name ?? update.title ?? update.kind ?? "tool"),
+          ...(typeof update.title === "string" ? { title: update.title } : {}),
           input: (update.rawInput ?? null) as JsonValue,
         });
+        this.emitToolUpdate(update);
         if (update.status === "completed" || update.status === "failed")
           this.emitToolResult(update);
         return;
       case "tool_call_update":
+        this.emitToolUpdate(update);
         if (update.status === "completed" || update.status === "failed")
           this.emitToolResult(update);
         return;
@@ -331,14 +363,35 @@ class AcpSession implements SessionHandle {
     }
   }
 
+  private emitToolUpdate(update: Record<string, unknown>): void {
+    const id = String(update.toolCallId ?? "");
+    if (update.content !== undefined) this.toolContent.set(id, update.content as JsonValue);
+    this.emit({
+      type: "tool.update",
+      sessionId: this.id,
+      id,
+      ...(typeof update.name === "string" ? { name: update.name } : {}),
+      ...(typeof update.title === "string" ? { title: update.title } : {}),
+      ...(update.rawInput !== undefined ? { input: update.rawInput as JsonValue } : {}),
+      ...(typeof update.status === "string" ? { status: update.status } : {}),
+      ...(update.content !== undefined
+        ? { content: update.content as JsonValue, ...readContent(update.content) }
+        : {}),
+    });
+  }
+
   private emitToolResult(update: Record<string, unknown>): void {
+    const id = String(update.toolCallId ?? "");
+    const content = this.toolContent.get(id);
     this.emit({
       type: "tool.result",
       sessionId: this.id,
-      id: String(update.toolCallId ?? ""),
-      output: blockText(update.content),
+      id,
+      ...readContent(content),
+      ...(content !== undefined ? { content } : {}),
       isError: update.status === "failed",
     });
+    this.toolContent.delete(id);
   }
 
   private handleRequest(
@@ -362,25 +415,66 @@ class AcpSession implements SessionHandle {
       params.toolCall && typeof params.toolCall === "object" ? params.toolCall : {}
     ) as Record<string, unknown>;
     const request: PermissionRequest = {
-      toolName: typeof toolCall.title === "string" ? toolCall.title : "tool",
+      toolName:
+        typeof toolCall.name === "string"
+          ? toolCall.name
+          : typeof toolCall.title === "string"
+            ? toolCall.title
+            : "tool",
       input: (toolCall.rawInput ?? null) as JsonValue,
     };
-    const decision = this.deps.onPermission
-      ? await this.deps.onPermission.request(request)
-      : "allow";
-    const wanted = decision === "allow" ? "allow" : "reject";
-    const match = options.find((option) => {
-      if (!option || typeof option !== "object") return false;
-      const kind = (option as Record<string, unknown>).kind;
-      return typeof kind === "string" && kind.startsWith(wanted);
-    }) as Record<string, unknown> | undefined;
-    if (match && match.optionId !== undefined) {
+    const eventId = `acp-permission:${typeof id}:${id}`;
+    this.emit({
+      type: "permission.request",
+      sessionId: this.id,
+      id: eventId,
+      ...(typeof toolCall.toolCallId === "string" ? { toolCallId: toolCall.toolCallId } : {}),
+      request,
+    });
+    try {
+      if (typeof params.sessionId === "string" && params.sessionId !== this.wireSessionId)
+        throw new Error("permission request session mismatch");
+      const decision = this.deps.onPermission
+        ? await this.deps.onPermission.request(request)
+        : "allow";
+      if (decision !== "allow" && decision !== "deny")
+        throw new Error("invalid permission decision");
+      const kinds =
+        decision === "allow" ? ["allow_once", "allow_always"] : ["reject_once", "reject_always"];
+      const match = options.find((option) => {
+        if (!option || typeof option !== "object") return false;
+        const item = option as Record<string, unknown>;
+        return (
+          typeof item.kind === "string" &&
+          kinds.includes(item.kind) &&
+          typeof item.optionId === "string"
+        );
+      }) as { optionId: string } | undefined;
       this.connection.respond(id, {
-        outcome: { outcome: "selected", optionId: match.optionId },
+        outcome: match
+          ? { outcome: "selected", optionId: match.optionId }
+          : { outcome: "cancelled" },
       });
-      return;
+      this.emit({
+        type: "permission.resolved",
+        sessionId: this.id,
+        id: eventId,
+        decision,
+        outcome: match ? "selected" : "cancelled",
+        ...(match ? { optionId: match.optionId } : {}),
+      });
+    } catch (error) {
+      this.connection.respond(id, { outcome: { outcome: "cancelled" } });
+      this.emit({
+        type: "permission.resolved",
+        sessionId: this.id,
+        id: eventId,
+        decision: "deny",
+        outcome: "error",
+        error: String(error),
+      });
+      this.deps.onDiagnostic?.({ code: "ACP_PERMISSION_ERROR", message: String(error) });
     }
-    this.connection.respond(id, { outcome: { outcome: "cancelled" } });
   }
 
   async send(input: UserInput, _options?: SendOptions): Promise<void> {

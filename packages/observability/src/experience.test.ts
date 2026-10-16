@@ -84,4 +84,47 @@ describe("SessionRecorder + ExperienceStore", () => {
   it("returns an empty list for a missing directory", () => {
     expect(new ExperienceStore("/nonexistent/mentat-exp-xyz").list()).toEqual([]);
   });
+
+  it("projects final tool parameters and permission outcomes without losing snapshots", () => {
+    const recorder = new SessionRecorder({ prompt: "task", cwd: "/tmp", harness: "acp" });
+    recorder.handle({ type: "tool.start", sessionId: "s", id: "t", name: "read", input: null });
+    const before = recorder.snapshot();
+    recorder.handle({
+      type: "tool.update",
+      sessionId: "s",
+      id: "t",
+      input: { path: "x" },
+      status: "completed",
+    });
+    recorder.handle({
+      type: "tool.result",
+      sessionId: "s",
+      id: "t",
+      output: "part",
+      isError: false,
+      content: [{ type: "image", data: "opaque" }],
+      outputCoverage: "partial",
+    });
+    recorder.handle({
+      type: "permission.request",
+      sessionId: "s",
+      id: "p",
+      toolCallId: "t",
+      request: { toolName: "read", input: { path: "x" } },
+    });
+    recorder.handle({
+      type: "permission.resolved",
+      sessionId: "s",
+      id: "p",
+      decision: "deny",
+      outcome: "error",
+      error: "failed",
+    });
+    expect(before.toolCalls?.[0]).toMatchObject({ input: null });
+    expect(recorder.snapshot().toolCalls).toMatchObject([
+      { kind: "call", input: { path: "x" }, status: "completed" },
+      { kind: "result", outputCoverage: "partial", content: [{ type: "image", data: "opaque" }] },
+    ]);
+    expect(recorder.snapshot().permissions).toHaveLength(2);
+  });
 });

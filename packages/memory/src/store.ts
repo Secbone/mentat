@@ -3,6 +3,15 @@ export type MemoryBasis = "user" | "tool" | "observation" | "inference" | "unkno
 export type MemoryStatus = "candidate" | "active" | "superseded" | "expired" | "archived";
 export type MemorySpeaker = "user" | "assistant" | "tool" | "system";
 
+/** Host-resolved source excerpts. Presence is not proof of semantic support. */
+export interface MemoryEvidenceSource {
+  pointer: string;
+  origin: string;
+  excerpt: string;
+  attribution?: string;
+  memoryScope?: "task" | "reusable" | "unspecified";
+}
+
 /** Effective status of an entry; legacy entries without one are treated as active. */
 export function memoryStatus(entry: MemoryEntry): MemoryStatus {
   return entry.status ?? "active";
@@ -19,6 +28,8 @@ export interface MemoryEntry {
   /** Applicability: user / project / task-type / audience. */
   scope?: string;
   condition?: string;
+  /** Reuse scope, separate from the user/project namespace in scope. */
+  applicability?: "task" | "reusable" | "unresolved";
   status?: MemoryStatus;
   /** Message id, tool-call id, or other evidence pointer. */
   evidence?: string;
@@ -28,6 +39,7 @@ export interface MemoryEntry {
   createdAt: number;
   /** Provenance for memories extracted from observable interactions. */
   evidenceIds?: string[];
+  evidenceSources?: MemoryEvidenceSource[];
 }
 
 export interface MemoryQuery {

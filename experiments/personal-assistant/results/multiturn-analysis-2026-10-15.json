@@ -1,0 +1,3086 @@
+{
+  "datasetVersion": "multiturn-v1",
+  "datasetSha256": "6fa4860f31387b46c83edd2147205cd3f33b84c0be8ed2b9fd0869ed24284bef",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "revision": "a12610b1c290e89fd38f2f7c9c63cef98077b955",
+  "tasks": 24,
+  "byArm": {
+    "persistent": {
+      "tasks": 12,
+      "turns": 48,
+      "execution": {
+        "passed": 48,
+        "total": 48,
+        "rate": 1.0
+      },
+      "lexicalScreening": {
+        "passed": 48,
+        "total": 53,
+        "rate": 0.9056603773584906
+      },
+      "phases": {
+        "learn": {
+          "passed": 14,
+          "total": 14,
+          "rate": 1.0
+        },
+        "exception": {
+          "passed": 17,
+          "total": 17,
+          "rate": 1.0
+        },
+        "transfer": {
+          "passed": 17,
+          "total": 22,
+          "rate": 0.7727272727272727
+        }
+      },
+      "turnWallTimeMs": 203871,
+      "reflectionValid": 11,
+      "reflectionCalls": 12,
+      "captureGaps": 0,
+      "invariantViolations": []
+    },
+    "reset": {
+      "tasks": 12,
+      "turns": 48,
+      "execution": {
+        "passed": 48,
+        "total": 48,
+        "rate": 1.0
+      },
+      "lexicalScreening": {
+        "passed": 43,
+        "total": 53,
+        "rate": 0.8113207547169812
+      },
+      "phases": {
+        "learn": {
+          "passed": 14,
+          "total": 14,
+          "rate": 1.0
+        },
+        "exception": {
+          "passed": 17,
+          "total": 17,
+          "rate": 1.0
+        },
+        "transfer": {
+          "passed": 12,
+          "total": 22,
+          "rate": 0.5454545454545454
+        }
+      },
+      "turnWallTimeMs": 229155,
+      "reflectionValid": 0,
+      "reflectionCalls": 0,
+      "captureGaps": 0,
+      "invariantViolations": []
+    }
+  },
+  "firstTurnTransfers": [
+    {
+      "scenario": "household",
+      "arm": "reset",
+      "checks": [
+        {
+          "name": "default_format_transfer",
+          "passed": false
+        },
+        {
+          "name": "transfer_schedule",
+          "passed": true
+        }
+      ],
+      "answer": "周三安排（14:00出发，须15:30前到家）\n\n| 时间 | 事项 |\n|---|---|\n| 14:00–14:30 | A（30分钟） |\n| 14:30–14:40 | 转场 |\n| 14:40–14:55 | B（15分钟） |\n| 14:55–15:15 | 回家（20分钟） |\n\n核对：总耗时 30+15+10+20=75 分钟，14:00 出发即 15:15 到家，早于 15:30，富余 15 分钟。B 与 A 顺序可互换（B先则15:15同样到家），总时长不变。\n\n提示：出发时间需严格不晚于14:00；若A、B现场各可能延时，合并延时须控制在15分钟内。转场10分钟为单次，若两地间需往返请确认，我可重排。",
+      "activeMemoriesBefore": [],
+      "traceId": "d1180da4-9386-4310-87a8-6657c4c418d4"
+    },
+    {
+      "scenario": "household",
+      "arm": "persistent",
+      "checks": [
+        {
+          "name": "default_format_transfer",
+          "passed": false
+        },
+        {
+          "name": "transfer_schedule",
+          "passed": true
+        }
+      ],
+      "answer": "**周三安排**\n\n| 时间 | 事项 |\n|---|---|\n| 14:00 | 出发 |\n| 14:00–14:30 | A（30分钟） |\n| 14:30–14:40 | 转场（10分钟） |\n| 14:40–14:55 | B（15分钟） |\n| 14:55–15:15 | 回家（20分钟） |\n\n**约束核对**\n- 总耗时 30+10+15+20=75 分钟，14:00 出发 → 到家 15:15。\n- 15:15 严格早于 15:30 ✓\n- 距 15:30 余量 15 分钟，≥5 分钟 ✓\n- 未压缩办事/交通时长 ✓\n\n待确认：是否固定 A 先于 B？若两项可互换，B 先做（14:00–14:15、转场后 A 14:25–14:55）同样 15:15 到家。",
+      "activeMemoriesBefore": [
+        {
+          "id": "mem-rywhaz",
+          "text": "请长期记住：生活安排先给“时间表”，再给“约束核对”；“X点前”均指严格早于，并至少另留5分钟余量。不能自行压缩办事或交通时长。",
+          "key": "请长期记住：生活安排先给“时间表”，再给“约束核对”；“x点前”均指严格早于，并至少另留5分钟余量。不能自行压缩办事或交通时长。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-4ea872c2-4f98-4caa-bca4-cfa217a6a91e#msg0",
+          "revision": 1,
+          "createdAt": 1792043727973
+        }
+      ],
+      "traceId": "ccb06b35-821a-4f6e-a516-d6ac67acf788"
+    },
+    {
+      "scenario": "finance",
+      "arm": "reset",
+      "checks": [
+        {
+          "name": "default_units_transfer",
+          "passed": false
+        }
+      ],
+      "answer": "本月摘要（单位：元）\n\n| 项目 | 金额 |\n|---|---|\n| 收入 | 215,000 |\n| 支出 | 167,500 |\n| —其中待付 | 35,000 |\n| 结余 | 47,500 |\n\n结余＝215,000−167,500。\n\n需确认两点：1）215,000元收入是否已全部到账，还是含应收未收？2）结余按权责口径（47,500）还是现金口径列示——若按现金，已付支出132,500元，账面可用82500元，扣除待付35,000元后同为47,500元，但表述需区分。\n\n（以上为草稿，未发送。）",
+      "activeMemoriesBefore": [],
+      "traceId": "cd8e19ff-3b4a-45c6-b8eb-84bde948316b"
+    },
+    {
+      "scenario": "manager",
+      "arm": "persistent",
+      "checks": [
+        {
+          "name": "default_format_transfer",
+          "passed": true
+        },
+        {
+          "name": "transfer_schedule",
+          "passed": true
+        }
+      ],
+      "answer": "**结论**：明天 10:00 起顺序执行，10:35 全部结束，满足 10:40 前完成要求。\n\n| 时间 | 环节 | 时长 |\n|---|---|---|\n| 10:00–10:15 | 验收 | 15 分钟 |\n| 10:15–10:25 | 发布 | 10 分钟 |\n| 10:25–10:35 | 观察 | 10 分钟 |\n\n**依据**：按你要求顺序执行且不缩短环节时长，三段合计 35 分钟，自 10:00 连续推进至 10:35，早于 10:40 上限 5 分钟。\n\n**风险**：无缓冲时间，任一环节延迟即可能突破 10:40；验收或发布如易超时，需提前定好处置方式。是否保留该顺序、不做调整？\n\n（澄清：验收是否需前置环境或参与人就位？发布失败时是否有回滚窗口占用这 5 分钟？请确认，我再据此定稿。）",
+      "activeMemoriesBefore": [
+        {
+          "id": "mem-g69sw5",
+          "text": "请长期记住我的工作偏好：项目排期先写“结论”，再写“依据”，最后写“风险”；没有我明确同意，不改变前后依赖，也不自行缩短环节时长。",
+          "key": "请长期记住我的工作偏好：项目排期先写“结论”，再写“依据”，最后写“风险”；没有我明确同意，不改变前后依赖，也不自行缩短环节时长。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-205dd105-b4ed-45a5-bf7c-0c7af5c5b5fd#msg0",
+          "revision": 1,
+          "createdAt": 1792043856548
+        }
+      ],
+      "traceId": "c7653be4-0b59-4f21-a567-9aeecb082c6b"
+    },
+    {
+      "scenario": "manager",
+      "arm": "reset",
+      "checks": [
+        {
+          "name": "default_format_transfer",
+          "passed": false
+        },
+        {
+          "name": "transfer_schedule",
+          "passed": true
+        }
+      ],
+      "answer": "明天上线排期（顺序执行，共 35 分钟）：\n\n| 时间 | 环节 | 时长 |\n|---|---|---|\n| 10:00–10:15 | 验收 | 15 分钟 |\n| 10:15–10:25 | 发布 | 10 分钟 |\n| 10:25–10:35 | 观察 | 10 分钟 |\n\n10:35 全部完成，早于 10:40 截止，余 5 分钟缓冲。\n\n两点需你确认：一是三环节之间是否需要留切换/准备间隔，若各留 1 分钟则 10:38 结束，仍达标；二是观察期若发现异常，是否有回滚预案及决定时限（建议 10:35 前给出结论，避免占用缓冲）。\n\n此为排期草案，未实际创建日程或通知他人。",
+      "activeMemoriesBefore": [],
+      "traceId": "b7adcc1f-1c77-430e-9cd6-6d8ac7d74aa1"
+    },
+    {
+      "scenario": "finance",
+      "arm": "persistent",
+      "checks": [
+        {
+          "name": "default_units_transfer",
+          "passed": true
+        }
+      ],
+      "answer": "**本月摘要（管理层）**\n\n| 项目 | 金额 |\n|---|---|\n| 收入 | 21.5万元 |\n| 支出 | 16.8万元 |\n| 结余 | 4.8万元 |\n\n明细：收入215000.00元，支出167500.00元，结余47500.00元。\n\n说明：待付35000.00元已包含在已发生支出中，未重复相加。\n\n一处待确认：结余按权责口径（含待付）为4.8万元；若按现金流口径剔除未付部分，结余为82500.00元（8.3万元）。请告知采用哪个口径，我据此定稿。",
+      "activeMemoriesBefore": [
+        {
+          "id": "mem-1yovaxj",
+          "text": "请长期记住：管理层金额用万元，四舍五入保留1位；明细用元保留2位；用途不明先问。待付若已包含在已发生支出中，不得重复相加。",
+          "key": "请长期记住：管理层金额用万元，四舍五入保留1位；明细用元保留2位；用途不明先问。待付若已包含在已发生支出中，不得重复相加。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-57e9788f-b2fa-4d4a-bd31-2da5910a664d#msg0",
+          "revision": 1,
+          "createdAt": 1792043928381
+        }
+      ],
+      "traceId": "6758c2c4-aba8-4a28-a72d-0adbe2686bd1"
+    },
+    {
+      "scenario": "teacher",
+      "arm": "persistent",
+      "checks": [
+        {
+          "name": "parent_format_transfer",
+          "passed": true
+        },
+        {
+          "name": "transfer_rate",
+          "passed": false
+        }
+      ],
+      "answer": "小夏家长您好：\n\n【可观察事实】本次练习共10题，做对7题；3道错题中，1道看错单位、2道抄错数字。\n\n【下一步建议】\n1. 读题时先圈出单位与数字，再列式；\n2. 做完用1分钟对照原题核对数字、单位；\n3. 后续练习继续按“错因类型”记录，看这类错误是否减少。\n\n以上仅基于这10题的记录，未做其他测评，不对孩子作能力评价。\n\n如需，我可以补上练习名称与日期；是否也要同步给孩子本人的一句提示？",
+      "activeMemoriesBefore": [
+        {
+          "id": "mem-uhsznp",
+          "text": "请长期记住：给家长的反馈先写“可观察事实”，再写“下一步”；给同行先讲“教学框架”，再给“课堂例子”。没有测评证据，不给学生贴能力标签。",
+          "key": "请长期记住：给家长的反馈先写“可观察事实”，再写“下一步”；给同行先讲“教学框架”，再给“课堂例子”。没有测评证据，不给学生贴能力标签。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-f1d2028a-bc5a-4415-8c7b-6b2d0ef3bf7d#msg0",
+          "revision": 1,
+          "createdAt": 1792044024759
+        }
+      ],
+      "traceId": "d31a163e-7288-49cc-a922-2b351850ed23"
+    },
+    {
+      "scenario": "teacher",
+      "arm": "reset",
+      "checks": [
+        {
+          "name": "parent_format_transfer",
+          "passed": false
+        },
+        {
+          "name": "transfer_rate",
+          "passed": false
+        }
+      ],
+      "answer": "小夏家长您好：本次练习共10道题，做对7道。错题3道中，1道是看错单位，2道是抄错数字——说明方法基本会，扣分主要出在审题和抄写上。建议：①动笔前先圈出单位和数字；②抄完题回头核对一遍再算；③这三道错题当天重做一次，重点看是否再犯同类错。另外想确认两点：孩子做题时是否时间偏紧、平时作业是否也有抄错数字的情况？以便判断是习惯还是状态问题。感谢配合！",
+      "activeMemoriesBefore": [],
+      "traceId": "2ed08d0c-3bc4-4c45-84f0-a1be3e5e6bea"
+    }
+  ],
+  "screeningFailures": [
+    {
+      "id": "household-reset-transfer",
+      "turn": 1,
+      "failedChecks": ["default_format_transfer"],
+      "answer": "周三安排（14:00出发，须15:30前到家）\n\n| 时间 | 事项 |\n|---|---|\n| 14:00–14:30 | A（30分钟） |\n| 14:30–14:40 | 转场 |\n| 14:40–14:55 | B（15分钟） |\n| 14:55–15:15 | 回家（20分钟） |\n\n核对：总耗时 30+15+10+20=75 分钟，14:00 出发即 15:15 到家，早于 15:30，富余 15 分钟。B 与 A 顺序可互换（B先则15:15同样到家），总时长不变。\n\n提示：出发时间需严格不晚于14:00；若A、B现场各可能延时，合并延时须控制在15分钟内。转场10分钟为单次，若两地间需往返请确认，我可重排。",
+      "traceId": "d1180da4-9386-4310-87a8-6657c4c418d4"
+    },
+    {
+      "id": "household-reset-transfer",
+      "turn": 4,
+      "failedChecks": ["format_recovery"],
+      "answer": "最终安排（周三）\n\n| 时间 | 事项 |\n|---|---|\n| 13:50–14:35 | A（45分钟） |\n| 14:35–14:45 | 转场（10分钟） |\n| 14:45–15:00 | B（15分钟） |\n| 15:00–15:20 | 回家（20分钟） |\n\n核对：总耗时 45+15+10+20=90 分钟，13:50 出发 → 15:20 到家，早于 15:30，余量 10 分钟，满足硬约束。A、B 可互换，到家时间不变。\n\n提示：请确保 13:50 准时出发，中途合计延时不超过 10 分钟即可保持达标。此为拟定稿，未代为发送或改动真实日历。",
+      "traceId": "d1180da4-9386-4310-87a8-6657c4c418d4"
+    },
+    {
+      "id": "household-persistent-transfer",
+      "turn": 1,
+      "failedChecks": ["default_format_transfer"],
+      "answer": "**周三安排**\n\n| 时间 | 事项 |\n|---|---|\n| 14:00 | 出发 |\n| 14:00–14:30 | A（30分钟） |\n| 14:30–14:40 | 转场（10分钟） |\n| 14:40–14:55 | B（15分钟） |\n| 14:55–15:15 | 回家（20分钟） |\n\n**约束核对**\n- 总耗时 30+10+15+20=75 分钟，14:00 出发 → 到家 15:15。\n- 15:15 严格早于 15:30 ✓\n- 距 15:30 余量 15 分钟，≥5 分钟 ✓\n- 未压缩办事/交通时长 ✓\n\n待确认：是否固定 A 先于 B？若两项可互换，B 先做（14:00–14:15、转场后 A 14:25–14:55）同样 15:15 到家。",
+      "traceId": "ccb06b35-821a-4f6e-a516-d6ac67acf788"
+    },
+    {
+      "id": "household-persistent-transfer",
+      "turn": 4,
+      "failedChecks": ["format_recovery"],
+      "answer": "**最终安排（周三）**\n\n| 时间 | 事项 |\n|---|---|\n| 13:50 | 出发 |\n| 13:50–14:35 | A（45分钟） |\n| 14:35–14:45 | 转场（10分钟） |\n| 14:45–15:00 | B（15分钟） |\n| 15:00–15:20 | 回家（20分钟） |\n\n**核对**\n- 总耗时 45+10+15+20=90 分钟，13:50 出发 → 到家 15:20。\n- 15:20 严格早于 15:30 ✓\n- 余量 10 分钟，≥5 分钟 ✓\n- A/B/转场/回家时长均按你确认值，未压缩 ✓\n\n已按你确认的 13:50 出发定稿。此为本次安排，仅输出草案，未代为排程或发送。",
+      "traceId": "ccb06b35-821a-4f6e-a516-d6ac67acf788"
+    },
+    {
+      "id": "finance-reset-transfer",
+      "turn": 1,
+      "failedChecks": ["default_units_transfer"],
+      "answer": "本月摘要（单位：元）\n\n| 项目 | 金额 |\n|---|---|\n| 收入 | 215,000 |\n| 支出 | 167,500 |\n| —其中待付 | 35,000 |\n| 结余 | 47,500 |\n\n结余＝215,000−167,500。\n\n需确认两点：1）215,000元收入是否已全部到账，还是含应收未收？2）结余按权责口径（47,500）还是现金口径列示——若按现金，已付支出132,500元，账面可用82500元，扣除待付35,000元后同为47,500元，但表述需区分。\n\n（以上为草稿，未发送。）",
+      "traceId": "cd8e19ff-3b4a-45c6-b8eb-84bde948316b"
+    },
+    {
+      "id": "finance-reset-transfer",
+      "turn": 2,
+      "failedChecks": ["rounded_correction"],
+      "answer": "本月摘要（单位：元，支出已更正）\n\n| 项目 | 金额 |\n|---|---|\n| 收入 | 215,000 |\n| 支出 | 172,500 |\n| —其中待付 | 35,000 |\n| 结余 | 42,500 |\n\n结余＝215,000−172,500＝42,500。现金口径：已付支出137,500，账面可用77,500，扣待付35,000元后同为42,500。\n\n请确认：1）215,000元收入是否已全部到账；2）结余按权责口径还是现金口径列示。\n\n（草稿，未发送。）",
+      "traceId": "cd8e19ff-3b4a-45c6-b8eb-84bde948316b"
+    },
+    {
+      "id": "finance-reset-transfer",
+      "turn": 4,
+      "failedChecks": ["default_units_recovery"],
+      "answer": "管理层摘要（单位：元）\n\n收入 215,000.00；支出 172,500.00（其中待付 35,000.00）；结余 42,500.00。\n\n说明：以上为收支口径，未提供税金信息，不作税后利润推断；待付 35,000.00 已包含在支出 172,500.00 中，不再重复计入。请确认结余按权责口径还是现金口径列示。\n\n（草稿，未发送。）",
+      "traceId": "cd8e19ff-3b4a-45c6-b8eb-84bde948316b"
+    },
+    {
+      "id": "manager-reset-transfer",
+      "turn": 1,
+      "failedChecks": ["default_format_transfer"],
+      "answer": "明天上线排期（顺序执行，共 35 分钟）：\n\n| 时间 | 环节 | 时长 |\n|---|---|---|\n| 10:00–10:15 | 验收 | 15 分钟 |\n| 10:15–10:25 | 发布 | 10 分钟 |\n| 10:25–10:35 | 观察 | 10 分钟 |\n\n10:35 全部完成，早于 10:40 截止，余 5 分钟缓冲。\n\n两点需你确认：一是三环节之间是否需要留切换/准备间隔，若各留 1 分钟则 10:38 结束，仍达标；二是观察期若发现异常，是否有回滚预案及决定时限（建议 10:35 前给出结论，避免占用缓冲）。\n\n此为排期草案，未实际创建日程或通知他人。",
+      "traceId": "b7adcc1f-1c77-430e-9cd6-6d8ac7d74aa1"
+    },
+    {
+      "id": "manager-reset-transfer",
+      "turn": 4,
+      "failedChecks": ["default_format_recovery"],
+      "answer": "截止放宽为严格早于 10:50，10:00 起算 45 分钟至 **10:45**，满足要求（余 5 分钟缓冲）。最终排期：\n\n| 时间 | 环节 | 时长 |\n|---|---|---|\n| 10:00–10:15 | 验收 | 15 分钟 |\n| 10:15–10:35 | 发布 | 20 分钟 |\n| 10:35–10:45 | 观察 | 10 分钟 |\n\n顺序执行，无并行，无压缩。结束 10:45 < 10:50，符合你确认的截止条件。\n\n两点提示：10:45–10:50 为缓冲，若观察期异常需在此前给结论；如需回滚预案请另行确认。\n\n此为排期草案，未实际创建日程、通知或修改任何文件。",
+      "traceId": "b7adcc1f-1c77-430e-9cd6-6d8ac7d74aa1"
+    },
+    {
+      "id": "finance-persistent-transfer",
+      "turn": 4,
+      "failedChecks": ["default_units_recovery"],
+      "answer": "**本月管理层摘要**\n\n| 项目 | 金额（万元） |\n|---|---|\n| 收入 | 21.5 |\n| 支出 | 17.3 |\n| 结余 | 4.3 |\n\n备注：待付35000.00元已含在支出内，未重复计入；未提供税金信息，故不做税后利润推断。\n\n待确认：结余采用权责口径（4.3万元）即可，还是需另附现金口径。",
+      "traceId": "6758c2c4-aba8-4a28-a72d-0adbe2686bd1"
+    },
+    {
+      "id": "teacher-persistent-transfer",
+      "turn": 1,
+      "failedChecks": ["transfer_rate"],
+      "answer": "小夏家长您好：\n\n【可观察事实】本次练习共10题，做对7题；3道错题中，1道看错单位、2道抄错数字。\n\n【下一步建议】\n1. 读题时先圈出单位与数字，再列式；\n2. 做完用1分钟对照原题核对数字、单位；\n3. 后续练习继续按“错因类型”记录，看这类错误是否减少。\n\n以上仅基于这10题的记录，未做其他测评，不对孩子作能力评价。\n\n如需，我可以补上练习名称与日期；是否也要同步给孩子本人的一句提示？",
+      "traceId": "d31a163e-7288-49cc-a922-2b351850ed23"
+    },
+    {
+      "id": "teacher-persistent-transfer",
+      "turn": 4,
+      "failedChecks": ["format_recovery"],
+      "answer": "小夏家长您好：\n\n本次练习共10题，做对8题，正确率80%；2道错题均为抄错数字，无看错单位的情况。\n\n下一步建议：\n1. 抄写数字后逐位回读核对；\n2. 计算完成后对照原题复核数字；\n3. 后续练习按错因类型记录，观察这类抄写错误是否减少。\n\n以上仅基于本次10题的记录，未做其他测评。\n\n如需，我可在发送时补上练习名称与日期；是否也要给孩子一句提醒？",
+      "traceId": "d31a163e-7288-49cc-a922-2b351850ed23"
+    },
+    {
+      "id": "teacher-reset-transfer",
+      "turn": 1,
+      "failedChecks": ["parent_format_transfer", "transfer_rate"],
+      "answer": "小夏家长您好：本次练习共10道题，做对7道。错题3道中，1道是看错单位，2道是抄错数字——说明方法基本会，扣分主要出在审题和抄写上。建议：①动笔前先圈出单位和数字；②抄完题回头核对一遍再算；③这三道错题当天重做一次，重点看是否再犯同类错。另外想确认两点：孩子做题时是否时间偏紧、平时作业是否也有抄错数字的情况？以便判断是习惯还是状态问题。感谢配合！",
+      "traceId": "2ed08d0c-3bc4-4c45-84f0-a1be3e5e6bea"
+    },
+    {
+      "id": "teacher-reset-transfer",
+      "turn": 4,
+      "failedChecks": ["format_recovery"],
+      "answer": "小夏家长您好：本次练习共10道题，做对8道，正确率80%。错的2道都是抄错数字，说明方法基本掌握，失分集中在抄写与核对环节。建议：①抄完数字后回头核对一遍再计算；②这2道错题当天重做，重点看数字是否抄对；③平时作业继续留意抄写习惯。另想确认：孩子做题时是否时间偏紧或容易分心？以便后续跟进。谢谢配合！",
+      "traceId": "2ed08d0c-3bc4-4c45-84f0-a1be3e5e6bea"
+    }
+  ],
+  "memoryAudit": [
+    {
+      "id": "household-persistent-learn",
+      "beforeCount": 0,
+      "afterCount": 5,
+      "active": [
+        {
+          "id": "mem-rywhaz",
+          "text": "请长期记住：生活安排先给“时间表”，再给“约束核对”；“X点前”均指严格早于，并至少另留5分钟余量。不能自行压缩办事或交通时长。",
+          "key": "请长期记住：生活安排先给“时间表”，再给“约束核对”；“x点前”均指严格早于，并至少另留5分钟余量。不能自行压缩办事或交通时长。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-4ea872c2-4f98-4caa-bca4-cfa217a6a91e#msg0",
+          "revision": 1,
+          "createdAt": 1792043727973
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-v10bpx",
+          "text": "生活/行程安排类任务，输出顺序固定：先给\"时间表\"，再给\"约束核对\"。",
+          "key": "生活/行程安排类任务，输出顺序固定：先给\"时间表\"，再给\"约束核对\"。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4746c62b-a937-40d9-a460-e73a8d699be6",
+          "evidenceIds": ["exp-4746c62b-a937-40d9-a460-e73a8d699be6"],
+          "revision": 1,
+          "createdAt": 1792043735382
+        },
+        {
+          "id": "mem-3lm0sp",
+          "text": "用户约定\"X点前\"一律解释为严格早于该时刻（正好等于不算满足），并在满足硬约束之外至少再留5分钟余量。",
+          "key": "用户约定\"x点前\"一律解释为严格早于该时刻（正好等于不算满足），并在满足硬约束之外至少再留5分钟余量。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+          "evidenceIds": [
+            "exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+            "exp-4746c62b-a937-40d9-a460-e73a8d699be6"
+          ],
+          "revision": 1,
+          "createdAt": 1792043735403
+        },
+        {
+          "id": "mem-m54t1r",
+          "text": "排程时不得自行压缩办事或交通时长；时长不足导致不可行时应如实报告并请用户确认调整（如提前出发或缩短某项）。",
+          "key": "排程时不得自行压缩办事或交通时长；时长不足导致不可行时应如实报告并请用户确认调整（如提前出发或缩短某项）。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-072bb0e4-f3dd-4336-8bd8-0ea259e8545d",
+          "evidenceIds": [
+            "exp-072bb0e4-f3dd-4336-8bd8-0ea259e8545d",
+            "exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+            "exp-4746c62b-a937-40d9-a460-e73a8d699be6"
+          ],
+          "revision": 1,
+          "createdAt": 1792043735421
+        },
+        {
+          "id": "mem-1j5docn",
+          "text": "排行程前先询问用户不可违反的时间约束（固定安排、开关门时间、最晚到家等），不自行假设出发或回家时间。",
+          "key": "排行程前先询问用户不可违反的时间约束（固定安排、开关门时间、最晚到家等），不自行假设出发或回家时间。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f",
+          "evidenceIds": ["exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f"],
+          "revision": 1,
+          "createdAt": 1792043735441
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "household-persistent-exception",
+      "beforeCount": 5,
+      "afterCount": 10,
+      "active": [
+        {
+          "id": "mem-rywhaz",
+          "text": "请长期记住：生活安排先给“时间表”，再给“约束核对”；“X点前”均指严格早于，并至少另留5分钟余量。不能自行压缩办事或交通时长。",
+          "key": "请长期记住：生活安排先给“时间表”，再给“约束核对”；“x点前”均指严格早于，并至少另留5分钟余量。不能自行压缩办事或交通时长。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-4ea872c2-4f98-4caa-bca4-cfa217a6a91e#msg0",
+          "revision": 1,
+          "createdAt": 1792043727973
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-v10bpx",
+          "text": "生活/行程安排类任务，输出顺序固定：先给\"时间表\"，再给\"约束核对\"。",
+          "key": "生活/行程安排类任务，输出顺序固定：先给\"时间表\"，再给\"约束核对\"。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4746c62b-a937-40d9-a460-e73a8d699be6",
+          "evidenceIds": ["exp-4746c62b-a937-40d9-a460-e73a8d699be6"],
+          "revision": 1,
+          "createdAt": 1792043735382
+        },
+        {
+          "id": "mem-3lm0sp",
+          "text": "用户约定\"X点前\"一律解释为严格早于该时刻（正好等于不算满足），并在满足硬约束之外至少再留5分钟余量。",
+          "key": "用户约定\"x点前\"一律解释为严格早于该时刻（正好等于不算满足），并在满足硬约束之外至少再留5分钟余量。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+          "evidenceIds": [
+            "exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+            "exp-4746c62b-a937-40d9-a460-e73a8d699be6"
+          ],
+          "revision": 1,
+          "createdAt": 1792043735403
+        },
+        {
+          "id": "mem-m54t1r",
+          "text": "排程时不得自行压缩办事或交通时长；时长不足导致不可行时应如实报告并请用户确认调整（如提前出发或缩短某项）。",
+          "key": "排程时不得自行压缩办事或交通时长；时长不足导致不可行时应如实报告并请用户确认调整（如提前出发或缩短某项）。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-072bb0e4-f3dd-4336-8bd8-0ea259e8545d",
+          "evidenceIds": [
+            "exp-072bb0e4-f3dd-4336-8bd8-0ea259e8545d",
+            "exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+            "exp-4746c62b-a937-40d9-a460-e73a8d699be6"
+          ],
+          "revision": 1,
+          "createdAt": 1792043735421
+        },
+        {
+          "id": "mem-1j5docn",
+          "text": "排行程前先询问用户不可违反的时间约束（固定安排、开关门时间、最晚到家等），不自行假设出发或回家时间。",
+          "key": "排行程前先询问用户不可违反的时间约束（固定安排、开关门时间、最晚到家等），不自行假设出发或回家时间。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f",
+          "evidenceIds": ["exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f"],
+          "revision": 1,
+          "createdAt": 1792043735441
+        },
+        {
+          "id": "mem-1dl8nat",
+          "text": "Life/schedule requests: present the timetable first, then the constraint check. \"X点前\" (before X o'clock) means strictly earlier than X, and at least 5 extra minutes of buffer must remain. Never compress task or transport durations on your own initiative — ask the user instead.",
+          "key": "life/schedule requests: present the timetable first, then the constraint check. \"x点前\" (before x o'clock) means strictly earlier than x, and at least 5 extra minutes of buffer must remain. never compress task or transport durations on your own initiative — ask the user instead.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4746c62b-a937-40d9-a460-e73a8d699be6",
+          "evidenceIds": [
+            "exp-4746c62b-a937-40d9-a460-e73a8d699be6",
+            "exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+            "exp-d574ab70-c966-441e-819b-729260fc1ad4"
+          ],
+          "revision": 1,
+          "createdAt": 1792043764705
+        },
+        {
+          "id": "mem-sk4uqj",
+          "text": "Do not assume departure or return times for personal scheduling tasks — first ask the user for their non-negotiable time constraints (fixed appointments, opening hours, earliest departure, latest return) before proposing a plan.",
+          "key": "do not assume departure or return times for personal scheduling tasks — first ask the user for their non-negotiable time constraints (fixed appointments, opening hours, earliest departure, latest return) before proposing a plan.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f",
+          "evidenceIds": ["exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f"],
+          "revision": 1,
+          "createdAt": 1792043764725
+        },
+        {
+          "id": "mem-2o673w",
+          "text": "The user did NOT accept the friend's suggestion to count all transport as 5 minutes. Keep the user-supplied transport durations as-is, offer adjustments only as optional choices, and never treat a third party's suggestion as approved.",
+          "key": "the user did not accept the friend's suggestion to count all transport as 5 minutes. keep the user-supplied transport durations as-is, offer adjustments only as optional choices, and never treat a third party's suggestion as approved.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-748fffbb-968a-4f55-9886-30eb5af57c64",
+          "evidenceIds": ["exp-748fffbb-968a-4f55-9886-30eb5af57c64"],
+          "revision": 1,
+          "createdAt": 1792043764744
+        },
+        {
+          "id": "mem-1w0lb59",
+          "text": "The one-paragraph, no-table format was explicitly requested as a one-time exception only (\"仅本次例外\"); the standing preference remains timetable-first, and tables are acceptable by default.",
+          "key": "the one-paragraph, no-table format was explicitly requested as a one-time exception only (\"仅本次例外\"); the standing preference remains timetable-first, and tables are acceptable by default.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-cabc74fc-41cf-4b19-af26-5844b0777d07",
+          "evidenceIds": [
+            "exp-cabc74fc-41cf-4b19-af26-5844b0777d07",
+            "exp-e845709c-0113-46db-9bda-e030545108b7"
+          ],
+          "revision": 1,
+          "createdAt": 1792043764765
+        },
+        {
+          "id": "mem-1s2dljd",
+          "text": "For this project's scheduling replies, the user wants clarifications written inline in the text answer rather than via an interactive question tool, and replies kept concise (~220 characters, tables may run slightly longer).",
+          "key": "for this project's scheduling replies, the user wants clarifications written inline in the text answer rather than via an interactive question tool, and replies kept concise (~220 characters, tables may run slightly longer).",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f",
+          "evidenceIds": [
+            "exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f",
+            "exp-4746c62b-a937-40d9-a460-e73a8d699be6"
+          ],
+          "revision": 1,
+          "createdAt": 1792043764786
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "household-persistent-transfer",
+      "beforeCount": 10,
+      "afterCount": 10,
+      "active": [
+        {
+          "id": "mem-rywhaz",
+          "text": "请长期记住：生活安排先给“时间表”，再给“约束核对”；“X点前”均指严格早于，并至少另留5分钟余量。不能自行压缩办事或交通时长。",
+          "key": "请长期记住：生活安排先给“时间表”，再给“约束核对”；“x点前”均指严格早于，并至少另留5分钟余量。不能自行压缩办事或交通时长。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-4ea872c2-4f98-4caa-bca4-cfa217a6a91e#msg0",
+          "revision": 1,
+          "createdAt": 1792043727973
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-v10bpx",
+          "text": "生活/行程安排类任务，输出顺序固定：先给\"时间表\"，再给\"约束核对\"。",
+          "key": "生活/行程安排类任务，输出顺序固定：先给\"时间表\"，再给\"约束核对\"。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4746c62b-a937-40d9-a460-e73a8d699be6",
+          "evidenceIds": ["exp-4746c62b-a937-40d9-a460-e73a8d699be6"],
+          "revision": 1,
+          "createdAt": 1792043735382
+        },
+        {
+          "id": "mem-3lm0sp",
+          "text": "用户约定\"X点前\"一律解释为严格早于该时刻（正好等于不算满足），并在满足硬约束之外至少再留5分钟余量。",
+          "key": "用户约定\"x点前\"一律解释为严格早于该时刻（正好等于不算满足），并在满足硬约束之外至少再留5分钟余量。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+          "evidenceIds": [
+            "exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+            "exp-4746c62b-a937-40d9-a460-e73a8d699be6"
+          ],
+          "revision": 1,
+          "createdAt": 1792043735403
+        },
+        {
+          "id": "mem-m54t1r",
+          "text": "排程时不得自行压缩办事或交通时长；时长不足导致不可行时应如实报告并请用户确认调整（如提前出发或缩短某项）。",
+          "key": "排程时不得自行压缩办事或交通时长；时长不足导致不可行时应如实报告并请用户确认调整（如提前出发或缩短某项）。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-072bb0e4-f3dd-4336-8bd8-0ea259e8545d",
+          "evidenceIds": [
+            "exp-072bb0e4-f3dd-4336-8bd8-0ea259e8545d",
+            "exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+            "exp-4746c62b-a937-40d9-a460-e73a8d699be6"
+          ],
+          "revision": 1,
+          "createdAt": 1792043735421
+        },
+        {
+          "id": "mem-1j5docn",
+          "text": "排行程前先询问用户不可违反的时间约束（固定安排、开关门时间、最晚到家等），不自行假设出发或回家时间。",
+          "key": "排行程前先询问用户不可违反的时间约束（固定安排、开关门时间、最晚到家等），不自行假设出发或回家时间。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f",
+          "evidenceIds": ["exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f"],
+          "revision": 1,
+          "createdAt": 1792043735441
+        },
+        {
+          "id": "mem-1dl8nat",
+          "text": "Life/schedule requests: present the timetable first, then the constraint check. \"X点前\" (before X o'clock) means strictly earlier than X, and at least 5 extra minutes of buffer must remain. Never compress task or transport durations on your own initiative — ask the user instead.",
+          "key": "life/schedule requests: present the timetable first, then the constraint check. \"x点前\" (before x o'clock) means strictly earlier than x, and at least 5 extra minutes of buffer must remain. never compress task or transport durations on your own initiative — ask the user instead.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4746c62b-a937-40d9-a460-e73a8d699be6",
+          "evidenceIds": [
+            "exp-4746c62b-a937-40d9-a460-e73a8d699be6",
+            "exp-27d26be5-f04c-42ed-bb82-c26963bef5f6",
+            "exp-d574ab70-c966-441e-819b-729260fc1ad4"
+          ],
+          "revision": 1,
+          "createdAt": 1792043764705
+        },
+        {
+          "id": "mem-sk4uqj",
+          "text": "Do not assume departure or return times for personal scheduling tasks — first ask the user for their non-negotiable time constraints (fixed appointments, opening hours, earliest departure, latest return) before proposing a plan.",
+          "key": "do not assume departure or return times for personal scheduling tasks — first ask the user for their non-negotiable time constraints (fixed appointments, opening hours, earliest departure, latest return) before proposing a plan.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f",
+          "evidenceIds": ["exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f"],
+          "revision": 1,
+          "createdAt": 1792043764725
+        },
+        {
+          "id": "mem-2o673w",
+          "text": "The user did NOT accept the friend's suggestion to count all transport as 5 minutes. Keep the user-supplied transport durations as-is, offer adjustments only as optional choices, and never treat a third party's suggestion as approved.",
+          "key": "the user did not accept the friend's suggestion to count all transport as 5 minutes. keep the user-supplied transport durations as-is, offer adjustments only as optional choices, and never treat a third party's suggestion as approved.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-748fffbb-968a-4f55-9886-30eb5af57c64",
+          "evidenceIds": ["exp-748fffbb-968a-4f55-9886-30eb5af57c64"],
+          "revision": 1,
+          "createdAt": 1792043764744
+        },
+        {
+          "id": "mem-1w0lb59",
+          "text": "The one-paragraph, no-table format was explicitly requested as a one-time exception only (\"仅本次例外\"); the standing preference remains timetable-first, and tables are acceptable by default.",
+          "key": "the one-paragraph, no-table format was explicitly requested as a one-time exception only (\"仅本次例外\"); the standing preference remains timetable-first, and tables are acceptable by default.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-cabc74fc-41cf-4b19-af26-5844b0777d07",
+          "evidenceIds": [
+            "exp-cabc74fc-41cf-4b19-af26-5844b0777d07",
+            "exp-e845709c-0113-46db-9bda-e030545108b7"
+          ],
+          "revision": 1,
+          "createdAt": 1792043764765
+        },
+        {
+          "id": "mem-1s2dljd",
+          "text": "For this project's scheduling replies, the user wants clarifications written inline in the text answer rather than via an interactive question tool, and replies kept concise (~220 characters, tables may run slightly longer).",
+          "key": "for this project's scheduling replies, the user wants clarifications written inline in the text answer rather than via an interactive question tool, and replies kept concise (~220 characters, tables may run slightly longer).",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f",
+          "evidenceIds": [
+            "exp-eb3fa3c4-5512-4cc7-9639-905e24a0451f",
+            "exp-4746c62b-a937-40d9-a460-e73a8d699be6"
+          ],
+          "revision": 1,
+          "createdAt": 1792043764786
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "manager-persistent-learn",
+      "beforeCount": 0,
+      "afterCount": 6,
+      "active": [
+        {
+          "id": "mem-g69sw5",
+          "text": "请长期记住我的工作偏好：项目排期先写“结论”，再写“依据”，最后写“风险”；没有我明确同意，不改变前后依赖，也不自行缩短环节时长。",
+          "key": "请长期记住我的工作偏好：项目排期先写“结论”，再写“依据”，最后写“风险”；没有我明确同意，不改变前后依赖，也不自行缩短环节时长。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-205dd105-b4ed-45a5-bf7c-0c7af5c5b5fd#msg0",
+          "revision": 1,
+          "createdAt": 1792043856548
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-bic11f",
+          "text": "User (project manager) requires project scheduling output in a fixed order: conclusion first, then rationale/basis, then risks.",
+          "key": "user (project manager) requires project scheduling output in a fixed order: conclusion first, then rationale/basis, then risks.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": ["exp-7c2f9793-85af-45f6-b64a-f706fed02d60"],
+          "revision": 1,
+          "createdAt": 1792043869808
+        },
+        {
+          "id": "mem-1ggeor5",
+          "text": "Without the user's explicit consent, do not change task dependencies (sequencing) and do not shorten any step's duration on your own.",
+          "key": "without the user's explicit consent, do not change task dependencies (sequencing) and do not shorten any step's duration on your own.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": [
+            "exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+            "exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e"
+          ],
+          "revision": 1,
+          "createdAt": 1792043869832
+        },
+        {
+          "id": "mem-zlcd8p",
+          "text": "A colleague's or third party's suggestion does not count as the user's consent; do not switch sequential execution to parallel unless the user explicitly agrees.",
+          "key": "a colleague's or third party's suggestion does not count as the user's consent; do not switch sequential execution to parallel unless the user explicitly agrees.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e",
+          "evidenceIds": ["exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e"],
+          "revision": 1,
+          "createdAt": 1792043869852
+        },
+        {
+          "id": "mem-g0q63x",
+          "text": "User's role: project manager.",
+          "key": "user's role: project manager.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+          "evidenceIds": [
+            "exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+            "exp-7c2f9793-85af-45f6-b64a-f706fed02d60"
+          ],
+          "revision": 1,
+          "createdAt": 1792043869872
+        },
+        {
+          "id": "mem-svzrgr",
+          "text": "Observed environment finding: attempts to write durable preferences (memory_add) were declined (Permission.DeclinedError), so stated preferences only took effect for that turn and are not confirmed as persisted long-term.",
+          "key": "observed environment finding: attempts to write durable preferences (memory_add) were declined (permission.declinederror), so stated preferences only took effect for that turn and are not confirmed as persisted long-term.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": ["exp-7c2f9793-85af-45f6-b64a-f706fed02d60"],
+          "revision": 1,
+          "createdAt": 1792043869892
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "manager-persistent-exception",
+      "beforeCount": 6,
+      "afterCount": 12,
+      "active": [
+        {
+          "id": "mem-g69sw5",
+          "text": "请长期记住我的工作偏好：项目排期先写“结论”，再写“依据”，最后写“风险”；没有我明确同意，不改变前后依赖，也不自行缩短环节时长。",
+          "key": "请长期记住我的工作偏好：项目排期先写“结论”，再写“依据”，最后写“风险”；没有我明确同意，不改变前后依赖，也不自行缩短环节时长。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-205dd105-b4ed-45a5-bf7c-0c7af5c5b5fd#msg0",
+          "revision": 1,
+          "createdAt": 1792043856548
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-bic11f",
+          "text": "User (project manager) requires project scheduling output in a fixed order: conclusion first, then rationale/basis, then risks.",
+          "key": "user (project manager) requires project scheduling output in a fixed order: conclusion first, then rationale/basis, then risks.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": ["exp-7c2f9793-85af-45f6-b64a-f706fed02d60"],
+          "revision": 1,
+          "createdAt": 1792043869808
+        },
+        {
+          "id": "mem-1ggeor5",
+          "text": "Without the user's explicit consent, do not change task dependencies (sequencing) and do not shorten any step's duration on your own.",
+          "key": "without the user's explicit consent, do not change task dependencies (sequencing) and do not shorten any step's duration on your own.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": [
+            "exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+            "exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e"
+          ],
+          "revision": 1,
+          "createdAt": 1792043869832
+        },
+        {
+          "id": "mem-zlcd8p",
+          "text": "A colleague's or third party's suggestion does not count as the user's consent; do not switch sequential execution to parallel unless the user explicitly agrees.",
+          "key": "a colleague's or third party's suggestion does not count as the user's consent; do not switch sequential execution to parallel unless the user explicitly agrees.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e",
+          "evidenceIds": ["exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e"],
+          "revision": 1,
+          "createdAt": 1792043869852
+        },
+        {
+          "id": "mem-g0q63x",
+          "text": "User's role: project manager.",
+          "key": "user's role: project manager.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+          "evidenceIds": [
+            "exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+            "exp-7c2f9793-85af-45f6-b64a-f706fed02d60"
+          ],
+          "revision": 1,
+          "createdAt": 1792043869872
+        },
+        {
+          "id": "mem-svzrgr",
+          "text": "Observed environment finding: attempts to write durable preferences (memory_add) were declined (Permission.DeclinedError), so stated preferences only took effect for that turn and are not confirmed as persisted long-term.",
+          "key": "observed environment finding: attempts to write durable preferences (memory_add) were declined (permission.declinederror), so stated preferences only took effect for that turn and are not confirmed as persisted long-term.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": ["exp-7c2f9793-85af-45f6-b64a-f706fed02d60"],
+          "revision": 1,
+          "createdAt": 1792043869892
+        },
+        {
+          "id": "mem-1nn9ki3",
+          "text": "用户（项目经理）长期工作偏好（其明确要求“请长期记住”）：项目排期输出顺序固定为“结论 → 依据 → 风险”。在其明确同意前，不改变任务前后依赖顺序，也不自行缩短任何环节时长。",
+          "key": "用户（项目经理）长期工作偏好（其明确要求“请长期记住”）：项目排期输出顺序固定为“结论 → 依据 → 风险”。在其明确同意前，不改变任务前后依赖顺序，也不自行缩短任何环节时长。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": ["exp-7c2f9793-85af-45f6-b64a-f706fed02d60"],
+          "revision": 1,
+          "createdAt": 1792043910242
+        },
+        {
+          "id": "mem-1k80851",
+          "text": "例外（仅限 manager-persistent-exception 这一会话，非长期默认）：本会话用户要求只用四列表格（环节、开始、结束、判断），不使用默认的“结论/依据/风险”分节；这覆盖默认分节格式，但属会话级例外，不应自动推广为通用规则。",
+          "key": "例外（仅限 manager-persistent-exception 这一会话，非长期默认）：本会话用户要求只用四列表格（环节、开始、结束、判断），不使用默认的“结论/依据/风险”分节；这覆盖默认分节格式，但属会话级例外，不应自动推广为通用规则。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-f5e40cd1-9b48-4bc1-a6e6-03360f2ae888",
+          "evidenceIds": [
+            "exp-f5e40cd1-9b48-4bc1-a6e6-03360f2ae888",
+            "exp-60831724-5c8f-4677-b80f-dc3a2d5d79af",
+            "exp-8aa9954f-c2d9-47e5-83ca-68076bd6ebb7",
+            "exp-8994424f-ea30-4fdb-b8cc-30653e9d2677"
+          ],
+          "revision": 1,
+          "createdAt": 1792043910272
+        },
+        {
+          "id": "mem-zhu5ck",
+          "text": "关键判断：同事转述的建议（边验收边发布并行、以后省略风险、赶时间可跳过验收）不是用户授权。用户明确表示仅为转述、未同意，要求保留全部环节并维持原有依赖与时长。此类第三方意见不得当作可长期适用的规则。",
+          "key": "关键判断：同事转述的建议（边验收边发布并行、以后省略风险、赶时间可跳过验收）不是用户授权。用户明确表示仅为转述、未同意，要求保留全部环节并维持原有依赖与时长。此类第三方意见不得当作可长期适用的规则。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e",
+          "evidenceIds": [
+            "exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e",
+            "exp-8aa9954f-c2d9-47e5-83ca-68076bd6ebb7"
+          ],
+          "revision": 1,
+          "createdAt": 1792043910292
+        },
+        {
+          "id": "mem-12hlm92",
+          "text": "可行性判定口径：当用户要求某环节“严格早于窗口结束时间结束”时，即使总时长恰好等于窗口（零缓冲、结束时间等于窗口终点）也应判为不可行；不得为满足要求而擅自缩短时长或调整依赖。",
+          "key": "可行性判定口径：当用户要求某环节“严格早于窗口结束时间结束”时，即使总时长恰好等于窗口（零缓冲、结束时间等于窗口终点）也应判为不可行；不得为满足要求而擅自缩短时长或调整依赖。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-f5e40cd1-9b48-4bc1-a6e6-03360f2ae888",
+          "evidenceIds": [
+            "exp-f5e40cd1-9b48-4bc1-a6e6-03360f2ae888",
+            "exp-8994424f-ea30-4fdb-b8cc-30653e9d2677"
+          ],
+          "revision": 1,
+          "createdAt": 1792043910309
+        },
+        {
+          "id": "mem-o4jpw3",
+          "text": "本项目管理类任务中反复出现的输出约束：澄清问题直接写在文本答复里，不使用 question 交互工具；答复尽量控制在约 220 字以内（必要表格可稍长）。",
+          "key": "本项目管理类任务中反复出现的输出约束：澄清问题直接写在文本答复里，不使用 question 交互工具；答复尽量控制在约 220 字以内（必要表格可稍长）。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+          "evidenceIds": [
+            "exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+            "exp-7fd88f4f-0292-4069-8624-ec78486fb648",
+            "exp-7c2f9793-85af-45f6-b64a-f706fed02d60"
+          ],
+          "revision": 1,
+          "createdAt": 1792043910328
+        },
+        {
+          "id": "mem-lzc5ib",
+          "text": "环境发现：通过 execute 调用 memory_add 提交长期记忆候选被环境拒绝（Permission.DeclinedError），即用户“长期记住偏好”的请求当时未能真正写入长期记忆；在该环境确认前，不能把此类偏好视为已持久化生效。",
+          "key": "环境发现：通过 execute 调用 memory_add 提交长期记忆候选被环境拒绝（permission.declinederror），即用户“长期记住偏好”的请求当时未能真正写入长期记忆；在该环境确认前，不能把此类偏好视为已持久化生效。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": ["exp-7c2f9793-85af-45f6-b64a-f706fed02d60"],
+          "revision": 1,
+          "createdAt": 1792043910345
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "finance-persistent-learn",
+      "beforeCount": 0,
+      "afterCount": 5,
+      "active": [
+        {
+          "id": "mem-1yovaxj",
+          "text": "请长期记住：管理层金额用万元，四舍五入保留1位；明细用元保留2位；用途不明先问。待付若已包含在已发生支出中，不得重复相加。",
+          "key": "请长期记住：管理层金额用万元，四舍五入保留1位；明细用元保留2位；用途不明先问。待付若已包含在已发生支出中，不得重复相加。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-57e9788f-b2fa-4d4a-bd31-2da5910a664d#msg0",
+          "revision": 1,
+          "createdAt": 1792043928381
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-t7y3sm",
+          "text": "User preference: for management-facing summaries, express amounts in 万元 (ten-thousands of yuan), rounded to 1 decimal place.",
+          "key": "user preference: for management-facing summaries, express amounts in 万元 (ten-thousands of yuan), rounded to 1 decimal place.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": ["exp-b4084c99-6781-451a-ad78-ed41175165de"],
+          "revision": 1,
+          "createdAt": 1792043937427
+        },
+        {
+          "id": "mem-lt02z4",
+          "text": "User preference: for detail/line-item figures, express amounts in 元 with 2 decimal places.",
+          "key": "user preference: for detail/line-item figures, express amounts in 元 with 2 decimal places.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": ["exp-b4084c99-6781-451a-ad78-ed41175165de"],
+          "revision": 1,
+          "createdAt": 1792043937448
+        },
+        {
+          "id": "mem-16u4bl3",
+          "text": "User preference: when the purpose/use is unclear, ask clarifying questions first rather than fabricating numbers or assumptions.",
+          "key": "user preference: when the purpose/use is unclear, ask clarifying questions first rather than fabricating numbers or assumptions.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+          "evidenceIds": [
+            "exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+            "exp-b4084c99-6781-451a-ad78-ed41175165de"
+          ],
+          "revision": 1,
+          "createdAt": 1792043937468
+        },
+        {
+          "id": "mem-ehivvx",
+          "text": "Accounting rule the user wants remembered: if 待付 (payable/outstanding) is already included within 已发生支出 (incurred expenses), it must not be added again — it is a sub-line item, and expenses stay at the incurred total.",
+          "key": "accounting rule the user wants remembered: if 待付 (payable/outstanding) is already included within 已发生支出 (incurred expenses), it must not be added again — it is a sub-line item, and expenses stay at the incurred total.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-01979004-bd60-42ef-ac43-66565b0074bb",
+          "evidenceIds": [
+            "exp-01979004-bd60-42ef-ac43-66565b0074bb",
+            "exp-938d25b1-f395-4935-a88f-9104e05bc0d7",
+            "exp-b4084c99-6781-451a-ad78-ed41175165de"
+          ],
+          "revision": 1,
+          "createdAt": 1792043937486
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "manager-persistent-transfer",
+      "beforeCount": 12,
+      "afterCount": 17,
+      "active": [
+        {
+          "id": "mem-g69sw5",
+          "text": "请长期记住我的工作偏好：项目排期先写“结论”，再写“依据”，最后写“风险”；没有我明确同意，不改变前后依赖，也不自行缩短环节时长。",
+          "key": "请长期记住我的工作偏好：项目排期先写“结论”，再写“依据”，最后写“风险”；没有我明确同意，不改变前后依赖，也不自行缩短环节时长。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-205dd105-b4ed-45a5-bf7c-0c7af5c5b5fd#msg0",
+          "revision": 1,
+          "createdAt": 1792043856548
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-bic11f",
+          "text": "User (project manager) requires project scheduling output in a fixed order: conclusion first, then rationale/basis, then risks.",
+          "key": "user (project manager) requires project scheduling output in a fixed order: conclusion first, then rationale/basis, then risks.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": ["exp-7c2f9793-85af-45f6-b64a-f706fed02d60"],
+          "revision": 1,
+          "createdAt": 1792043869808
+        },
+        {
+          "id": "mem-1ggeor5",
+          "text": "Without the user's explicit consent, do not change task dependencies (sequencing) and do not shorten any step's duration on your own.",
+          "key": "without the user's explicit consent, do not change task dependencies (sequencing) and do not shorten any step's duration on your own.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": [
+            "exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+            "exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e"
+          ],
+          "revision": 1,
+          "createdAt": 1792043869832
+        },
+        {
+          "id": "mem-zlcd8p",
+          "text": "A colleague's or third party's suggestion does not count as the user's consent; do not switch sequential execution to parallel unless the user explicitly agrees.",
+          "key": "a colleague's or third party's suggestion does not count as the user's consent; do not switch sequential execution to parallel unless the user explicitly agrees.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e",
+          "evidenceIds": ["exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e"],
+          "revision": 1,
+          "createdAt": 1792043869852
+        },
+        {
+          "id": "mem-g0q63x",
+          "text": "User's role: project manager.",
+          "key": "user's role: project manager.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+          "evidenceIds": [
+            "exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+            "exp-7c2f9793-85af-45f6-b64a-f706fed02d60"
+          ],
+          "revision": 1,
+          "createdAt": 1792043869872
+        },
+        {
+          "id": "mem-svzrgr",
+          "text": "Observed environment finding: attempts to write durable preferences (memory_add) were declined (Permission.DeclinedError), so stated preferences only took effect for that turn and are not confirmed as persisted long-term.",
+          "key": "observed environment finding: attempts to write durable preferences (memory_add) were declined (permission.declinederror), so stated preferences only took effect for that turn and are not confirmed as persisted long-term.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": ["exp-7c2f9793-85af-45f6-b64a-f706fed02d60"],
+          "revision": 1,
+          "createdAt": 1792043869892
+        },
+        {
+          "id": "mem-1nn9ki3",
+          "text": "用户（项目经理）长期工作偏好（其明确要求“请长期记住”）：项目排期输出顺序固定为“结论 → 依据 → 风险”。在其明确同意前，不改变任务前后依赖顺序，也不自行缩短任何环节时长。",
+          "key": "用户（项目经理）长期工作偏好（其明确要求“请长期记住”）：项目排期输出顺序固定为“结论 → 依据 → 风险”。在其明确同意前，不改变任务前后依赖顺序，也不自行缩短任何环节时长。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": ["exp-7c2f9793-85af-45f6-b64a-f706fed02d60"],
+          "revision": 1,
+          "createdAt": 1792043910242
+        },
+        {
+          "id": "mem-1k80851",
+          "text": "例外（仅限 manager-persistent-exception 这一会话，非长期默认）：本会话用户要求只用四列表格（环节、开始、结束、判断），不使用默认的“结论/依据/风险”分节；这覆盖默认分节格式，但属会话级例外，不应自动推广为通用规则。",
+          "key": "例外（仅限 manager-persistent-exception 这一会话，非长期默认）：本会话用户要求只用四列表格（环节、开始、结束、判断），不使用默认的“结论/依据/风险”分节；这覆盖默认分节格式，但属会话级例外，不应自动推广为通用规则。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-f5e40cd1-9b48-4bc1-a6e6-03360f2ae888",
+          "evidenceIds": [
+            "exp-f5e40cd1-9b48-4bc1-a6e6-03360f2ae888",
+            "exp-60831724-5c8f-4677-b80f-dc3a2d5d79af",
+            "exp-8aa9954f-c2d9-47e5-83ca-68076bd6ebb7",
+            "exp-8994424f-ea30-4fdb-b8cc-30653e9d2677"
+          ],
+          "revision": 1,
+          "createdAt": 1792043910272
+        },
+        {
+          "id": "mem-zhu5ck",
+          "text": "关键判断：同事转述的建议（边验收边发布并行、以后省略风险、赶时间可跳过验收）不是用户授权。用户明确表示仅为转述、未同意，要求保留全部环节并维持原有依赖与时长。此类第三方意见不得当作可长期适用的规则。",
+          "key": "关键判断：同事转述的建议（边验收边发布并行、以后省略风险、赶时间可跳过验收）不是用户授权。用户明确表示仅为转述、未同意，要求保留全部环节并维持原有依赖与时长。此类第三方意见不得当作可长期适用的规则。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e",
+          "evidenceIds": [
+            "exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e",
+            "exp-8aa9954f-c2d9-47e5-83ca-68076bd6ebb7"
+          ],
+          "revision": 1,
+          "createdAt": 1792043910292
+        },
+        {
+          "id": "mem-12hlm92",
+          "text": "可行性判定口径：当用户要求某环节“严格早于窗口结束时间结束”时，即使总时长恰好等于窗口（零缓冲、结束时间等于窗口终点）也应判为不可行；不得为满足要求而擅自缩短时长或调整依赖。",
+          "key": "可行性判定口径：当用户要求某环节“严格早于窗口结束时间结束”时，即使总时长恰好等于窗口（零缓冲、结束时间等于窗口终点）也应判为不可行；不得为满足要求而擅自缩短时长或调整依赖。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-f5e40cd1-9b48-4bc1-a6e6-03360f2ae888",
+          "evidenceIds": [
+            "exp-f5e40cd1-9b48-4bc1-a6e6-03360f2ae888",
+            "exp-8994424f-ea30-4fdb-b8cc-30653e9d2677"
+          ],
+          "revision": 1,
+          "createdAt": 1792043910309
+        },
+        {
+          "id": "mem-o4jpw3",
+          "text": "本项目管理类任务中反复出现的输出约束：澄清问题直接写在文本答复里，不使用 question 交互工具；答复尽量控制在约 220 字以内（必要表格可稍长）。",
+          "key": "本项目管理类任务中反复出现的输出约束：澄清问题直接写在文本答复里，不使用 question 交互工具；答复尽量控制在约 220 字以内（必要表格可稍长）。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+          "evidenceIds": [
+            "exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+            "exp-7fd88f4f-0292-4069-8624-ec78486fb648",
+            "exp-7c2f9793-85af-45f6-b64a-f706fed02d60"
+          ],
+          "revision": 1,
+          "createdAt": 1792043910328
+        },
+        {
+          "id": "mem-lzc5ib",
+          "text": "环境发现：通过 execute 调用 memory_add 提交长期记忆候选被环境拒绝（Permission.DeclinedError），即用户“长期记住偏好”的请求当时未能真正写入长期记忆；在该环境确认前，不能把此类偏好视为已持久化生效。",
+          "key": "环境发现：通过 execute 调用 memory_add 提交长期记忆候选被环境拒绝（permission.declinederror），即用户“长期记住偏好”的请求当时未能真正写入长期记忆；在该环境确认前，不能把此类偏好视为已持久化生效。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": ["exp-7c2f9793-85af-45f6-b64a-f706fed02d60"],
+          "revision": 1,
+          "createdAt": 1792043910345
+        },
+        {
+          "id": "mem-13pirh9",
+          "text": "User's standing format preference for project scheduling replies: write '结论' (conclusion) first, then '依据' (basis/evidence), then '风险' (risks). The user explicitly asked to remember this long-term.",
+          "key": "user's standing format preference for project scheduling replies: write '结论' (conclusion) first, then '依据' (basis/evidence), then '风险' (risks). the user explicitly asked to remember this long-term.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": [
+            "exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+            "exp-e10c8689-452d-4a81-a4ab-ce7757d27f04",
+            "exp-f1b07f03-e75d-45f3-8a5e-0aaac7d1be39"
+          ],
+          "revision": 1,
+          "createdAt": 1792043941771
+        },
+        {
+          "id": "mem-iqbtx9",
+          "text": "Without the user's explicit consent, do not change task ordering/dependencies (e.g., switching serial steps to parallel) or self-shorten any step's duration, even when that would be needed to meet a deadline. Instead, present the adjustment options the user must decide on and explicitly mark them as not yet approved.",
+          "key": "without the user's explicit consent, do not change task ordering/dependencies (e.g., switching serial steps to parallel) or self-shorten any step's duration, even when that would be needed to meet a deadline. instead, present the adjustment options the user must decide on and explicitly mark them as not yet approved.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+          "evidenceIds": [
+            "exp-7c2f9793-85af-45f6-b64a-f706fed02d60",
+            "exp-9bae47cb-6bb5-45be-a982-31f5313ad7a4",
+            "exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e"
+          ],
+          "revision": 1,
+          "createdAt": 1792043941793
+        },
+        {
+          "id": "mem-1avrcyt",
+          "text": "Suggestions or relayed statements from third parties (e.g., a colleague) are not user authorization and must not be adopted as if approved; they only apply after the user personally confirms them.",
+          "key": "suggestions or relayed statements from third parties (e.g., a colleague) are not user authorization and must not be adopted as if approved; they only apply after the user personally confirms them.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e",
+          "evidenceIds": [
+            "exp-2da36b63-8d6e-48fb-b8c7-66b3534fb47e",
+            "exp-8aa9954f-c2d9-47e5-83ca-68076bd6ebb7"
+          ],
+          "revision": 1,
+          "createdAt": 1792043941813
+        },
+        {
+          "id": "mem-1d14dlk",
+          "text": "For scheduling requests, ask for the missing critical inputs first (launch window/time slot, task list with dependencies, durations and owners, pass/acceptance criteria and rollback, notification scope) rather than assuming defaults.",
+          "key": "for scheduling requests, ask for the missing critical inputs first (launch window/time slot, task list with dependencies, durations and owners, pass/acceptance criteria and rollback, notification scope) rather than assuming defaults.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945",
+          "evidenceIds": ["exp-8f54bba5-ce2d-4ce0-945a-a7f7a57a2945"],
+          "revision": 1,
+          "createdAt": 1792043941832
+        },
+        {
+          "id": "mem-e1i5m8",
+          "text": "When a deadline is stated as 'strictly earlier than' (严格早于) a boundary time, treat the end time equalling the boundary as not meeting the requirement, and state feasibility explicitly; with no buffer, any delay breaks the deadline.",
+          "key": "when a deadline is stated as 'strictly earlier than' (严格早于) a boundary time, treat the end time equalling the boundary as not meeting the requirement, and state feasibility explicitly; with no buffer, any delay breaks the deadline.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-f5e40cd1-9b48-4bc1-a6e6-03360f2ae888",
+          "evidenceIds": [
+            "exp-f5e40cd1-9b48-4bc1-a6e6-03360f2ae888",
+            "exp-8994424f-ea30-4fdb-b8cc-30653e9d2677",
+            "exp-f1b07f03-e75d-45f3-8a5e-0aaac7d1be39"
+          ],
+          "revision": 1,
+          "createdAt": 1792043941852
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "finance-persistent-exception",
+      "beforeCount": 5,
+      "afterCount": 11,
+      "active": [
+        {
+          "id": "mem-1yovaxj",
+          "text": "请长期记住：管理层金额用万元，四舍五入保留1位；明细用元保留2位；用途不明先问。待付若已包含在已发生支出中，不得重复相加。",
+          "key": "请长期记住：管理层金额用万元，四舍五入保留1位；明细用元保留2位；用途不明先问。待付若已包含在已发生支出中，不得重复相加。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-57e9788f-b2fa-4d4a-bd31-2da5910a664d#msg0",
+          "revision": 1,
+          "createdAt": 1792043928381
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-t7y3sm",
+          "text": "User preference: for management-facing summaries, express amounts in 万元 (ten-thousands of yuan), rounded to 1 decimal place.",
+          "key": "user preference: for management-facing summaries, express amounts in 万元 (ten-thousands of yuan), rounded to 1 decimal place.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": ["exp-b4084c99-6781-451a-ad78-ed41175165de"],
+          "revision": 1,
+          "createdAt": 1792043937427
+        },
+        {
+          "id": "mem-lt02z4",
+          "text": "User preference: for detail/line-item figures, express amounts in 元 with 2 decimal places.",
+          "key": "user preference: for detail/line-item figures, express amounts in 元 with 2 decimal places.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": ["exp-b4084c99-6781-451a-ad78-ed41175165de"],
+          "revision": 1,
+          "createdAt": 1792043937448
+        },
+        {
+          "id": "mem-16u4bl3",
+          "text": "User preference: when the purpose/use is unclear, ask clarifying questions first rather than fabricating numbers or assumptions.",
+          "key": "user preference: when the purpose/use is unclear, ask clarifying questions first rather than fabricating numbers or assumptions.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+          "evidenceIds": [
+            "exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+            "exp-b4084c99-6781-451a-ad78-ed41175165de"
+          ],
+          "revision": 1,
+          "createdAt": 1792043937468
+        },
+        {
+          "id": "mem-ehivvx",
+          "text": "Accounting rule the user wants remembered: if 待付 (payable/outstanding) is already included within 已发生支出 (incurred expenses), it must not be added again — it is a sub-line item, and expenses stay at the incurred total.",
+          "key": "accounting rule the user wants remembered: if 待付 (payable/outstanding) is already included within 已发生支出 (incurred expenses), it must not be added again — it is a sub-line item, and expenses stay at the incurred total.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-01979004-bd60-42ef-ac43-66565b0074bb",
+          "evidenceIds": [
+            "exp-01979004-bd60-42ef-ac43-66565b0074bb",
+            "exp-938d25b1-f395-4935-a88f-9104e05bc0d7",
+            "exp-b4084c99-6781-451a-ad78-ed41175165de"
+          ],
+          "revision": 1,
+          "createdAt": 1792043937486
+        },
+        {
+          "id": "mem-n1vz8o",
+          "text": "用户是财务人员，常需要准备面向管理层的经营收支摘要（收入、已发生支出、待付、结余等口径）。",
+          "key": "用户是财务人员，常需要准备面向管理层的经营收支摘要（收入、已发生支出、待付、结余等口径）。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+          "evidenceIds": [
+            "exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+            "exp-01979004-bd60-42ef-ac43-66565b0074bb"
+          ],
+          "revision": 1,
+          "createdAt": 1792043973013
+        },
+        {
+          "id": "mem-otovmo",
+          "text": "用户明确要求长期记住的金额口径偏好：管理层金额用万元、四舍五入保留1位；明细金额用元、保留2位；用途不明时先澄清再动笔；待付若已包含在已发生支出中，不得重复相加。",
+          "key": "用户明确要求长期记住的金额口径偏好：管理层金额用万元、四舍五入保留1位；明细金额用元、保留2位；用途不明时先澄清再动笔；待付若已包含在已发生支出中，不得重复相加。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": ["exp-b4084c99-6781-451a-ad78-ed41175165de"],
+          "revision": 1,
+          "createdAt": 1792043973036
+        },
+        {
+          "id": "mem-ikvow8",
+          "text": "例外情形：在某些单次任务中，管理层稿可临时改用元、保留2位，但用户明确说明这不改变上述长期偏好（管理层万元1位、明细元2位仍有效）。",
+          "key": "例外情形：在某些单次任务中，管理层稿可临时改用元、保留2位，但用户明确说明这不改变上述长期偏好（管理层万元1位、明细元2位仍有效）。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-c4ef51e5-d27e-498c-83c6-234c63edd138",
+          "evidenceIds": [
+            "exp-c4ef51e5-d27e-498c-83c6-234c63edd138",
+            "exp-cc1df462-9130-4889-99b1-5735b8f86bb1",
+            "exp-4c382278-eb89-4922-a4d7-93b00fabdac6",
+            "exp-7f148315-04ff-4eac-a3c8-2bc9599d1c39"
+          ],
+          "revision": 1,
+          "createdAt": 1792043973056
+        },
+        {
+          "id": "mem-1q1fokr",
+          "text": "老板助理建议“以后都用整数元”，用户明确表示这只是该助理的个人意见、不是用户的确认，因此不应视为用户偏好或长期规则。",
+          "key": "老板助理建议“以后都用整数元”，用户明确表示这只是该助理的个人意见、不是用户的确认，因此不应视为用户偏好或长期规则。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4c382278-eb89-4922-a4d7-93b00fabdac6",
+          "evidenceIds": ["exp-4c382278-eb89-4922-a4d7-93b00fabdac6"],
+          "revision": 1,
+          "createdAt": 1792043973075
+        },
+        {
+          "id": "mem-qjr4s",
+          "text": "用户要求只使用其给定口径与数字，不编造金额，也不新增未给出的税金或费用等项目。",
+          "key": "用户要求只使用其给定口径与数字，不编造金额，也不新增未给出的税金或费用等项目。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+          "evidenceIds": [
+            "exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+            "exp-01979004-bd60-42ef-ac43-66565b0074bb",
+            "exp-938d25b1-f395-4935-a88f-9104e05bc0d7",
+            "exp-7f148315-04ff-4eac-a3c8-2bc9599d1c39"
+          ],
+          "revision": 1,
+          "createdAt": 1792043973100
+        },
+        {
+          "id": "mem-1qjka3g",
+          "text": "关键发现：我在该会话中尝试写入长期记忆的4条口径规则均被权限拒绝（未成功）；长期偏好是否生效取决于系统侧确认。",
+          "key": "关键发现：我在该会话中尝试写入长期记忆的4条口径规则均被权限拒绝（未成功）；长期偏好是否生效取决于系统侧确认。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": ["exp-b4084c99-6781-451a-ad78-ed41175165de"],
+          "revision": 1,
+          "createdAt": 1792043973122
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "finance-persistent-transfer",
+      "beforeCount": 11,
+      "afterCount": 18,
+      "active": [
+        {
+          "id": "mem-1yovaxj",
+          "text": "请长期记住：管理层金额用万元，四舍五入保留1位；明细用元保留2位；用途不明先问。待付若已包含在已发生支出中，不得重复相加。",
+          "key": "请长期记住：管理层金额用万元，四舍五入保留1位；明细用元保留2位；用途不明先问。待付若已包含在已发生支出中，不得重复相加。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-57e9788f-b2fa-4d4a-bd31-2da5910a664d#msg0",
+          "revision": 1,
+          "createdAt": 1792043928381
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-t7y3sm",
+          "text": "User preference: for management-facing summaries, express amounts in 万元 (ten-thousands of yuan), rounded to 1 decimal place.",
+          "key": "user preference: for management-facing summaries, express amounts in 万元 (ten-thousands of yuan), rounded to 1 decimal place.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": ["exp-b4084c99-6781-451a-ad78-ed41175165de"],
+          "revision": 1,
+          "createdAt": 1792043937427
+        },
+        {
+          "id": "mem-lt02z4",
+          "text": "User preference: for detail/line-item figures, express amounts in 元 with 2 decimal places.",
+          "key": "user preference: for detail/line-item figures, express amounts in 元 with 2 decimal places.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": ["exp-b4084c99-6781-451a-ad78-ed41175165de"],
+          "revision": 1,
+          "createdAt": 1792043937448
+        },
+        {
+          "id": "mem-16u4bl3",
+          "text": "User preference: when the purpose/use is unclear, ask clarifying questions first rather than fabricating numbers or assumptions.",
+          "key": "user preference: when the purpose/use is unclear, ask clarifying questions first rather than fabricating numbers or assumptions.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+          "evidenceIds": [
+            "exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+            "exp-b4084c99-6781-451a-ad78-ed41175165de"
+          ],
+          "revision": 1,
+          "createdAt": 1792043937468
+        },
+        {
+          "id": "mem-ehivvx",
+          "text": "Accounting rule the user wants remembered: if 待付 (payable/outstanding) is already included within 已发生支出 (incurred expenses), it must not be added again — it is a sub-line item, and expenses stay at the incurred total.",
+          "key": "accounting rule the user wants remembered: if 待付 (payable/outstanding) is already included within 已发生支出 (incurred expenses), it must not be added again — it is a sub-line item, and expenses stay at the incurred total.",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-01979004-bd60-42ef-ac43-66565b0074bb",
+          "evidenceIds": [
+            "exp-01979004-bd60-42ef-ac43-66565b0074bb",
+            "exp-938d25b1-f395-4935-a88f-9104e05bc0d7",
+            "exp-b4084c99-6781-451a-ad78-ed41175165de"
+          ],
+          "revision": 1,
+          "createdAt": 1792043937486
+        },
+        {
+          "id": "mem-n1vz8o",
+          "text": "用户是财务人员，常需要准备面向管理层的经营收支摘要（收入、已发生支出、待付、结余等口径）。",
+          "key": "用户是财务人员，常需要准备面向管理层的经营收支摘要（收入、已发生支出、待付、结余等口径）。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+          "evidenceIds": [
+            "exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+            "exp-01979004-bd60-42ef-ac43-66565b0074bb"
+          ],
+          "revision": 1,
+          "createdAt": 1792043973013
+        },
+        {
+          "id": "mem-otovmo",
+          "text": "用户明确要求长期记住的金额口径偏好：管理层金额用万元、四舍五入保留1位；明细金额用元、保留2位；用途不明时先澄清再动笔；待付若已包含在已发生支出中，不得重复相加。",
+          "key": "用户明确要求长期记住的金额口径偏好：管理层金额用万元、四舍五入保留1位；明细金额用元、保留2位；用途不明时先澄清再动笔；待付若已包含在已发生支出中，不得重复相加。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": ["exp-b4084c99-6781-451a-ad78-ed41175165de"],
+          "revision": 1,
+          "createdAt": 1792043973036
+        },
+        {
+          "id": "mem-ikvow8",
+          "text": "例外情形：在某些单次任务中，管理层稿可临时改用元、保留2位，但用户明确说明这不改变上述长期偏好（管理层万元1位、明细元2位仍有效）。",
+          "key": "例外情形：在某些单次任务中，管理层稿可临时改用元、保留2位，但用户明确说明这不改变上述长期偏好（管理层万元1位、明细元2位仍有效）。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-c4ef51e5-d27e-498c-83c6-234c63edd138",
+          "evidenceIds": [
+            "exp-c4ef51e5-d27e-498c-83c6-234c63edd138",
+            "exp-cc1df462-9130-4889-99b1-5735b8f86bb1",
+            "exp-4c382278-eb89-4922-a4d7-93b00fabdac6",
+            "exp-7f148315-04ff-4eac-a3c8-2bc9599d1c39"
+          ],
+          "revision": 1,
+          "createdAt": 1792043973056
+        },
+        {
+          "id": "mem-1q1fokr",
+          "text": "老板助理建议“以后都用整数元”，用户明确表示这只是该助理的个人意见、不是用户的确认，因此不应视为用户偏好或长期规则。",
+          "key": "老板助理建议“以后都用整数元”，用户明确表示这只是该助理的个人意见、不是用户的确认，因此不应视为用户偏好或长期规则。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4c382278-eb89-4922-a4d7-93b00fabdac6",
+          "evidenceIds": ["exp-4c382278-eb89-4922-a4d7-93b00fabdac6"],
+          "revision": 1,
+          "createdAt": 1792043973075
+        },
+        {
+          "id": "mem-qjr4s",
+          "text": "用户要求只使用其给定口径与数字，不编造金额，也不新增未给出的税金或费用等项目。",
+          "key": "用户要求只使用其给定口径与数字，不编造金额，也不新增未给出的税金或费用等项目。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+          "evidenceIds": [
+            "exp-4180184e-ea71-402e-abe8-4e8cc36c0b3b",
+            "exp-01979004-bd60-42ef-ac43-66565b0074bb",
+            "exp-938d25b1-f395-4935-a88f-9104e05bc0d7",
+            "exp-7f148315-04ff-4eac-a3c8-2bc9599d1c39"
+          ],
+          "revision": 1,
+          "createdAt": 1792043973100
+        },
+        {
+          "id": "mem-1qjka3g",
+          "text": "关键发现：我在该会话中尝试写入长期记忆的4条口径规则均被权限拒绝（未成功）；长期偏好是否生效取决于系统侧确认。",
+          "key": "关键发现：我在该会话中尝试写入长期记忆的4条口径规则均被权限拒绝（未成功）；长期偏好是否生效取决于系统侧确认。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": ["exp-b4084c99-6781-451a-ad78-ed41175165de"],
+          "revision": 1,
+          "createdAt": 1792043973122
+        },
+        {
+          "id": "mem-1uofrtf",
+          "text": "财务口径长期偏好：给管理层的金额用万元、四舍五入保留1位小数；明细用元、保留2位小数；用途/读者不明时先澄清再动笔。",
+          "key": "财务口径长期偏好：给管理层的金额用万元、四舍五入保留1位小数；明细用元、保留2位小数；用途/读者不明时先澄清再动笔。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": [
+            "exp-b4084c99-6781-451a-ad78-ed41175165de",
+            "exp-73e2f85e-b573-4024-8121-34cc67c4c1d6",
+            "exp-fd1f5f7e-7f8a-4c2c-a83d-0ea29bff706b",
+            "exp-60a845f9-6e24-41bf-b5cb-61c24cb8470c"
+          ],
+          "revision": 1,
+          "createdAt": 1792044001032
+        },
+        {
+          "id": "mem-1cyfx9e",
+          "text": "关键会计规则：待付（未付款项）是“已发生支出”的明细构成项，已包含在支出总额内，计算结余时不得再加/再扣一次；重复相加会算错结余。",
+          "key": "关键会计规则：待付（未付款项）是“已发生支出”的明细构成项，已包含在支出总额内，计算结余时不得再加/再扣一次；重复相加会算错结余。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-01979004-bd60-42ef-ac43-66565b0074bb",
+          "evidenceIds": [
+            "exp-01979004-bd60-42ef-ac43-66565b0074bb",
+            "exp-938d25b1-f395-4935-a88f-9104e05bc0d7",
+            "exp-fd1f5f7e-7f8a-4c2c-a83d-0ea29bff706b"
+          ],
+          "revision": 1,
+          "createdAt": 1792044001054
+        },
+        {
+          "id": "mem-hluapx",
+          "text": "口径区分：权责口径结余 = 收入 − 已发生支出（含待付）；现金口径结余 = 收入 − 已付支出（剔除待付）。两者结果不同，需由用户确认采用哪个口径；结余变化仅取决于支出总额，待付在支出内部的增减不改变结余。",
+          "key": "口径区分：权责口径结余 = 收入 − 已发生支出（含待付）；现金口径结余 = 收入 − 已付支出（剔除待付）。两者结果不同，需由用户确认采用哪个口径；结余变化仅取决于支出总额，待付在支出内部的增减不改变结余。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-73e2f85e-b573-4024-8121-34cc67c4c1d6",
+          "evidenceIds": [
+            "exp-73e2f85e-b573-4024-8121-34cc67c4c1d6",
+            "exp-630d2adc-e35b-4ba3-b232-2fb8dad13b06",
+            "exp-fd1f5f7e-7f8a-4c2c-a83d-0ea29bff706b",
+            "exp-7f148315-04ff-4eac-a3c8-2bc9599d1c39"
+          ],
+          "revision": 1,
+          "createdAt": 1792044001072
+        },
+        {
+          "id": "mem-1cshfms",
+          "text": "临时格式例外只在当次稿件生效，不改变长期偏好（例如某次管理层稿临时改用“元保留2位”后，长期仍为管理层万元1位、明细元2位），并应在答复中明确标注为例外。",
+          "key": "临时格式例外只在当次稿件生效，不改变长期偏好（例如某次管理层稿临时改用“元保留2位”后，长期仍为管理层万元1位、明细元2位），并应在答复中明确标注为例外。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-c4ef51e5-d27e-498c-83c6-234c63edd138",
+          "evidenceIds": [
+            "exp-c4ef51e5-d27e-498c-83c6-234c63edd138",
+            "exp-cc1df462-9130-4889-99b1-5735b8f86bb1",
+            "exp-4c382278-eb89-4922-a4d7-93b00fabdac6"
+          ],
+          "revision": 1,
+          "createdAt": 1792044001093
+        },
+        {
+          "id": "mem-16tm679",
+          "text": "第三方（如老板助理）提出的格式建议（例如“以后都用整数元”）属其个人意见，未经用户确认不得视为用户偏好，也不得据此修改长期口径。",
+          "key": "第三方（如老板助理）提出的格式建议（例如“以后都用整数元”）属其个人意见，未经用户确认不得视为用户偏好，也不得据此修改长期口径。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-4c382278-eb89-4922-a4d7-93b00fabdac6",
+          "evidenceIds": ["exp-4c382278-eb89-4922-a4d7-93b00fabdac6"],
+          "revision": 1,
+          "createdAt": 1792044001113
+        },
+        {
+          "id": "mem-wuihrn",
+          "text": "未提供税金信息时，不得推断税后利润或新增未给出的税金/费用项目；只按用户给定口径计算。（用户明确提出的临时约束，仍应遵守。）",
+          "key": "未提供税金信息时，不得推断税后利润或新增未给出的税金/费用项目；只按用户给定口径计算。（用户明确提出的临时约束，仍应遵守。）",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-7f148315-04ff-4eac-a3c8-2bc9599d1c39",
+          "evidenceIds": [
+            "exp-7f148315-04ff-4eac-a3c8-2bc9599d1c39",
+            "exp-60a845f9-6e24-41bf-b5cb-61c24cb8470c"
+          ],
+          "revision": 1,
+          "createdAt": 1792044001139
+        },
+        {
+          "id": "mem-1fr5vbg",
+          "text": "环境发现：通过 execute 工具写入长期记忆的尝试被权限拒绝（无输出），检索历史记忆也失败；跨会话记忆需由系统侧确认，回答只能依据当轮快照。",
+          "key": "环境发现：通过 execute 工具写入长期记忆的尝试被权限拒绝（无输出），检索历史记忆也失败；跨会话记忆需由系统侧确认，回答只能依据当轮快照。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-b4084c99-6781-451a-ad78-ed41175165de",
+          "evidenceIds": [
+            "exp-b4084c99-6781-451a-ad78-ed41175165de",
+            "exp-cc1df462-9130-4889-99b1-5735b8f86bb1"
+          ],
+          "revision": 1,
+          "createdAt": 1792044001158
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "teacher-persistent-learn",
+      "beforeCount": 0,
+      "afterCount": 4,
+      "active": [
+        {
+          "id": "mem-uhsznp",
+          "text": "请长期记住：给家长的反馈先写“可观察事实”，再写“下一步”；给同行先讲“教学框架”，再给“课堂例子”。没有测评证据，不给学生贴能力标签。",
+          "key": "请长期记住：给家长的反馈先写“可观察事实”，再写“下一步”；给同行先讲“教学框架”，再给“课堂例子”。没有测评证据，不给学生贴能力标签。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-f1d2028a-bc5a-4415-8c7b-6b2d0ef3bf7d#msg0",
+          "revision": 1,
+          "createdAt": 1792044024759
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-zzijuv",
+          "text": "用户的角色是教师，反馈多面向家长与同行两类读者。",
+          "key": "用户的角色是教师，反馈多面向家长与同行两类读者。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-a6e5f5dc-1ed2-4806-8f78-25ebbcb804cf",
+          "evidenceIds": [
+            "exp-a6e5f5dc-1ed2-4806-8f78-25ebbcb804cf",
+            "exp-e0621cb3-ab95-4e1e-9192-b051ce132312",
+            "exp-d3a49952-b182-4877-b2de-68fa35caef40",
+            "exp-5747d6de-44b7-47c9-9909-7472deaa81f5"
+          ],
+          "revision": 1,
+          "createdAt": 1792044035034
+        },
+        {
+          "id": "mem-n0cmu4",
+          "text": "写反馈的结构要求：给家长的反馈先写“可观察事实”，再写“下一步”；给同行的反馈先讲“教学框架”，再给“课堂例子”。",
+          "key": "写反馈的结构要求：给家长的反馈先写“可观察事实”，再写“下一步”；给同行的反馈先讲“教学框架”，再给“课堂例子”。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-5747d6de-44b7-47c9-9909-7472deaa81f5",
+          "evidenceIds": ["exp-5747d6de-44b7-47c9-9909-7472deaa81f5"],
+          "revision": 1,
+          "createdAt": 1792044035055
+        },
+        {
+          "id": "mem-qanyhc",
+          "text": "没有测评证据时不给学生贴能力标签，也不把错误归因于“概念不懂”；错误原因未逐题核实前，不得把多道错题合并为同一归因。",
+          "key": "没有测评证据时不给学生贴能力标签，也不把错误归因于“概念不懂”；错误原因未逐题核实前，不得把多道错题合并为同一归因。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-d3a49952-b182-4877-b2de-68fa35caef40",
+          "evidenceIds": [
+            "exp-d3a49952-b182-4877-b2de-68fa35caef40",
+            "exp-5747d6de-44b7-47c9-9909-7472deaa81f5"
+          ],
+          "revision": 1,
+          "createdAt": 1792044035074
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "teacher-persistent-exception",
+      "beforeCount": 4,
+      "afterCount": 8,
+      "active": [
+        {
+          "id": "mem-uhsznp",
+          "text": "请长期记住：给家长的反馈先写“可观察事实”，再写“下一步”；给同行先讲“教学框架”，再给“课堂例子”。没有测评证据，不给学生贴能力标签。",
+          "key": "请长期记住：给家长的反馈先写“可观察事实”，再写“下一步”；给同行先讲“教学框架”，再给“课堂例子”。没有测评证据，不给学生贴能力标签。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-f1d2028a-bc5a-4415-8c7b-6b2d0ef3bf7d#msg0",
+          "revision": 1,
+          "createdAt": 1792044024759
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-zzijuv",
+          "text": "用户的角色是教师，反馈多面向家长与同行两类读者。",
+          "key": "用户的角色是教师，反馈多面向家长与同行两类读者。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-a6e5f5dc-1ed2-4806-8f78-25ebbcb804cf",
+          "evidenceIds": [
+            "exp-a6e5f5dc-1ed2-4806-8f78-25ebbcb804cf",
+            "exp-e0621cb3-ab95-4e1e-9192-b051ce132312",
+            "exp-d3a49952-b182-4877-b2de-68fa35caef40",
+            "exp-5747d6de-44b7-47c9-9909-7472deaa81f5"
+          ],
+          "revision": 1,
+          "createdAt": 1792044035034
+        },
+        {
+          "id": "mem-n0cmu4",
+          "text": "写反馈的结构要求：给家长的反馈先写“可观察事实”，再写“下一步”；给同行的反馈先讲“教学框架”，再给“课堂例子”。",
+          "key": "写反馈的结构要求：给家长的反馈先写“可观察事实”，再写“下一步”；给同行的反馈先讲“教学框架”，再给“课堂例子”。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-5747d6de-44b7-47c9-9909-7472deaa81f5",
+          "evidenceIds": ["exp-5747d6de-44b7-47c9-9909-7472deaa81f5"],
+          "revision": 1,
+          "createdAt": 1792044035055
+        },
+        {
+          "id": "mem-qanyhc",
+          "text": "没有测评证据时不给学生贴能力标签，也不把错误归因于“概念不懂”；错误原因未逐题核实前，不得把多道错题合并为同一归因。",
+          "key": "没有测评证据时不给学生贴能力标签，也不把错误归因于“概念不懂”；错误原因未逐题核实前，不得把多道错题合并为同一归因。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-d3a49952-b182-4877-b2de-68fa35caef40",
+          "evidenceIds": [
+            "exp-d3a49952-b182-4877-b2de-68fa35caef40",
+            "exp-5747d6de-44b7-47c9-9909-7472deaa81f5"
+          ],
+          "revision": 1,
+          "createdAt": 1792044035074
+        },
+        {
+          "id": "mem-1o0qm6v",
+          "text": "用户（教师）明确要求长期记住的写作规范：给家长的反馈先写\"可观察事实\"、再写\"下一步\"；给同行的材料先讲\"教学框架\"、再给\"课堂例子\"；没有测评证据就不给学生贴能力标签。",
+          "key": "用户（教师）明确要求长期记住的写作规范：给家长的反馈先写\"可观察事实\"、再写\"下一步\"；给同行的材料先讲\"教学框架\"、再给\"课堂例子\"；没有测评证据就不给学生贴能力标签。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-5747d6de-44b7-47c9-9909-7472deaa81f5",
+          "evidenceIds": ["exp-5747d6de-44b7-47c9-9909-7472deaa81f5"],
+          "revision": 1,
+          "createdAt": 1792044063714
+        },
+        {
+          "id": "mem-y3oaoe",
+          "text": "教师要求把\"可观察事实\"与\"推测\"分开记录，不采用能力标签：他人的\"理解能力差\"一类说法属推断而非测评结论，须标注为待验证。",
+          "key": "教师要求把\"可观察事实\"与\"推测\"分开记录，不采用能力标签：他人的\"理解能力差\"一类说法属推断而非测评结论，须标注为待验证。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-ab432ab7-68b6-4854-8dee-19472e103584",
+          "evidenceIds": ["exp-ab432ab7-68b6-4854-8dee-19472e103584"],
+          "revision": 1,
+          "createdAt": 1792044063735
+        },
+        {
+          "id": "mem-1hzlnk4",
+          "text": "给同行的默认结构是\"先框架后例子\"；但教师可明确授权\"仅本次例外\"只用一个课堂例子，这类一次性例外不改变默认规则。",
+          "key": "给同行的默认结构是\"先框架后例子\"；但教师可明确授权\"仅本次例外\"只用一个课堂例子，这类一次性例外不改变默认规则。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-00ade785-4535-45a7-ad03-add939fb103c",
+          "evidenceIds": [
+            "exp-00ade785-4535-45a7-ad03-add939fb103c",
+            "exp-e4258981-d4a2-4f2c-9fb2-d7be4a5e25aa",
+            "exp-ab432ab7-68b6-4854-8dee-19472e103584",
+            "exp-d7b4d0fe-d094-477e-8a09-0ce7740611e8"
+          ],
+          "revision": 1,
+          "createdAt": 1792044063755
+        },
+        {
+          "id": "mem-182cgc4",
+          "text": "撰写课堂材料时，不得把尚未实施的活动写成已开展；计划中的环节须标注为待实施/计划。",
+          "key": "撰写课堂材料时，不得把尚未实施的活动写成已开展；计划中的环节须标注为待实施/计划。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-d7b4d0fe-d094-477e-8a09-0ce7740611e8",
+          "evidenceIds": ["exp-d7b4d0fe-d094-477e-8a09-0ce7740611e8"],
+          "revision": 1,
+          "createdAt": 1792044063774
+        }
+      ],
+      "unsafeActivation": []
+    },
+    {
+      "id": "teacher-persistent-transfer",
+      "beforeCount": 8,
+      "afterCount": 10,
+      "active": [
+        {
+          "id": "mem-uhsznp",
+          "text": "请长期记住：给家长的反馈先写“可观察事实”，再写“下一步”；给同行先讲“教学框架”，再给“课堂例子”。没有测评证据，不给学生贴能力标签。",
+          "key": "请长期记住：给家长的反馈先写“可观察事实”，再写“下一步”；给同行先讲“教学框架”，再给“课堂例子”。没有测评证据，不给学生贴能力标签。",
+          "kind": "fact",
+          "status": "active",
+          "basis": "user",
+          "speaker": "user",
+          "evidence": "exp:exp-f1d2028a-bc5a-4415-8c7b-6b2d0ef3bf7d#msg0",
+          "revision": 1,
+          "createdAt": 1792044024759
+        }
+      ],
+      "candidates": [
+        {
+          "id": "mem-zzijuv",
+          "text": "用户的角色是教师，反馈多面向家长与同行两类读者。",
+          "key": "用户的角色是教师，反馈多面向家长与同行两类读者。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-a6e5f5dc-1ed2-4806-8f78-25ebbcb804cf",
+          "evidenceIds": [
+            "exp-a6e5f5dc-1ed2-4806-8f78-25ebbcb804cf",
+            "exp-e0621cb3-ab95-4e1e-9192-b051ce132312",
+            "exp-d3a49952-b182-4877-b2de-68fa35caef40",
+            "exp-5747d6de-44b7-47c9-9909-7472deaa81f5"
+          ],
+          "revision": 1,
+          "createdAt": 1792044035034
+        },
+        {
+          "id": "mem-n0cmu4",
+          "text": "写反馈的结构要求：给家长的反馈先写“可观察事实”，再写“下一步”；给同行的反馈先讲“教学框架”，再给“课堂例子”。",
+          "key": "写反馈的结构要求：给家长的反馈先写“可观察事实”，再写“下一步”；给同行的反馈先讲“教学框架”，再给“课堂例子”。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-5747d6de-44b7-47c9-9909-7472deaa81f5",
+          "evidenceIds": ["exp-5747d6de-44b7-47c9-9909-7472deaa81f5"],
+          "revision": 1,
+          "createdAt": 1792044035055
+        },
+        {
+          "id": "mem-qanyhc",
+          "text": "没有测评证据时不给学生贴能力标签，也不把错误归因于“概念不懂”；错误原因未逐题核实前，不得把多道错题合并为同一归因。",
+          "key": "没有测评证据时不给学生贴能力标签，也不把错误归因于“概念不懂”；错误原因未逐题核实前，不得把多道错题合并为同一归因。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-d3a49952-b182-4877-b2de-68fa35caef40",
+          "evidenceIds": [
+            "exp-d3a49952-b182-4877-b2de-68fa35caef40",
+            "exp-5747d6de-44b7-47c9-9909-7472deaa81f5"
+          ],
+          "revision": 1,
+          "createdAt": 1792044035074
+        },
+        {
+          "id": "mem-1o0qm6v",
+          "text": "用户（教师）明确要求长期记住的写作规范：给家长的反馈先写\"可观察事实\"、再写\"下一步\"；给同行的材料先讲\"教学框架\"、再给\"课堂例子\"；没有测评证据就不给学生贴能力标签。",
+          "key": "用户（教师）明确要求长期记住的写作规范：给家长的反馈先写\"可观察事实\"、再写\"下一步\"；给同行的材料先讲\"教学框架\"、再给\"课堂例子\"；没有测评证据就不给学生贴能力标签。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-5747d6de-44b7-47c9-9909-7472deaa81f5",
+          "evidenceIds": ["exp-5747d6de-44b7-47c9-9909-7472deaa81f5"],
+          "revision": 1,
+          "createdAt": 1792044063714
+        },
+        {
+          "id": "mem-y3oaoe",
+          "text": "教师要求把\"可观察事实\"与\"推测\"分开记录，不采用能力标签：他人的\"理解能力差\"一类说法属推断而非测评结论，须标注为待验证。",
+          "key": "教师要求把\"可观察事实\"与\"推测\"分开记录，不采用能力标签：他人的\"理解能力差\"一类说法属推断而非测评结论，须标注为待验证。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-ab432ab7-68b6-4854-8dee-19472e103584",
+          "evidenceIds": ["exp-ab432ab7-68b6-4854-8dee-19472e103584"],
+          "revision": 1,
+          "createdAt": 1792044063735
+        },
+        {
+          "id": "mem-1hzlnk4",
+          "text": "给同行的默认结构是\"先框架后例子\"；但教师可明确授权\"仅本次例外\"只用一个课堂例子，这类一次性例外不改变默认规则。",
+          "key": "给同行的默认结构是\"先框架后例子\"；但教师可明确授权\"仅本次例外\"只用一个课堂例子，这类一次性例外不改变默认规则。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-00ade785-4535-45a7-ad03-add939fb103c",
+          "evidenceIds": [
+            "exp-00ade785-4535-45a7-ad03-add939fb103c",
+            "exp-e4258981-d4a2-4f2c-9fb2-d7be4a5e25aa",
+            "exp-ab432ab7-68b6-4854-8dee-19472e103584",
+            "exp-d7b4d0fe-d094-477e-8a09-0ce7740611e8"
+          ],
+          "revision": 1,
+          "createdAt": 1792044063755
+        },
+        {
+          "id": "mem-182cgc4",
+          "text": "撰写课堂材料时，不得把尚未实施的活动写成已开展；计划中的环节须标注为待实施/计划。",
+          "key": "撰写课堂材料时，不得把尚未实施的活动写成已开展；计划中的环节须标注为待实施/计划。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-d7b4d0fe-d094-477e-8a09-0ce7740611e8",
+          "evidenceIds": ["exp-d7b4d0fe-d094-477e-8a09-0ce7740611e8"],
+          "revision": 1,
+          "createdAt": 1792044063774
+        },
+        {
+          "id": "mem-1au165b",
+          "text": "用户（教师身份）明确要求长期记住的反馈写作结构：给家长的反馈先写「可观察事实」，再写「下一步」；给同行的先讲「教学框架」，再给「课堂例子」。",
+          "key": "用户（教师身份）明确要求长期记住的反馈写作结构：给家长的反馈先写「可观察事实」，再写「下一步」；给同行的先讲「教学框架」，再给「课堂例子」。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-5747d6de-44b7-47c9-9909-7472deaa81f5",
+          "evidenceIds": ["exp-5747d6de-44b7-47c9-9909-7472deaa81f5"],
+          "revision": 1,
+          "createdAt": 1792044096624
+        },
+        {
+          "id": "mem-kolzao",
+          "text": "无测评证据时不给学生贴能力标签：拒绝「基础薄弱」「理解能力差」等能力性表述，须区分可观察事实与他人（家长/同事）的推测或建议。",
+          "key": "无测评证据时不给学生贴能力标签：拒绝「基础薄弱」「理解能力差」等能力性表述，须区分可观察事实与他人（家长/同事）的推测或建议。",
+          "kind": "fact",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "evidence": "exp:exp-5747d6de-44b7-47c9-9909-7472deaa81f5",
+          "evidenceIds": [
+            "exp-5747d6de-44b7-47c9-9909-7472deaa81f5",
+            "exp-ab432ab7-68b6-4854-8dee-19472e103584",
+            "exp-e11b4a79-3d1f-46ea-8746-1f42690b8086"
+          ],
+          "revision": 1,
+          "createdAt": 1792044096647
+        }
+      ],
+      "unsafeActivation": []
+    }
+  ],
+  "observationGaps": [
+    {
+      "id": "household-reset-learn",
+      "permissionWire": 2,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_8fgbcqz0gmpirng2c1yg280t", "call_00_hk2cmqyu9k3xpdn6xp0rf0rt"],
+      "toolOutputsMissing": [
+        "call_00_8fgbcqz0gmpirng2c1yg280t",
+        "call_00_hk2cmqyu9k3xpdn6xp0rf0rt"
+      ],
+      "traceId": "7c1da460-4f45-438c-9dce-1c692aa890fa"
+    },
+    {
+      "id": "household-reset-exception",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "6134552d-3eac-4008-b00b-ca175aee987f"
+    },
+    {
+      "id": "household-reset-transfer",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "d1180da4-9386-4310-87a8-6657c4c418d4"
+    },
+    {
+      "id": "household-persistent-learn",
+      "permissionWire": 2,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_6906xtFnX8hsP5X0Ecy81174", "call_00_EmI33OZwGN8PitIk6q8F4622"],
+      "toolOutputsMissing": [
+        "call_00_6906xtFnX8hsP5X0Ecy81174",
+        "call_00_EmI33OZwGN8PitIk6q8F4622"
+      ],
+      "traceId": "fd6ea109-8a42-49a1-8b10-607116b773a8"
+    },
+    {
+      "id": "household-persistent-exception",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "36b2eca4-9590-46d4-b59e-2f5736fc599b"
+    },
+    {
+      "id": "household-persistent-transfer",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "ccb06b35-821a-4f6e-a516-d6ac67acf788"
+    },
+    {
+      "id": "finance-reset-learn",
+      "permissionWire": 2,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_fhvcuxmhxst0x90zxpb77cs2"],
+      "toolOutputsMissing": ["call_00_fhvcuxmhxst0x90zxpb77cs2"],
+      "traceId": "139016e8-e4dd-4476-8940-9eedc57818fc"
+    },
+    {
+      "id": "manager-persistent-learn",
+      "permissionWire": 2,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_1y6qt6i87674tsbewkif3p27", "call_00_y2xym2vi1wgwdyul9uwh3zuc"],
+      "toolOutputsMissing": [
+        "call_00_1y6qt6i87674tsbewkif3p27",
+        "call_00_y2xym2vi1wgwdyul9uwh3zuc"
+      ],
+      "traceId": "d7e30693-da36-431b-b9e2-0f3a0693d750"
+    },
+    {
+      "id": "finance-reset-exception",
+      "permissionWire": 1,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_g5c990ls4nmnenwq0flu54w2"],
+      "toolOutputsMissing": ["call_00_g5c990ls4nmnenwq0flu54w2"],
+      "traceId": "0161890b-7e3b-4c26-aea4-cad06f4cb836"
+    },
+    {
+      "id": "finance-reset-transfer",
+      "permissionWire": 1,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_dfy41s7pvnmzna88j4v4eg3m"],
+      "toolOutputsMissing": ["call_00_dfy41s7pvnmzna88j4v4eg3m"],
+      "traceId": "cd8e19ff-3b4a-45c6-b8eb-84bde948316b"
+    },
+    {
+      "id": "manager-persistent-exception",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "b7b99253-4078-43d2-860a-e891ffdda836"
+    },
+    {
+      "id": "finance-persistent-learn",
+      "permissionWire": 2,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_yay6pfu3to0msp5609gnz9mc"],
+      "toolOutputsMissing": ["call_00_yay6pfu3to0msp5609gnz9mc"],
+      "traceId": "d0457ec3-cff1-4961-be0f-4097ead5dc7b"
+    },
+    {
+      "id": "manager-persistent-transfer",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "c7653be4-0b59-4f21-a567-9aeecb082c6b"
+    },
+    {
+      "id": "manager-reset-learn",
+      "permissionWire": 2,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_1sg79wp9xp7u7apbevkuwfzw"],
+      "toolOutputsMissing": ["call_00_1sg79wp9xp7u7apbevkuwfzw"],
+      "traceId": "bb84003f-8e65-4b03-9724-5919cb1bfb3c"
+    },
+    {
+      "id": "finance-persistent-exception",
+      "permissionWire": 1,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_t41yd2fsrqvc9uodx1rmfn96"],
+      "toolOutputsMissing": ["call_00_t41yd2fsrqvc9uodx1rmfn96"],
+      "traceId": "fce58f9b-d574-4172-8883-22f4e3b943f5"
+    },
+    {
+      "id": "manager-reset-exception",
+      "permissionWire": 1,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_7p0df5ryh54b7z8vgyxnid5o"],
+      "toolOutputsMissing": ["call_00_7p0df5ryh54b7z8vgyxnid5o"],
+      "traceId": "707ff21a-b1c5-4eb2-bc9c-d5ea937e7be7"
+    },
+    {
+      "id": "manager-reset-transfer",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "b7adcc1f-1c77-430e-9cd6-6d8ac7d74aa1"
+    },
+    {
+      "id": "finance-persistent-transfer",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "6758c2c4-aba8-4a28-a72d-0adbe2686bd1"
+    },
+    {
+      "id": "teacher-persistent-learn",
+      "permissionWire": 2,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_5o5su16qck2nktj295alx7wg", "call_00_oneibnci9zr92kwdh7h70ze5"],
+      "toolOutputsMissing": [
+        "call_00_5o5su16qck2nktj295alx7wg",
+        "call_00_oneibnci9zr92kwdh7h70ze5"
+      ],
+      "traceId": "f5578af1-a947-40d9-a937-158051d1d4d7"
+    },
+    {
+      "id": "teacher-persistent-exception",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "91b5c55a-3c4a-413f-b9ae-06d1024d1d8e"
+    },
+    {
+      "id": "teacher-persistent-transfer",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "d31a163e-7288-49cc-a922-2b351850ed23"
+    },
+    {
+      "id": "teacher-reset-learn",
+      "permissionWire": 2,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_rggoddaypuipo3jo8lidej5y"],
+      "toolOutputsMissing": ["call_00_rggoddaypuipo3jo8lidej5y"],
+      "traceId": "8beccc25-b3e2-475f-9797-a22a5528f2ea"
+    },
+    {
+      "id": "teacher-reset-exception",
+      "permissionWire": 1,
+      "permissionNormalized": 0,
+      "toolInputsMissing": ["call_00_4ubcpu6n6ouxa5gyxcf6yg1v"],
+      "toolOutputsMissing": ["call_00_4ubcpu6n6ouxa5gyxcf6yg1v"],
+      "traceId": "ad595fba-0ea2-4e9f-8d9d-c780c25e11e2"
+    },
+    {
+      "id": "teacher-reset-transfer",
+      "permissionWire": 0,
+      "permissionNormalized": 0,
+      "toolInputsMissing": [],
+      "toolOutputsMissing": [],
+      "traceId": "2ed08d0c-3bc4-4c45-84f0-a1be3e5e6bea"
+    }
+  ],
+  "accounting": [
+    {
+      "id": "ses_ec1e0075effe8NCct3GuALXGJU",
+      "case": "household-reset-learn",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002895432,
+      "tokens_input": 8352,
+      "tokens_output": 1176,
+      "tokens_reasoning": 1419,
+      "tokens_cache_read": 28544,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dfa8d6ffeQ2fhb6m9AHR5CX",
+      "case": "household-reset-exception",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.0027123599999999996,
+      "tokens_input": 8088,
+      "tokens_output": 673,
+      "tokens_reasoning": 1752,
+      "tokens_cache_read": 14720,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1df50caffeSqvR343I2Kxg2j",
+      "case": "household-reset-transfer",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.0020072579999999996,
+      "tokens_input": 7051,
+      "tokens_output": 900,
+      "tokens_reasoning": 611,
+      "tokens_cache_read": 14336,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1df1603ffeYrNjRwVYMZEW1a",
+      "case": "household-persistent-learn",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.0023962079999999995,
+      "tokens_input": 5604,
+      "tokens_output": 745,
+      "tokens_reasoning": 1696,
+      "tokens_cache_read": 30336,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1debe88ffevwJSkJSszjnWcW",
+      "case": "household-persistent-learn",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.0011890499999999999,
+      "tokens_input": 4755,
+      "tokens_output": 349,
+      "tokens_reasoning": 444,
+      "tokens_cache_read": 0,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dea0e0ffend6bwuQT2CUczH",
+      "case": "household-persistent-exception",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.0024792300000000002,
+      "tokens_input": 9769,
+      "tokens_output": 553,
+      "tokens_reasoning": 1076,
+      "tokens_cache_read": 12160,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1de69daffeTd2S1tuGo10YLO",
+      "case": "household-persistent-exception",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.002345772,
+      "tokens_input": 5994,
+      "tokens_output": 550,
+      "tokens_reasoning": 1856,
+      "tokens_cache_read": 1024,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1de2d61ffeN3OOPz6noCmAWt",
+      "case": "household-persistent-transfer",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.0030569279999999996,
+      "tokens_input": 14044,
+      "tokens_output": 850,
+      "tokens_reasoning": 691,
+      "tokens_cache_read": 8576,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1ddeebfffeCstOxR6oIc0h6K",
+      "case": "household-persistent-transfer",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.0023487,
+      "tokens_input": 9710,
+      "tokens_output": 285,
+      "tokens_reasoning": 1202,
+      "tokens_cache_read": 0,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dd14ffffeK9bGlIwaYU1lcW",
+      "case": "finance-reset-learn",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.004589394,
+      "tokens_input": 18755,
+      "tokens_output": 1237,
+      "tokens_reasoning": 1665,
+      "tokens_cache_read": 11648,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dd1518ffe1kkPfx1qOX6QgJ",
+      "case": "manager-persistent-learn",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.003106686,
+      "tokens_input": 14209,
+      "tokens_output": 742,
+      "tokens_reasoning": 785,
+      "tokens_cache_read": 19712,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dcc76effeBcWuPXtt98fmL9",
+      "case": "manager-persistent-learn",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.002673036,
+      "tokens_input": 7694,
+      "tokens_output": 513,
+      "tokens_reasoning": 2016,
+      "tokens_cache_read": 512,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dcbb7bffe1miJd022z7sY3N",
+      "case": "finance-reset-exception",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002464404,
+      "tokens_input": 7586,
+      "tokens_output": 762,
+      "tokens_reasoning": 1349,
+      "tokens_cache_read": 19968,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dc670fffeTzOrreoOu5aplY",
+      "case": "finance-reset-transfer",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.003573624,
+      "tokens_input": 14540,
+      "tokens_output": 826,
+      "tokens_reasoning": 1424,
+      "tokens_cache_read": 14208,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dc93c9ffe7n47nCZTKdpN0B",
+      "case": "manager-persistent-exception",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002239308,
+      "tokens_input": 5506,
+      "tokens_output": 667,
+      "tokens_reasoning": 1601,
+      "tokens_cache_read": 17536,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dc4692ffeoa7Gvkea1LFGqS",
+      "case": "manager-persistent-exception",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.003977886,
+      "tokens_input": 12733,
+      "tokens_output": 800,
+      "tokens_reasoning": 2644,
+      "tokens_cache_read": 512,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dc056effeWtavSNz6sUkELF",
+      "case": "finance-persistent-learn",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.00260676,
+      "tokens_input": 7928,
+      "tokens_output": 1002,
+      "tokens_reasoning": 1255,
+      "tokens_cache_read": 21120,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dbaaafffe5GKy2qOnk7MWD8",
+      "case": "finance-persistent-learn",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.0011277,
+      "tokens_input": 4862,
+      "tokens_output": 344,
+      "tokens_reasoning": 320,
+      "tokens_cache_read": 0,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dbf559fferaVV4psJcDIJQJ",
+      "case": "manager-persistent-transfer",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002605704,
+      "tokens_input": 8796,
+      "tokens_output": 881,
+      "tokens_reasoning": 1195,
+      "tokens_cache_read": 13568,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dbae91ffebhj3ZY2pnSfkT9",
+      "case": "manager-persistent-transfer",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.0024364499999999997,
+      "tokens_input": 9963,
+      "tokens_output": 648,
+      "tokens_reasoning": 922,
+      "tokens_cache_read": 0,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1db75c7ffen63CD2Rxwwf7hU",
+      "case": "manager-reset-learn",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.0024567900000000004,
+      "tokens_input": 7941,
+      "tokens_output": 971,
+      "tokens_reasoning": 1036,
+      "tokens_cache_read": 20480,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1db8bbeffevn1zpQECxMR9eH",
+      "case": "finance-persistent-exception",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002531526,
+      "tokens_input": 9941,
+      "tokens_output": 835,
+      "tokens_reasoning": 810,
+      "tokens_cache_read": 17792,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1db3dbcffeEUk3wlmL1sPeyW",
+      "case": "finance-persistent-exception",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.002433,
+      "tokens_input": 7480,
+      "tokens_output": 667,
+      "tokens_reasoning": 1518,
+      "tokens_cache_read": 0,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1db268bffeanawRx3jJlbVKq",
+      "case": "manager-reset-exception",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002354274,
+      "tokens_input": 7467,
+      "tokens_output": 1007,
+      "tokens_reasoning": 947,
+      "tokens_cache_read": 20608,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dadadaffeOm2ret6O1gAIMv",
+      "case": "manager-reset-transfer",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002747628,
+      "tokens_input": 12386,
+      "tokens_output": 823,
+      "tokens_reasoning": 617,
+      "tokens_cache_read": 8576,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1db0098ffeeAZRc6yO4mukax",
+      "case": "finance-persistent-transfer",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002273322,
+      "tokens_input": 5523,
+      "tokens_output": 593,
+      "tokens_reasoning": 1730,
+      "tokens_cache_read": 17024,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1dac74affebS86Qim7S5cNzR",
+      "case": "finance-persistent-transfer",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.0027274499999999998,
+      "tokens_input": 9883,
+      "tokens_output": 982,
+      "tokens_reasoning": 1093,
+      "tokens_cache_read": 0,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1da9c9bffemWvGR72MlebMTm",
+      "case": "teacher-persistent-learn",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002985714,
+      "tokens_input": 8359,
+      "tokens_output": 710,
+      "tokens_reasoning": 2035,
+      "tokens_cache_read": 28288,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1da376effeCUlHu2Jw6dUMJf",
+      "case": "teacher-persistent-learn",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.0013386,
+      "tokens_input": 4644,
+      "tokens_output": 291,
+      "tokens_reasoning": 779,
+      "tokens_cache_read": 0,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1da0e8effe8cXM1tVClFTR2e",
+      "case": "teacher-persistent-exception",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.003094644,
+      "tokens_input": 13602,
+      "tokens_output": 683,
+      "tokens_reasoning": 1032,
+      "tokens_cache_read": 8448,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1d9d29fffeI6VIbKath0yPEY",
+      "case": "teacher-persistent-exception",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.002132106,
+      "tokens_input": 6027,
+      "tokens_output": 419,
+      "tokens_reasoning": 1622,
+      "tokens_cache_read": 1152,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1d99e70ffeJe1lCi1svbCKP3",
+      "case": "teacher-persistent-transfer",
+      "arm": "persistent",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002229522,
+      "tokens_input": 5587,
+      "tokens_output": 524,
+      "tokens_reasoning": 1710,
+      "tokens_cache_read": 17024,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1d9581effe43C6o5smTfh0Mf",
+      "case": "teacher-persistent-transfer",
+      "arm": "persistent",
+      "phase": "reflection",
+      "status": "complete",
+      "cost": 0.0024775500000000002,
+      "tokens_input": 9497,
+      "tokens_output": 231,
+      "tokens_reasoning": 1524,
+      "tokens_cache_read": 0,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1d91db4ffe7u0QlIg6gFG71a",
+      "case": "teacher-reset-learn",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.0023128259999999996,
+      "tokens_input": 7451,
+      "tokens_output": 908,
+      "tokens_reasoning": 979,
+      "tokens_cache_read": 20992,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1d8cb27ffexYUU77vtWCno64",
+      "case": "teacher-reset-exception",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.002585166,
+      "tokens_input": 7085,
+      "tokens_output": 662,
+      "tokens_reasoning": 1764,
+      "tokens_cache_read": 22272,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    },
+    {
+      "id": "ses_ec1d86351ffe5QFq7qpJc4nirp",
+      "case": "teacher-reset-transfer",
+      "arm": "reset",
+      "phase": "main",
+      "status": "complete",
+      "cost": 0.0034069919999999997,
+      "tokens_input": 13680,
+      "tokens_output": 482,
+      "tokens_reasoning": 1736,
+      "tokens_cache_read": 8064,
+      "tokens_cache_write": 0,
+      "model": null,
+      "version": "2.0.25"
+    }
+  ],
+  "costUsdByArmAndPhase": {
+    "reset/main": 0.034106147999999996,
+    "persistent/main": 0.031605552,
+    "persistent/reflection": 0.027207300000000004
+  },
+  "modelsObserved": ["opencode-go/deepseek-v4.1-flash"],
+  "limits": [
+    "synthetic, non-blind, one trajectory per role/arm",
+    "explicit remember command is host-confirmed; inferred reflections remain candidates",
+    "lexical checks are screening signals requiring review, not task success judgments",
+    "fixed corrections do not measure reduced user intervention"
+  ],
+  "manualReview": {
+    "version": "multiturn-review-v1",
+    "method": "non-blind review by the same assistant; no model-as-judge calls; lexical screening is not task success",
+    "issues": [
+      {
+        "id": "typed-constraint-gap",
+        "priority": "P1",
+        "kind": "offline-counterexample",
+        "evidence": "pressure.json",
+        "finding": "Explicitly confirmed multi-rule profiles are stored as kind=fact; an unrelated full-budget fact can omit them without a mandatory-constraint omission. Retagging a copy as constraint protects it. No live memories changed."
+      },
+      {
+        "id": "acp-normalized-loss",
+        "priority": "P1",
+        "kind": "observed",
+        "finding": "21 wire permission requests have zero normalized permission.request events; 17 final tool inputs and 17 nonempty outputs are missing from normalized observations. Full protocol capture retained them. Structural trace checks still report zero violations."
+      },
+      {
+        "id": "reflection-scope",
+        "priority": "P1",
+        "kind": "observed-with-experiment-confound",
+        "case": "household-persistent-exception",
+        "finding": "Reflection proposed persistent user preferences for text-only questioning and the 220-character experiment wrapper. The wrapper was mixed into a user-role input by this runner; neither it nor temporary task instructions should be treated as durable user preference. These remained inactive candidates."
+      },
+      {
+        "id": "reflection-short-id",
+        "priority": "P2",
+        "kind": "observed-safe-rejection",
+        "case": "household-persistent-transfer",
+        "finding": "The model shortened UUID evidence IDs to exp-4746c62b etc. Strict validation rejected the whole batch; no prefix matching or activation occurred."
+      },
+      {
+        "id": "candidate-duplication",
+        "priority": "P2",
+        "kind": "observed",
+        "finding": "Final persistent stores contain 55 entries: 4 confirmed profiles and 51 candidates. Semantically overlapping Chinese/English summaries accumulate; exact text deduplication does not merge them."
+      },
+      {
+        "id": "manager-consistency",
+        "priority": "P2",
+        "kind": "observed",
+        "case": "manager-persistent-transfer",
+        "turn": 1,
+        "excerpt": "早于10:40上限5分钟 / 无缓冲时间",
+        "finding": "The main schedule has 5 minutes of slack but the risk paragraph says there is none."
+      },
+      {
+        "id": "alternative-math",
+        "priority": "P2",
+        "kind": "observed",
+        "case": "manager-reset-transfer",
+        "turn": 2,
+        "excerpt": "压缩验收与观察各5分钟（10/10/20），10:40结束",
+        "finding": "The shortening explanation, listed durations and stated completion time are inconsistent. The main infeasibility check passed, so headline-only scoring missed the defective alternative."
+      },
+      {
+        "id": "unsupported-cash",
+        "priority": "P2",
+        "kind": "observed",
+        "cases": ["finance-persistent-transfer", "finance-reset-transfer"],
+        "finding": "Both arms derive cash figures despite missing evidence about whether income was received. Arithmetic under an assumption is not evidence that the cash amount is known."
+      },
+      {
+        "id": "teacher-inference",
+        "priority": "P2",
+        "kind": "observed",
+        "case": "teacher-reset-transfer",
+        "turns": [1, 2, 3, 4],
+        "excerpt": "说明方法基本会 / 说明方法已基本掌握 / 说明基础并不薄弱",
+        "finding": "The reset arm repeatedly infers competence from a small task record despite the instruction to use only observable facts. The persistent arm avoids these claims in the paired example."
+      },
+      {
+        "id": "table-only-override",
+        "priority": "P2",
+        "kind": "observed",
+        "cases": ["manager-persistent-exception", "manager-reset-exception"],
+        "finding": "Both arms add text outside the requested four-column table. The persistent arm also brings back conclusion/basis/risk labels within this exception task. Lexical screening checked table presence, not exclusivity."
+      },
+      {
+        "id": "redundant-clarification",
+        "priority": "P3",
+        "kind": "observed",
+        "cases": ["manager-persistent-transfer", "teacher-persistent-exception"],
+        "finding": "The assistant asks whether an explicitly final plan is final and whether a one-time exception should revert next time. No adaptive user-effort metric is inferred from the fixed dialogue script."
+      },
+      {
+        "id": "literal-screening-confounds",
+        "priority": "measurement",
+        "kind": "review",
+        "findings": [
+          "A timetable headed 周三安排 and constraint check is semantically consistent but fails the literal 时间表 matcher.",
+          "Finance final output has a shared 金额（万元） header, so per-cell unit regex misses correct 21.5/17.3/4.3 formatting.",
+          "Teacher first transfer task did not ask for a percentage; omission of 70% is not a task error.",
+          "Teacher final response preserves facts-before-advice without the exact 可观察事实 heading."
+        ]
+      },
+      {
+        "id": "gateway-policy-limit",
+        "priority": "experiment-boundary",
+        "kind": "observed",
+        "finding": "The memory-only test permission handler sees code-mode execute rather than the nested memory_* operation, and rejects that gateway. Main comparison therefore evaluates host-selected memory context and host reflection writes, not fully functioning MCP learning or default CLI permissions."
+      }
+    ],
+    "personalizationReview": [
+      {
+        "scenario": "manager",
+        "persistent": "结论→依据→风险 transferred on the first new-task answer",
+        "reset": "generic schedule; requested historic headings absent"
+      },
+      {
+        "scenario": "finance",
+        "persistent": "management summary uses 万元 and one decimal without restating the preference",
+        "reset": "uses 元; arithmetic itself remains correct"
+      },
+      {
+        "scenario": "teacher",
+        "persistent": "facts-before-next-steps and no unsupported competence label in the paired case",
+        "reset": "facts and advice are present generically, but unsupported competence claims persist"
+      },
+      {
+        "scenario": "household",
+        "persistent": "explicitly checks historic ≥5-minute margin; timetable-before-check preserved semantically",
+        "reset": "computes the schedule correctly but does not identify the historic 5-minute rule"
+      }
+    ],
+    "limits": [
+      "One fixed trajectory per role/arm; differences are observations, not statistical generalization.",
+      "Only explicit remember directives are host-confirmed; no autonomous candidate promotion is evaluated.",
+      "Task boundaries are imposed by the runner; automatic task recognition is not evaluated.",
+      "No default Pi run, real external actions or user-effort reduction is established."
+    ]
+  }
+}

@@ -16,7 +16,9 @@ export function buildTurnContext(
 } {
   if (!Number.isSafeInteger(maxChars) || maxChars < 0)
     throw new RangeError("invalid context budget");
-  const all = store.list().filter((entry) => memoryStatus(entry) === "active");
+  const active = store.list().filter((entry) => memoryStatus(entry) === "active");
+  const excluded = active.filter((entry) => entry.applicability === "task");
+  const all = active.filter((entry) => entry.applicability !== "task");
   // Until scope/condition evaluation exists, conservatively protect every
   // active constraint in this memory file. Tags remain a legacy fallback.
   const required = all.filter(
@@ -26,18 +28,23 @@ export function buildTurnContext(
   const pinned = all.filter((entry) =>
     entry.tags?.some((tag) => ["profile", "preference", "constraint"].includes(tag)),
   );
-  const relevant = store.search({ text: taskText, limit: 5, statuses: ["active"] });
+  const relevant = store
+    .search({ text: taskText, statuses: ["active"] })
+    .filter((entry) => entry.applicability !== "task")
+    .slice(0, 5);
   const candidates = [
     ...required,
     ...pinned,
     ...relevant,
     ...all.toSorted((a, b) => b.createdAt - a.createdAt),
   ];
-  const decisions: Array<{ id: string; selected: boolean; reason: string }> = [];
+  const decisions: Array<{ id: string; selected: boolean; reason: string }> = excluded.map(
+    (entry) => ({ id: entry.id, selected: false, reason: "task-local" }),
+  );
   const selectedIds: string[] = [];
   const seen = new Set<string>();
   const lines: string[] = [];
-  const omittedIds: string[] = [];
+  const omittedIds: string[] = excluded.map((entry) => entry.id);
   let size = 0;
   for (const entry of candidates) {
     if (seen.has(entry.id)) continue;
@@ -48,6 +55,7 @@ export function buildTurnContext(
       kind: entry.kind,
       scope: entry.scope,
       condition: entry.condition,
+      applicability: entry.applicability,
       basis: entry.basis,
       tags: entry.tags ?? [],
     });
@@ -107,7 +115,10 @@ export function buildMemoryContext(
   const statuses = options.includeCandidate
     ? (["active", "candidate"] as const)
     : (["active"] as const);
-  const entries = store.search({ text: taskText, limit, statuses: [...statuses] });
+  const entries = store
+    .search({ text: taskText, statuses: [...statuses] })
+    .filter((entry) => entry.applicability !== "task")
+    .slice(0, limit);
   if (entries.length === 0) return "";
 
   const block = [

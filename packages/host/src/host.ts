@@ -3,12 +3,14 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import {
+  ASSISTANT_PROMPT_VERSION,
+  applyReflections,
   assemblePrompt,
   assistantPromptOptions,
   type ReflectionInput,
+  type RememberInput,
   reflectMemories,
   rememberUserFact,
-  saveReflections,
 } from "@mentat/assistant";
 import type {
   HarnessAdapter,
@@ -24,9 +26,11 @@ import { ExperienceStore, FileTrajectoryStore, projectExperience } from "@mentat
 import {
   closeSession,
   type ExperienceSink,
+  normalizeTaskInput,
   openSession,
   runTurn,
   SessionRecorder,
+  type TaskInput,
   type TurnOptions,
 } from "@mentat/session";
 
@@ -93,7 +97,7 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
             model: config.model ?? null,
             permissionMode: config.permissionMode ?? "custom",
             protocolLog: config.protocolLog ?? false,
-            promptVersion: "personal-assistant-v2",
+            promptVersion: ASSISTANT_PROMPT_VERSION,
           },
         },
         traceId,
@@ -221,20 +225,23 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
         throw error;
       }
     },
-    async turn(session: SessionHandle, task: string, options: TurnOptions = {}) {
+    async turn(session: SessionHandle, task: string | TaskInput, options: TurnOptions = {}) {
       if (closed || !sessions.has(session))
         throw new Error("session is not owned by an active host");
+      const input = normalizeTaskInput(task);
       let began = false;
       const turnId = options.turnId ?? randomUUID();
       knownTurns.add(turnId);
       const recorder = new SessionRecorder({
-        prompt: task,
+        prompt: input.text,
+        input,
         cwd: config.cwd,
         harness: config.adapter.id,
         ...(config.model ? { model: config.model } : {}),
       });
+      emit("task.input", { turnId, input });
       try {
-        const assembled = await assemblePrompt(memory, config.adapter, task);
+        const assembled = await assemblePrompt(memory, config.adapter, input);
         emit("prompt.assembled", {
           turnId,
           parentSpanId: sessionSpans.get(session),
@@ -271,7 +278,8 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
             record = projectExperience(
               file.dir,
               {
-                prompt: task,
+                prompt: input.text,
+                input,
                 cwd: config.cwd,
                 harness: config.adapter.id,
                 ...(config.model ? { model: config.model } : {}),
@@ -312,9 +320,21 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
         throw error;
       }
     },
-    async remember(text: string) {
-      const result = await rememberUserFact(memory, experience, text, config.cwd);
+    async remember(input: RememberInput) {
+      const result = await rememberUserFact(memory, experience, input, config.cwd);
       emit("memory.confirm", { result });
+      if (
+        typeof input === "string" &&
+        result.op !== "reject" &&
+        (result.classification === "unspecified" ||
+          result.entry?.kind === "fact" ||
+          result.entry?.kind === "candidate")
+      )
+        diagnostic({
+          code: "MEMORY_KIND_UNSPECIFIED",
+          message:
+            "Saved unclassified text; hard-constraint protection is not established. Use an explicit constraint/preference/fact/method kind for each rule.",
+        });
       return result;
     },
     async reflect(input: ReflectionInput, options: TurnOptions = {}) {
@@ -323,15 +343,26 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
       try {
         const parsed = await reflectMemories(config.reflectionAdapter ?? config.adapter, {
           ...input,
+          existingMemories: await memory.search({ statuses: ["candidate", "active"] }),
           cwd: config.cwd,
           ...(config.model ? { model: config.model } : {}),
           execution: { ...execution({ ...options, turnId: spanId }), deps: adapterDeps },
         });
         emit("reflection.parsed", { spanId, ...parsed });
-        const added =
-          parsed.status === "invalid" ? 0 : await saveReflections(memory, parsed.candidates);
-        emit("reflection.end", { spanId, status: parsed.status, added });
-        return { ...parsed, added };
+        const applied =
+          parsed.status === "invalid"
+            ? {
+                added: 0,
+                merged: 0,
+                skipped: 0,
+                rejected: 0,
+                decisions: [],
+                applicationStatus: "not-applied" as const,
+              }
+            : await applyReflections(memory, parsed.candidates);
+        emit("reflection.apply", { spanId, ...applied });
+        emit("reflection.end", { spanId, status: parsed.status, ...applied });
+        return { ...parsed, ...applied };
       } catch (error) {
         emit("reflection.error", { spanId, error: String(error) });
         throw error;

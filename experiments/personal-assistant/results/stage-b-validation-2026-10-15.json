@@ -1,0 +1,356 @@
+{
+  "date": "2026-10-15",
+  "scope": "Stage B source boundaries and evidence-batch validation; synthetic non-blind household pilot",
+  "strategy": {
+    "inputSchemaVersion": "source-fragments-v1",
+    "reflectionSchemaVersion": "evidence-batch-v1",
+    "promptVersion": "personal-assistant-v3",
+    "runnerSha256": "f911d6529b6e3874e1baf3a90034f1f2ea7cf294f0451d95ec386dfe832f9e73"
+  },
+  "datasetSha256": "6fa4860f31387b46c83edd2147205cd3f33b84c0be8ed2b9fd0869ed24284bef",
+  "tasks": 6,
+  "userTurns": 24,
+  "reflectionCalls": 3,
+  "hostCalls": 27,
+  "executionFailures": 0,
+  "model": ["opencode-go/deepseek-v4.1-flash"],
+  "nativeAccounting": {
+    "complete": 9
+  },
+  "costUsdByArmAndPhase": {
+    "reset/main": 0.009832734,
+    "persistent/main": 0.008725482,
+    "persistent/reflection": 0.006862643999999999
+  },
+  "totalRecordedCostUsd": 0.025420859999999997,
+  "reflections": [
+    {
+      "case": "household-persistent-learn",
+      "status": "ok",
+      "added": 4,
+      "issues": [],
+      "candidates": [
+        {
+          "text": "生活类安排（如排时间表）的输出顺序：先给「时间表」，再给「约束核对」。",
+          "kind": "preference",
+          "evidenceIds": ["exp-2ca2c868e1757d3ce8ba2f8c85563109"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-2ca2c868e1757d3ce8ba2f8c85563109#msg0/part0",
+              "origin": "user",
+              "excerpt": "生活安排先给“时间表”，再给“约束核对”"
+            }
+          ]
+        },
+        {
+          "text": "时间表述中「X点前」一律理解为严格早于X点，不能把正好X点当作满足；并且在边界之外至少另留5分钟余量。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-2ca2c868e1757d3ce8ba2f8c85563109"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-2ca2c868e1757d3ce8ba2f8c85563109#msg0/part0",
+              "origin": "user",
+              "excerpt": "“X点前”均指严格早于，并至少另留5分钟余量"
+            }
+          ]
+        },
+        {
+          "text": "排生活安排时不得自行压缩办事或交通时长。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-2ca2c868e1757d3ce8ba2f8c85563109"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-2ca2c868e1757d3ce8ba2f8c85563109#msg0/part0",
+              "origin": "user",
+              "excerpt": "不能自行压缩办事或交通时长"
+            }
+          ]
+        },
+        {
+          "text": "排日程时先向用户询问不能违反的时间约束，不自行假设出发时间或回家时间。",
+          "kind": "preference",
+          "evidenceIds": ["exp-8ddb010777f1fe1947c9c41eeb4bf2e6"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-8ddb010777f1fe1947c9c41eeb4bf2e6#msg0/part0",
+              "origin": "user",
+              "excerpt": "先问我不能违反的时间约束，别自行假设出发或回家时间"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "household-persistent-exception",
+      "status": "ok",
+      "added": 5,
+      "issues": [],
+      "candidates": [
+        {
+          "text": "生活安排先给“时间表”，再给“约束核对”。",
+          "kind": "preference",
+          "evidenceIds": ["exp-2ca2c868e1757d3ce8ba2f8c85563109"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-2ca2c868e1757d3ce8ba2f8c85563109#msg0/part0",
+              "origin": "user",
+              "excerpt": "生活安排先给“时间表”，再给“约束核对”"
+            }
+          ]
+        },
+        {
+          "text": "时间表述中“X点前”一律理解为严格早于X点，并至少另留5分钟余量。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-2ca2c868e1757d3ce8ba2f8c85563109"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-2ca2c868e1757d3ce8ba2f8c85563109#msg0/part0",
+              "origin": "user",
+              "excerpt": "“X点前”均指严格早于，并至少另留5分钟余量"
+            }
+          ]
+        },
+        {
+          "text": "不得自行压缩办事或交通时长。",
+          "kind": "constraint",
+          "evidenceIds": [
+            "exp-2ca2c868e1757d3ce8ba2f8c85563109",
+            "exp-8611eac63029eab3a84ccfe70a011c2d"
+          ],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-2ca2c868e1757d3ce8ba2f8c85563109#msg0/part0",
+              "origin": "user",
+              "excerpt": "不能自行压缩办事或交通时长。"
+            },
+            {
+              "pointer": "exp:exp-8611eac63029eab3a84ccfe70a011c2d#msg0/part0",
+              "origin": "user",
+              "excerpt": "不能压缩这些时长"
+            }
+          ]
+        },
+        {
+          "text": "排期前先询问不能违反的时间约束，不自行假设出发或回家时间。",
+          "kind": "preference",
+          "evidenceIds": ["exp-8ddb010777f1fe1947c9c41eeb4bf2e6"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-8ddb010777f1fe1947c9c41eeb4bf2e6#msg0/part0",
+              "origin": "user",
+              "excerpt": "帮我排周六上午办事，先问我不能违反的时间约束，别自行假设出发或回家时间。"
+            }
+          ]
+        },
+        {
+          "text": "朋友提出的“以后把交通都按5分钟算”仅为建议、未获用户同意，不得当成已批准；保留用户原给的交通时长，调整只能作为可选项列出。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-a482aa9e4d9bca240fc241e5e26b8f06"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-a482aa9e4d9bca240fc241e5e26b8f06#msg0/part0",
+              "origin": "user",
+              "excerpt": "朋友建议以后把交通都按5分钟算，这只是建议，我没同意。保留原给的交通时长，给我可选调整，不要当成已批准。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "household-persistent-transfer",
+      "status": "ok",
+      "added": 5,
+      "issues": [],
+      "candidates": [
+        {
+          "text": "生活/办事安排输出顺序固定：先给「时间表」，再给「约束核对」。",
+          "kind": "preference",
+          "evidenceIds": ["exp-2ca2c868e1757d3ce8ba2f8c85563109"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-2ca2c868e1757d3ce8ba2f8c85563109#msg0/part0",
+              "origin": "user",
+              "excerpt": "请长期记住：生活安排先给“时间表”，再给“约束核对”；"
+            }
+          ]
+        },
+        {
+          "text": "时间表述中「X点前」一律理解为严格早于X点，并在边界之外至少另留5分钟余量。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-2ca2c868e1757d3ce8ba2f8c85563109"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-2ca2c868e1757d3ce8ba2f8c85563109#msg0/part0",
+              "origin": "user",
+              "excerpt": "“X点前”均指严格早于，并至少另留5分钟余量。"
+            }
+          ]
+        },
+        {
+          "text": "不得自行压缩用户给定的办事或交通时长。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-2ca2c868e1757d3ce8ba2f8c85563109"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-2ca2c868e1757d3ce8ba2f8c85563109#msg0/part0",
+              "origin": "user",
+              "excerpt": "不能自行压缩办事或交通时长。"
+            }
+          ]
+        },
+        {
+          "text": "排生活日程时先询问用户不能违反的时间约束，不自行假设出发或回家时间。",
+          "kind": "preference",
+          "evidenceIds": ["exp-8ddb010777f1fe1947c9c41eeb4bf2e6"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-8ddb010777f1fe1947c9c41eeb4bf2e6#msg0/part0",
+              "origin": "user",
+              "excerpt": "先问我不能违反的时间约束，别自行假设出发或回家时间。"
+            }
+          ]
+        },
+        {
+          "text": "对用户假设的变更只做核对，不代替用户确认或批准变更，是否采用由用户决定。",
+          "kind": "preference",
+          "evidenceIds": ["exp-bab34be757184ece881c377bbd6cf2ec"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-bab34be757184ece881c377bbd6cf2ec#msg0/part0",
+              "origin": "user",
+              "excerpt": "请核对，不直接替我确认变更。"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "finalMemoryStatuses": {
+    "active": 1,
+    "candidate": 14
+  },
+  "candidateSourceOrigins": {
+    "user": 15
+  },
+  "captureChecks": [
+    {
+      "case": "household-reset-learn",
+      "gaps": 0,
+      "violations": [],
+      "capture": {
+        "status": "matched-captured-fields",
+        "protocolFrames": 22,
+        "tools": 2,
+        "permissionRequests": 4,
+        "issues": [],
+        "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+        "nonTextToolResults": 0
+      }
+    },
+    {
+      "case": "household-reset-exception",
+      "gaps": 0,
+      "violations": [],
+      "capture": {
+        "status": "matched-captured-fields",
+        "protocolFrames": 6,
+        "tools": 1,
+        "permissionRequests": 1,
+        "issues": [],
+        "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+        "nonTextToolResults": 0
+      }
+    },
+    {
+      "case": "household-reset-transfer",
+      "gaps": 0,
+      "violations": [],
+      "capture": {
+        "status": "matched-captured-fields",
+        "protocolFrames": 6,
+        "tools": 1,
+        "permissionRequests": 1,
+        "issues": [],
+        "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+        "nonTextToolResults": 0
+      }
+    },
+    {
+      "case": "household-persistent-learn",
+      "gaps": 0,
+      "violations": [],
+      "capture": {
+        "status": "matched-captured-fields",
+        "protocolFrames": 12,
+        "tools": 2,
+        "permissionRequests": 2,
+        "issues": [],
+        "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+        "nonTextToolResults": 0
+      }
+    },
+    {
+      "case": "household-persistent-exception",
+      "gaps": 0,
+      "violations": [],
+      "capture": {
+        "status": "matched-captured-fields",
+        "protocolFrames": 6,
+        "tools": 1,
+        "permissionRequests": 1,
+        "issues": [],
+        "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+        "nonTextToolResults": 0
+      }
+    },
+    {
+      "case": "household-persistent-transfer",
+      "gaps": 0,
+      "violations": [],
+      "capture": {
+        "status": "unverified",
+        "protocolFrames": 0,
+        "tools": 0,
+        "permissionRequests": 0,
+        "issues": [],
+        "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+        "nonTextToolResults": 0
+      }
+    }
+  ],
+  "manualReview": {
+    "policyContamination": "No text-question or 220-character host policy in the 14 parsed candidates; all 15 citations resolve to user-origin excerpts.",
+    "remainingIssues": [
+      {
+        "kind": "scope-generalization",
+        "case": "household-persistent-learn",
+        "evidence": "A task-local request to first ask scheduling constraints became a general preference. Exact excerpt matching did not establish reusable scope."
+      },
+      {
+        "kind": "duplicate-candidates",
+        "evidence": "Three cumulative reflections added 4, 5 and 5 candidates; paraphrases of the same buffer/format rules remain separate. Replaying identical proposals is idempotent; semantic merging is not implemented."
+      },
+      {
+        "kind": "temporary-format",
+        "case": "household-persistent-exception",
+        "turn": 3,
+        "evidence": "Despite a task-level one-paragraph exception, the answer used two paragraphs."
+      },
+      {
+        "kind": "answer-inconsistency",
+        "case": "household-persistent-exception",
+        "turn": 3,
+        "evidence": "Answer said arrival must be before 10:25, then accepted arrival exactly 10:25 as a five-minute margin before 10:30."
+      }
+    ],
+    "screeningCaveats": "Literal format headings and omitted duration literals produce false failures; 11/13 in both arms is not a task success rate."
+  },
+  "limits": [
+    "One synthetic trajectory per arm; no independent blind review or repeated runs.",
+    "24 user turns and 3 reflections; user-rule activation still uses an explicit legacy remember string, not autonomous learning.",
+    "Final memory has one active mixed fact and 14 inactive candidates; typed atomization and legacy migration remain pending.",
+    "Memory-only gateway policy still rejects execute wrappers; no claim of MCP learning-channel validation.",
+    "Live pilot covered source/schema behavior; explicit feedback/error source variants were exercised offline.",
+    "No claim that source presence and verbatim excerpt prove semantic support or professional correctness."
+  ]
+}

@@ -1,0 +1,614 @@
+{
+  "date": "2026-10-15",
+  "scope": "Host-labelled reuse scope and bounded candidate evidence operations",
+  "replayDesign": {
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "source": "/Users/soar/Code/mentat/.mentat/experiments/multiturn-scope-merge-20261015",
+    "sourceSha256": "e7692e385966d1eb12acf1aeaad614c9285791ba938408f66ad583ad6ac70bf0",
+    "reflectionSchemaVersion": "evidence-operations-v3",
+    "maximumCalls": 3,
+    "treatment": "empty isolated candidate branch; no active user profile; same cumulative real evidence"
+  },
+  "replayRounds": [
+    {
+      "case": "household-persistent-learn",
+      "interactions": 4,
+      "status": "ok",
+      "added": 3,
+      "merged": 0,
+      "skipped": 0,
+      "rejected": 0,
+      "applicationStatus": "complete",
+      "decisions": [
+        {
+          "index": 0,
+          "op": "add",
+          "id": "mem-6kqfye"
+        },
+        {
+          "index": 1,
+          "op": "add",
+          "id": "mem-s8c7jr"
+        },
+        {
+          "index": 2,
+          "op": "add",
+          "id": "mem-1vs9ud4"
+        }
+      ],
+      "proposals": [
+        {
+          "text": "生活安排时，先给「时间表」，再给「约束核对」。",
+          "kind": "preference",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "生活安排先给“时间表”，再给“约束核对”",
+              "memoryScope": "reusable"
+            }
+          ],
+          "applicability": "reusable",
+          "operation": "add"
+        },
+        {
+          "text": "生活安排中，凡「X点前」均指严格早于该时刻，并至少另留5分钟余量。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "“X点前”均指严格早于，并至少另留5分钟余量",
+              "memoryScope": "reusable"
+            }
+          ],
+          "applicability": "reusable",
+          "operation": "add"
+        },
+        {
+          "text": "生活安排排程时，不得自行压缩办事或交通时长。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "不能自行压缩办事或交通时长",
+              "memoryScope": "reusable"
+            }
+          ],
+          "applicability": "reusable",
+          "operation": "add"
+        }
+      ],
+      "memory": [
+        {
+          "id": "mem-1vs9ud4",
+          "text": "生活安排排程时，不得自行压缩办事或交通时长。",
+          "key": "生活安排排程时，不得自行压缩办事或交通时长。",
+          "kind": "constraint",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "applicability": "reusable",
+          "evidence": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "不能自行压缩办事或交通时长",
+              "memoryScope": "reusable"
+            }
+          ],
+          "revision": 1,
+          "createdAt": 1792058471527
+        },
+        {
+          "id": "mem-s8c7jr",
+          "text": "生活安排中，凡「X点前」均指严格早于该时刻，并至少另留5分钟余量。",
+          "key": "生活安排中，凡「x点前」均指严格早于该时刻，并至少另留5分钟余量。",
+          "kind": "constraint",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "applicability": "reusable",
+          "evidence": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "“X点前”均指严格早于，并至少另留5分钟余量",
+              "memoryScope": "reusable"
+            }
+          ],
+          "revision": 1,
+          "createdAt": 1792058471504
+        },
+        {
+          "id": "mem-6kqfye",
+          "text": "生活安排时，先给「时间表」，再给「约束核对」。",
+          "key": "生活安排时，先给「时间表」，再给「约束核对」。",
+          "kind": "preference",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "applicability": "reusable",
+          "evidence": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "生活安排先给“时间表”，再给“约束核对”",
+              "memoryScope": "reusable"
+            }
+          ],
+          "revision": 1,
+          "createdAt": 1792058471478
+        }
+      ]
+    },
+    {
+      "case": "household-persistent-exception",
+      "interactions": 8,
+      "status": "ok",
+      "added": 0,
+      "merged": 0,
+      "skipped": 0,
+      "rejected": 0,
+      "applicationStatus": "complete",
+      "decisions": [
+        {
+          "index": 0,
+          "op": "dedup",
+          "reason": "merge evidence already present",
+          "id": "mem-1vs9ud4"
+        },
+        {
+          "index": 1,
+          "op": "dedup",
+          "reason": "merge evidence already present",
+          "id": "mem-s8c7jr"
+        },
+        {
+          "index": 2,
+          "op": "dedup",
+          "reason": "merge evidence already present",
+          "id": "mem-6kqfye"
+        }
+      ],
+      "proposals": [
+        {
+          "text": "生活安排排程时，不得自行压缩办事或交通时长。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "不能自行压缩办事或交通时长",
+              "memoryScope": "reusable"
+            }
+          ],
+          "applicability": "reusable",
+          "operation": "merge",
+          "mergeTarget": {
+            "id": "mem-1vs9ud4",
+            "revision": 1
+          }
+        },
+        {
+          "text": "生活安排中，凡「X点前」均指严格早于该时刻，并至少另留5分钟余量。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "“X点前”均指严格早于，并至少另留5分钟余量",
+              "memoryScope": "reusable"
+            }
+          ],
+          "applicability": "reusable",
+          "operation": "merge",
+          "mergeTarget": {
+            "id": "mem-s8c7jr",
+            "revision": 1
+          }
+        },
+        {
+          "text": "生活安排时，先给「时间表」，再给「约束核对」。",
+          "kind": "preference",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "生活安排先给“时间表”，再给“约束核对”",
+              "memoryScope": "reusable"
+            }
+          ],
+          "applicability": "reusable",
+          "operation": "merge",
+          "mergeTarget": {
+            "id": "mem-6kqfye",
+            "revision": 1
+          }
+        }
+      ],
+      "memory": [
+        {
+          "id": "mem-1vs9ud4",
+          "text": "生活安排排程时，不得自行压缩办事或交通时长。",
+          "key": "生活安排排程时，不得自行压缩办事或交通时长。",
+          "kind": "constraint",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "applicability": "reusable",
+          "evidence": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "不能自行压缩办事或交通时长",
+              "memoryScope": "reusable"
+            }
+          ],
+          "revision": 1,
+          "createdAt": 1792058471527
+        },
+        {
+          "id": "mem-s8c7jr",
+          "text": "生活安排中，凡「X点前」均指严格早于该时刻，并至少另留5分钟余量。",
+          "key": "生活安排中，凡「x点前」均指严格早于该时刻，并至少另留5分钟余量。",
+          "kind": "constraint",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "applicability": "reusable",
+          "evidence": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "“X点前”均指严格早于，并至少另留5分钟余量",
+              "memoryScope": "reusable"
+            }
+          ],
+          "revision": 1,
+          "createdAt": 1792058471504
+        },
+        {
+          "id": "mem-6kqfye",
+          "text": "生活安排时，先给「时间表」，再给「约束核对」。",
+          "key": "生活安排时，先给「时间表」，再给「约束核对」。",
+          "kind": "preference",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "applicability": "reusable",
+          "evidence": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "生活安排先给“时间表”，再给“约束核对”",
+              "memoryScope": "reusable"
+            }
+          ],
+          "revision": 1,
+          "createdAt": 1792058471478
+        }
+      ]
+    },
+    {
+      "case": "household-persistent-transfer",
+      "interactions": 12,
+      "status": "ok",
+      "added": 0,
+      "merged": 0,
+      "skipped": 0,
+      "rejected": 0,
+      "applicationStatus": "complete",
+      "decisions": [
+        {
+          "index": 0,
+          "op": "dedup",
+          "reason": "merge evidence already present",
+          "id": "mem-6kqfye"
+        },
+        {
+          "index": 1,
+          "op": "dedup",
+          "reason": "merge evidence already present",
+          "id": "mem-s8c7jr"
+        },
+        {
+          "index": 2,
+          "op": "dedup",
+          "reason": "merge evidence already present",
+          "id": "mem-1vs9ud4"
+        }
+      ],
+      "proposals": [
+        {
+          "text": "生活安排时，先给「时间表」，再给「约束核对」。",
+          "kind": "preference",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "生活安排先给“时间表”，再给“约束核对”",
+              "memoryScope": "reusable"
+            }
+          ],
+          "applicability": "reusable",
+          "operation": "merge",
+          "mergeTarget": {
+            "id": "mem-6kqfye",
+            "revision": 1
+          }
+        },
+        {
+          "text": "生活安排中，凡「X点前」均指严格早于该时刻，并至少另留5分钟余量。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "“X点前”均指严格早于，并至少另留5分钟余量",
+              "memoryScope": "reusable"
+            }
+          ],
+          "applicability": "reusable",
+          "operation": "merge",
+          "mergeTarget": {
+            "id": "mem-s8c7jr",
+            "revision": 1
+          }
+        },
+        {
+          "text": "生活安排排程时，不得自行压缩办事或交通时长。",
+          "kind": "constraint",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "不能自行压缩办事或交通时长",
+              "memoryScope": "reusable"
+            }
+          ],
+          "applicability": "reusable",
+          "operation": "merge",
+          "mergeTarget": {
+            "id": "mem-1vs9ud4",
+            "revision": 1
+          }
+        }
+      ],
+      "memory": [
+        {
+          "id": "mem-1vs9ud4",
+          "text": "生活安排排程时，不得自行压缩办事或交通时长。",
+          "key": "生活安排排程时，不得自行压缩办事或交通时长。",
+          "kind": "constraint",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "applicability": "reusable",
+          "evidence": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "不能自行压缩办事或交通时长",
+              "memoryScope": "reusable"
+            }
+          ],
+          "revision": 1,
+          "createdAt": 1792058471527
+        },
+        {
+          "id": "mem-s8c7jr",
+          "text": "生活安排中，凡「X点前」均指严格早于该时刻，并至少另留5分钟余量。",
+          "key": "生活安排中，凡「x点前」均指严格早于该时刻，并至少另留5分钟余量。",
+          "kind": "constraint",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "applicability": "reusable",
+          "evidence": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "“X点前”均指严格早于，并至少另留5分钟余量",
+              "memoryScope": "reusable"
+            }
+          ],
+          "revision": 1,
+          "createdAt": 1792058471504
+        },
+        {
+          "id": "mem-6kqfye",
+          "text": "生活安排时，先给「时间表」，再给「约束核对」。",
+          "key": "生活安排时，先给「时间表」，再给「约束核对」。",
+          "kind": "preference",
+          "status": "candidate",
+          "basis": "inference",
+          "speaker": "assistant",
+          "applicability": "reusable",
+          "evidence": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+          "evidenceIds": ["exp-228b5b6bdb509359100da4d5b3ad1346"],
+          "evidenceSources": [
+            {
+              "pointer": "exp:exp-228b5b6bdb509359100da4d5b3ad1346#msg0/part0",
+              "origin": "user",
+              "excerpt": "生活安排先给“时间表”，再给“约束核对”",
+              "memoryScope": "reusable"
+            }
+          ],
+          "revision": 1,
+          "createdAt": 1792058471478
+        }
+      ]
+    }
+  ],
+  "replayValidation": {
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "models": [
+      {
+        "requested": "opencode-go/deepseek-v4.1-flash",
+        "effective": "opencode-go/deepseek-v4.1-flash"
+      },
+      {
+        "requested": "opencode-go/deepseek-v4.1-flash",
+        "effective": "opencode-go/deepseek-v4.1-flash"
+      },
+      {
+        "requested": "opencode-go/deepseek-v4.1-flash",
+        "effective": "opencode-go/deepseek-v4.1-flash"
+      }
+    ],
+    "accounting": {
+      "status": "complete",
+      "sessions": [
+        {
+          "id": "ses_ec0fce1fcffejeuhJhdp6EqysU",
+          "cost": 0.003496788,
+          "tokens_input": 13442,
+          "tokens_output": 460,
+          "tokens_reasoning": 2003,
+          "tokens_cache_read": 896,
+          "tokens_cache_write": 0,
+          "model": null,
+          "version": "2.0.25"
+        },
+        {
+          "id": "ses_ec0fdc485ffeOUk0S7EMcQ3lWQ",
+          "cost": 0.0034083359999999997,
+          "tokens_input": 10096,
+          "tokens_output": 458,
+          "tokens_reasoning": 2696,
+          "tokens_cache_read": 512,
+          "tokens_cache_write": 0,
+          "model": null,
+          "version": "2.0.25"
+        },
+        {
+          "id": "ses_ec0fde7c0ffe6npcJjUGiRWjgv",
+          "cost": 0.001815936,
+          "tokens_input": 6732,
+          "tokens_output": 419,
+          "tokens_reasoning": 922,
+          "tokens_cache_read": 512,
+          "tokens_cache_write": 0,
+          "model": null,
+          "version": "2.0.25"
+        }
+      ],
+      "missing": []
+    },
+    "trajectory": {
+      "traceId": "78e0038c-23e0-41fc-8e53-27adbb2cde8d",
+      "status": "complete",
+      "events": 480,
+      "turns": 3,
+      "gaps": 0,
+      "violations": [],
+      "capture": {
+        "status": "unverified",
+        "protocolFrames": 0,
+        "tools": 0,
+        "permissionRequests": 0,
+        "issues": [],
+        "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+        "nonTextToolResults": 0
+      }
+    }
+  },
+  "replayCostUsd": 0.00872106,
+  "mainPreflight": {
+    "tasks": 6,
+    "hostCalls": 27,
+    "executionFailures": 0,
+    "costUsd": 0.023104008000000002,
+    "reflectionApplications": [
+      {
+        "case": "household-persistent-learn",
+        "status": "ok",
+        "applicationStatus": "rejected",
+        "added": 0,
+        "merged": 0,
+        "skipped": 0,
+        "rejected": 1,
+        "decisions": [
+          {
+            "index": 0,
+            "op": "reject",
+            "reason": "merge cannot modify an established rule"
+          }
+        ]
+      },
+      {
+        "case": "household-persistent-exception",
+        "status": "ok",
+        "applicationStatus": "complete",
+        "added": 0,
+        "merged": 0,
+        "skipped": 0,
+        "rejected": 0,
+        "decisions": []
+      },
+      {
+        "case": "household-persistent-transfer",
+        "status": "ok",
+        "applicationStatus": "complete",
+        "added": 0,
+        "merged": 0,
+        "skipped": 1,
+        "rejected": 0,
+        "decisions": [
+          {
+            "index": 0,
+            "op": "skip",
+            "reason": "model proposed no save"
+          }
+        ]
+      }
+    ],
+    "finding": "One attempted merge into an established rule was safely rejected. Final schema separates read-only A aliases from candidate C aliases."
+  },
+  "totalRecordedCostUsd": 0.031825068,
+  "manualReview": {
+    "retainedRules": [
+      "生活安排先时间表，再约束核对",
+      "X点前严格早于，并至少另留5分钟余量",
+      "不自行压缩办事或交通时长"
+    ],
+    "candidateCounts": [3, 3, 3],
+    "allRemainCandidates": true,
+    "allReusableSources": true,
+    "note": "Later replay rounds returned no new proposals. Positive new-evidence merges and stale-writer rejection were verified by repository tests, not demonstrated by these zero-update model rounds."
+  },
+  "limitations": [
+    "Single household trajectory; synthetic and non-blind.",
+    "Scope labels come from the known explicit remember directive, not automatic interpretation of arbitrary user language.",
+    "Replay uses an isolated empty candidate branch and regenerates no user-task answers; it does not prove live task quality improvement.",
+    "General semantic equivalence, automatic activation, natural-language exceptions and expiry/restoration remain unimplemented.",
+    "Previous snapshots and the first rejected application are preserved. A sandbox-only startup failure used no model sessions and is excluded from model results."
+  ]
+}

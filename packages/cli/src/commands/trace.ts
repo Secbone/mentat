@@ -59,6 +59,7 @@ export async function traceCommand(args: string[]): Promise<number> {
     process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
     return args.includes("--check") &&
       (value.violations.length ||
+        value.capture.issues.length ||
         value.gaps ||
         ["running", "incomplete", "interrupted"].includes(value.status))
       ? 1

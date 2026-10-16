@@ -1,16 +1,20 @@
 import type { AgentEvent, JsonValue, StopReason, Usage } from "@mentat/core";
+import { type EvidenceFragment, inputFragments, type TaskInput } from "./input";
 export type RecordedToolCall =
   | {
       kind: "call";
       id: string;
       name: string;
       input: JsonValue;
+      status?: string;
     }
   | {
       kind: "result";
       id: string;
       output: string;
       isError: boolean;
+      content?: JsonValue;
+      outputCoverage?: "complete" | "partial" | "unsupported";
     };
 
 /** Message-level pointer inside a trajectory: who said what, and where. */
@@ -18,6 +22,8 @@ export interface MessageEvidence {
   role: "assistant" | "user";
   index?: number;
   text: string;
+  /** Absent in legacy records; do not infer source boundaries inside old mixed prompts. */
+  fragments?: EvidenceFragment[];
 }
 
 /** One finished task's trajectory summary; the fuel for offline evolution. */
@@ -43,6 +49,8 @@ export interface ExperienceRecord {
   messages?: MessageEvidence[];
   /** Observable tool inputs and results; no private reasoning. */
   toolCalls?: RecordedToolCall[];
+  /** Permission lifecycle, including cancellation and handler errors. */
+  permissions?: Extract<AgentEvent, { type: "permission.request" | "permission.resolved" }>[];
 }
 
 /** Stable evidence pointer to a whole trajectory (message-level detail lives in it). */
@@ -62,6 +70,7 @@ export function sessionEvidence(sessionId: string): string {
 
 export interface ExperienceBase {
   prompt: string;
+  input?: TaskInput;
   cwd: string;
   harness: string;
   model?: string;
@@ -82,7 +91,14 @@ export class SessionRecorder {
       outcome: "error",
       toolErrors: 0,
       tools: [],
-      messages: [{ role: "user", index: 0, text: base.prompt }],
+      messages: [
+        {
+          role: "user",
+          index: 0,
+          text: base.prompt,
+          ...(base.input ? { fragments: inputFragments(base.input) } : {}),
+        },
+      ],
       toolCalls: [],
     };
   }
@@ -125,7 +141,28 @@ export class SessionRecorder {
           id: event.id,
           output: event.output,
           isError: event.isError,
+          ...(event.content !== undefined ? { content: structuredClone(event.content) } : {}),
+          ...(event.outputCoverage ? { outputCoverage: event.outputCoverage } : {}),
         });
+        break;
+      case "tool.update": {
+        const call = this.record.toolCalls?.findLast(
+          (item) => item.kind === "call" && item.id === event.id,
+        );
+        if (call?.kind === "call") {
+          if (event.input !== undefined) call.input = structuredClone(event.input);
+          if (event.name !== undefined) {
+            call.name = event.name;
+            if (!this.record.tools.includes(event.name)) this.record.tools.push(event.name);
+          }
+          if (event.status !== undefined) call.status = event.status;
+        }
+        break;
+      }
+      case "permission.request":
+      case "permission.resolved":
+        this.record.permissions ??= [];
+        this.record.permissions.push(structuredClone(event));
         break;
       default:
         break;

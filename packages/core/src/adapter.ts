@@ -37,6 +37,8 @@ export interface SessionOptions {
 
 export interface UserInput {
   text: string;
+  /** Host-owned run policy, distinct from user preferences and quoted reference data. */
+  hostPolicy?: string;
   /** Host-selected reference data for this turn, separate from user text. */
   context?: string;
 }

@@ -2,15 +2,20 @@ import type { MemoryEntry } from "./store";
 
 export interface WriteRequest {
   text: string;
+  mode?: "merge-evidence";
+  targetId?: string;
+  expectedEntryRevision?: number;
   key?: string;
   kind?: MemoryEntry["kind"];
   basis?: MemoryEntry["basis"];
   scope?: string;
   condition?: string;
+  applicability?: MemoryEntry["applicability"];
   /** Only explicit host user directives may activate or change an established rule. */
   status?: MemoryEntry["status"];
   evidence?: string;
   evidenceIds?: string[];
+  evidenceSources?: MemoryEntry["evidenceSources"];
   /** Host-origin identity; never copy it from model-supplied arguments. */
   speaker?: MemoryEntry["speaker"];
   tags?: string[];

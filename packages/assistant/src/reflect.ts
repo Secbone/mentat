@@ -2,11 +2,13 @@ import type { HarnessAdapter } from "@mentat/core";
 import type { MemoryAccess } from "@mentat/memory";
 import { runOnce, type TurnOptions } from "@mentat/session";
 import {
-  parseReflectionCandidates,
+  parseEvidenceReflection,
   type ReflectedCandidate,
   type ReflectionInput,
+  type ReflectionParseResult,
   reflectionPrompt,
 } from "./reflection";
+import { buildReflectionBatch } from "./reflection-evidence";
 
 /**
  * Ask the harness to distill durable memories from a finished task and return
@@ -19,9 +21,27 @@ export async function reflectMemories(
     model?: string;
     execution?: TurnOptions & { deps?: import("@mentat/core").AdapterDeps };
   },
-): Promise<ReturnType<typeof parseReflectionCandidates>> {
-  if (!options.interactions?.length) return { status: "ok", candidates: [] };
-  const prompt = reflectionPrompt(options);
+): Promise<
+  ReflectionParseResult & {
+    evidenceBatchId: string;
+    evidenceMap: Array<{ ref: string; pointer: string; origin: string }>;
+    memoryMap: Array<{ ref: string; id: string; revision: number; status: string }>;
+  }
+> {
+  const batch = buildReflectionBatch(options.interactions ?? [], options.existingMemories ?? []);
+  const metadata = {
+    evidenceBatchId: batch.id,
+    evidenceMap: batch.sources.map(({ ref, pointer, origin }) => ({ ref, pointer, origin })),
+    memoryMap: batch.memories.map(({ ref, entry }) => ({
+      ref,
+      id: entry.id,
+      revision: entry.revision ?? 1,
+      status: entry.status ?? "active",
+    })),
+  };
+  if (!options.interactions?.length)
+    return { status: "ok" as const, candidates: [], issues: [], ...metadata };
+  const prompt = reflectionPrompt(options, batch);
   if (prompt.length > 100_000) {
     throw new Error(
       "interaction evidence exceeds reflection budget (100000 chars); evidence was not truncated",
@@ -42,26 +62,92 @@ export async function reflectMemories(
       deps: { ...options.execution?.deps, onPermission: { request: () => "deny" } },
     },
   );
-  if (result.reason !== "done") return { status: "invalid", candidates: [] };
-  return parseReflectionCandidates(
-    result.text,
-    options.interactions.map((record) => record.id),
-  );
+  if (result.reason !== "done")
+    return {
+      status: "invalid" as const,
+      candidates: [],
+      issues: [{ code: "execution-failed", message: `Reflection stopped: ${result.reason}` }],
+      ...metadata,
+    };
+  return { ...parseEvidenceReflection(result.text, batch), ...metadata };
 }
 
+export async function applyReflections(memory: MemoryAccess, candidates: ReflectedCandidate[]) {
+  let added = 0,
+    merged = 0,
+    skipped = 0,
+    rejected = 0;
+  const decisions: Array<{ index: number; op: string; reason?: string; id?: string }> = [];
+  for (const [index, candidate] of candidates.entries()) {
+    if (candidate.operation === "skip" || candidate.applicability === "task") {
+      skipped++;
+      decisions.push({
+        index,
+        op: "skip",
+        reason:
+          candidate.applicability === "task"
+            ? "task-local evidence is retained in experience, not long-term memory"
+            : "model proposed no save",
+      });
+      continue;
+    }
+    const result = await memory.propose({
+      text: candidate.text,
+      kind: candidate.kind ?? "fact",
+      evidence: candidate.evidenceSources?.[0]?.pointer ?? `exp:${candidate.evidenceIds[0]}`,
+      evidenceIds: candidate.evidenceIds,
+      ...(candidate.evidenceSources ? { evidenceSources: candidate.evidenceSources } : {}),
+      applicability: candidate.applicability ?? "unresolved",
+      ...(candidate.condition !== undefined
+        ? {
+            condition: candidate.condition,
+            ...(candidate.operation !== "merge"
+              ? {
+                  key: `reflection:${candidate.kind}:${candidate.applicability}:${candidate.condition}:${candidate.text.trim().toLowerCase()}`,
+                }
+              : {}),
+          }
+        : {}),
+      ...(candidate.operation === "merge"
+        ? {
+            mode: "merge-evidence" as const,
+            targetId: candidate.mergeTarget?.id,
+            expectedEntryRevision: candidate.mergeTarget?.revision,
+            ...(candidate.mergeTarget?.scope !== undefined
+              ? { scope: candidate.mergeTarget.scope }
+              : {}),
+          }
+        : {}),
+    });
+    decisions.push({
+      index,
+      op: result.op,
+      ...(result.reason ? { reason: result.reason } : {}),
+      ...(result.entry ? { id: result.entry.id } : {}),
+    });
+    if (result.op === "add") added++;
+    if (result.op === "update") merged++;
+    if (result.op === "reject") rejected++;
+  }
+  return {
+    added,
+    merged,
+    skipped,
+    rejected,
+    decisions,
+    applicationStatus: rejected
+      ? decisions.some((decision) => decision.op !== "reject")
+        ? ("partial" as const)
+        : ("rejected" as const)
+      : ("complete" as const),
+  };
+}
+
+/** Compatibility count of writes; host callers use the detailed application report. */
 export async function saveReflections(
   memory: MemoryAccess,
   candidates: ReflectedCandidate[],
 ): Promise<number> {
-  let added = 0;
-  for (const candidate of candidates) {
-    const result = await memory.propose({
-      text: candidate.text,
-      kind: "fact",
-      evidence: `exp:${candidate.evidenceIds[0]}`,
-      evidenceIds: candidate.evidenceIds,
-    });
-    if (result.op === "add" || result.op === "update") added++;
-  }
-  return added;
+  const result = await applyReflections(memory, candidates);
+  return result.added + result.merged;
 }

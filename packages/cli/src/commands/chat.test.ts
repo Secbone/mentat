@@ -32,7 +32,7 @@ it("reflects chat corrections with earlier answers and reloads tool-written memo
   const dir = mkdtempSync(join(tmpdir(), "mentat-chat-"));
   const memory = join(dir, "memory.json");
   const sends: UserInput[] = [];
-  const reflectionEvidence: Array<Array<{ id: string; prompt: string; messages: unknown[] }>> = [];
+  const reflectionEvidence: Array<{ records: unknown[]; sources: unknown[] }> = [];
   let disposed = 0;
   state.lines = [
     "安排周末",
@@ -64,11 +64,18 @@ it("reflects chat corrections with earlier answers and reloads tool-written memo
         send: async (input) => {
           let answer: string;
           if (reflection) {
-            const evidence = JSON.parse(
-              input.text.match(/Interaction evidence: (.*)\n/)?.[1] ?? "[]",
-            );
+            const evidence = JSON.parse(input.text.match(/Evidence batch: (.*)\n/)?.[1] ?? "{}");
             reflectionEvidence.push(evidence);
-            answer = JSON.stringify([{ text: "11点前回家", evidenceIds: [evidence[1].id] }]);
+            answer = JSON.stringify({
+              batchId: evidence.batchId,
+              candidates: [
+                {
+                  text: "11点前回家",
+                  kind: "constraint",
+                  evidenceRefs: [{ ref: "E2.M1.P1", excerpt: "需要11点前回家" }],
+                },
+              ],
+            });
           } else {
             sends.push(input);
             answer = sends.length === 1 ? "安排到11:30" : "已修订计划";
@@ -105,7 +112,7 @@ it("reflects chat corrections with earlier answers and reloads tool-written memo
   ).toBe(0);
   expect(sends[1]?.context).toContain("交通缓冲20分钟");
   expect(sends[2]?.context).not.toContain("11点前回家");
-  expect(reflectionEvidence.map((records) => records.length)).toEqual([2, 3]);
+  expect(reflectionEvidence.map((batch) => batch.records.length)).toEqual([2, 3]);
   expect(JSON.stringify(reflectionEvidence[1])).toContain("安排到11:30");
   expect(new JsonFileMemoryStore(memory).list()).toHaveLength(2);
   expect(
