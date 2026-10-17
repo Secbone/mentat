@@ -19,7 +19,7 @@ export type RecordedToolCall =
 
 /** Message-level pointer inside a trajectory: who said what, and where. */
 export interface MessageEvidence {
-  role: "assistant" | "user";
+  role: "assistant" | "user" | "system" | "tool" | "document";
   index?: number;
   text: string;
   /** Absent in legacy records; do not infer source boundaries inside old mixed prompts. */
@@ -29,6 +29,8 @@ export interface MessageEvidence {
 /** One finished task's trajectory summary; the fuel for offline evolution. */
 export interface ExperienceRecord {
   id: string;
+  /** Imported observations preserve their date/roles; they are not verified task outcomes. */
+  imported?: { source: string; sessionId: string; timestampKnown?: boolean; order?: number };
   traceId?: string;
   turnId?: string;
   trajectoryDir?: string;

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "benchmark": {
+    "id": "contract-inspect",
+    "version": "fixture-1",
+    "track": "smoke"
+  },
+  "dataset": {
+    "revision": "fixture-1",
+    "sha256": "f48bf78fdcea0ca3fc44ca817df19f999d7fa42d1a9ae1cfa1006bf0d07fb9f5",
+    "split": "smoke",
+    "source": "benchmarks/examples/episodes.json"
+  },
+  "scorer": {
+    "id": "inspect-fixture",
+    "revision": "1",
+    "config": {}
+  },
+  "protocol": {
+    "id": "host-episodes",
+    "revision": "1",
+    "config": {
+      "permission": "deny",
+      "session": "fresh-per-episode",
+      "confirmation": "explicit typed user directives",
+      "candidateActivation": "disabled",
+      "isolation": "local-process-only"
+    },
+    "arms": [
+      {
+        "id": "baseline",
+        "memory": "reset"
+      }
+    ],
+    "maxCalls": 16,
+    "turnTimeoutMs": 10000
+  },
+  "subject": {
+    "id": "mentat",
+    "revision": "fixture-1",
+    "codeSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "harness": "fake",
+    "harnessVersion": "builtin-1",
+    "model": "fake",
+    "modelVersion": "builtin-1",
+    "config": {}
+  },
+  "metrics": [
+    {
+      "id": "task.success",
+      "dimension": "task-quality",
+      "direction": "higher-better",
+      "unit": "ratio",
+      "min": 0,
+      "max": 1,
+      "source": "accuracy",
+      "valueMap": {
+        "C": 1,
+        "I": 0,
+        "P": 0.5
+      }
+    }
+  ],
+  "units": [
+    {
+      "caseId": "task-a",
+      "familyId": "fixture",
+      "arm": "baseline",
+      "repetition": 0,
+      "sourceId": "task-a:1",
+      "metricIds": ["task.success"]
+    },
+    {
+      "caseId": "task-b",
+      "familyId": "fixture",
+      "arm": "baseline",
+      "repetition": 0,
+      "sourceId": "task-b:1",
+      "metricIds": ["task.success"]
+    }
+  ]
+}

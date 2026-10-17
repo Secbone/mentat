@@ -12,6 +12,8 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@mentat/benchmark": "workspace:*",
+    "@mentat/benchmark-file": "workspace:*",
     "@mentat/assistant": "workspace:*",
     "@mentat/core": "workspace:*",
     "@mentat/evaluation": "workspace:*",

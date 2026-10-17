@@ -7,6 +7,8 @@
 | 包 | 职责 | 生产 workspace 依赖 |
 |---|---|---|
 | `@mentat/core` | 统一协议、制品契约、事件、JSON工具、harness注册与测试契约 | 无 |
+| `@mentat/benchmark` | 评测契约、能力清单、连续任务与配对分析 | 无 |
+| `@mentat/benchmark-file` | 上游结果接入、文件存储、外部运行与报告 | benchmark、evaluation |
 | `@mentat/session` | 会话执行、轨迹与经验契约、统一超时取消 | core |
 | `@mentat/host` | 默认装配与资源关闭、可替换服务注入 | core、session、assistant、memory、memory-file、memory-mcp、observability、transport-pi、transport-acp |
 | `@mentat/kernel` | 插件生命周期、服务容器和作用域 | core |
@@ -84,4 +86,6 @@ node_modules/.bin/tsc --noEmit -p experiments/personal-assistant/tsconfig.json
 
 ## 执行与可观测性重构
 
-当前为17个功能包；上面的2026-10-15验证记录是此前15包拆分基线，重构实现和验证见 [执行、记忆与可观测性重构](../refactor-execution-observability.md)。assistant禁止依赖文件实现和终端，session只依赖core，observability实现session契约；host负责默认装配。不要让领域包反向导入host。
+执行与可观测性重构阶段形成17个功能包；上面的2026-10-15验证记录是此前15包拆分基线，重构实现和验证见 [执行、记忆与可观测性重构](../refactor-execution-observability.md)。assistant禁止依赖文件实现和终端，session只依赖core，observability实现session契约；host负责默认装配。不要让领域包反向导入host。
+
+2026-10-16新增 benchmark 与 benchmark-file 后为19个功能包。benchmark 保持纯契约与分析，benchmark-file 负责运行文件和外部执行；Mentat Subject 的 host 装配在 CLI，两个新包均不依赖 host 或 transport。公开评测集环境和 scorer 留在上游框架，接入说明见 [评测框架](../benchmark-framework.md)。

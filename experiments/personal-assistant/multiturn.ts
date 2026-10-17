@@ -11,6 +11,7 @@ import { FileMemoryRepository } from "@mentat/memory-file";
 import { inspectTrajectory, readTrajectory, resolveEventData } from "@mentat/observability";
 import type { ExperienceRecord, TaskInput } from "@mentat/session";
 import { createAcpAdapter } from "@mentat/transport-acp";
+import { explicitRules } from "./explicit-rules";
 
 export interface Check {
   name: string;
@@ -40,7 +41,7 @@ export type Arm = "persistent" | "reset";
 export function modelInput(role: string, turn: ExperimentTurn): TaskInput {
   return {
     text: turn.text,
-    memoryScope: turn.remember ? "reusable" : "task",
+    memoryScope: turn.remember ? "reusable" : "unspecified",
     hostPolicy: `这是合成任务模拟，用户身份：${role}。\n澄清问题直接写在文本答复中，不使用question交互工具。答复尽量控制在220字以内，必要表格可稍长；仅输出答复或草稿，不进行真实发送、排会、购买或文件修改。`,
   };
 }
@@ -186,7 +187,7 @@ export async function runMultiturn() {
     datasetSha256,
     runnerSha256,
     datasetVersion: cases.version,
-    inputSchemaVersion: "source-scope-v2",
+    inputSchemaVersion: "source-scope-v3-typed-confirmation",
     reflectionSchemaVersion: "evidence-operations-v3",
     promptVersion: ASSISTANT_PROMPT_VERSION,
     model,
@@ -353,7 +354,8 @@ export async function runMultiturn() {
               throw new Error(result.error ?? `turn ended ${result.reason}`);
             }
             // Exact explicit user directive, never a hidden profile or model inference.
-            if (turn.remember) await host.remember(turn.text);
+            if (turn.remember)
+              for (const rule of explicitRules(scenario.id, turn.text)) await host.remember(rule);
           }
           if (arm === "persistent") {
             reserve();

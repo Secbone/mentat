@@ -1,0 +1,26 @@
+{
+  "path": "/Users/soar/Code/mentat",
+  "totalBytes": 245107195904,
+  "freeBytes": 117920182272,
+  "incomingBytes": 0,
+  "reserveBytes": 32212254720,
+  "remainingAfterBytes": 117920182272,
+  "allowed": true,
+  "measuredAt": "2026-10-16T05:57:22.893170+00:00",
+  "knownAdditionalStorage": {
+    "knownDatasetRepositoryBytes": 10205679100,
+    "meaning": "Raw repository file sizes; excludes environments and runtime artifacts"
+  },
+  "policy": "Preserve 30 GiB host free space; preflight each artifact and Docker data partition separately; never delete unrelated resources.",
+  "dockerDataPartition": {
+    "status": "measured",
+    "plannedIncomingBytes": null,
+    "freeBytes": 28144918528,
+    "totalBytes": 31524294656,
+    "reserveBytes": 5368709120,
+    "plannedBatchFits": null
+  },
+  "existingDockerResources": "3 active images, 3 active containers, 2 active volumes; preserve all",
+  "allElevenEnvironmentsFit": null,
+  "limitations": "Repository sizes exclude extraction, indexes, weights, environments, build cache and logs. Do not sum host and Docker free space. Check actual image/build needs per batch. This command never deletes or resizes resources."
+}

@@ -1,6 +1,7 @@
 export * from "./adapter";
 export * from "./adapters/fake";
 export * from "./adapters/registry";
+export * from "./answer";
 export * from "./artifact";
 export * from "./events";
 export * from "./json";

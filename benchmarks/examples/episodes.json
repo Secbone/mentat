@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "episodes": [
+    {
+      "id": "format-learn",
+      "familyId": "format",
+      "phase": "learn",
+      "turns": [
+        {
+          "input": { "text": "请长期记住：安排工作先列时间表。", "memoryScope": "reusable" },
+          "remember": [
+            { "text": "安排工作先列时间表。", "kind": "preference", "key": "schedule-format" }
+          ]
+        }
+      ],
+      "checks": []
+    },
+    {
+      "id": "format-probe",
+      "familyId": "format",
+      "phase": "probe",
+      "turns": [{ "input": { "text": "smoke-probe-format", "memoryScope": "task" } }],
+      "checks": [
+        {
+          "metricId": "protocol.echo",
+          "turn": 0,
+          "kind": "includes",
+          "expected": "smoke-probe-format"
+        }
+      ]
+    },
+    {
+      "id": "constraint-learn",
+      "familyId": "constraint",
+      "phase": "learn",
+      "turns": [
+        {
+          "input": { "text": "请长期记住：不要自行缩短交通时间。", "memoryScope": "reusable" },
+          "remember": [
+            { "text": "不要自行缩短交通时间。", "kind": "constraint", "key": "travel-duration" }
+          ]
+        }
+      ],
+      "checks": []
+    },
+    {
+      "id": "constraint-probe",
+      "familyId": "constraint",
+      "phase": "probe",
+      "turns": [{ "input": { "text": "smoke-probe-constraint", "memoryScope": "task" } }],
+      "checks": [
+        {
+          "metricId": "protocol.echo",
+          "turn": 0,
+          "kind": "includes",
+          "expected": "smoke-probe-constraint"
+        }
+      ]
+    }
+  ]
+}

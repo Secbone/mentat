@@ -1,0 +1,2322 @@
+{
+  "schemaVersion": 1,
+  "limitations": [
+    "Synthetic longitudinal pilot, six profiles, one repetition; no independent blinded judge.",
+    "Post-hoc JSON/tool-markup and memory snapshot diagnostics are exploratory, not preregistered scores.",
+    "Oracle reader exact screen is not official LongMemEval semantic grading or memory retrieval."
+  ],
+  "suites": {
+    "longitudinal": {
+      "runId": "146f10e5-3be5-4962-bedf-769c06930445",
+      "createdAt": "2026-10-16T03:52:33.847Z",
+      "codeSha256": "bc50f3a690096a6f6c833f05b0f829ed82727ce93962d9633162aa1bce03cb63",
+      "datasetSha256": "fd7dc6179e52bd7c204470cefab5c060f972173968a4988d9baa167e99494701",
+      "runFileSha256": "9db6f27cad68171a30e3072c72e1671e75ea379d49a7a5febdc15f51650eeeac",
+      "arms": {
+        "reset": {
+          "status": {
+            "completed": 36
+          },
+          "metrics": {
+            "task.quality": {
+              "sum": 1,
+              "measured": 24,
+              "mean": 0.041666666666666664
+            },
+            "constraint.applied": {
+              "sum": 0,
+              "measured": 24,
+              "mean": 0
+            },
+            "preference.applied": {
+              "sum": 1,
+              "measured": 24,
+              "mean": 0.041666666666666664
+            },
+            "interaction.corrections": {
+              "sum": 6,
+              "measured": 24,
+              "mean": 0.25
+            },
+            "exception.restored": {
+              "sum": 0,
+              "measured": 6,
+              "mean": 0
+            },
+            "update.retained": {
+              "sum": 0,
+              "measured": 6,
+              "mean": 0
+            }
+          },
+          "phaseMetrics": {
+            "probe": {
+              "task.quality": {
+                "sum": 0,
+                "measured": 12,
+                "mean": 0
+              },
+              "constraint.applied": {
+                "sum": 0,
+                "measured": 12,
+                "mean": 0
+              },
+              "preference.applied": {
+                "sum": 0,
+                "measured": 12,
+                "mean": 0
+              },
+              "interaction.corrections": {
+                "sum": 6,
+                "measured": 12,
+                "mean": 0.5
+              },
+              "update.retained": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              }
+            },
+            "exception": {
+              "task.quality": {
+                "sum": 1,
+                "measured": 6,
+                "mean": 0.16666666666666666
+              },
+              "constraint.applied": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              },
+              "preference.applied": {
+                "sum": 1,
+                "measured": 6,
+                "mean": 0.16666666666666666
+              },
+              "interaction.corrections": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              }
+            },
+            "regression": {
+              "task.quality": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              },
+              "constraint.applied": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              },
+              "preference.applied": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              },
+              "exception.restored": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              },
+              "interaction.corrections": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              }
+            }
+          },
+          "costUsd": 0.031399176,
+          "unknownCosts": 0,
+          "medianDurationMs": 7282.0,
+          "maxDurationMs": 62887,
+          "confirmedModels": ["opencode-go/deepseek-v4.1-flash"],
+          "modelConfirmations": 36,
+          "nativeSessions": 36,
+          "uniqueNativeSessions": 36,
+          "nativeTokenCounters": {
+            "tokens_input": 35796,
+            "tokens_output": 4157,
+            "tokens_reasoning": 39105,
+            "tokens_cache_read": 24192,
+            "tokens_cache_write": 0
+          },
+          "reflections": [],
+          "exploratory": {
+            "invalidFirstJson": [
+              "household-1-1",
+              "household-1-2",
+              "household-1-3",
+              "household-1-4",
+              "household-1-5",
+              "household-2-learn",
+              "household-2-1",
+              "household-2-2",
+              "household-2-3",
+              "household-2-4",
+              "household-2-5",
+              "finance-1-learn",
+              "finance-1-1",
+              "finance-1-2",
+              "finance-1-3",
+              "finance-1-4",
+              "finance-1-5",
+              "finance-2-learn",
+              "finance-2-1",
+              "finance-2-2",
+              "finance-2-3",
+              "finance-2-4",
+              "finance-2-5",
+              "engineer-1-learn",
+              "engineer-1-1",
+              "engineer-1-2",
+              "engineer-1-3",
+              "engineer-1-4",
+              "engineer-1-5",
+              "engineer-2-learn",
+              "engineer-2-1",
+              "engineer-2-3",
+              "engineer-2-4",
+              "engineer-2-5"
+            ],
+            "scoredFirstAnswers": 24,
+            "invalidScoredFirstJson": [
+              "household-1-1",
+              "household-1-2",
+              "household-1-3",
+              "household-1-5",
+              "household-2-1",
+              "household-2-2",
+              "household-2-3",
+              "household-2-5",
+              "finance-1-1",
+              "finance-1-2",
+              "finance-1-3",
+              "finance-1-5",
+              "finance-2-1",
+              "finance-2-2",
+              "finance-2-3",
+              "finance-2-5",
+              "engineer-1-1",
+              "engineer-1-2",
+              "engineer-1-3",
+              "engineer-1-5",
+              "engineer-2-1",
+              "engineer-2-3",
+              "engineer-2-5"
+            ],
+            "firstOutputMentionsMemoryToolOrMarkup": [
+              "household-1-1",
+              "household-1-2",
+              "household-1-3",
+              "household-1-5",
+              "household-2-learn",
+              "household-2-1",
+              "household-2-2",
+              "household-2-3",
+              "household-2-4",
+              "household-2-5",
+              "finance-1-learn",
+              "finance-1-1",
+              "finance-1-3",
+              "finance-1-5",
+              "finance-2-learn",
+              "finance-2-1",
+              "finance-2-3",
+              "finance-2-4",
+              "finance-2-5",
+              "engineer-1-learn",
+              "engineer-1-1",
+              "engineer-1-2",
+              "engineer-1-4",
+              "engineer-1-5",
+              "engineer-2-learn",
+              "engineer-2-1",
+              "engineer-2-3",
+              "engineer-2-4",
+              "engineer-2-5"
+            ],
+            "fenceOnlyRecoveries": [
+              {
+                "caseId": "household-1-4",
+                "metrics": {}
+              },
+              {
+                "caseId": "finance-1-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "finance-1-4",
+                "metrics": {}
+              },
+              {
+                "caseId": "finance-2-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              }
+            ],
+            "correctionRepairs": [
+              {
+                "caseId": "household-1-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "household-2-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "finance-1-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "finance-2-1",
+                "strictJson": true,
+                "orderRepaired": true
+              },
+              {
+                "caseId": "engineer-1-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "engineer-2-1",
+                "strictJson": false,
+                "orderRepaired": false
+              }
+            ],
+            "memoryAudits": [
+              {
+                "caseId": "household-1-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-1",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-2",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-3",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-4",
+                "entries": 1,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-5",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-1",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-2",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-3",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-4",
+                "entries": 1,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-5",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-1",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-2",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-3",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-4",
+                "entries": 1,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-5",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-1",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-2",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-3",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-4",
+                "entries": 1,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-5",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-1",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-2",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-3",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-4",
+                "entries": 1,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-5",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-1",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-2",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-3",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-4",
+                "entries": 1,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-5",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              }
+            ]
+          }
+        },
+        "explicit": {
+          "status": {
+            "completed": 36
+          },
+          "metrics": {
+            "task.quality": {
+              "sum": 9,
+              "measured": 24,
+              "mean": 0.375
+            },
+            "constraint.applied": {
+              "sum": 9,
+              "measured": 24,
+              "mean": 0.375
+            },
+            "preference.applied": {
+              "sum": 9,
+              "measured": 24,
+              "mean": 0.375
+            },
+            "interaction.corrections": {
+              "sum": 5,
+              "measured": 24,
+              "mean": 0.20833333333333334
+            },
+            "exception.restored": {
+              "sum": 3,
+              "measured": 6,
+              "mean": 0.5
+            },
+            "update.retained": {
+              "sum": 4,
+              "measured": 6,
+              "mean": 0.6666666666666666
+            }
+          },
+          "phaseMetrics": {
+            "probe": {
+              "task.quality": {
+                "sum": 5,
+                "measured": 12,
+                "mean": 0.4166666666666667
+              },
+              "constraint.applied": {
+                "sum": 5,
+                "measured": 12,
+                "mean": 0.4166666666666667
+              },
+              "preference.applied": {
+                "sum": 5,
+                "measured": 12,
+                "mean": 0.4166666666666667
+              },
+              "interaction.corrections": {
+                "sum": 5,
+                "measured": 12,
+                "mean": 0.4166666666666667
+              },
+              "update.retained": {
+                "sum": 4,
+                "measured": 6,
+                "mean": 0.6666666666666666
+              }
+            },
+            "exception": {
+              "task.quality": {
+                "sum": 1,
+                "measured": 6,
+                "mean": 0.16666666666666666
+              },
+              "constraint.applied": {
+                "sum": 1,
+                "measured": 6,
+                "mean": 0.16666666666666666
+              },
+              "preference.applied": {
+                "sum": 1,
+                "measured": 6,
+                "mean": 0.16666666666666666
+              },
+              "interaction.corrections": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              }
+            },
+            "regression": {
+              "task.quality": {
+                "sum": 3,
+                "measured": 6,
+                "mean": 0.5
+              },
+              "constraint.applied": {
+                "sum": 3,
+                "measured": 6,
+                "mean": 0.5
+              },
+              "preference.applied": {
+                "sum": 3,
+                "measured": 6,
+                "mean": 0.5
+              },
+              "exception.restored": {
+                "sum": 3,
+                "measured": 6,
+                "mean": 0.5
+              },
+              "interaction.corrections": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              }
+            }
+          },
+          "costUsd": 0.017349624,
+          "unknownCosts": 0,
+          "medianDurationMs": 5750.0,
+          "maxDurationMs": 14471,
+          "confirmedModels": ["opencode-go/deepseek-v4.1-flash"],
+          "modelConfirmations": 36,
+          "nativeSessions": 36,
+          "uniqueNativeSessions": 36,
+          "nativeTokenCounters": {
+            "tokens_input": 49328,
+            "tokens_output": 3022,
+            "tokens_reasoning": 13427,
+            "tokens_cache_read": 27008,
+            "tokens_cache_write": 0
+          },
+          "reflections": [],
+          "exploratory": {
+            "invalidFirstJson": [
+              "household-1-learn",
+              "household-1-2",
+              "household-1-3",
+              "household-1-4",
+              "household-2-learn",
+              "household-2-1",
+              "household-2-2",
+              "household-2-4",
+              "household-2-5",
+              "finance-1-learn",
+              "finance-1-1",
+              "finance-1-4",
+              "finance-2-learn",
+              "finance-2-1",
+              "finance-2-2",
+              "finance-2-4",
+              "engineer-1-learn",
+              "engineer-1-1",
+              "engineer-1-2",
+              "engineer-1-3",
+              "engineer-1-4",
+              "engineer-1-5",
+              "engineer-2-1",
+              "engineer-2-2",
+              "engineer-2-3",
+              "engineer-2-4"
+            ],
+            "scoredFirstAnswers": 24,
+            "invalidScoredFirstJson": [
+              "household-1-2",
+              "household-1-3",
+              "household-2-1",
+              "household-2-2",
+              "household-2-5",
+              "finance-1-1",
+              "finance-2-1",
+              "finance-2-2",
+              "engineer-1-1",
+              "engineer-1-2",
+              "engineer-1-3",
+              "engineer-1-5",
+              "engineer-2-1",
+              "engineer-2-2",
+              "engineer-2-3"
+            ],
+            "firstOutputMentionsMemoryToolOrMarkup": [
+              "household-1-learn",
+              "household-1-4",
+              "household-2-learn",
+              "household-2-4",
+              "finance-1-learn",
+              "finance-1-4",
+              "finance-2-learn",
+              "finance-2-4",
+              "engineer-1-learn",
+              "engineer-1-4"
+            ],
+            "fenceOnlyRecoveries": [
+              {
+                "caseId": "household-1-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "household-1-3",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "exception.restored": 1
+                }
+              },
+              {
+                "caseId": "household-2-1",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "household-2-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "household-2-5",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "update.retained": 1
+                }
+              },
+              {
+                "caseId": "finance-1-1",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "finance-2-1",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "finance-2-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "engineer-1-1",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "engineer-1-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "engineer-1-3",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "exception.restored": 1
+                }
+              },
+              {
+                "caseId": "engineer-1-5",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "update.retained": 1
+                }
+              },
+              {
+                "caseId": "engineer-2-1",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "engineer-2-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "engineer-2-3",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "exception.restored": 1
+                }
+              },
+              {
+                "caseId": "engineer-2-4",
+                "metrics": {}
+              }
+            ],
+            "correctionRepairs": [
+              {
+                "caseId": "household-2-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "finance-1-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "finance-2-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "engineer-1-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "engineer-2-1",
+                "strictJson": false,
+                "orderRepaired": false
+              }
+            ],
+            "memoryAudits": [
+              {
+                "caseId": "household-1-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              }
+            ]
+          }
+        },
+        "reflect": {
+          "status": {
+            "completed": 36
+          },
+          "metrics": {
+            "task.quality": {
+              "sum": 7,
+              "measured": 24,
+              "mean": 0.2916666666666667
+            },
+            "constraint.applied": {
+              "sum": 7,
+              "measured": 24,
+              "mean": 0.2916666666666667
+            },
+            "preference.applied": {
+              "sum": 7,
+              "measured": 24,
+              "mean": 0.2916666666666667
+            },
+            "interaction.corrections": {
+              "sum": 4,
+              "measured": 24,
+              "mean": 0.16666666666666666
+            },
+            "exception.restored": {
+              "sum": 1,
+              "measured": 6,
+              "mean": 0.16666666666666666
+            },
+            "update.retained": {
+              "sum": 2,
+              "measured": 6,
+              "mean": 0.3333333333333333
+            }
+          },
+          "phaseMetrics": {
+            "probe": {
+              "task.quality": {
+                "sum": 4,
+                "measured": 12,
+                "mean": 0.3333333333333333
+              },
+              "constraint.applied": {
+                "sum": 4,
+                "measured": 12,
+                "mean": 0.3333333333333333
+              },
+              "preference.applied": {
+                "sum": 4,
+                "measured": 12,
+                "mean": 0.3333333333333333
+              },
+              "interaction.corrections": {
+                "sum": 4,
+                "measured": 12,
+                "mean": 0.3333333333333333
+              },
+              "update.retained": {
+                "sum": 2,
+                "measured": 6,
+                "mean": 0.3333333333333333
+              }
+            },
+            "exception": {
+              "task.quality": {
+                "sum": 2,
+                "measured": 6,
+                "mean": 0.3333333333333333
+              },
+              "constraint.applied": {
+                "sum": 2,
+                "measured": 6,
+                "mean": 0.3333333333333333
+              },
+              "preference.applied": {
+                "sum": 2,
+                "measured": 6,
+                "mean": 0.3333333333333333
+              },
+              "interaction.corrections": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              }
+            },
+            "regression": {
+              "task.quality": {
+                "sum": 1,
+                "measured": 6,
+                "mean": 0.16666666666666666
+              },
+              "constraint.applied": {
+                "sum": 1,
+                "measured": 6,
+                "mean": 0.16666666666666666
+              },
+              "preference.applied": {
+                "sum": 1,
+                "measured": 6,
+                "mean": 0.16666666666666666
+              },
+              "exception.restored": {
+                "sum": 1,
+                "measured": 6,
+                "mean": 0.16666666666666666
+              },
+              "interaction.corrections": {
+                "sum": 0,
+                "measured": 6,
+                "mean": 0
+              }
+            }
+          },
+          "costUsd": 0.06138501,
+          "unknownCosts": 0,
+          "medianDurationMs": 15078.5,
+          "maxDurationMs": 29656,
+          "confirmedModels": ["opencode-go/deepseek-v4.1-flash"],
+          "modelConfirmations": 72,
+          "nativeSessions": 72,
+          "uniqueNativeSessions": 72,
+          "nativeTokenCounters": {
+            "tokens_input": 201919,
+            "tokens_output": 6314,
+            "tokens_reasoning": 45233,
+            "tokens_cache_read": 56320,
+            "tokens_cache_write": 0
+          },
+          "reflections": [
+            {
+              "caseId": "household-1-learn",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-1-1",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-1-2",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-1-3",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-1-4",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 2,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-1-5",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-2-learn",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-2-1",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-2-2",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-2-3",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-2-4",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "household-2-5",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 2,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-1-learn",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-1-1",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-1-2",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-1-3",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-1-4",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-1-5",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-2-learn",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-2-1",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 2,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-2-2",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-2-3",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-2-4",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "finance-2-5",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 2,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-1-learn",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-1-1",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-1-2",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-1-3",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-1-4",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-1-5",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-2-learn",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-2-1",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-2-2",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-2-3",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-2-4",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 0,
+              "rejected": 0
+            },
+            {
+              "caseId": "engineer-2-5",
+              "status": "completed",
+              "added": 0,
+              "merged": 0,
+              "skipped": 2,
+              "rejected": 0
+            }
+          ],
+          "exploratory": {
+            "invalidFirstJson": [
+              "household-1-learn",
+              "household-1-3",
+              "household-1-4",
+              "household-2-learn",
+              "household-2-1",
+              "household-2-2",
+              "finance-1-learn",
+              "finance-1-1",
+              "finance-1-2",
+              "finance-1-3",
+              "finance-1-4",
+              "finance-1-5",
+              "finance-2-learn",
+              "finance-2-1",
+              "finance-2-2",
+              "finance-2-3",
+              "finance-2-4",
+              "finance-2-5",
+              "engineer-1-learn",
+              "engineer-1-2",
+              "engineer-1-3",
+              "engineer-1-4",
+              "engineer-1-5",
+              "engineer-2-learn",
+              "engineer-2-1",
+              "engineer-2-3",
+              "engineer-2-4",
+              "engineer-2-5"
+            ],
+            "scoredFirstAnswers": 24,
+            "invalidScoredFirstJson": [
+              "household-1-3",
+              "household-2-1",
+              "household-2-2",
+              "finance-1-1",
+              "finance-1-2",
+              "finance-1-3",
+              "finance-1-5",
+              "finance-2-1",
+              "finance-2-2",
+              "finance-2-3",
+              "finance-2-5",
+              "engineer-1-2",
+              "engineer-1-3",
+              "engineer-1-5",
+              "engineer-2-1",
+              "engineer-2-3",
+              "engineer-2-5"
+            ],
+            "firstOutputMentionsMemoryToolOrMarkup": [
+              "household-1-learn",
+              "household-1-4",
+              "household-2-learn",
+              "finance-1-learn",
+              "finance-1-4",
+              "finance-2-learn",
+              "finance-2-4",
+              "engineer-1-learn",
+              "engineer-2-learn",
+              "engineer-2-4"
+            ],
+            "fenceOnlyRecoveries": [
+              {
+                "caseId": "household-1-3",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "exception.restored": 1
+                }
+              },
+              {
+                "caseId": "household-2-1",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "household-2-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "finance-1-1",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "finance-1-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "finance-1-3",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "exception.restored": 1
+                }
+              },
+              {
+                "caseId": "finance-1-5",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "update.retained": 1
+                }
+              },
+              {
+                "caseId": "finance-2-1",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "finance-2-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "finance-2-3",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "exception.restored": 1
+                }
+              },
+              {
+                "caseId": "finance-2-5",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "update.retained": 1
+                }
+              },
+              {
+                "caseId": "engineer-1-2",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "engineer-1-3",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "exception.restored": 1
+                }
+              },
+              {
+                "caseId": "engineer-1-4",
+                "metrics": {}
+              },
+              {
+                "caseId": "engineer-2-1",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1
+                }
+              },
+              {
+                "caseId": "engineer-2-3",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "exception.restored": 1
+                }
+              },
+              {
+                "caseId": "engineer-2-5",
+                "metrics": {
+                  "task.quality": 1,
+                  "constraint.applied": 1,
+                  "preference.applied": 1,
+                  "update.retained": 1
+                }
+              }
+            ],
+            "correctionRepairs": [
+              {
+                "caseId": "household-2-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "finance-1-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "finance-2-1",
+                "strictJson": false,
+                "orderRepaired": false
+              },
+              {
+                "caseId": "engineer-2-1",
+                "strictJson": false,
+                "orderRepaired": false
+              }
+            ],
+            "memoryAudits": [
+              {
+                "caseId": "household-1-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-1-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "household-2-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-1-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "finance-2-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-1-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-learn",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-1",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-2",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-3",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-4",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "engineer-2-5",
+                "entries": 2,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    "oracle-reader": {
+      "runId": "0fa53b29-1080-4217-88a7-b5fa13af5e32",
+      "createdAt": "2026-10-16T03:33:56.971Z",
+      "codeSha256": "bc50f3a690096a6f6c833f05b0f829ed82727ce93962d9633162aa1bce03cb63",
+      "datasetSha256": "7793b3b0611c89017df718dadc89a5ccc3afbed42ad551fd3c477af5593b156f",
+      "runFileSha256": "db42b0e435c75efbb7cd42750438611a25dfd1fbafca2c49d7e2a133ca06f970",
+      "arms": {
+        "reset": {
+          "status": {
+            "completed": 12
+          },
+          "metrics": {
+            "reader.exact": {
+              "sum": 5,
+              "measured": 12,
+              "mean": 0.4166666666666667
+            }
+          },
+          "phaseMetrics": {
+            "probe": {
+              "reader.exact": {
+                "sum": 5,
+                "measured": 12,
+                "mean": 0.4166666666666667
+              }
+            }
+          },
+          "costUsd": 0.014881158,
+          "unknownCosts": 0,
+          "medianDurationMs": 5750.0,
+          "maxDurationMs": 10203,
+          "confirmedModels": ["opencode-go/deepseek-v4.1-flash"],
+          "modelConfirmations": 12,
+          "nativeSessions": 12,
+          "uniqueNativeSessions": 12,
+          "nativeTokenCounters": {
+            "tokens_input": 90833,
+            "tokens_output": 403,
+            "tokens_reasoning": 1683,
+            "tokens_cache_read": 1536,
+            "tokens_cache_write": 0
+          },
+          "reflections": [],
+          "exploratory": {
+            "invalidFirstJson": [],
+            "scoredFirstAnswers": 12,
+            "invalidScoredFirstJson": [],
+            "firstOutputMentionsMemoryToolOrMarkup": [],
+            "fenceOnlyRecoveries": [],
+            "correctionRepairs": [],
+            "memoryAudits": [
+              {
+                "caseId": "01493427",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "031748ae",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "00ca467f",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "0100672e",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "0e5e2d1a",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "1568498a",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "06878be2",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "06f04340",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "001be529",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "0862e8bf",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "08f4fc43",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              },
+              {
+                "caseId": "0bb5a684",
+                "entries": 0,
+                "candidates": 0,
+                "unexpectedActive": 0,
+                "quotedFormatActive": 0,
+                "activeOriginViolations": 0
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

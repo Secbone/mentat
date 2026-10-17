@@ -1,0 +1,1373 @@
+{
+  "schemaVersion": 1,
+  "benchmark": {
+    "id": "mentat-longitudinal",
+    "version": "pilot-1",
+    "track": "adapted"
+  },
+  "dataset": {
+    "revision": "frozen-1",
+    "sha256": "fd7dc6179e52bd7c204470cefab5c060f972173968a4988d9baa167e99494701",
+    "split": "pilot",
+    "source": "benchmarks/pilots/2026-10-16/mentat-longitudinal-episodes.json"
+  },
+  "scorer": {
+    "id": "native-structured-rules",
+    "revision": "2",
+    "config": {
+      "firstAnswerOnly": true
+    }
+  },
+  "protocol": {
+    "id": "host-episodes",
+    "revision": "1",
+    "config": {
+      "permission": "deny",
+      "session": "fresh-per-episode",
+      "confirmation": "explicit typed user directives",
+      "candidateActivation": "disabled",
+      "isolation": "local-process-only",
+      "isolateOpenCode": true,
+      "requireModelConfirmation": true,
+      "correctiveFeedback": "conditional; first answer scored"
+    },
+    "arms": [
+      {
+        "id": "reset",
+        "memory": "reset"
+      },
+      {
+        "id": "explicit",
+        "memory": "explicit"
+      },
+      {
+        "id": "reflect",
+        "memory": "reflect"
+      }
+    ],
+    "maxCalls": 180,
+    "turnTimeoutMs": 90000
+  },
+  "subject": {
+    "id": "mentat",
+    "revision": "fixture-1",
+    "codeSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "harness": "acp",
+    "harnessVersion": "opencode-2.0.25",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "modelVersion": "deepseek-v4.1-flash",
+    "config": {}
+  },
+  "metrics": [
+    {
+      "id": "task.quality",
+      "dimension": "task-quality",
+      "direction": "higher-better",
+      "unit": "ratio",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "id": "constraint.applied",
+      "dimension": "safety",
+      "direction": "higher-better",
+      "unit": "ratio",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "id": "preference.applied",
+      "dimension": "personalization",
+      "direction": "higher-better",
+      "unit": "ratio",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "id": "update.retained",
+      "dimension": "adaptation",
+      "direction": "higher-better",
+      "unit": "ratio",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "id": "exception.restored",
+      "dimension": "transfer",
+      "direction": "higher-better",
+      "unit": "ratio",
+      "min": 0,
+      "max": 1
+    },
+    {
+      "id": "interaction.corrections",
+      "dimension": "interaction",
+      "direction": "lower-better",
+      "unit": "turns",
+      "min": 0,
+      "source": "runtime.correctiveTurns"
+    }
+  ],
+  "units": [
+    {
+      "caseId": "household-1-learn",
+      "familyId": "household-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-1-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-1-1",
+      "familyId": "household-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-1-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-2",
+      "familyId": "household-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-1-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-3",
+      "familyId": "household-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-1-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-4",
+      "familyId": "household-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-1-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-1-5",
+      "familyId": "household-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-1-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-learn",
+      "familyId": "household-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-2-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-2-1",
+      "familyId": "household-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-2-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-2",
+      "familyId": "household-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-2-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-3",
+      "familyId": "household-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-2-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-4",
+      "familyId": "household-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-2-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-2-5",
+      "familyId": "household-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "household-2-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-learn",
+      "familyId": "finance-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-1-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-1-1",
+      "familyId": "finance-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-1-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-2",
+      "familyId": "finance-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-1-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-3",
+      "familyId": "finance-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-1-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-4",
+      "familyId": "finance-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-1-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-1-5",
+      "familyId": "finance-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-1-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-learn",
+      "familyId": "finance-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-2-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-2-1",
+      "familyId": "finance-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-2-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-2",
+      "familyId": "finance-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-2-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-3",
+      "familyId": "finance-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-2-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-4",
+      "familyId": "finance-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-2-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-2-5",
+      "familyId": "finance-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "finance-2-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-learn",
+      "familyId": "engineer-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-1-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-1-1",
+      "familyId": "engineer-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-1-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-2",
+      "familyId": "engineer-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-1-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-3",
+      "familyId": "engineer-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-1-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-4",
+      "familyId": "engineer-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-1-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-1-5",
+      "familyId": "engineer-1",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-1-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-learn",
+      "familyId": "engineer-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-2-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-2-1",
+      "familyId": "engineer-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-2-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-2",
+      "familyId": "engineer-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-2-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-3",
+      "familyId": "engineer-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-2-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-4",
+      "familyId": "engineer-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-2-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-2-5",
+      "familyId": "engineer-2",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "engineer-2-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-learn",
+      "familyId": "household-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-1-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-1-1",
+      "familyId": "household-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-1-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-2",
+      "familyId": "household-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-1-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-3",
+      "familyId": "household-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-1-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-4",
+      "familyId": "household-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-1-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-1-5",
+      "familyId": "household-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-1-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-learn",
+      "familyId": "household-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-2-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-2-1",
+      "familyId": "household-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-2-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-2",
+      "familyId": "household-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-2-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-3",
+      "familyId": "household-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-2-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-4",
+      "familyId": "household-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-2-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-2-5",
+      "familyId": "household-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "household-2-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-learn",
+      "familyId": "finance-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-1-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-1-1",
+      "familyId": "finance-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-1-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-2",
+      "familyId": "finance-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-1-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-3",
+      "familyId": "finance-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-1-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-4",
+      "familyId": "finance-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-1-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-1-5",
+      "familyId": "finance-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-1-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-learn",
+      "familyId": "finance-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-2-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-2-1",
+      "familyId": "finance-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-2-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-2",
+      "familyId": "finance-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-2-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-3",
+      "familyId": "finance-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-2-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-4",
+      "familyId": "finance-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-2-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-2-5",
+      "familyId": "finance-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "finance-2-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-learn",
+      "familyId": "engineer-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-1-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-1-1",
+      "familyId": "engineer-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-1-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-2",
+      "familyId": "engineer-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-1-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-3",
+      "familyId": "engineer-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-1-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-4",
+      "familyId": "engineer-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-1-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-1-5",
+      "familyId": "engineer-1",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-1-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-learn",
+      "familyId": "engineer-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-2-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-2-1",
+      "familyId": "engineer-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-2-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-2",
+      "familyId": "engineer-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-2-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-3",
+      "familyId": "engineer-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-2-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-4",
+      "familyId": "engineer-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-2-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-2-5",
+      "familyId": "engineer-2",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "engineer-2-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-learn",
+      "familyId": "household-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-1-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-1-1",
+      "familyId": "household-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-1-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-2",
+      "familyId": "household-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-1-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-3",
+      "familyId": "household-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-1-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-1-4",
+      "familyId": "household-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-1-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-1-5",
+      "familyId": "household-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-1-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-learn",
+      "familyId": "household-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-2-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-2-1",
+      "familyId": "household-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-2-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-2",
+      "familyId": "household-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-2-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-3",
+      "familyId": "household-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-2-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "household-2-4",
+      "familyId": "household-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-2-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "household-2-5",
+      "familyId": "household-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "household-2-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-learn",
+      "familyId": "finance-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-1-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-1-1",
+      "familyId": "finance-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-1-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-2",
+      "familyId": "finance-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-1-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-3",
+      "familyId": "finance-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-1-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-1-4",
+      "familyId": "finance-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-1-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-1-5",
+      "familyId": "finance-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-1-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-learn",
+      "familyId": "finance-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-2-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-2-1",
+      "familyId": "finance-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-2-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-2",
+      "familyId": "finance-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-2-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-3",
+      "familyId": "finance-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-2-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "finance-2-4",
+      "familyId": "finance-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-2-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "finance-2-5",
+      "familyId": "finance-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "finance-2-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-learn",
+      "familyId": "engineer-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-1-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-1-1",
+      "familyId": "engineer-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-1-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-2",
+      "familyId": "engineer-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-1-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-3",
+      "familyId": "engineer-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-1-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-1-4",
+      "familyId": "engineer-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-1-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-1-5",
+      "familyId": "engineer-1",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-1-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-learn",
+      "familyId": "engineer-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-2-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-2-1",
+      "familyId": "engineer-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-2-1",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-2",
+      "familyId": "engineer-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-2-2",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-3",
+      "familyId": "engineer-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-2-3",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "exception.restored",
+        "interaction.corrections"
+      ]
+    },
+    {
+      "caseId": "engineer-2-4",
+      "familyId": "engineer-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-2-4",
+      "metricIds": []
+    },
+    {
+      "caseId": "engineer-2-5",
+      "familyId": "engineer-2",
+      "arm": "reflect",
+      "repetition": 0,
+      "sourceId": "engineer-2-5",
+      "metricIds": [
+        "task.quality",
+        "constraint.applied",
+        "preference.applied",
+        "update.retained",
+        "interaction.corrections"
+      ]
+    }
+  ]
+}

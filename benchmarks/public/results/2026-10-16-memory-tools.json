@@ -1,0 +1,133 @@
+{
+  "kind": "real-model-contract-diagnostic",
+  "scope": "synthetic tool instrumentation only; no public benchmark score or learning efficacy claim",
+  "findings": "Two settled direct-MCP runs performed real candidate write+new-session read; no-wait controls failed. Startup race is a supported diagnosis, delay is a compatibility workaround not a readiness guarantee.",
+  "runs": [
+    {
+      "probe": 1,
+      "codeSha256": "041fb57f249d6624a39b949bed0d0ef78b39cbbf4d2e822aca8dc6d0593545d7",
+      "startupSettleMs": 0,
+      "tools": [],
+      "candidateStored": false,
+      "candidateActivated": false,
+      "candidateReadBack": null,
+      "actualModels": [
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        },
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        }
+      ],
+      "source": ".mentat/public-evaluations/memory-tools-probe-v1/result.json",
+      "sha256": "f8f4dced44716faa3b09b381bec46af2e8023a61239409446f904784b27d66a8"
+    },
+    {
+      "probe": 2,
+      "codeSha256": "363e27de755f5a3fbebef7d0d8b9fe3c98c9c908cab6176d778f07b7a013b558",
+      "startupSettleMs": 0,
+      "tools": [],
+      "candidateStored": false,
+      "candidateActivated": false,
+      "candidateReadBack": null,
+      "actualModels": [
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        },
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        }
+      ],
+      "source": ".mentat/public-evaluations/memory-tools-probe-v2/result.json",
+      "sha256": "70c9f9131bd417d53a620b997d2a39666711bb3e6096452d1cba223f9ff18420"
+    },
+    {
+      "probe": 3,
+      "codeSha256": "b2f93fdd22a6123373fdc51804a2e0d5c0a44cace5d12ce893840c95ff440cc8",
+      "startupSettleMs": 0,
+      "tools": [],
+      "candidateStored": false,
+      "candidateActivated": false,
+      "candidateReadBack": null,
+      "actualModels": [
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        },
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        }
+      ],
+      "source": ".mentat/public-evaluations/memory-tools-probe-v3/result.json",
+      "sha256": "3a44c3f66fdcfeb1fb79eaa622b9b9c8d57dab7bbb95ab7c57bd55c9fd64370a"
+    },
+    {
+      "probe": 5,
+      "codeSha256": "d82caa4f0f36b117fe1f3a53ae5f4fc92e704be79ab4484df7ce112645a14c7c",
+      "startupSettleMs": 2000,
+      "tools": ["direct_memory_memory_add", "direct_memory_memory_search"],
+      "candidateStored": true,
+      "candidateActivated": false,
+      "candidateReadBack": true,
+      "actualModels": [
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        },
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        }
+      ],
+      "source": ".mentat/public-evaluations/memory-tools-probe-v5/result.json",
+      "sha256": "0bfe57535c65c65982e1addb4bdc493276b5a0c44fb20e1f3734901335375210"
+    },
+    {
+      "probe": 6,
+      "codeSha256": "3daded9f5d8ebcb112d4761cbd630acd273538ccab4def9ef9df182cd98a2ad4",
+      "startupSettleMs": 2000,
+      "tools": ["direct_memory_memory_add", "direct_memory_memory_search"],
+      "candidateStored": true,
+      "candidateActivated": false,
+      "candidateReadBack": true,
+      "actualModels": [
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        },
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        }
+      ],
+      "source": ".mentat/public-evaluations/memory-tools-probe-v6/result.json",
+      "sha256": "2a47557742703970a1b0b7aac49a6379e899500af861fe8f5f220fc12aabe3a3"
+    },
+    {
+      "probe": 7,
+      "codeSha256": "4e7551394bf5f380f8b25bc03e3c3e4da7a7c81a64e4a9b6ad272c8b55313c92",
+      "startupSettleMs": 0,
+      "tools": [],
+      "candidateStored": false,
+      "candidateActivated": false,
+      "candidateReadBack": false,
+      "actualModels": [
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        },
+        {
+          "requested": "opencode-go/deepseek-v4.1-flash",
+          "effective": "opencode-go/deepseek-v4.1-flash"
+        }
+      ],
+      "source": ".mentat/public-evaluations/memory-tools-probe-v7/result.json",
+      "sha256": "02ff983712ccc6a5eeb6e45464651cf519d8882d6fda71a4d971e7f3dad1c384"
+    }
+  ]
+}

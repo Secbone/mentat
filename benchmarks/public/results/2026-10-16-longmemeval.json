@@ -1,0 +1,2612 @@
+{
+  "benchmark": "longmemeval-cleaned-s",
+  "track": "adapted-model-transport",
+  "scope": "full-500-both-methods",
+  "sourceManifest": {
+    "schemaVersion": 1,
+    "benchmark": "longmemeval-cleaned-s",
+    "track": "adapted-model-transport",
+    "scope": "full-500",
+    "datasetSha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "upstreamRevision": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+    "readerFunctionSha256": "3fca78ab42e06cf9a76019179fd3ba840210662a7e8a25cfe640283d42f59ec9",
+    "judgeFunctionSha256": "90413115ed06dd07135f9d9ed53b14238776029eeb1a32a87ccbfbc0e2730482",
+    "retrievalFunctionSha256": "46cecf70e8cbdd9c7bfa5c9098c5649d705959288e6b37a117ed6e98be59bdbd",
+    "corpusFunctionSha256": "0685f947a0bcb29e8bcfca92bdc9f4ed8a827009a77aed9b43b44baa3a5ce04b",
+    "readerModel": "opencode-go/deepseek-v4.1-flash",
+    "judgeModel": "opencode-go/deepseek-v4.1-flash",
+    "judgeLabelRule": "yes substring, unchanged upstream",
+    "nativeHistoryBudgetChars": 12000,
+    "bm25TopKSessions": 10,
+    "bm25MaxContextTokens": 4000,
+    "bm25Tokenizer": "cl100k_base",
+    "bm25Corpus": "user messages only, upstream session granularity",
+    "transportLimitations": [
+      "OpenCode ACP serializes role messages; no exact sampling or max_tokens control",
+      "DeepSeek replaces the published fixed GPT-4o judge; do not directly subtract published scores"
+    ],
+    "agents": ["mentat-episodic", "longmemeval-flat-bm25"],
+    "planned": [
+      {
+        "question_id": "e47becba",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "118b2229",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "51a45a95",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "58bf7951",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "1e043500",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "c5e8278d",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "6ade9755",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "6f9b354f",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "58ef2f1c",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "f8c5f88b",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "5d3d2817",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "7527f7e2",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "c960da58",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "3b6f954b",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "726462e0",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "94f70d80",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "66f24dbb",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "ad7109d1",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "af8d2e46",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "dccbc061",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "c8c3f81d",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "8ebdbe50",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "6b168ec8",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "75499fd8",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "21436231",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "95bcc1c8",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "0862e8bf",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "853b0a1d",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "a06e4cfe",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "37d43f65",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "b86304ba",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "d52b4f67",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "25e5aa4f",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "caf9ead2",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "8550ddae",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "60d45044",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "3f1e9474",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "86b68151",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "577d4d32",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "ec81a493",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "15745da0",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "e01b8e2f",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "bc8a6e93",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "ccb36322",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "001be529",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "b320f3f8",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "19b5f2b3",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "4fd1909e",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "545bd2b5",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "8a137a7f",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "76d63226",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "86f00804",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "8e9d538c",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "311778f1",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "c19f7a0b",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "4100d0a0",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "29f2956b",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "1faac195",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "faba32e5",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "f4f1d8a4",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "c14c00dd",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "36580ce8",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "3d86fd0a",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "a82c026e",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "0862e8bf_abs",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "15745da0_abs",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "bc8a6e93_abs",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "19b5f2b3_abs",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "29f2956b_abs",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "f4f1d8a4_abs",
+        "question_type": "single-session-user"
+      },
+      {
+        "question_id": "0a995998",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "6d550036",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_59c863d7",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "b5ef892d",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "e831120c",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "3a704032",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_d84a3211",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "aae3761f",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_f2262a51",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "dd2973ad",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "c4a1ceb8",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_a56e767c",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "6cb6f249",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "46a3abf7",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "36b9f61e",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "28dc39ac",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_2f8be40d",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "2e6d26dc",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_15e38248",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "88432d0a",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "80ec1f4f",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "d23cf73b",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_7fce9456",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "d682f1a2",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "7024f17c",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_5501fe77",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_2ba83207",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "2318644b",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "2ce6a0f2",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_d12ceb0e",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "00ca467f",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "b3c15d39",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_31ff4165",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "eeda8a6d",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "2788b940",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "60bf93ed",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "9d25d4e0",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "129d1232",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "60472f9c",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_194be4b3",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "a9f6b44c",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "d851d5ba",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "5a7937c8",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_ab202e7f",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_e05b82a6",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_731e37d7",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "edced276",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "10d9b85a",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "e3038f8c",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "2b8f3739",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "1a8a66a6",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "c2ac3c61",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "bf659f65",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_372c3eed",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_2f91af09",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "81507db6",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "88432d0a_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "80ec1f4f_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "eeda8a6d_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "60bf93ed_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "edced276_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_372c3eed_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "8a2466db",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "06878be2",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "75832dbd",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "0edc2aef",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "35a27287",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "32260d93",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "195a1a1b",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "afdc33df",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "caf03d32",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "54026fce",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "06f04340",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "6b7dfb22",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "1a1907b4",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "09d032c9",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "38146c39",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "d24813b1",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "57f827a0",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "95228167",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "505af2f5",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "75f70248",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "d6233ab6",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "1da05512",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "fca70973",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "b6025781",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "a89d7624",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "b0479f84",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "1d4e3b97",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "07b6f563",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "1c0ddc50",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "0a34ad58",
+        "question_type": "single-session-preference"
+      },
+      {
+        "question_id": "d3ab962e",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "2311e44b",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "cc06de0d",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "a11281a2",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "4f54b7c9",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "85fa3a3f",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "9aaed6a3",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "1f2b8d4f",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "e6041065",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "51c32626",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "d905b33f",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "7405e8b1",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "f35224e0",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "6456829e",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "a4996e51",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "3c1045c8",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "60036106",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "681a1674",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "e25c3b8d",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "4adc0475",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "4bc144e2",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "ef66a6e5",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "5025383b",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "a1cc6108",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "9ee3ecd6",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "3fdac837",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "91b15a6e",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "27016adc",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "720133ac",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "77eafa52",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "8979f9ec",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "0100672e",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "a96c20ee",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "92a0aa75",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "3fe836c9",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "1c549ce4",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "6c49646a",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "1192316e",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "0ea62687",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "67e0d0f2",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "bb7c3b45",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "ba358f49",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "61f8c8f8",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "60159905",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "ef9cf60a",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "73d42213",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "bc149d6b",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "099778bb",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "09ba9854",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "d6062bb9",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "157a136e",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "c18a7dc8",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "a3332713",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "55241a1f",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "a08a253f",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "f0e564bc",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "078150f1",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "8cf4d046",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "a346bb18",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "37f165cf",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "8e91e7d9",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "87f22b4a",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "e56a43b9",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "efc3f7c2",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "21d02d0d",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "2311e44b_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "6456829e_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "e5ba910e_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "a96c20ee_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "ba358f49_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "09ba9854_abs",
+        "question_type": "multi-session"
+      },
+      {
+        "question_id": "gpt4_59149c77",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_f49edff3",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "71017276",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "b46e15ed",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_fa19884c",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "0bc8ad92",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "af082822",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_4929293a",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_b5700ca9",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "9a707b81",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_1d4ab0c9",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_e072b769",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "0db4c65d",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_1d80365e",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_7f6b06db",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_6dc9b45b",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_8279ba02",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_18c2b244",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_a1b77f9c",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_1916e0ea",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_7a0daae1",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_468eb063",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_7abb270c",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_1e4a8aeb",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_4fc4f797",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "4dfccbf7",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_61e13b3c",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_45189cb4",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "2ebe6c90",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_e061b84f",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "370a8ff4",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_d6585ce8",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_4ef30696",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_ec93e27f",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "6e984301",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "8077ef71",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_f420262c",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_8e165409",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_74aed68e",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "bcbe585f",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_21adecb5",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "5e1b23de",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_98f46fc6",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_af6db32f",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "eac54adc",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_7ddcf75f",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_a2d1d1f6",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_85da3956",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_b0863698",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_68e94287",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_e414231e",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_7ca326fa",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_7bc6cf22",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "2ebe6c92",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_e061b84g",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "71017277",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "b46e15ee",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_d6585ce9",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_1e4a8aec",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_f420262d",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_59149c78",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_e414231f",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_4929293b",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_468eb064",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_fa19884d",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "9a707b82",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "eac54add",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "4dfccbf8",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "0bc8ad93",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "6e984302",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_8279ba03",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_b5700ca0",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_68e94288",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_2655b836",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_2487a7cb",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_76048e76",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_2312f94c",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "0bb5a684",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "08f4fc43",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "2c63a862",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_385a5000",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "2a1811e2",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "bbf86515",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_5dcc0aab",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_0b2f1d21",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "f0853d11",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_6ed717ea",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_70e84552",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "a3838d2b",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_93159ced",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_2d58bcd6",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_65aabe59",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "982b5123",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "b9cfe692",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_4edbafa2",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "c8090214",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_483dd43c",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "e4e14d04",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "c9f37c46",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_2c50253f",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "dcfa8644",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_b4a80587",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_9a159967",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "cc6d1ec1",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_8c8961ae",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_d9af6064",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_7de946e7",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "d01c6aa8",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "993da5e2",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "a3045048",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_d31cdae3",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_cd90e484",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_88806d6e",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_4cd9eba1",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_93f6379c",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "b29f3365",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_2f56ae70",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "6613b389",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_78cf46a3",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_0a05b494",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_1a1dc16d",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_2f584639",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_213fd887",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_5438fa52",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_c27434e8",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_fe651585",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "8c18457d",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_70e84552_abs",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_93159ced_abs",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "982b5123_abs",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "c8090214_abs",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_c27434e8_abs",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "gpt4_fe651585_abs",
+        "question_type": "temporal-reasoning"
+      },
+      {
+        "question_id": "6a1eabeb",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "6aeb4375",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "830ce83f",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "852ce960",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "945e3d21",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "d7c942c3",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "71315a70",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "89941a93",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "ce6d2d27",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "9ea5eabc",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "07741c44",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "a1eacc2a",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "184da446",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "031748ae",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "4d6b87c8",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "0f05491a",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "08e075c7",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "f9e8c073",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "41698283",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "2698e78f",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "b6019101",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "45dc21b6",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "5a4f22c0",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "6071bd76",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "e493bb7c",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "618f13b2",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "72e3ee87",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "c4ea545c",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "01493427",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "6a27ffc2",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "2133c1b5",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "18bc8abd",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "db467c8c",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "7a87bd0c",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "e61a7584",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "1cea1afa",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "ed4ddc30",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "8fb83627",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "b01defab",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "22d2cb42",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "0e4e4c46",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "4b24c848",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "7e974930",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "603deb26",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "59524333",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "5831f84d",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "eace081b",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "affe2881",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "50635ada",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "e66b632c",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "0ddfec37",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "f685340e",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "cc5ded98",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "dfde3500",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "69fee5aa",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "7401057b",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "cf22b7bf",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "a2f3aa27",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "c7dc5443",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "06db6396",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "3ba21379",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "9bbe84a2",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "10e09553",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "dad224aa",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "ba61f0b9",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "42ec0761",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "5c40ec5b",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "c6853660",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "26bdc477",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "0977f2af",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "6aeb4375_abs",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "031748ae_abs",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "2698e78f_abs",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "2133c1b5_abs",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "0ddfec37_abs",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "f685340e_abs",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "89941a94",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "07741c45",
+        "question_type": "knowledge-update"
+      },
+      {
+        "question_id": "7161e7e2",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "c4f10528",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "89527b6b",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "e9327a54",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "4c36ccef",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "6ae235be",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "7e00a6cb",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "1903aded",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "ceb54acb",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "f523d9fe",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "0e5e2d1a",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "fea54f57",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "cc539528",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "dc439ea3",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "18dcd5a5",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "488d3006",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "58470ed2",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "8cf51dda",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "1d4da289",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "8464fc84",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "8aef76bc",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "71a3fd6b",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "2bf43736",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "70b3e69b",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "8752c811",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "3249768e",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "1b9b7252",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "1568498a",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "6222b6eb",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "e8a79c70",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "d596882b",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "e3fc4d6e",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "51b23612",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "3e321797",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "e982271f",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "352ab8bd",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "fca762bc",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "7a8d0b71",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "a40e080f",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "8b9d4367",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "5809eb10",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "41275add",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "4388e9dd",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "4baee567",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "561fabcd",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "b759caee",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "ac031881",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "28bcfaac",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "16c90bf4",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "c8f1aeed",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "eaca4986",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "c7cf7dfd",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "e48988bc",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "1de5cff2",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "65240037",
+        "question_type": "single-session-assistant"
+      },
+      {
+        "question_id": "778164c6",
+        "question_type": "single-session-assistant"
+      }
+    ],
+    "reserveHostBytes": 32212254720,
+    "runnerSha256": "ad3f12fb532f28aea34d56c31552413cd51edf6d910a4e40e700381e36c62b62",
+    "dependencyVersions": {
+      "numpy": "1.26.4",
+      "rank-bm25": "0.2.2",
+      "tiktoken": "0.12.0"
+    },
+    "transport": {
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "revision": "6d97cfbeaf3656ff76d524b6492a164b9ecc58d3",
+      "codeSha256": "4e12790c8ab6b786148350fe8f4e1d1269b48248171a14f0168d6c602bd250c2",
+      "harness": "opencode-acp",
+      "samplingControl": "not-exposed-by-ACP",
+      "messageDelivery": "serialized-text; system-policy-appended-by-ACP",
+      "tools": "unsupported; requests with tools are rejected",
+      "active": 0,
+      "queued": 0
+    }
+  },
+  "originalErrors": 13,
+  "judgeOnlyRecoveries": 8,
+  "provenPreInferenceReaderRecoveries": 5,
+  "summary": {
+    "mentat-episodic": {
+      "completed": 500,
+      "correct": 229,
+      "accuracy": 0.458,
+      "byType": {
+        "single-session-user": {
+          "completed": 70,
+          "correct": 48,
+          "accuracy": 0.6857142857142857
+        },
+        "multi-session": {
+          "completed": 133,
+          "correct": 27,
+          "accuracy": 0.20300751879699247
+        },
+        "single-session-preference": {
+          "completed": 30,
+          "correct": 11,
+          "accuracy": 0.36666666666666664
+        },
+        "temporal-reasoning": {
+          "completed": 133,
+          "correct": 45,
+          "accuracy": 0.3383458646616541
+        },
+        "knowledge-update": {
+          "completed": 78,
+          "correct": 55,
+          "accuracy": 0.7051282051282052
+        },
+        "single-session-assistant": {
+          "completed": 56,
+          "correct": 43,
+          "accuracy": 0.7678571428571429
+        }
+      },
+      "abstention": {
+        "completed": 30,
+        "correct": 5,
+        "accuracy": 0.16666666666666666
+      },
+      "costUsd": 0.609673962
+    },
+    "longmemeval-flat-bm25": {
+      "completed": 500,
+      "correct": 66,
+      "accuracy": 0.132,
+      "byType": {
+        "single-session-user": {
+          "completed": 70,
+          "correct": 13,
+          "accuracy": 0.18571428571428572
+        },
+        "multi-session": {
+          "completed": 133,
+          "correct": 16,
+          "accuracy": 0.12030075187969924
+        },
+        "single-session-preference": {
+          "completed": 30,
+          "correct": 3,
+          "accuracy": 0.1
+        },
+        "temporal-reasoning": {
+          "completed": 133,
+          "correct": 12,
+          "accuracy": 0.09022556390977443
+        },
+        "knowledge-update": {
+          "completed": 78,
+          "correct": 9,
+          "accuracy": 0.11538461538461539
+        },
+        "single-session-assistant": {
+          "completed": 56,
+          "correct": 13,
+          "accuracy": 0.23214285714285715
+        }
+      },
+      "abstention": {
+        "completed": 30,
+        "correct": 29,
+        "accuracy": 0.9666666666666667
+      },
+      "costUsd": 0.587407656
+    }
+  },
+  "comparison": {
+    "comparable": true,
+    "before": "45ce174e-781f-4f0f-b1f9-b93e97a53f10",
+    "after": "882048ae-f646-4275-bd2e-9a2d6d2e07b9",
+    "mismatches": [],
+    "metrics": [
+      {
+        "arm": "main",
+        "metric": "qa.correct",
+        "dimension": "memory",
+        "unit": "ratio",
+        "planned": 500,
+        "paired": 500,
+        "unpaired": 0,
+        "families": 500,
+        "delta": 0.326,
+        "improvement": 0.326,
+        "confidence95": [0.276, 0.378],
+        "warning": "Paired available-case family macro difference; inspect missing trials. Bootstrap clusters are families; small family counts do not establish generalization."
+      },
+      {
+        "arm": "main",
+        "metric": "qa.single-session-user",
+        "dimension": "memory",
+        "unit": "ratio",
+        "planned": 70,
+        "paired": 70,
+        "unpaired": 0,
+        "families": 70,
+        "delta": 0.5,
+        "improvement": 0.5,
+        "confidence95": [0.32857142857142857, 0.6428571428571429],
+        "warning": "Paired available-case family macro difference; inspect missing trials. Bootstrap clusters are families; small family counts do not establish generalization."
+      },
+      {
+        "arm": "main",
+        "metric": "qa.multi-session",
+        "dimension": "memory",
+        "unit": "ratio",
+        "planned": 133,
+        "paired": 133,
+        "unpaired": 0,
+        "families": 133,
+        "delta": 0.08270676691729323,
+        "improvement": 0.08270676691729323,
+        "confidence95": [0, 0.17293233082706766],
+        "warning": "Paired available-case family macro difference; inspect missing trials. Bootstrap clusters are families; small family counts do not establish generalization."
+      },
+      {
+        "arm": "main",
+        "metric": "qa.single-session-preference",
+        "dimension": "memory",
+        "unit": "ratio",
+        "planned": 30,
+        "paired": 30,
+        "unpaired": 0,
+        "families": 30,
+        "delta": 0.26666666666666666,
+        "improvement": 0.26666666666666666,
+        "confidence95": [0.1, 0.43333333333333335],
+        "warning": "Paired available-case family macro difference; inspect missing trials. Bootstrap clusters are families; small family counts do not establish generalization."
+      },
+      {
+        "arm": "main",
+        "metric": "qa.temporal-reasoning",
+        "dimension": "memory",
+        "unit": "ratio",
+        "planned": 133,
+        "paired": 133,
+        "unpaired": 0,
+        "families": 133,
+        "delta": 0.24812030075187969,
+        "improvement": 0.24812030075187969,
+        "confidence95": [0.15037593984962405, 0.3458646616541353],
+        "warning": "Paired available-case family macro difference; inspect missing trials. Bootstrap clusters are families; small family counts do not establish generalization."
+      },
+      {
+        "arm": "main",
+        "metric": "qa.knowledge-update",
+        "dimension": "memory",
+        "unit": "ratio",
+        "planned": 78,
+        "paired": 78,
+        "unpaired": 0,
+        "families": 78,
+        "delta": 0.5897435897435898,
+        "improvement": 0.5897435897435898,
+        "confidence95": [0.44871794871794873, 0.717948717948718],
+        "warning": "Paired available-case family macro difference; inspect missing trials. Bootstrap clusters are families; small family counts do not establish generalization."
+      },
+      {
+        "arm": "main",
+        "metric": "qa.single-session-assistant",
+        "dimension": "memory",
+        "unit": "ratio",
+        "planned": 56,
+        "paired": 56,
+        "unpaired": 0,
+        "families": 56,
+        "delta": 0.5357142857142857,
+        "improvement": 0.5357142857142857,
+        "confidence95": [0.4107142857142857, 0.6607142857142857],
+        "warning": "Paired available-case family macro difference; inspect missing trials. Bootstrap clusters are families; small family counts do not establish generalization."
+      },
+      {
+        "arm": "main",
+        "metric": "qa.abstention",
+        "dimension": "memory",
+        "unit": "ratio",
+        "planned": 30,
+        "paired": 30,
+        "unpaired": 0,
+        "families": 30,
+        "delta": -0.8,
+        "improvement": -0.8,
+        "confidence95": [-0.9333333333333333, -0.6666666666666666],
+        "warning": "Paired available-case family macro difference; inspect missing trials. Bootstrap clusters are families; small family counts do not establish generalization."
+      }
+    ],
+    "beforeCoverage": {
+      "runId": "45ce174e-781f-4f0f-b1f9-b93e97a53f10",
+      "benchmark": {
+        "id": "longmemeval",
+        "version": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+        "track": "adapted"
+      },
+      "subject": {
+        "id": "controlled-study:de6068c3de33ab141360f18a232f3e13ef25b5f60e92a6552cb7d892723b8456",
+        "revision": "controlled-study",
+        "codeSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "harness": "opencode-acp",
+        "harnessVersion": "opencode-2.0.25",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "modelVersion": "deepseek-v4.1-flash",
+        "config": {
+          "study": "de6068c3de33ab141360f18a232f3e13ef25b5f60e92a6552cb7d892723b8456"
+        }
+      },
+      "execution": "completed",
+      "trials": {
+        "completed": 500,
+        "error": 0,
+        "missing": 0,
+        "skipped": 0
+      },
+      "planned": 500,
+      "reflections": {
+        "attempted": 0,
+        "completed": 0,
+        "invalid": 0,
+        "errors": 0
+      },
+      "cost": {
+        "knownUsd": 0.5874076559999998,
+        "measured": 500,
+        "unknown": 0
+      },
+      "metrics": [
+        {
+          "arm": "main",
+          "metric": "qa.correct",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 500,
+          "measured": 500,
+          "unknown": 0,
+          "families": 500,
+          "macroMean": 0.132
+        },
+        {
+          "arm": "main",
+          "metric": "qa.single-session-user",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 70,
+          "measured": 70,
+          "unknown": 0,
+          "families": 70,
+          "macroMean": 0.18571428571428572
+        },
+        {
+          "arm": "main",
+          "metric": "qa.multi-session",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 133,
+          "measured": 133,
+          "unknown": 0,
+          "families": 133,
+          "macroMean": 0.12030075187969924
+        },
+        {
+          "arm": "main",
+          "metric": "qa.single-session-preference",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 30,
+          "measured": 30,
+          "unknown": 0,
+          "families": 30,
+          "macroMean": 0.1
+        },
+        {
+          "arm": "main",
+          "metric": "qa.temporal-reasoning",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 133,
+          "measured": 133,
+          "unknown": 0,
+          "families": 133,
+          "macroMean": 0.09022556390977443
+        },
+        {
+          "arm": "main",
+          "metric": "qa.knowledge-update",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 78,
+          "measured": 78,
+          "unknown": 0,
+          "families": 78,
+          "macroMean": 0.11538461538461539
+        },
+        {
+          "arm": "main",
+          "metric": "qa.single-session-assistant",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 56,
+          "measured": 56,
+          "unknown": 0,
+          "families": 56,
+          "macroMean": 0.23214285714285715
+        },
+        {
+          "arm": "main",
+          "metric": "qa.abstention",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 30,
+          "measured": 30,
+          "unknown": 0,
+          "families": 30,
+          "macroMean": 0.9666666666666667
+        }
+      ]
+    },
+    "afterCoverage": {
+      "runId": "882048ae-f646-4275-bd2e-9a2d6d2e07b9",
+      "benchmark": {
+        "id": "longmemeval",
+        "version": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+        "track": "adapted"
+      },
+      "subject": {
+        "id": "controlled-study:de6068c3de33ab141360f18a232f3e13ef25b5f60e92a6552cb7d892723b8456",
+        "revision": "controlled-study",
+        "codeSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "harness": "opencode-acp",
+        "harnessVersion": "opencode-2.0.25",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "modelVersion": "deepseek-v4.1-flash",
+        "config": {
+          "study": "de6068c3de33ab141360f18a232f3e13ef25b5f60e92a6552cb7d892723b8456"
+        }
+      },
+      "execution": "completed",
+      "trials": {
+        "completed": 500,
+        "error": 0,
+        "missing": 0,
+        "skipped": 0
+      },
+      "planned": 500,
+      "reflections": {
+        "attempted": 0,
+        "completed": 0,
+        "invalid": 0,
+        "errors": 0
+      },
+      "cost": {
+        "knownUsd": 0.6096739619999999,
+        "measured": 500,
+        "unknown": 0
+      },
+      "metrics": [
+        {
+          "arm": "main",
+          "metric": "qa.correct",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 500,
+          "measured": 500,
+          "unknown": 0,
+          "families": 500,
+          "macroMean": 0.458
+        },
+        {
+          "arm": "main",
+          "metric": "qa.single-session-user",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 70,
+          "measured": 70,
+          "unknown": 0,
+          "families": 70,
+          "macroMean": 0.6857142857142857
+        },
+        {
+          "arm": "main",
+          "metric": "qa.multi-session",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 133,
+          "measured": 133,
+          "unknown": 0,
+          "families": 133,
+          "macroMean": 0.20300751879699247
+        },
+        {
+          "arm": "main",
+          "metric": "qa.single-session-preference",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 30,
+          "measured": 30,
+          "unknown": 0,
+          "families": 30,
+          "macroMean": 0.36666666666666664
+        },
+        {
+          "arm": "main",
+          "metric": "qa.temporal-reasoning",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 133,
+          "measured": 133,
+          "unknown": 0,
+          "families": 133,
+          "macroMean": 0.3383458646616541
+        },
+        {
+          "arm": "main",
+          "metric": "qa.knowledge-update",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 78,
+          "measured": 78,
+          "unknown": 0,
+          "families": 78,
+          "macroMean": 0.7051282051282052
+        },
+        {
+          "arm": "main",
+          "metric": "qa.single-session-assistant",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 56,
+          "measured": 56,
+          "unknown": 0,
+          "families": 56,
+          "macroMean": 0.7678571428571429
+        },
+        {
+          "arm": "main",
+          "metric": "qa.abstention",
+          "dimension": "memory",
+          "direction": "higher-better",
+          "unit": "ratio",
+          "planned": 30,
+          "measured": 30,
+          "unknown": 0,
+          "families": 30,
+          "macroMean": 0.16666666666666666
+        }
+      ]
+    },
+    "subjects": [
+      {
+        "id": "longmemeval-flat-bm25",
+        "revision": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+        "codeSha256": "8a4ea211bbcf34dd9a50772cf07d6e6187d98547bdf0d1bcb5517383d1be40a3",
+        "harness": "opencode-acp",
+        "harnessVersion": "opencode-2.0.25",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "modelVersion": "deepseek-v4.1-flash",
+        "config": {
+          "study": "de6068c3de33ab141360f18a232f3e13ef25b5f60e92a6552cb7d892723b8456",
+          "method": {
+            "implementation": "unchanged upstream BM25 functions and reader prompt",
+            "corpus": "user-only/session",
+            "readerTokenLimit": 4000,
+            "topK": 10
+          }
+        }
+      },
+      {
+        "id": "mentat-episodic",
+        "revision": "6d97cfbeaf3656ff76d524b6492a164b9ecc58d3",
+        "codeSha256": "4e12790c8ab6b786148350fe8f4e1d1269b48248171a14f0168d6c602bd250c2",
+        "harness": "opencode-acp",
+        "harnessVersion": "opencode-2.0.25",
+        "model": "opencode-go/deepseek-v4.1-flash",
+        "modelVersion": "deepseek-v4.1-flash",
+        "config": {
+          "study": "de6068c3de33ab141360f18a232f3e13ef25b5f60e92a6552cb7d892723b8456",
+          "method": {
+            "history": "host.ingestHistory + lexical quoted observation retrieval",
+            "budgetChars": 12000,
+            "manualConfirmation": false,
+            "reflection": false
+          }
+        }
+      }
+    ],
+    "interpretation": "Controlled cross-subject difference. Method configurations are declared experimental variables; this is not a project-version regression or proof of architectural causality."
+  },
+  "toolAudit": {
+    "transport": "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1",
+    "counts": {
+      "requests": 2052,
+      "traces": 2052,
+      "protocolFrames": 35432,
+      "wireToolEvents": 0,
+      "normalizedToolEvents": 0,
+      "permissionDecisions": 0
+    },
+    "findings": [],
+    "recordedToolPolicy": "passed",
+    "osNetworkIsolation": "not-verified",
+    "scope": "Recorded ACP frames, normalized tool events, artifact integrity and trace completion. No packet capture or OS filesystem/network sandbox proof; no proof of absence of model training contamination."
+  },
+  "sourceArtifacts": [
+    {
+      "path": ".mentat/public-evaluations/longmemeval-s-full-v1/manifest.json",
+      "sha256": "c8a9906d9bea4468744e4b629cfc74f8ecf11276415e28a48f17ed1c63beca60"
+    },
+    {
+      "path": ".mentat/public-evaluations/longmemeval-s-full-v1/results.jsonl",
+      "sha256": "68e94c8c5565959412f1e64dc3873ef9bf0e365957166873d41fe886a1ea6e8b"
+    },
+    {
+      "path": ".mentat/public-evaluations/longmemeval-s-judge-recovery-v1/recoveries.json",
+      "sha256": "684bea8441c76dd9227739ea1b2420fdf14307b809181ebc81e93d231fdbf202"
+    },
+    {
+      "path": ".mentat/public-evaluations/longmemeval-s-reader-recovery-v1/recoveries.json",
+      "sha256": "b73dee6c3cf8171e48a0fa9954abbe8aa83f8a6fd47e9b0cede265c71111dfad"
+    },
+    {
+      "path": ".mentat/public-evaluations/longmemeval-tools-audit-recovered-v1.json",
+      "sha256": "c83046ea34a3b19cddd8f91cb4e1c0244b682f604fb0d49dbdb13928bce00e0a"
+    }
+  ],
+  "claimBoundary": "Host raw historical ingestion/retrieval and answering only; no agent memory tools, long-term preference writing, reflection or self-evolution measured. V1 dirty checkout hash recorded but no complete source archive."
+}

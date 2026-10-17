@@ -9,6 +9,7 @@ import type {
   Usage,
   UserInput,
 } from "@mentat/core";
+import { finalAnswerIssue } from "@mentat/core";
 import { type Diagnostic, observe } from "./trajectory";
 
 export interface TurnResult {
@@ -22,6 +23,7 @@ export interface TurnResult {
   durationMs: number;
 }
 export interface TurnOptions {
+  requireFinalAnswer?: boolean;
   timeoutMs?: number;
   cleanupTimeoutMs?: number;
   signal?: AbortSignal;
@@ -130,6 +132,13 @@ export async function runTurn(
       if (event.sessionId !== session.id) {
         trace("invariant.violation", { code: "SESSION_MISMATCH", eventSessionId: event.sessionId });
         return;
+      }
+      if (event.type === "run.settled" && event.reason === "done" && options.requireFinalAnswer) {
+        const issue = finalAnswerIssue(text);
+        if (issue) {
+          trace("output.invalid", { issue, transportReason: event.reason });
+          event = { ...event, reason: "error", error: `invalid final answer: ${issue}` };
+        }
       }
       events.push(structuredClone(event));
       trace("agent.event", event as unknown as Record<string, import("@mentat/core").JsonValue>);

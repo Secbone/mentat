@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "current-analysis-assistant",
+  "method": "post-hoc, non-blind comparison of each first answer with the upstream reference",
+  "officialScore": false,
+  "limitations": [
+    "Not an independent judge or a substitute for the official semantic evaluator.",
+    "Checks reference intent; does not independently verify historical conversations or practical product recommendations."
+  ],
+  "items": [
+    {
+      "questionId": "01493427",
+      "verdict": "reference-supported",
+      "reason": "Correct postcard count."
+    },
+    {
+      "questionId": "031748ae",
+      "verdict": "reference-supported",
+      "reason": "Distinguishes the original four engineers from the current five."
+    },
+    {
+      "questionId": "00ca467f",
+      "verdict": "reference-supported",
+      "reason": "Correct appointment count; numeric JSON value differs from reference string."
+    },
+    {
+      "questionId": "0100672e",
+      "verdict": "reference-supported",
+      "reason": "Correct per-mug amount with consistent total and count."
+    },
+    {
+      "questionId": "0e5e2d1a",
+      "verdict": "reference-supported",
+      "reason": "Correct study participant count."
+    },
+    { "questionId": "1568498a", "verdict": "reference-supported", "reason": "Correct chess move." },
+    {
+      "questionId": "06878be2",
+      "verdict": "reference-supported",
+      "reason": "Suggestions explicitly build on the Sony setup and complementary accessories; not a fresh compatibility review."
+    },
+    {
+      "questionId": "06f04340",
+      "verdict": "reference-supported",
+      "reason": "Dinner suggestions incorporate the named homegrown tomatoes, basil and mint."
+    },
+    {
+      "questionId": "001be529",
+      "verdict": "reference-supported",
+      "reason": "Correct duration with added context and capitalization difference."
+    },
+    { "questionId": "0862e8bf", "verdict": "reference-supported", "reason": "Correct cat name." },
+    {
+      "questionId": "08f4fc43",
+      "verdict": "reference-supported",
+      "reason": "Uses the reference-accepted 30-day convention."
+    },
+    {
+      "questionId": "0bb5a684",
+      "verdict": "reference-supported",
+      "reason": "Uses the reference-accepted seven-day convention."
+    }
+  ]
+}

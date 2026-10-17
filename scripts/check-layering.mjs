@@ -8,6 +8,8 @@ import ts from "typescript";
 
 export const ALLOWED_WORKSPACE_DEPS = {
   "@mentat/core": [],
+  "@mentat/benchmark": [],
+  "@mentat/benchmark-file": ["@mentat/benchmark", "@mentat/evaluation"],
   "@mentat/session": ["@mentat/core"],
   "@mentat/host": [
     "@mentat/core",
@@ -40,6 +42,8 @@ export const ALLOWED_WORKSPACE_DEPS = {
   "@mentat/transport-pi": ["@mentat/core"],
   "@mentat/transport-acp": ["@mentat/core"],
   "@mentat/cli": [
+    "@mentat/benchmark",
+    "@mentat/benchmark-file",
     "@mentat/session",
     "@mentat/host",
     "@mentat/assistant",
@@ -64,6 +68,7 @@ const TEST_ONLY_DEPS = {
   "@mentat/memory-evolution": ["@mentat/kernel"],
 };
 const PURE_PACKAGES = new Set([
+  "@mentat/benchmark",
   "@mentat/session",
   "@mentat/assistant",
   "@mentat/core",

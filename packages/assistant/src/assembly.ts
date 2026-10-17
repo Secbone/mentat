@@ -1,11 +1,12 @@
 import type { HarnessAdapter } from "@mentat/core";
 import type { MemoryAccess } from "@mentat/memory";
 import { normalizeTaskInput, type TaskInput } from "@mentat/session";
-import { ASSISTANT_PROMPT_VERSION, assistantPromptOptions } from "./prompt";
+import { ASSISTANT_PROMPT_VERSION, type AssistantTools, assistantPromptOptions } from "./prompt";
 export async function assemblePrompt(
   memory: MemoryAccess,
   adapter: HarnessAdapter,
   task: string | TaskInput,
+  tools?: AssistantTools,
 ) {
   const input = normalizeTaskInput(task);
   const snapshot = await memory.context(input.text);
@@ -25,7 +26,7 @@ export async function assemblePrompt(
       {
         name: "assistant-policy",
         version: ASSISTANT_PROMPT_VERSION,
-        text: assistantPromptOptions(adapter).systemPrompt,
+        text: assistantPromptOptions(adapter, tools).systemPrompt,
       },
     ],
     contexts,

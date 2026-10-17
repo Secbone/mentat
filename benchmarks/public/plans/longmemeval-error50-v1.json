@@ -1,0 +1,432 @@
+{
+  "schemaVersion": 1,
+  "kind": "fixed-prior-error-diagnostic",
+  "seed": "mentat-longmemeval-prior-error50-v1",
+  "selection": "50 prior Mentat errors, 30 with DSML text and20 without; fixed category quotas; prioritize abstention within each stratum; SHA256 deterministic order",
+  "claimBoundary": "Post-hoc error cohort; no full-dataset accuracy or unbiased improvement estimate. Original results immutable. Exactly one inference per selected question; no answer resampling.",
+  "sources": [
+    {
+      "path": ".mentat/public-evaluations/longmemeval-s-full-v1/results.jsonl",
+      "sha256": "68e94c8c5565959412f1e64dc3873ef9bf0e365957166873d41fe886a1ea6e8b"
+    },
+    {
+      "path": ".mentat/public-evaluations/longmemeval-s-judge-recovery-v1/recoveries.json",
+      "sha256": "684bea8441c76dd9227739ea1b2420fdf14307b809181ebc81e93d231fdbf202"
+    },
+    {
+      "path": ".mentat/public-evaluations/longmemeval-s-reader-recovery-v1/recoveries.json",
+      "sha256": "b73dee6c3cf8171e48a0fa9954abbe8aa83f8a6fd47e9b0cede265c71111dfad"
+    }
+  ],
+  "byType": {
+    "temporal-reasoning": 14,
+    "multi-session": 14,
+    "single-session-assistant": 4,
+    "knowledge-update": 6,
+    "single-session-preference": 6,
+    "single-session-user": 6
+  },
+  "abstentionCount": 23,
+  "items": [
+    {
+      "questionId": "6e984302",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": false,
+      "priorHypothesisSha256": "8f19d4fbc31c0ce793f73e615e3f2b38a8fa70b07a64cd2a7f7b70f613d22b0f"
+    },
+    {
+      "questionId": "2b8f3739",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "774512e3a82453c1aa7a3d2ed9aba1eb0185f1c86ea6aa03d5db17e6cfd5fd47"
+    },
+    {
+      "questionId": "e9327a54",
+      "questionType": "single-session-assistant",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": false,
+      "priorHypothesisSha256": "74346c0e9589d909b0793a6686040040589e04374a36911d4e73620ba8b80c00"
+    },
+    {
+      "questionId": "cc5ded98",
+      "questionType": "knowledge-update",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "ebce7e11b040ba3aba74824b3f1ce6042081976b1238b97433ebc54c450fb16e"
+    },
+    {
+      "questionId": "561fabcd",
+      "questionType": "single-session-assistant",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "a21b68065515e92013950229fdbbdcfe9e37e8c9c8d8140b3dc1e3b48ac61ff6"
+    },
+    {
+      "questionId": "9a707b82",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "75737e7ccdfcc3a196b234f7a933d0d2c0d21483b057215b80489efbb4a76432"
+    },
+    {
+      "questionId": "gpt4_2c50253f",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": false,
+      "priorHypothesisSha256": "6a07a0314ea4a6b1701783e9acb5bccdff7167ddf11cde4e784beb21cff9f4e4"
+    },
+    {
+      "questionId": "gpt4_e414231f",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "445711f1cc9c10edcc2a9504830f71f4a94770efd3ae72304c654ae04eed6678"
+    },
+    {
+      "questionId": "95228167",
+      "questionType": "single-session-preference",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": false,
+      "priorHypothesisSha256": "bb47f3066819ac27e3b8e392c9b1bbf1fe16fe940b8a1a107aa09cdebd7e6400"
+    },
+    {
+      "questionId": "gpt4_8279ba03",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "da96e176fceb972db50e753b919eb5e9b04012d029cb28245663ad8d580a4265"
+    },
+    {
+      "questionId": "gpt4_85da3956",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "484f52e0269c1935ad5878f4c0bc1d5a0af4c99fff214f81afecd4a39a9c34a4"
+    },
+    {
+      "questionId": "118b2229",
+      "questionType": "single-session-user",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "3cd3b9c541dd3445d22f5ea2bb430281b3f08030d8fd9d216cb4a4a6da6f8ca6"
+    },
+    {
+      "questionId": "38146c39",
+      "questionType": "single-session-preference",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": false,
+      "priorHypothesisSha256": "704947682d1c9ef1fff848f8f28075f9907804d38a1eb03b6cb85d56384e5dc3"
+    },
+    {
+      "questionId": "32260d93",
+      "questionType": "single-session-preference",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": false,
+      "priorHypothesisSha256": "5f1b84985212959a6920cd1f9c35e38144e8c9bd620efd608551eb0b2e4a0b6d"
+    },
+    {
+      "questionId": "06878be2",
+      "questionType": "single-session-preference",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": false,
+      "priorHypothesisSha256": "b083388593a4f218c612a3d5d81dd002def2ecee4452d642e3ac182d1096812a"
+    },
+    {
+      "questionId": "gpt4_e05b82a6",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "73f53b599e304c21979302ab330523446cbf99ffc316a54553160f6fc02f050c"
+    },
+    {
+      "questionId": "1903aded",
+      "questionType": "single-session-assistant",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": false,
+      "priorHypothesisSha256": "d25c0b07d6604c6ed7ffb9cd94b049127be93b97e6fbd6b73704c56c52328e6c"
+    },
+    {
+      "questionId": "2788b940",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "ce956e003275891ea8110544c5f1684582630a2430ab39da3773b12c64e17ca9"
+    },
+    {
+      "questionId": "09ba9854",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "cb72e210475e049e0e25f22e26b49df1b3e146428a49b4e26b7239525044c68e"
+    },
+    {
+      "questionId": "e48988bc",
+      "questionType": "single-session-assistant",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "125d7e8ff96f474837f590a7efb293f15ba2f85985602a7e3290c38b46aac152"
+    },
+    {
+      "questionId": "57f827a0",
+      "questionType": "single-session-preference",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "9a02b061943fe41842aaa4e9214f8653f6f528758fc0bef33a79d9eb9a63e393"
+    },
+    {
+      "questionId": "gpt4_731e37d7",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "bb1bb2cf9a556a258771077e13efdc20fcecd00037603bb4480d31f5be0b1a97"
+    },
+    {
+      "questionId": "88432d0a_abs",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "84509e5a3916a12171cfd3ffcd4c44eda645a98bab92ca3ad7f2211bc13de16e"
+    },
+    {
+      "questionId": "0ddfec37_abs",
+      "questionType": "knowledge-update",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": true,
+      "priorHypothesisSha256": "4d1205a8e55a907c74aa41263cc86b01d324046c94cdd5efa0073e7fb7c2bcf6"
+    },
+    {
+      "questionId": "e5ba910e_abs",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "fd1f25561ba2216ae04aea9324d3bb8c241021056e120753c5513b76a187f4aa"
+    },
+    {
+      "questionId": "f0853d11",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "f662c37a0e0365c2cb2a429456425ab2903b37bd74d0d1a68fdf4c90b1ee8f95"
+    },
+    {
+      "questionId": "09ba9854_abs",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "7d991a8641b14573ab5b8468ed0aa479206876da2448de7c6f91cbbec9b459f9"
+    },
+    {
+      "questionId": "f35224e0",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "306ef594843a8ef48b8ba1e24e34dc6a6ff6d2f2b7c852828c9c597948d114d8"
+    },
+    {
+      "questionId": "60bf93ed_abs",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "24279e2f195324208e51da5883c1124d864498bd88eccc8a11d97651014c6a06"
+    },
+    {
+      "questionId": "gpt4_fe651585_abs",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "04a543f853b9b7c1019b5de7723498369bbcd29d565c4d087aa676adb5e865ca"
+    },
+    {
+      "questionId": "15745da0_abs",
+      "questionType": "single-session-user",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "1f822406ddf4c86c91a2ea5a0e49c6c74037c06a748147a1f3dca56fa26e8615"
+    },
+    {
+      "questionId": "0edc2aef",
+      "questionType": "single-session-preference",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "496885ed69f029cf86951ef46b7294663c183cfe5fa810cea226cec21e986e45"
+    },
+    {
+      "questionId": "gpt4_c27434e8_abs",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "682e74826cdf135b6126c1b3fd48bd394cd65238aa2ea815b6c038914457946b"
+    },
+    {
+      "questionId": "19b5f2b3_abs",
+      "questionType": "single-session-user",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "6a718a837e223e793961f0cf130196ced8c7cc235c21d06fc805bacc0b8e6f45"
+    },
+    {
+      "questionId": "gpt4_59149c78",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "5092ee169a8aab7c0d2e5e5ec6cad77cadee2f233d12a0605eb0e52b400e1d24"
+    },
+    {
+      "questionId": "2698e78f_abs",
+      "questionType": "knowledge-update",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "0ce910a34bd914d8fbce04e55b957a7023f49487d3f472b4982b92eab9e3da2b"
+    },
+    {
+      "questionId": "gpt4_93159ced_abs",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "8a0cabe67d252a2f313e26f3e7089894eb4606da810df7f0feb44efedf62e192"
+    },
+    {
+      "questionId": "ba358f49_abs",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "b4ce02852bd5b08d59c43ed025aabd22270936efca1daa626df6d09a4aac01aa"
+    },
+    {
+      "questionId": "f685340e_abs",
+      "questionType": "knowledge-update",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "27a352c98e89c6309296deaabab05c45b14a79db42a77dd5e4642a776eb4884f"
+    },
+    {
+      "questionId": "0862e8bf_abs",
+      "questionType": "single-session-user",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "393779347d1728341723fb718c4b19b01baaf5defc03174c198c23d5291f821a"
+    },
+    {
+      "questionId": "f4f1d8a4_abs",
+      "questionType": "single-session-user",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "d82f404a33dc66f4d5114e23e390b20a854bb051f97b1f05f66140a129d7f636"
+    },
+    {
+      "questionId": "a96c20ee_abs",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "7b1cfa233148b1a50ca509e8457d6ba38337353724244d0e2f6a93711b4463b4"
+    },
+    {
+      "questionId": "eeda8a6d_abs",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "37a0ae4446267ff6319e428a68f0a0ffa8976dbc1925dca1caa68a1e5e7ed5ee"
+    },
+    {
+      "questionId": "2133c1b5_abs",
+      "questionType": "knowledge-update",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "5292112406ea96b063be18ef99cbc530f3152bb9240eb53358fafba6b5bc99d5"
+    },
+    {
+      "questionId": "982b5123_abs",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "741851a1f4dc1baa45c67f71ebe2c8c91a1a13eb38ef50cfbe7d4174d368a646"
+    },
+    {
+      "questionId": "edced276_abs",
+      "questionType": "multi-session",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "d34ca63ebeaeab6d1f903868d30f6a62242cf9354d1c35d1547e92c19d65da51"
+    },
+    {
+      "questionId": "031748ae_abs",
+      "questionType": "knowledge-update",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "4fb45ec22041bf362c3e517f04d43e2b5ab98061a3f914e7f9de1446a277b7eb"
+    },
+    {
+      "questionId": "3d86fd0a",
+      "questionType": "single-session-user",
+      "priorCorrect": false,
+      "priorDsml": false,
+      "abstention": false,
+      "priorHypothesisSha256": "601ca10adbe822ff30ecc7ba35ae5c95eb9de5177320c272394ab0affb1c0149"
+    },
+    {
+      "questionId": "c8090214_abs",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "b980a74b19d6fce45bb35d4324add37950141a655b66c9be911888ddd5649875"
+    },
+    {
+      "questionId": "gpt4_70e84552_abs",
+      "questionType": "temporal-reasoning",
+      "priorCorrect": false,
+      "priorDsml": true,
+      "abstention": true,
+      "priorHypothesisSha256": "b8cbf15bc4481cd0b2ed25302120b70d8ba90aff7e76743e28015d2226e3d133"
+    }
+  ]
+}

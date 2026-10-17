@@ -1,11 +1,15 @@
 import type { PermissionMode } from "@mentat/core";
 import { AdapterRegistry, createFakeAdapter } from "@mentat/core";
+import type { AcpAdapterOptions } from "@mentat/transport-acp";
 import { createAcpAdapter } from "@mentat/transport-acp";
 import { createPiAdapter } from "@mentat/transport-pi";
 
 export interface AcpRegistration {
   binary: string;
   baseArgs?: string[];
+  env?: Record<string, string>;
+  startupSettleMs?: number;
+  startupReadiness?: AcpAdapterOptions["startupReadiness"];
 }
 
 export interface RegistryOptions {
@@ -35,7 +39,15 @@ export function createDefaultRegistry(
 
   const acp = options.acp ?? acpFromEnv();
   if (acp) {
-    registry.register(createAcpAdapter({ binary: acp.binary, baseArgs: acp.baseArgs ?? ["acp"] }));
+    registry.register(
+      createAcpAdapter({
+        binary: acp.binary,
+        baseArgs: acp.baseArgs ?? ["acp"],
+        ...(acp.env ? { env: acp.env } : {}),
+        ...(acp.startupSettleMs !== undefined ? { startupSettleMs: acp.startupSettleMs } : {}),
+        ...(acp.startupReadiness ? { startupReadiness: acp.startupReadiness } : {}),
+      }),
+    );
   }
   return registry;
 }

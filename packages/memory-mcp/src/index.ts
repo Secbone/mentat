@@ -6,6 +6,7 @@ export function memoryMcpSpec(
   memoryPath: string,
   scope?: string,
   trace?: { traceId: string; dir: string },
+  options?: { readOnly?: boolean },
 ): McpServerSpec {
   return {
     name: "memory",
@@ -13,6 +14,7 @@ export function memoryMcpSpec(
     args: [fileURLToPath(new URL("./server.mjs", import.meta.url))],
     env: {
       MENTAT_MEMORY_FILE: memoryPath,
+      ...(options?.readOnly ? { MENTAT_MEMORY_READ_ONLY: "true" } : {}),
       ...(scope ? { MENTAT_MEMORY_SCOPE: scope } : {}),
       ...(trace ? { MENTAT_TRACE_ID: trace.traceId, MENTAT_TRACE_DIR: trace.dir } : {}),
     },

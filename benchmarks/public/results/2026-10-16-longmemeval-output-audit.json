@@ -1,0 +1,1797 @@
+{
+  "scope": "All500 questions per method, original plus documented infrastructure recoveries; descriptive post-hoc output audit, not a new score or causal estimate.",
+  "detector": "Case-sensitive literal DSML substring in saved hypothesis; not a native tool event.",
+  "sources": [
+    ".mentat/public-evaluations/longmemeval-s-full-v1/results.jsonl",
+    ".mentat/public-evaluations/longmemeval-s-judge-recovery-v1/recoveries.json",
+    ".mentat/public-evaluations/longmemeval-s-reader-recovery-v1/recoveries.json"
+  ],
+  "methods": {
+    "mentat-episodic": {
+      "n": 500,
+      "correct": 229,
+      "dsmlText": 210,
+      "dsmlIncorrect": 209,
+      "byType": {
+        "knowledge-update": {
+          "n": 78,
+          "correct": 55,
+          "dsmlText": 12
+        },
+        "multi-session": {
+          "n": 133,
+          "correct": 27,
+          "dsmlText": 81
+        },
+        "single-session-assistant": {
+          "n": 56,
+          "correct": 43,
+          "dsmlText": 9
+        },
+        "single-session-preference": {
+          "n": 30,
+          "correct": 11,
+          "dsmlText": 13
+        },
+        "single-session-user": {
+          "n": 70,
+          "correct": 48,
+          "dsmlText": 20
+        },
+        "temporal-reasoning": {
+          "n": 133,
+          "correct": 45,
+          "dsmlText": 75
+        }
+      },
+      "abstention": {
+        "n": 30,
+        "correct": 5,
+        "dsmlText": 24
+      },
+      "dsmlCases": [
+        {
+          "questionId": "58bf7951",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5e11bc06-266b-4d77-b057-0e724d0a5245/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/70162322-7206-4270-8932-7b9b4952606b/response.json"
+          ]
+        },
+        {
+          "questionId": "51a45a95",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6f19d53e-5830-49f4-aa94-e19a9346ed42/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/38948fe7-e182-42d1-9f4c-3c88c8970c11/response.json"
+          ]
+        },
+        {
+          "questionId": "1e043500",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/bb894288-0094-4146-918f-9dc72d5281e5/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b5cc49e9-e52d-4fca-aa61-d851ed540c87/response.json"
+          ]
+        },
+        {
+          "questionId": "6f9b354f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a889fb80-7700-4fa4-b5fd-28e25471957f/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a0968965-1044-4953-85f1-26bfd262470d/response.json"
+          ]
+        },
+        {
+          "questionId": "5d3d2817",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0b9fdb3a-2cce-424a-91a6-e7a5ec58f3d3/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/8842a485-cb00-4de1-be8c-eb8c9fc1d22a/response.json"
+          ]
+        },
+        {
+          "questionId": "75499fd8",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/ba1882eb-a2aa-4df8-95db-ad95d78a1f97/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c5efa09d-3e19-4808-8bab-5bfd8870e2d4/response.json"
+          ]
+        },
+        {
+          "questionId": "0862e8bf",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7e6bd3ee-721e-45fe-a209-150e66d3709e/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f0e715fc-5edd-49e6-a80a-15715317a9e0/response.json"
+          ]
+        },
+        {
+          "questionId": "b86304ba",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/75b78b97-ddfe-4330-ba18-4b387021adf6/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0dac55b3-eedb-4fbf-bc59-d93bc6130181/response.json"
+          ]
+        },
+        {
+          "questionId": "60d45044",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d6d46db6-5918-47c9-a260-8f7b3ccf331a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/456818c9-77c8-4a52-8615-9eaaaa1d903f/response.json"
+          ]
+        },
+        {
+          "questionId": "ccb36322",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/46d6c786-13e6-4d67-bdfb-ba447c7a71c3/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/54f24fd8-2f11-48dc-9f9a-c5ac23852fdd/response.json"
+          ]
+        },
+        {
+          "questionId": "19b5f2b3",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/249c67c8-d5cf-4ba8-b5d4-966f2c943b59/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a97aeeeb-9f9b-4734-a243-bc4178652341/response.json"
+          ]
+        },
+        {
+          "questionId": "4100d0a0",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1280afb5-0a4c-4e50-b041-f015b8d744d0/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/fea9bbd5-f5e6-4e83-88d9-56fff91dc11f/response.json"
+          ]
+        },
+        {
+          "questionId": "29f2956b",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c19e6f0c-5a2e-4da5-806b-19a3519248ae/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/24f3ad28-f8c0-47d2-91e1-ddee5568cda5/response.json"
+          ]
+        },
+        {
+          "questionId": "1faac195",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/beb67ad0-08bd-4cf1-9dbf-18ee670c08b1/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6bee86fe-2a48-44b4-8abc-ae1e64953ab4/response.json"
+          ]
+        },
+        {
+          "questionId": "c14c00dd",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b01c72ac-70c4-49e9-a1a5-d72dd281c14b/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7c340143-967f-4dc7-816e-92fde709d28e/response.json"
+          ]
+        },
+        {
+          "questionId": "0862e8bf_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/222423ed-72f9-4fb6-9d23-c485df99c957/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1e69c2cc-988f-4a2b-b258-2f608184ba30/response.json"
+          ]
+        },
+        {
+          "questionId": "15745da0_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6bd6bc9c-0ff9-4517-ac4b-96fcfb6350db/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/fb15019f-e3ae-40d2-8941-0a1ea7dae782/response.json"
+          ]
+        },
+        {
+          "questionId": "19b5f2b3_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a529d9e7-90ae-4200-b1b6-3bd1e38230bb/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/2f00b6f2-bbb8-48bf-8907-37173aa7f234/response.json"
+          ]
+        },
+        {
+          "questionId": "29f2956b_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/415fdd55-5106-4b9d-869b-dadcbef54382/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5f3993ae-0f5f-490d-a415-ae9f21b8baeb/response.json"
+          ]
+        },
+        {
+          "questionId": "f4f1d8a4_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d3767dc4-2b1f-414e-aa5f-6b82e88dacc9/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e6bd88de-eb16-4b2a-9536-62d826e71dfe/response.json"
+          ]
+        },
+        {
+          "questionId": "6d550036",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/841a82f9-f159-4626-897e-d193270cdd7a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/752add5b-bfc0-42b8-86bf-dcaf56425bbe/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_59c863d7",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/42103656-32ee-4dda-a6cf-efbb0d89dee9/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e029fbb2-6cdb-44a8-acc2-62eb494169cf/response.json"
+          ]
+        },
+        {
+          "questionId": "b5ef892d",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0a8cdc1c-d7c6-42f3-a892-08e7051096ef/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/066a9d16-e518-41ab-b68f-910dcac094b0/response.json"
+          ]
+        },
+        {
+          "questionId": "3a704032",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3b073cff-f0ec-497e-8419-27a927a342f5/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/72bea51d-e8c0-4584-aa0b-a50752d1f192/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_d84a3211",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/035b988a-59a4-4553-a00b-4993c427c850/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4569895a-8698-4ad9-b4f1-747051e25877/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_f2262a51",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/21da0ffd-829f-420d-b3c8-f9e066aee837/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/878aaaff-d776-4a97-a930-849b750203ff/response.json"
+          ]
+        },
+        {
+          "questionId": "dd2973ad",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7e2be2e5-84fe-4f8a-99ef-ba210f4181cb/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/58fb44df-4708-4079-841d-c21f842c1c31/response.json"
+          ]
+        },
+        {
+          "questionId": "c4a1ceb8",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d1faaeda-352a-4000-859c-9af689fa86ce/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/bfed6b6b-796e-46d3-a068-76187ec99538/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_a56e767c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7eb5841b-e7dc-4727-bd43-120c511381be/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c66efab2-75ea-43c4-aa91-680185b2dc98/response.json"
+          ]
+        },
+        {
+          "questionId": "6cb6f249",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e42cf78a-bb7c-4ae4-8a4d-036e88e5dea0/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1c407bb5-3136-4532-8547-62806bfdbeb9/response.json"
+          ]
+        },
+        {
+          "questionId": "46a3abf7",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/45832794-b748-44f0-8032-0d15fd8d6a74/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b574b36b-cf59-4769-a471-937138cbb928/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_2f8be40d",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/07421198-0fb5-4f95-897b-d9cd316cc9d8/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e41e2832-992c-4052-a3e5-25f95306bd07/response.json"
+          ]
+        },
+        {
+          "questionId": "2e6d26dc",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/544fcf51-f821-4e65-8112-ac0448a1e8da/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/10b555df-2584-47eb-a84c-288a77575f8c/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_15e38248",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f9e5799d-15a8-4395-b0b2-644fda2b2350/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/92f6c05b-619a-4261-9325-c13c7cd209ab/response.json"
+          ]
+        },
+        {
+          "questionId": "80ec1f4f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/43774fb2-5a3e-41ea-8177-cbb2f40b40be/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/bc0e8181-bb73-4566-8749-16701bc81cba/response.json"
+          ]
+        },
+        {
+          "questionId": "88432d0a",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/55c55351-145f-41eb-ae9e-ad0a24a7eb50/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f69932f5-36e4-4249-b3b1-1eecc3fcf15b/response.json"
+          ]
+        },
+        {
+          "questionId": "d23cf73b",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a10fb430-67ab-4647-986d-464cb48f5ec0/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/23fab9e3-91e2-4901-8127-cbd1b0035535/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_7fce9456",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0e8aa995-a4e1-4af7-afae-44b3fa313b8c/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/749aa2fc-6e2c-451e-9954-d1052444cc00/response.json"
+          ]
+        },
+        {
+          "questionId": "d682f1a2",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b1d52bd6-da4f-4a09-a409-bcb3ef6e9784/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3b2a35e7-a086-44c0-9b6b-0390668e45f4/response.json"
+          ]
+        },
+        {
+          "questionId": "7024f17c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/705db01c-a735-4983-866f-34e10b376a2b/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/84030f5a-affd-40df-89c7-03930aa7dfd9/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_2ba83207",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a40916f3-f00d-4e57-ac41-9fbd03f3e3f4/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/93bb65e0-e808-489b-ae6f-76a1f9dd9dfd/response.json"
+          ]
+        },
+        {
+          "questionId": "2318644b",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/582fbe60-338d-4b2b-88ef-de0a296a33e1/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/2b9e0c92-9ee3-49c7-9d2c-7ac754c935ec/response.json"
+          ]
+        },
+        {
+          "questionId": "2ce6a0f2",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f7fc1be4-caf0-49cf-a226-fbd07e9b9453/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/cdacad97-9be8-4087-a877-afd2c1f5679b/response.json"
+          ]
+        },
+        {
+          "questionId": "00ca467f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/64824038-3fe4-489d-a30b-60ac1e34c0b5/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b5a10aab-6f2f-4cec-a5ef-b76ac119964a/response.json"
+          ]
+        },
+        {
+          "questionId": "eeda8a6d",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/97698e58-75d1-4590-946a-30a58cc3bc1e/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4c6aac40-3474-4276-b7ef-b255121f370e/response.json"
+          ]
+        },
+        {
+          "questionId": "9d25d4e0",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9b1a7edd-b528-4ccf-b31e-a50e95b3f703/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/97faa42e-b26e-4fbf-a3a1-9e2fc0467f90/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_194be4b3",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/453f7fba-dc67-46e0-adb4-682bd8d67776/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d1ad02d7-25ea-406a-a0e5-dfe6a0558680/response.json"
+          ]
+        },
+        {
+          "questionId": "a9f6b44c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/2777fc56-af09-471d-92dd-31dadf116767/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/ebb9391a-bf88-49dc-8ba4-00467c49cd19/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_ab202e7f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/8c278ba3-a012-4552-a2eb-6047540b0e98/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6acaef07-a080-4833-9367-840870d64da3/response.json"
+          ]
+        },
+        {
+          "questionId": "edced276",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/8c8bc746-77e6-485a-bf10-a2b7829a2a4e/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/bb4ec92e-2357-4358-b782-05416f423379/response.json"
+          ]
+        },
+        {
+          "questionId": "10d9b85a",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/ce157b7d-0303-425f-8e0b-447341917d03/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3b61dcff-ca6c-4f58-8828-3b53282107f7/response.json"
+          ]
+        },
+        {
+          "questionId": "e3038f8c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5cd12ca3-f737-43f5-b319-43b365d1daec/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/cc88b4d1-b721-4dd1-8dc7-5525a02c7541/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_372c3eed",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/05802d96-ac16-4880-8a7b-e8751dede1d9/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/993371fd-6a40-496d-bbd8-9c7ac2b6ff8e/response.json"
+          ]
+        },
+        {
+          "questionId": "81507db6",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/60be1706-609e-4425-af0d-93dff1e72936/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4c6b18b0-84c7-4e89-8e91-1cac645cf1ae/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_2f91af09",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3a08dc12-33ff-4c6c-9081-6be3756d1dbe/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1d394110-1f43-4894-a1eb-e144321d0423/response.json"
+          ]
+        },
+        {
+          "questionId": "88432d0a_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/97a12050-9594-4aae-87e2-0db6c10b66f2/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a5a5f05b-e3ac-478c-b19b-4d8811cef04d/response.json"
+          ]
+        },
+        {
+          "questionId": "bf659f65",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b9022906-452d-400b-9785-e3f520b5a08e/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/07ada0ec-3300-4eb3-b45f-ccec57e6a1e1/response.json"
+          ]
+        },
+        {
+          "questionId": "eeda8a6d_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/93044034-7846-495a-a270-84be598d3006/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0245ead0-02c4-431d-94f8-7b6a7ee50fbd/response.json"
+          ]
+        },
+        {
+          "questionId": "60bf93ed_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/ae63cdbb-34c1-4fe5-aa8b-3c50b71021ab/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/20c3149c-b81d-4c07-9af0-917e67d6b61c/response.json"
+          ]
+        },
+        {
+          "questionId": "edced276_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e0bac55e-4333-4fcb-9939-fadf90036ea4/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b91fc2ba-05ea-40c1-9d49-b4faf9a9890c/response.json"
+          ]
+        },
+        {
+          "questionId": "06878be2",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/102f617b-0a9d-432e-808c-f3b05a482573/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/8bb6968e-7929-478d-a423-ec1d05ce1a47/response.json"
+          ]
+        },
+        {
+          "questionId": "75832dbd",
+          "correct": true,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/dd59c59d-25c5-4a0c-b185-b09c4bd689dc/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5216a4a8-8efb-4d79-82d1-2a808a2ff377/response.json"
+          ]
+        },
+        {
+          "questionId": "32260d93",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9d2aedb4-ce48-47f7-ab21-cb06ca1e66a9/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a9720680-a2fe-426a-8ecf-eff041df9f16/response.json"
+          ]
+        },
+        {
+          "questionId": "afdc33df",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f879dd5e-dfcf-4f79-9ae6-5ea24fca568d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5d994207-b347-4c8c-b295-8559032ce0de/response.json"
+          ]
+        },
+        {
+          "questionId": "06f04340",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/09cdb7cc-b1aa-42ea-b040-82a130cdbd2b/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/759e4af4-fa7b-4b80-a30f-e1ab20fcaa63/response.json"
+          ]
+        },
+        {
+          "questionId": "1a1907b4",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6a68ff4d-76b1-46f0-852a-19d6cdc6aa3a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/13e8b2f0-6e80-4fb0-b979-91c1d487ac60/response.json"
+          ]
+        },
+        {
+          "questionId": "38146c39",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/633f5acf-74f6-4f0c-9dc3-f6772d954ad0/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c6f7a1a6-c347-4f36-8c24-ab80de6d8f1b/response.json"
+          ]
+        },
+        {
+          "questionId": "95228167",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/22750632-8ed2-49b6-81b6-1a4b009678c2/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/8d232e56-ddcb-451a-9c21-53b7f9818b18/response.json"
+          ]
+        },
+        {
+          "questionId": "505af2f5",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/410e4f47-a8cd-4e28-b6be-1fa5e7a9d5a9/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c1ffd6bc-57f8-4a56-af4b-db589fd2d452/response.json"
+          ]
+        },
+        {
+          "questionId": "1da05512",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/68bb3b1b-5efa-448f-abe9-8df79383abc7/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/369cb836-4901-4f73-b49d-60a53a60749b/response.json"
+          ]
+        },
+        {
+          "questionId": "fca70973",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/402b8787-f1ca-43ae-909d-28723b555cbc/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/dcaacb0b-3b34-49f0-aca2-409e496b0754/response.json"
+          ]
+        },
+        {
+          "questionId": "1d4e3b97",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b8b41f54-0ac4-4be5-a5bb-db9bb4f3372b/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a008d84e-b36e-43d0-a463-db4328493555/response.json"
+          ]
+        },
+        {
+          "questionId": "1c0ddc50",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/67db3159-3adc-40e8-82b5-c54dde87fa56/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1660ae9e-e3de-4849-b364-3ecfcb6cb38e/response.json"
+          ]
+        },
+        {
+          "questionId": "d3ab962e",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/acb415d6-4885-458a-824a-ac0b35ef0eb4/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/16c10656-7668-4ae5-97eb-dfb857237440/response.json"
+          ]
+        },
+        {
+          "questionId": "1f2b8d4f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/cc4fb301-3935-4cca-bf35-c662aaa1eb34/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f999c829-e424-4520-9d75-165a8f154655/response.json"
+          ]
+        },
+        {
+          "questionId": "6456829e",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1b401fc4-3a81-45c6-923b-c13fcf316dd3/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/cdfcb091-38d1-4c80-9c61-c22deb7fb47e/response.json"
+          ]
+        },
+        {
+          "questionId": "3c1045c8",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5fd174cf-7fff-40a1-8eaf-79ddbbc0d840/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4fb6fd4a-18ab-4bf8-a421-ca116e5c4371/response.json"
+          ]
+        },
+        {
+          "questionId": "4adc0475",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/17b88353-f274-4391-8359-521d3d07bd2a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e7d3d863-3080-442a-9002-40a08f0b28ee/response.json"
+          ]
+        },
+        {
+          "questionId": "ef66a6e5",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1bc156b1-4673-44a6-b272-72e8d85afece/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a4bb9abe-a768-4704-8fbb-f656bbe0fd5b/response.json"
+          ]
+        },
+        {
+          "questionId": "a1cc6108",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1c02554b-84fb-4cdd-82bc-1aa65cef72cd/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f779e136-2fda-416a-863e-4f38eb81c98d/response.json"
+          ]
+        },
+        {
+          "questionId": "5025383b",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f6bdc4d4-a0c3-46b7-b2db-a924318cb914/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5febb759-258f-4ad2-9445-da60653ce12a/response.json"
+          ]
+        },
+        {
+          "questionId": "3fdac837",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/64bd7db9-12f0-4669-909b-aca02b391a16/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/da18b81a-9f3e-472a-893b-665a66178b72/response.json"
+          ]
+        },
+        {
+          "questionId": "27016adc",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/30d7af15-d3fa-40ca-9efe-47ed3ef3915d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3d7c0ea5-38d5-4354-830a-946d4f286aaa/response.json"
+          ]
+        },
+        {
+          "questionId": "91b15a6e",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1a376065-990c-496f-ad5b-10da0e0016ac/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/482a03d6-241e-46b0-b263-b98ed1749b28/response.json"
+          ]
+        },
+        {
+          "questionId": "720133ac",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7345c536-e085-4b8b-900f-1f587056db02/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/ec90ffad-a00e-4c5a-a756-73a4467c9092/response.json"
+          ]
+        },
+        {
+          "questionId": "77eafa52",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3f755e48-2a41-4de5-a44e-97f908cd94c0/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a0fc71cc-4911-4680-9ec3-fb32630245d8/response.json"
+          ]
+        },
+        {
+          "questionId": "8979f9ec",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d3bc2514-7ef5-4ff1-91c5-a8d5a3f2f66b/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/219557d3-9be4-45d2-b817-8b1848876720/response.json"
+          ]
+        },
+        {
+          "questionId": "a96c20ee",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/cc413f7b-6ebf-4022-8501-20317ca73af3/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a4689157-fbc2-4cc9-a166-4aa49de36155/response.json"
+          ]
+        },
+        {
+          "questionId": "92a0aa75",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/de584c4a-1b80-454d-8c7a-c1fcd0e3b29d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6ccb09cf-646f-42de-ae0c-c4318ed7bfc6/response.json"
+          ]
+        },
+        {
+          "questionId": "1c549ce4",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/2a5a0cfb-3cbc-4d92-a2ba-92924e13f85d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9f7afdb6-2d5f-4ce4-96bd-8f709befc770/response.json"
+          ]
+        },
+        {
+          "questionId": "1192316e",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e152d499-1de4-425c-9aaf-49206c98c9ad/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6a0fb0e0-4f67-4cd0-bca8-d42190f1f409/response.json"
+          ]
+        },
+        {
+          "questionId": "67e0d0f2",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9a277028-425b-4291-bdea-0011469b3cb5/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c4e0a5a9-8f5e-4b93-87bb-26ff1d2a451d/response.json"
+          ]
+        },
+        {
+          "questionId": "ba358f49",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5b4c0167-4d90-417d-8108-7612d25b2c19/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5e0b12f3-bb14-4966-99ad-516914eb9244/response.json"
+          ]
+        },
+        {
+          "questionId": "61f8c8f8",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/695f8daf-7f16-4232-a3ff-db151d824aab/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1ed8ac64-bf31-458a-a8a5-0be259dd764e/response.json"
+          ]
+        },
+        {
+          "questionId": "60159905",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3f96748c-c420-42bf-ad84-bf7fe210b5c4/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3eb4fe53-252c-438b-b628-be263592f047/response.json"
+          ]
+        },
+        {
+          "questionId": "73d42213",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f6e008d0-2199-428d-bbc5-d78ac822257d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f665e7f1-7069-44e0-b685-b600ca69905e/response.json"
+          ]
+        },
+        {
+          "questionId": "bc149d6b",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/803dbdfb-bb26-4c97-8c58-10cad14d7ea0/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0b4271f1-9953-4e6d-b8b2-22330d895047/response.json"
+          ]
+        },
+        {
+          "questionId": "099778bb",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/09316b47-5a93-4e1f-a6a7-12493e18c6a8/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/76de9d59-1064-45e7-a3b8-4e30d987e8cf/response.json"
+          ]
+        },
+        {
+          "questionId": "d6062bb9",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a92f6c64-dd0c-4272-a705-df0fa9e5fa25/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/41b5f57d-55dd-47ec-97ef-bba0db80eec3/response.json"
+          ]
+        },
+        {
+          "questionId": "157a136e",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/eedd5c80-a7b9-4a5e-816d-5f12ffb41ee4/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4d38f74b-a471-4c87-b06b-925ecb8e14ea/response.json"
+          ]
+        },
+        {
+          "questionId": "c18a7dc8",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c07f6668-ac31-4648-8c04-0b892eade95d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/ce981d3f-8b32-4aae-be71-644e943f90a3/response.json"
+          ]
+        },
+        {
+          "questionId": "f0e564bc",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/660d12e5-7067-433a-8cae-78e669cd4480/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c441338e-9ba7-42bb-b674-ba182e6d86c5/response.json"
+          ]
+        },
+        {
+          "questionId": "a3332713",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a58056c7-3e0b-4a95-8064-7020589e48bb/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d1c5dab7-1c04-4749-b240-b50d6e8d9ac1/response.json"
+          ]
+        },
+        {
+          "questionId": "a346bb18",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c34cfc64-82ae-4aa4-8be0-398a709c6a7d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/289f067f-c6d0-40ad-9b63-567ebb90cbf3/response.json"
+          ]
+        },
+        {
+          "questionId": "37f165cf",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/81d00e88-4248-4873-b796-e0a07d01e883/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d9c1b227-3250-4856-8a30-ce7113c125af/response.json"
+          ]
+        },
+        {
+          "questionId": "8e91e7d9",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9c83e56a-ea82-4202-9325-30c26364bce0/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/390f8469-d2ff-4256-8c26-ea870a3af3cd/response.json"
+          ]
+        },
+        {
+          "questionId": "8cf4d046",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e7dade0d-30c4-44c9-96d9-99d3668ec9c8/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/71d2a37d-8488-4676-a7df-e403a6d8f06c/response.json"
+          ]
+        },
+        {
+          "questionId": "87f22b4a",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/35c3d768-1183-45d6-b8c1-809e79c9c19b/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/02371cc8-5a9d-4aa8-b73c-4a2bce8767ee/response.json"
+          ]
+        },
+        {
+          "questionId": "efc3f7c2",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6dc4670d-c6a7-422a-be57-b9279a8775bb/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/99e6d4f0-f351-41bf-b89a-a984541f8bc7/response.json"
+          ]
+        },
+        {
+          "questionId": "6456829e_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/42aef89e-c551-4dd6-9ef2-b7367da95bee/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d3ea4123-d214-459b-b29f-d653d5f7d3ad/response.json"
+          ]
+        },
+        {
+          "questionId": "e5ba910e_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/2d43dc6a-2442-4c32-b9bd-aee0106af86a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d7df1cfb-7e32-4ae9-8205-e9c3195575fb/response.json"
+          ]
+        },
+        {
+          "questionId": "a96c20ee_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/160ffcd4-83cc-4671-aba5-96f774fa2c72/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9f0a9f2e-cd98-46b3-a6e0-ba4efb7b58e2/response.json"
+          ]
+        },
+        {
+          "questionId": "ba358f49_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b10d5b89-2688-4f7f-ab8e-b56da74d382a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/305b977b-7fba-4746-95e4-609d7c7c5183/response.json"
+          ]
+        },
+        {
+          "questionId": "09ba9854_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/fb032994-e304-4a82-bcff-0d7a0d745258/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/81191bc9-dadb-4cac-b2fc-96226b56e29b/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_59149c77",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7454eb28-5dd4-417e-8c07-20aa842a14f1/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/038143d2-9a95-499f-ada3-d7b044d462a8/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_f49edff3",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/79fff48b-5f62-4dea-838c-ac27592fec1d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/35973b45-fa45-4d5d-8251-af4e7e500d25/response.json"
+          ]
+        },
+        {
+          "questionId": "b46e15ed",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/82e33acc-1f30-42d9-b7e9-5f66c5e22ea8/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/8c94b0ff-b3f9-42dd-bcd4-eb0ffc07d46d/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_fa19884c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0a86742e-e269-4a6b-b0f1-cc909db1b529/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/58e8a404-f4e8-45b7-a736-0aa22a2d063c/response.json"
+          ]
+        },
+        {
+          "questionId": "9a707b81",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9dbbf628-7cab-4fd5-b4c4-c24419cec5ae/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c60f4044-245d-4547-9e5f-a01eaf1c3cea/response.json"
+          ]
+        },
+        {
+          "questionId": "0db4c65d",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c6cb30df-1e3a-4c4f-ac0c-4ff8c3bd4ee8/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/320d8978-4cb1-4eca-a384-e293834b83fc/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_7f6b06db",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/deadf9dd-14c9-42a1-9fcf-802dc2d5c107/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5498b16d-2969-44d3-81cc-683103e02cae/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_8279ba02",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0a14b293-c214-4eba-bea5-32b23253b03d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/92a13b3d-c812-4476-850b-0534e9861efa/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_18c2b244",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/fed6da52-8517-4512-b8fd-e31c4a9fc3e9/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6b495709-4c03-47e3-a31d-e76c9674e5e5/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_a1b77f9c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c83dd1b9-19bf-4454-968f-cd7b4563251f/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1888d546-d319-4495-9fd2-e2b3bf183282/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_468eb063",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5fb616a7-6fdc-410c-ab75-60338355f471/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b6e6770c-923a-4548-81aa-5ca0da0d7bfe/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_1e4a8aeb",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9e380dd9-2d5c-4204-85dd-38f6ffe81ed1/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9032a8ea-0cdd-4e59-99b1-3f309e36ee95/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_4fc4f797",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/35e65508-bb9b-43dd-b16b-df07f5797671/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0d872f46-f586-4e59-bf14-aca4c40640b2/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_7abb270c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4479518d-0bb1-4dab-9d54-5b5e7f167207/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/177b1148-dda9-482e-ab70-9cca6af946cf/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_45189cb4",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5cc797b5-49e0-4f70-9e7b-bb7f9cbb1ef0/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/42f7607d-ec47-4050-b5df-269aecd7175d/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_e061b84f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/78db36d8-0ee2-40a7-ba47-b011b9145217/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1e3be285-30f4-4144-ae9a-67af03216c22/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_d6585ce8",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/ba747cbc-a05b-40ee-9fbc-fa717e114572/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/20490305-190c-4733-a3f8-2b34ed52dd45/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_4ef30696",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0e75d04e-fed2-4b3d-bf40-40ff6b74c6b3/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/76159329-84e8-4060-97be-c2804f845ae1/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_ec93e27f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/41cec679-1145-4d40-8970-77bb5ef50331/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/624d5060-c1dd-4dc3-b6d3-fe289255ea62/response.json"
+          ]
+        },
+        {
+          "questionId": "6e984301",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3553b149-a678-4530-bd5a-5c0583202e86/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/cde724b6-bf93-4367-95f5-078ebad0be71/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_f420262c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4bb847c5-b22a-4794-93f2-754556316103/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b1107a67-40bf-4d43-a282-55b7b68abe8b/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_21adecb5",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/545d7b0b-c04d-411a-9eac-c3a07e6c395d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d8543dd7-8f00-4c1f-b0df-0faea58447a6/response.json"
+          ]
+        },
+        {
+          "questionId": "5e1b23de",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e2cdacea-a699-48a6-ab11-1b1bed966c81/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c92d2ee4-21bd-40b8-9375-44ccb4310ff3/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_af6db32f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f6b02a2e-2ef3-47d6-bfc7-8fc9722019e2/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4865225c-c613-4c2d-9fcb-74fc2e98cb63/response.json"
+          ]
+        },
+        {
+          "questionId": "eac54adc",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/dc112485-7e51-4dc7-97f7-01754fa68799/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/233873f8-890b-4871-92b4-c549f8f79a0d/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_b0863698",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d76cc85a-bdec-46cd-bfdc-867a8c26e055/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/af10cf00-f6fe-4921-a30b-2f55c04b3f5e/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_7ca326fa",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f8c69843-5549-4537-ab4f-e65a0dc9d32d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1a24937a-db09-479f-bbad-b55a92115e4d/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_68e94287",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3b716057-03cc-4b1d-86b8-f3974f981d25/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a3410453-c8f8-4e67-8d76-ca3380579065/response.json"
+          ]
+        },
+        {
+          "questionId": "2ebe6c92",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/93d28014-7d1f-4300-a4f0-9f28b2b3109e/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4d03ac00-82e7-498c-8528-8d0c77f2cef9/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_e061b84g",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4fde5e2c-3108-4b9a-9f78-ab37fe636abb/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/67feb93f-ff98-4929-81c4-4b9f29f14beb/response.json"
+          ]
+        },
+        {
+          "questionId": "71017277",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/fc5c5aa5-85fb-4476-84c9-9c7f5b1385a8/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/2f7579ef-f782-4deb-bde0-c17d5035656f/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_d6585ce9",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/651e174f-6050-49c2-b5dd-8115214986aa/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/8d1703ec-7c44-4197-bf1b-bb457cee7805/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_1e4a8aec",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e6db6abc-f2fd-44d8-bedc-071de7c44ca5/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/84c745c6-41dd-4a52-89d0-135d306efe48/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_4929293b",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/27f302ed-cdf0-43af-97dc-f7b28b2c0231/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6e27b641-a35b-4da9-aeaa-ff7fd3adba5f/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_fa19884d",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c2cd87bc-9ecc-4178-9a92-25f017347836/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c71da462-c823-40d5-a8b7-5f8e928463aa/response.json"
+          ]
+        },
+        {
+          "questionId": "0bc8ad93",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f21762ae-07c8-422f-a275-8bb78f7fd7a9/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/a334389e-bf34-4484-8743-cc964eaac7f0/response.json"
+          ]
+        },
+        {
+          "questionId": "6e984302",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/09f6db38-509e-4796-8475-3dba0baa5541/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/871c9025-ec06-45bb-8f5d-34221903e55c/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_b5700ca0",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9312997c-6aa3-4bd8-9c3b-65a9252d3f01/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/55199509-47f0-4074-a125-027e7f73b6b5/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_2655b836",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/2a7f1e54-5acb-4511-9800-b05a52c7c748/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/201a5401-f91d-4683-a1be-b07743d98254/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_76048e76",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3ba0db23-56ec-46d3-a1f6-4f61af315f6a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c65d18cd-106e-48ce-84b4-30f8fe274f6f/response.json"
+          ]
+        },
+        {
+          "questionId": "0bb5a684",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7336a0bf-8567-4f38-a90a-b135b9a774ec/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/fdf2c098-07c5-4eae-b0cf-108f6507f3cd/response.json"
+          ]
+        },
+        {
+          "questionId": "2c63a862",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/2ec09290-bc48-45c4-8004-235781a1d966/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/396e63f1-7f2c-4d41-99a6-35ebc5b1af43/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_0b2f1d21",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9f307b43-1302-42f1-b5d3-14f097230829/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6d400087-ce3c-485e-a45d-9ca6eae37d4d/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_6ed717ea",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/bf8ba5b4-beeb-4498-96ee-8c2c24fa4a61/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7b554d7b-0f75-4336-a8c9-63714766f19a/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_70e84552",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1e49e68d-e3e1-401f-ae29-8623d658bcbf/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/ac458b1c-72a8-4643-8daa-dc5756fcb9ae/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_93159ced",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/31be6d70-73ea-4f92-8432-5d08f6c6cc43/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9caec7c0-48c8-467f-b2fa-ddec89a04259/response.json"
+          ]
+        },
+        {
+          "questionId": "a3838d2b",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/aeb62a76-8185-4cb1-94e5-adbdc64d216d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b23e5ab2-4912-405c-aca2-c86a8ea094a4/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_65aabe59",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/04628f9d-a4ee-4ce9-92e5-f75754cff1ed/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d9cc862b-b7cd-4bf7-a0ac-0e436f68a32c/response.json"
+          ]
+        },
+        {
+          "questionId": "982b5123",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/120f5b03-3ce8-4104-9286-bb280aea9a79/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9f140698-d242-45e9-b83c-6fc525a4ee09/response.json"
+          ]
+        },
+        {
+          "questionId": "b9cfe692",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b1e6d190-769e-4df9-9be3-ad751933399f/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/51d2b35d-2f64-4e27-b876-fa9621316b33/response.json"
+          ]
+        },
+        {
+          "questionId": "c8090214",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7cc3593e-ab7e-437f-81be-3cd7e2f6fb97/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1764ceb6-4a78-477a-88c8-e4b82fa1a907/response.json"
+          ]
+        },
+        {
+          "questionId": "e4e14d04",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b9277540-cebe-4fc0-894d-b5561643cb3c/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e400f551-29e7-4807-ae8b-d070bb6b3782/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_483dd43c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/88e4f061-484f-4afa-b317-d7ebb3d10a98/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7686cec5-0d15-42c4-b0aa-37ad8a45f7cd/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_2c50253f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/35099e93-b576-4439-91c7-30d955861d82/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/74803b5b-d45c-49fa-8715-c760756c92e7/response.json"
+          ]
+        },
+        {
+          "questionId": "cc6d1ec1",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/ddfe55e0-173f-49b7-a625-efb8a0e09440/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/32884544-2432-4986-8145-52a6d0fb1c3e/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_8c8961ae",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/79f8273c-b89a-418e-bc72-445a0bebd54e/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/ae138e98-f867-4b05-bea3-f3560cc660a7/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_7de946e7",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1afcaf92-1557-4b19-81aa-dd2ce6fd7125/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/344208c0-b039-4656-a8b6-ab01ebfb05e9/response.json"
+          ]
+        },
+        {
+          "questionId": "d01c6aa8",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/676a0b77-d244-4120-b3cc-2ac4d058445e/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/71cf751a-573e-4f6c-ac50-523ff2fbe0aa/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_88806d6e",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/51a4a831-c0d8-4893-9fbb-5d492b9f539d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/fbf7cf84-ee8b-4ad8-86f0-db175b317463/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_4cd9eba1",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/646f2eae-7bac-4309-932e-aecf0a0124b6/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/bb964b58-c7ab-4349-b561-977fb907700b/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_93f6379c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/02fd687f-f54a-4be1-bd60-1fda47aba34a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/28e02ecf-c2ae-45bb-9521-ff825c387e81/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_2f56ae70",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0024ebea-7b36-494b-8fb5-861c93fa521a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1b43e677-c074-478d-bdaa-e0328ed10393/response.json"
+          ]
+        },
+        {
+          "questionId": "6613b389",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6a23656c-9f8f-41bc-94d2-8eb7bdb305cf/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/19b0f8f0-9e19-442c-94b7-34c00716c787/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_1a1dc16d",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/cbceb0b2-861d-40a1-96c8-50702e36fb98/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/412f0624-2363-40c3-b7e5-e36f3f97720f/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_0a05b494",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/29bc317a-475c-4c5b-b592-0a40a56c5317/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/2bc89fa0-17db-40b1-bb60-6b189e7d979d/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_78cf46a3",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3cd14313-56e0-4b84-8bc2-e8cc8cb273f6/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e5ca037f-3dfb-4d49-9e7d-7904b2789f1b/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_213fd887",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d55c3e63-4a80-419e-a880-51f2a2e2ba66/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/cc0c3f36-025b-4266-865e-75f1fc3276ce/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_5438fa52",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7aef165a-0230-4c0c-918d-1a74a8353e58/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3799e726-4aa2-45a6-8610-04131eb0ea9b/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_fe651585",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f4ea628f-669d-4deb-8e53-e6e381525ff9/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/64487ea2-6e83-4414-a9ba-d9945ee8a2b3/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_70e84552_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0d3a259f-d8ab-4bc1-8f38-df2fd5328aa8/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f01a62b0-17a8-4d45-8b73-0a64fbb6a7f6/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_93159ced_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f5560ec7-c414-436b-89d5-f6f449f04357/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6c091435-1af8-4341-9f87-103b78bc3aeb/response.json"
+          ]
+        },
+        {
+          "questionId": "982b5123_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7a3fc70e-7fc5-4dcf-b903-7cd29300f686/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/85928e2a-fa63-44b0-97ce-a5999411aaa9/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_c27434e8_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7eb81d3e-4552-4ac4-8946-be417ae98ba4/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d137d328-dccc-44e5-bcff-4627602d022a/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_fe651585_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0895f4fc-0d47-4b18-b745-a8c6ae862d28/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3f723d75-2b44-4b39-905d-34801fc85d5f/response.json"
+          ]
+        },
+        {
+          "questionId": "830ce83f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3aec8113-1ea4-4aa8-96f9-6a3616cf5436/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/6f445b65-5de3-4e78-906c-fb0cca948f43/response.json"
+          ]
+        },
+        {
+          "questionId": "c8090214_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5597df2c-56eb-42b3-b3a4-d7f04a78adf4/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/21c8d8b6-2352-4637-b8a7-ad0667089c65/response.json"
+          ]
+        },
+        {
+          "questionId": "9ea5eabc",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/3630b245-cc4d-4a90-922b-149376236f16/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c49c7f0d-f677-47a7-a371-5580d2593095/response.json"
+          ]
+        },
+        {
+          "questionId": "c4ea545c",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/bf70cfa8-e963-44cd-8ff7-3a507124400d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c8dfc2e8-ff80-424c-89d1-9d5a22431860/response.json"
+          ]
+        },
+        {
+          "questionId": "2133c1b5",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/423048c0-5a1f-40d4-84cb-d4d3909c58e0/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f8ce9bd5-7169-4d6a-bfe7-905226dccf46/response.json"
+          ]
+        },
+        {
+          "questionId": "59524333",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/07c3c0ca-229a-4bd0-9aba-6ad1748e8f61/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/1c3e3919-8e3e-429e-92e4-f868c5630a03/response.json"
+          ]
+        },
+        {
+          "questionId": "eace081b",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9b169bb7-1893-4e83-9cc0-3edf8fe5cf3d/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/eb527923-0bd5-442c-92d0-a25b81d27330/response.json"
+          ]
+        },
+        {
+          "questionId": "0977f2af",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c7cf1444-7806-4d9b-be4c-de8bb3f5cca3/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f189c2e6-7f53-4552-811e-f058501f7e06/response.json"
+          ]
+        },
+        {
+          "questionId": "2698e78f_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4c2e33f1-6a97-420f-b2eb-e24cbc6fde62/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/dcaf87e7-0240-4e01-88dc-3177b69ade9d/response.json"
+          ]
+        },
+        {
+          "questionId": "031748ae_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c0de10e6-1222-44a7-b143-5c047461cf9a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/c98960c3-9d6e-4677-9129-9d2086306db4/response.json"
+          ]
+        },
+        {
+          "questionId": "2133c1b5_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/bc7ef711-5a56-4b49-953f-6177fee8175a/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/5f710b21-7217-4b04-8a1a-81143553b8e9/response.json"
+          ]
+        },
+        {
+          "questionId": "f685340e_abs",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e180c30f-6169-4d54-996f-a6411056ccd1/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d28a3c24-f296-4570-8976-38f8a1598586/response.json"
+          ]
+        },
+        {
+          "questionId": "07741c45",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f467cc5f-7681-49fb-803c-6b465dabaed1/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0a401be5-a53e-4409-8883-3b99f9151d83/response.json"
+          ]
+        },
+        {
+          "questionId": "89527b6b",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/440bcb25-6168-476d-ae22-3aa83ef36db3/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/9e094a12-79ea-4223-9180-28faa6cd1e65/response.json"
+          ]
+        },
+        {
+          "questionId": "e9327a54",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/526241ca-fe18-4a2f-b185-98dc0b28ac39/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/fa0f1ff5-b6f5-4ec7-bf66-0ff43ff16c51/response.json"
+          ]
+        },
+        {
+          "questionId": "7e00a6cb",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/74b698bb-ac92-4429-9328-a06f5066c5d8/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/19155fa6-8cfe-41a5-946e-b0fc5220d047/response.json"
+          ]
+        },
+        {
+          "questionId": "1903aded",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/0d5799f9-8a2b-415b-a019-a645d6e77f81/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/f98717cd-4430-4fef-962d-3fe8755fa962/response.json"
+          ]
+        },
+        {
+          "questionId": "58470ed2",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/76112088-dd12-453e-8efe-c4eee2dbd05e/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/100c1d8d-429f-40cb-9e73-ae0bbb2aecc4/response.json"
+          ]
+        },
+        {
+          "questionId": "71a3fd6b",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e3c71250-8da3-4111-a8f2-277f77ecff07/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/dd08c7f4-d55d-496f-bfd1-f60fbdf9e6bc/response.json"
+          ]
+        },
+        {
+          "questionId": "1568498a",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/df532aba-e2ad-42cc-b26b-f6f24d360bf7/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/86805298-84ca-4aa9-aa2a-0e842d20693e/response.json"
+          ]
+        },
+        {
+          "questionId": "e982271f",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/dcbf0da9-2011-4632-88a8-b6ac9dd04007/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/4022d0b8-b74f-4ef0-92c1-ffb3853ad955/response.json"
+          ]
+        },
+        {
+          "questionId": "7a8d0b71",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d25a7391-6ba3-45ac-9e70-f81b2db962f0/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/b6ddebe4-bd9a-40c4-8ed4-682b8b2c6706/response.json"
+          ]
+        }
+      ]
+    },
+    "longmemeval-flat-bm25": {
+      "n": 500,
+      "correct": 66,
+      "dsmlText": 2,
+      "dsmlIncorrect": 2,
+      "byType": {
+        "knowledge-update": {
+          "n": 78,
+          "correct": 9,
+          "dsmlText": 0
+        },
+        "multi-session": {
+          "n": 133,
+          "correct": 16,
+          "dsmlText": 0
+        },
+        "single-session-assistant": {
+          "n": 56,
+          "correct": 13,
+          "dsmlText": 0
+        },
+        "single-session-preference": {
+          "n": 30,
+          "correct": 3,
+          "dsmlText": 0
+        },
+        "single-session-user": {
+          "n": 70,
+          "correct": 13,
+          "dsmlText": 0
+        },
+        "temporal-reasoning": {
+          "n": 133,
+          "correct": 12,
+          "dsmlText": 2
+        }
+      },
+      "abstention": {
+        "n": 30,
+        "correct": 29,
+        "dsmlText": 0
+      },
+      "dsmlCases": [
+        {
+          "questionId": "gpt4_f49edff3",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e1af01b2-6bb5-421a-9ecf-766718d3190f/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/e5f23501-bc74-46a3-b698-66f86a91ead0/response.json"
+          ]
+        },
+        {
+          "questionId": "gpt4_e072b769",
+          "correct": false,
+          "evidence": [
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/7dde67fa-545d-4eca-b884-9bc2038f3313/response.json",
+            "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-v1/requests/d3b2e1e0-1868-470f-8c9f-20b79e3707f3/response.json"
+          ]
+        }
+      ]
+    }
+  }
+}

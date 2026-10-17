@@ -15,6 +15,38 @@ function readText(result: Awaited<ReturnType<Client["callTool"]>>): string {
 }
 
 describe("memory MCP server", () => {
+  it("exposes a read-only catalog and acknowledges actual catalog exchange", async () => {
+    const root = mkdtempSync(join(tmpdir(), "mentat-readonly-"));
+    const receipt = join(root, "catalog.jsonl");
+    const spec = memoryMcpSpec(join(root, "memory.json"), undefined, undefined, { readOnly: true });
+    const client = new Client({ name: "read-only", version: "0.0.0" });
+    await client.connect(
+      new StdioClientTransport({
+        command: spec.command,
+        args: spec.args,
+        env: {
+          ...process.env,
+          ...spec.env,
+          MENTAT_MCP_READY_FILE: receipt,
+          MENTAT_MCP_READY_TOKEN: "nonce",
+        } as Record<string, string>,
+      }),
+    );
+    try {
+      expect((await client.listTools()).tools.map((tool) => tool.name)).toEqual(["memory_search"]);
+      expect(JSON.parse(readFileSync(receipt, "utf8").trim())).toMatchObject({
+        event: "tools/list-sent",
+        token: "nonce",
+        tools: ["memory_search"],
+      });
+      expect(
+        (await client.callTool({ name: "memory_add", arguments: { id: "x", text: "unsupported" } }))
+          .isError,
+      ).toBe(true);
+    } finally {
+      await client.close();
+    }
+  });
   it("stores model writes as auditable candidates, even with an unverified evidence pointer", async () => {
     const file = join(mkdtempSync(join(tmpdir(), "mentat-mcpmem-")), "memory.json");
     const spec = memoryMcpSpec(file);

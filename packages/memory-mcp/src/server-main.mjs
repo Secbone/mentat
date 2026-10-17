@@ -43,6 +43,16 @@ const access = createMemoryAccess(new FileMemoryRepository(file), {
   onObserverError: (error) => console.error(`memory observation failed: ${String(error)}`),
 });
 const server = new McpServer({ name: "mentat-memory", version: "0.0.1" });
+if (process.env.MENTAT_MCP_PROBE_NONCE)
+  server.registerTool(
+    "memory_ready",
+    {
+      description:
+        "Read-only infrastructure readiness probe. Returns an ephemeral diagnostic nonce; never reads or writes user memory.",
+      inputSchema: {},
+    },
+    async () => ({ content: [{ type: "text", text: process.env.MENTAT_MCP_PROBE_NONCE }] }),
+  );
 
 server.registerTool(
   "memory_search",
@@ -70,45 +80,79 @@ server.registerTool(
   }),
 );
 
-server.registerTool(
-  "memory_add",
-  {
-    description:
-      "Propose an unconfirmed memory candidate using a stable rule key as id. " +
-      "This tool cannot confirm user preferences or replace active rules. " +
-      "Evidence is a claimed reference, not verified user confirmation.",
-    inputSchema: {
-      id: z.string(),
-      text: z.string(),
-      tags: z.array(z.string()).optional(),
-      evidence: z.string().optional(),
+if (process.env.MENTAT_MEMORY_READ_ONLY !== "true")
+  server.registerTool(
+    "memory_add",
+    {
+      description:
+        "Propose an unconfirmed memory candidate using a stable rule key as id. " +
+        "This tool cannot confirm user preferences or replace active rules. " +
+        "Evidence is a claimed reference, not verified user confirmation.",
+      inputSchema: {
+        id: z.string(),
+        text: z.string(),
+        tags: z.array(z.string()).optional(),
+        evidence: z.string().optional(),
+      },
     },
-  },
-  async ({ id, text, tags, evidence }) => {
-    const decision = await access.propose({
-      text,
-      key: id,
-      kind: "fact",
-      ...(tags ? { tags } : {}),
-      ...(evidence ? { evidence } : {}),
-    });
-    if (decision.op === "add" || decision.op === "update")
+    async ({ id, text, tags, evidence }) => {
+      const decision = await access.propose({
+        text,
+        key: id,
+        kind: "fact",
+        ...(tags ? { tags } : {}),
+        ...(evidence ? { evidence } : {}),
+      });
+      if (decision.op === "add" || decision.op === "update")
+        return {
+          content: [
+            {
+              type: "text",
+              text: `stored candidate ${decision.entry.id}; transaction=${decision.transactionId}; user confirmation required`,
+            },
+          ],
+        };
+      if (decision.op === "dedup") {
+        return { content: [{ type: "text", text: `already stored ${id}` }] };
+      }
       return {
-        content: [
-          {
-            type: "text",
-            text: `stored candidate ${decision.entry.id}; transaction=${decision.transactionId}; user confirmation required`,
-          },
-        ],
+        isError: true,
+        content: [{ type: "text", text: `rejected: ${decision.reason ?? "invalid"}` }],
       };
-    if (decision.op === "dedup") {
-      return { content: [{ type: "text", text: `already stored ${id}` }] };
-    }
-    return {
-      isError: true,
-      content: [{ type: "text", text: `rejected: ${decision.reason ?? "invalid"}` }],
-    };
-  },
-);
+    },
+  );
 
-await server.connect(new StdioServerTransport());
+// Observe the SDK transport, without replacing its schema generation or handlers.
+// A receipt is written only after a real engine tools/list response was sent.
+class CatalogTransport extends StdioServerTransport {
+  lists = new Set();
+  async start() {
+    const receive = this.onmessage;
+    this.onmessage = (message, ...args) => {
+      if (message.method === "tools/list") this.lists.add(message.id);
+      receive?.(message, ...args);
+    };
+    return super.start();
+  }
+  async send(message) {
+    await super.send(message);
+    if (
+      this.lists.delete(message.id) &&
+      Array.isArray(message.result?.tools) &&
+      process.env.MENTAT_MCP_READY_FILE &&
+      process.env.MENTAT_MCP_READY_TOKEN
+    ) {
+      appendFileSync(
+        process.env.MENTAT_MCP_READY_FILE,
+        `${JSON.stringify({
+          event: "tools/list-sent",
+          token: process.env.MENTAT_MCP_READY_TOKEN,
+          tools: message.result.tools.map((tool) => tool.name),
+          pid: process.pid,
+        })}\n`,
+        { mode: 0o600 },
+      );
+    }
+  }
+}
+await server.connect(new CatalogTransport());

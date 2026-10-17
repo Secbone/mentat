@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "current-analysis-assistant",
+  "method": "post-hoc, non-blind inspection; does not replace frozen strict scores",
+  "items": [
+    {
+      "arm": "reflect",
+      "caseId": "engineer-1-5",
+      "finding": "correct-fields-with-extra-presentation",
+      "reason": "Contains the correct updated order, country/shop/product fields and not-run status in a JSON block, followed by explanatory bullets. Fails both strict JSON and fence-only recovery; business fields are correct."
+    },
+    {
+      "arm": "reset",
+      "caseId": "household-1-1",
+      "finding": "tool-protocol-text-without-execution",
+      "reason": "First answer contains DSML memory_search invocation text. The recorded trajectory has no corresponding tool or permission event. The correction explains missing historical constraints; it must not be classified as a verified arithmetic error or executed retrieval."
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-10-16T05:28:18.585002+00:00",
+  "disk": {
+    "path": "/Users/soar/Code/mentat",
+    "totalBytes": 245107195904,
+    "freeBytes": 121287647232,
+    "incomingBytes": 0,
+    "reserveBytes": 32212254720,
+    "remainingAfterBytes": 121287647232,
+    "allowed": true
+  },
+  "datasets": {
+    "longmemeval": {
+      "repository": "xiaowu0162/longmemeval-cleaned",
+      "revision": "98d7416c24c778c2fee6e6f3006e7a073259d48f",
+      "gated": false,
+      "metadataUrl": "https://huggingface.co/api/datasets/xiaowu0162/longmemeval-cleaned?blobs=true",
+      "fileCount": 5,
+      "knownSizeFiles": 5,
+      "repositoryFileBytesKnown": 3029875295,
+      "sizeMeaning": "File bytes only; excludes extraction, environments, model weights and duplicate caches.",
+      "largestFiles": [
+        {
+          "path": "longmemeval_m_cleaned.json",
+          "size": 2737100077
+        },
+        {
+          "path": "longmemeval_s_cleaned.json",
+          "size": 277383467
+        },
+        {
+          "path": "longmemeval_oracle.json",
+          "size": 15388478
+        },
+        {
+          "path": ".gitattributes",
+          "size": 2647
+        },
+        {
+          "path": "README.md",
+          "size": 626
+        }
+      ]
+    },
+    "personamem-v2": {
+      "repository": "bowen-upenn/PersonaMem-v2",
+      "revision": "ed956dea41521fc4499acbc63f966e0fd3c053ba",
+      "gated": false,
+      "metadataUrl": "https://huggingface.co/api/datasets/bowen-upenn/PersonaMem-v2?blobs=true",
+      "fileCount": 9001,
+      "knownSizeFiles": 9001,
+      "repositoryFileBytesKnown": 4576126064,
+      "sizeMeaning": "File bytes only; excludes extraction, environments, model weights and duplicate caches.",
+      "largestFiles": [
+        {
+          "path": "benchmark/multimodal/train.csv",
+          "size": 160956527
+        },
+        {
+          "path": "benchmark/text/train.csv",
+          "size": 157116318
+        },
+        {
+          "path": "benchmark/text/benchmark.csv",
+          "size": 42426457
+        },
+        {
+          "path": "benchmark/multimodal/benchmark.csv",
+          "size": 42350391
+        },
+        {
+          "path": "benchmark/multimodal/val.csv",
+          "size": 17895918
+        },
+        {
+          "path": "benchmark/text/val.csv",
+          "size": 17474290
+        },
+        {
+          "path": "data/chat_history_multimodal_128k/chat_history_250913_163556_persona310.json",
+          "size": 2144166
+        },
+        {
+          "path": "data/chat_history_multimodal_128k/chat_history_250911_213509_persona310.json",
+          "size": 2142113
+        },
+        {
+          "path": "data/chat_history_multimodal_128k/chat_history_250913_163556_persona85.json",
+          "size": 1975002
+        },
+        {
+          "path": "data/chat_history_multimodal_128k/chat_history_250911_213509_persona85.json",
+          "size": 1947935
+        }
+      ]
+    },
+    "memoryagentbench": {
+      "repository": "ai-hyz/MemoryAgentBench",
+      "revision": "7ea066982b140a19337e17e60d45d4076e042faf",
+      "gated": false,
+      "metadataUrl": "https://huggingface.co/api/datasets/ai-hyz/MemoryAgentBench?blobs=true",
+      "fileCount": 7,
+      "knownSizeFiles": 7,
+      "repositoryFileBytesKnown": 76576327,
+      "sizeMeaning": "File bytes only; excludes extraction, environments, model weights and duplicate caches.",
+      "largestFiles": [
+        {
+          "path": "data/Long_Range_Understanding-00000-of-00001.parquet",
+          "size": 49342452
+        },
+        {
+          "path": "data/Accurate_Retrieval-00000-of-00001.parquet",
+          "size": 20024386
+        },
+        {
+          "path": "data/Test_Time_Learning-00000-of-00001.parquet",
+          "size": 3947476
+        },
+        {
+          "path": "entity2id.json",
+          "size": 1758081
+        },
+        {
+          "path": "data/Conflict_Resolution-00000-of-00001.parquet",
+          "size": 1491588
+        },
+        {
+          "path": "README.md",
+          "size": 9883
+        },
+        {
+          "path": ".gitattributes",
+          "size": 2461
+        }
+      ]
+    },
+    "personamem-v3": {
+      "repository": "bowen-upenn/PersonaMem-v3",
+      "revision": "7b00a090b35b7293e6efeeb19494207f32b5a9ee",
+      "gated": false,
+      "metadataUrl": "https://huggingface.co/api/datasets/bowen-upenn/PersonaMem-v3?blobs=true",
+      "fileCount": 909,
+      "knownSizeFiles": 909,
+      "repositoryFileBytesKnown": 1951947881,
+      "sizeMeaning": "File bytes only; excludes extraction, environments, model weights and duplicate caches.",
+      "largestFiles": [
+        {
+          "path": "samples/persona_context.csv",
+          "size": 363695328
+        },
+        {
+          "path": "samples/persona_queries.csv",
+          "size": 90239203
+        },
+        {
+          "path": "backend/106/test.json",
+          "size": 13597109
+        },
+        {
+          "path": "backend/58/test.json",
+          "size": 13470226
+        },
+        {
+          "path": "backend/87/test.json",
+          "size": 12397564
+        },
+        {
+          "path": "backend/67/test.json",
+          "size": 12211323
+        },
+        {
+          "path": "backend/68/test.json",
+          "size": 11934122
+        },
+        {
+          "path": "backend/89/test.json",
+          "size": 11545054
+        },
+        {
+          "path": "backend/86/test.json",
+          "size": 11540443
+        },
+        {
+          "path": "backend/32/test.json",
+          "size": 10967945
+        }
+      ]
+    },
+    "rsi-exam": {
+      "repository": "RSI-Exam/RSI-Exam",
+      "revision": "66f54935eaa576e27dae446f74c2ce17875c14da",
+      "gated": false,
+      "metadataUrl": "https://huggingface.co/api/datasets/RSI-Exam/RSI-Exam?blobs=true",
+      "fileCount": 2694,
+      "knownSizeFiles": 2694,
+      "repositoryFileBytesKnown": 571153533,
+      "sizeMeaning": "File bytes only; excludes extraction, environments, model weights and duplicate caches.",
+      "largestFiles": [
+        {
+          "path": "lung_fewshot_celltype_annotation/environment/data/visible_unlabeled.h5ad",
+          "size": 97708447
+        },
+        {
+          "path": "lung_fewshot_celltype_annotation/tests/public/visible_unlabeled.h5ad",
+          "size": 97708447
+        },
+        {
+          "path": "trifinger_offline_rl_push_refined/tests/anchor_checkpoints/sota/model.pt",
+          "size": 23192513
+        },
+        {
+          "path": "mbff_banking_placement/environment/tools/preliminary-evaluator",
+          "size": 22776056
+        },
+        {
+          "path": "mbff_banking_placement/tests/tools/preliminary-evaluator",
+          "size": 22776056
+        },
+        {
+          "path": "mbff_banking_placement/tests/heldout/hiddencase02.txt",
+          "size": 16685547
+        },
+        {
+          "path": "mbff_banking_placement/environment/data/testcase2_0812.txt",
+          "size": 16685546
+        },
+        {
+          "path": "mbff_banking_placement/tests/heldout/hiddencase03.txt",
+          "size": 16685544
+        },
+        {
+          "path": "mbff_banking_placement/environment/tools/sanity",
+          "size": 12023648
+        },
+        {
+          "path": "mbff_banking_placement/tests/tools/sanity",
+          "size": 12023648
+        }
+      ]
+    }
+  }
+}

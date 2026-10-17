@@ -1,4 +1,5 @@
 import { type ChildProcessWithoutNullStreams, spawn } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import type {
   AdapterDeps,
   AgentEvent,
@@ -20,6 +21,17 @@ export interface AcpAdapterOptions {
   baseArgs?: string[];
   id?: string;
   env?: Record<string, string>;
+  /** Opt-in engine workaround after session/new; a delay is not a tool-readiness proof. */
+  startupSettleMs?: number;
+  /** Fresh tools/list receipt from the MCP process actually connected by the engine.
+   * This proves catalog exchange, not tool permission or model execution.
+   */
+  startupReadiness?: {
+    receiptPath: string;
+    token: string;
+    tools: string[];
+    timeoutMs?: number;
+  };
 }
 
 interface PendingRequest {
@@ -295,10 +307,40 @@ class AcpSession implements SessionHandle {
     const configOptions = Array.isArray(result.configOptions)
       ? (result.configOptions as Array<{ category?: string; id?: string; currentValue?: string }>)
       : [];
-    const currentModel =
-      configOptions.find((option) => option.category === "model" || option.id === "model")
-        ?.currentValue ??
+    const modelOption = configOptions.find(
+      (option) => option.category === "model" || option.id === "model",
+    );
+    let currentModel =
+      modelOption?.currentValue ??
       (result.models as { currentModelId?: string } | undefined)?.currentModelId;
+    if (this.requestedModel && currentModel !== this.requestedModel && modelOption?.id) {
+      this.deps.onDiagnostic?.({
+        code: "ACP_MODEL_SELECTION",
+        message: JSON.stringify({
+          requested: this.requestedModel,
+          previous: currentModel ?? null,
+        }),
+      });
+      const selected = await this.connection.request("session/set_config_option", {
+        sessionId: this.wireSessionId,
+        configId: modelOption.id,
+        value: this.requestedModel,
+      });
+      const options = Array.isArray(selected.configOptions)
+        ? (selected.configOptions as Array<{
+            id?: string;
+            category?: string;
+            currentValue?: string;
+          }>)
+        : [];
+      currentModel = options.find(
+        (option) => option.id === modelOption.id || option.category === "model",
+      )?.currentValue;
+      if (currentModel !== this.requestedModel)
+        throw new Error(
+          `ACP model selection unverified: requested ${this.requestedModel}, engine returned ${currentModel ?? "unknown"}`,
+        );
+    }
     this.deps.onDiagnostic?.({
       code: currentModel ? "ACP_MODEL_CONFIRMED" : "ACP_MODEL_UNVERIFIED",
       message: JSON.stringify({
@@ -547,7 +589,21 @@ let sessionSeq = 0;
  * normalizing `session/update` chunks into {@link AgentEvent}s.
  */
 export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
+  const settleMs = options.startupSettleMs ?? 0;
+  if (!Number.isSafeInteger(settleMs) || settleMs < 0 || settleMs > 10000)
+    throw new RangeError("ACP startupSettleMs must be an integer from 0 to 10000");
   const baseArgs = options.baseArgs ?? [];
+  const readiness = options.startupReadiness;
+  if (
+    readiness &&
+    (!readiness.receiptPath ||
+      !readiness.token ||
+      !readiness.tools.length ||
+      !Number.isSafeInteger(readiness.timeoutMs ?? 20000) ||
+      (readiness.timeoutMs ?? 20000) <= 0 ||
+      (readiness.timeoutMs ?? 20000) > 60000)
+  )
+    throw new RangeError("invalid ACP startupReadiness");
   return {
     id: options.id ?? "acp",
     label: "ACP",
@@ -558,6 +614,10 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
           "ACP adapter cannot replace the agent system prompt; use task-context delivery",
         );
       }
+      const previousReceipts =
+        readiness && existsSync(readiness.receiptPath)
+          ? readFileSync(readiness.receiptPath).length
+          : 0;
       const session = new AcpSession(
         `acp-${++sessionSeq}`,
         {
@@ -575,6 +635,53 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
       );
       try {
         await session.start();
+        if (readiness) {
+          const deadline = Date.now() + (readiness.timeoutMs ?? 20000);
+          let found = false;
+          while (Date.now() < deadline) {
+            const fresh = existsSync(readiness.receiptPath)
+              ? readFileSync(readiness.receiptPath).subarray(previousReceipts).toString()
+              : "";
+            found = fresh
+              .split("\n")
+              .slice(0, -1)
+              .some((line) => {
+                try {
+                  const receipt = JSON.parse(line);
+                  return (
+                    receipt.token === readiness.token &&
+                    receipt.event === "tools/list-sent" &&
+                    Array.isArray(receipt.tools) &&
+                    readiness.tools.every((name) => receipt.tools.includes(name))
+                  );
+                } catch {
+                  return false;
+                }
+              });
+            if (found) break;
+            await new Promise((ready) => setTimeout(ready, 25));
+          }
+          if (!found) throw new Error("ACP MCP catalog readiness timed out; no prompt submitted");
+          deps.onDiagnostic?.({
+            code: "ACP_MCP_CATALOG_READY",
+            message: JSON.stringify({
+              tools: readiness.tools,
+              proof:
+                "fresh tools/list response; permissions and execution require independent validation",
+            }),
+          });
+        }
+        if (settleMs) {
+          deps.onDiagnostic?.({
+            code: "ACP_STARTUP_SETTLE",
+            message: JSON.stringify({
+              milliseconds: settleMs,
+              policy:
+                "configured engine compatibility delay; tool readiness must be verified independently",
+            }),
+          });
+          await new Promise((ready) => setTimeout(ready, settleMs));
+        }
       } catch (error) {
         // never leak the child process if the ACP handshake fails
         await session.dispose();

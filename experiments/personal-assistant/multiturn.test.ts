@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { explicitRules } from "./explicit-rules";
 import { memoryLocation, modelInput, scoreAnswer } from "./multiturn";
 
 test("model inputs contain user turns but never hidden checks", () => {
@@ -11,7 +12,7 @@ test("model inputs contain user turns but never hidden checks", () => {
   });
   const text = JSON.stringify(input);
   assert.equal(input.text, "给家长写反馈");
-  assert.equal(input.memoryScope, "task");
+  assert.equal(input.memoryScope, "unspecified");
   assert.ok(input.hostPolicy?.includes("220字"));
   assert.ok(!text.includes("hidden-rubric"));
   assert.ok(!text.includes("secret-evaluator"));
@@ -47,6 +48,9 @@ test("frozen dataset has the planned task and explicit-confirmation boundaries",
         if (turn.remember) {
           assert.equal(task.id, "learn");
           assert.match(turn.text, /请长期记住/);
+          const typed = explicitRules(scenario.id, turn.text);
+          assert.ok(typed.every((r) => typeof r !== "string" && turn.text.includes(r.text)));
+          assert.ok(typed.some((r) => typeof r !== "string" && r.kind === "constraint"));
           confirmations++;
         }
     }

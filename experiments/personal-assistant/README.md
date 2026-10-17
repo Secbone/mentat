@@ -192,3 +192,5 @@ node experiments/personal-assistant/prepare.mjs prepare /tmp/mentat-product-01 p
 来源分段与证据批次改造后，`multiturn.ts` 将用户原文与运行包装分开发送，并记录input/reflection schema及prompt版本。恢复运行同时校验执行器哈希与这些版本，不能向旧v2目录追加新策略结果，必须使用新输出目录。旧报告及旧轨迹保留其原始实验条件；当前实现进度见[阶段B验证](../../docs/research/stage-b-validation-2026-10-15.md)。
 
 范围与候选操作版本将显式remember回合标为reusable，其余回合标为task；标注来自既有明确指令，不来自评分规则。`reflection-operations.ts --source=<完整运行目录> --out=<新目录>`可在隔离候选分支上读取三段累计交互，最多调用模型3次，不重新生成业务答案。输入/反思schema现为 `source-scope-v2` / `evidence-operations-v3`；验证与边界见[范围与候选验证](../../docs/research/scope-merge-validation-2026-10-15.md)。
+
+2026-10-16 预检更新：当前 `multiturn.ts` 的输入版本为 `source-scope-v3-typed-confirmation`。明确长期记忆回合仍为 reusable，其他回合改为 unspecified，保留模型判断范围的空间；`explicit-rules.ts` 仅从既有用户原文确认偏好和约束类型。上述 v2 描述及旧结果保留其历史条件，不能向旧目录续跑。首次统一评测采用独立的冻结用例、结构化首答评分和三组对照，见[评测报告](../../docs/research/unified-evaluation-2026-10-16.md)。

@@ -8,6 +8,9 @@
       "@mentat/memory-evolution": [
         "packages/memory-evolution/src/index.ts"
       ],
+      "@mentat/benchmark-file": [
+        "packages/benchmark-file/src/index.ts"
+      ],
       "@mentat/observability": [
         "packages/observability/src/index.ts"
       ],
@@ -31,6 +34,9 @@
       ],
       "@mentat/assistant": [
         "packages/assistant/src/index.ts"
+      ],
+      "@mentat/benchmark": [
+        "packages/benchmark/src/index.ts"
       ],
       "@mentat/evolution": [
         "packages/evolution/src/index.ts"

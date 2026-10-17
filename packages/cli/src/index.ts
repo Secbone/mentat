@@ -1,3 +1,4 @@
+import { benchCommand } from "./commands/bench";
 import { chatCommand } from "./commands/chat";
 import { evolveCommand } from "./commands/evolve";
 import { harnessCommand } from "./commands/harness";
@@ -13,6 +14,8 @@ export { createDefaultRegistry } from "./lib/registry";
 export async function run(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
   switch (command) {
+    case "bench":
+      return benchCommand(rest);
     case undefined:
     case "-h":
     case "--help":

@@ -27,6 +27,10 @@ pnpm dev harness list
 | 包 | 职责 |
 |---|---|
 | `@mentat/core` | 协议、事件、制品契约、JSON工具与harness测试契约 |
+| `@mentat/session` | 会话执行、超时取消、交互与经验契约 |
+| `@mentat/host` | 默认助手装配、可替换服务与资源关闭 |
+| `@mentat/benchmark` | 公开评测清单、纯评测契约、连续任务和配对分析 |
+| `@mentat/benchmark-file` | 上游结果接入、运行留存、外部运行器和报告 |
 | `@mentat/kernel` | 服务容器、插件生命周期与作用域 |
 | `@mentat/evolution` | 提案、门、评测接口、选择、归档和演化循环 |
 | `@mentat/models` | 模型目录、模型选择与模型制品 |
@@ -47,6 +51,8 @@ pnpm dev harness list
 的 `exports` 单一来源生成。
 
 ## 引擎接入
+
+多维度持续评测使用 `pnpm bench list`、`pnpm test:benchmarks` 和 `pnpm bench:smoke`；公开集选型、社区框架复用与接入状态见 [评测框架](docs/benchmark-framework.md)。冒烟只验证连通性，不产生公开 benchmark 或学习效果成绩。
 
 ```bash
 mentat harness list                                   # 列出可用引擎与能力

@@ -24,6 +24,37 @@ function handle(send: (listener: AgentEventListener) => Promise<void>): SessionH
   };
 }
 describe("turn execution contract", () => {
+  it("rejects leaked protocol as an incomplete answer without manufacturing tool events", async () => {
+    const tracer = new MemoryTracer();
+    const session = handle(async (listener) => {
+      listener({
+        type: "message.completed",
+        sessionId: "s",
+        message: { role: "assistant", text: "<｜｜DSML｜｜ calls>fake</｜｜DSML｜｜ calls>" },
+      });
+      listener({ type: "run.settled", sessionId: "s", reason: "done" });
+    });
+    const result = await runTurn(
+      session,
+      { text: "answer a question" },
+      { requireFinalAnswer: true, tracer },
+    );
+    expect(result.reason).toBe("error");
+    expect(result.error).toContain("tool-protocol-text");
+    expect(result.events.some((event) => event.type === "tool.start")).toBe(false);
+    expect(result.events.at(-1)).toMatchObject({ type: "run.settled", reason: "error" });
+  });
+  it("allows protocol documentation when answer validation is not requested", async () => {
+    const session = handle(async (listener) => {
+      listener({
+        type: "message.completed",
+        sessionId: "s",
+        message: { role: "assistant", text: "Example: <｜｜DSML｜｜ calls>" },
+      });
+      listener({ type: "run.settled", sessionId: "s", reason: "done" });
+    });
+    expect((await runTurn(session, { text: "document the protocol" })).reason).toBe("done");
+  });
   it("does not confuse send acknowledgement with completion", async () => {
     const session = handle(async (listener) => {
       setTimeout(() => {

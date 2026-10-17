@@ -36,11 +36,31 @@ importers:
         specifier: workspace:*
         version: link:../session
 
+  packages/benchmark: {}
+
+  packages/benchmark-file:
+    dependencies:
+      '@mentat/benchmark':
+        specifier: workspace:*
+        version: link:../benchmark
+      '@mentat/evaluation':
+        specifier: workspace:*
+        version: link:../evaluation
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.32.1
+        version: 1.32.1(zod@4.6.7)
+
   packages/cli:
     dependencies:
       '@mentat/assistant':
         specifier: workspace:*
         version: link:../assistant
+      '@mentat/benchmark':
+        specifier: workspace:*
+        version: link:../benchmark
+      '@mentat/benchmark-file':
+        specifier: workspace:*
+        version: link:../benchmark-file
       '@mentat/core':
         specifier: workspace:*
         version: link:../core

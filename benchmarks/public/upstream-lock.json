@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "scope": "All eleven selected public benchmarks; private upstream tasks tracked separately, not silently omitted.",
+  "sources": [
+    {
+      "id": "agentdojo",
+      "repository": "https://github.com/ethz-spylab/agentdojo.git",
+      "revision": "089ed468cf3ed0322acc66b0211f26d9d90dbf60",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected"
+    },
+    {
+      "id": "longmemeval",
+      "repository": "https://github.com/xiaowu0162/LongMemEval.git",
+      "revision": "9e0b455f4ef0e2ab8f2e582289761153549043fc",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected"
+    },
+    {
+      "id": "memoryagentbench",
+      "repository": "https://github.com/HUST-AI-HYZ/MemoryAgentBench.git",
+      "revision": "538026089d1a8a8eff05121d0db89b388f360eba",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected"
+    },
+    {
+      "id": "memoryarena",
+      "repository": "https://github.com/ZexueHe/MemoryArena.git",
+      "revision": "6cd9de14b71915e39ac742a20dc33785e14b6aab",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected"
+    },
+    {
+      "id": "past-bench",
+      "repository": "https://github.com/Gen-Verse/PAST-Bench.git",
+      "revision": "f8223517ae7491e776b69793d9f11e9d074ab42e",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected",
+      "families": 26
+    },
+    {
+      "id": "personamem-v2",
+      "repository": "https://github.com/bowen-upenn/PersonaMem-v2.git",
+      "revision": "d29d91d016add354e459dfeb0d24af08bc402e2a",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected"
+    },
+    {
+      "id": "personamem-v3",
+      "repository": "https://github.com/bowen-upenn/PersonaMem-v3.git",
+      "revision": "ad80a3b1b322129fb0585ead33b129a87bb4e387",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected"
+    },
+    {
+      "id": "rsi-exam",
+      "repository": "https://github.com/aiming-lab/RSI-Exam.git",
+      "revision": "1e91cbfa6458aa261d865bdb28fca7b68752a08d",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected",
+      "publicTasks": 35,
+      "privateTasks": 53,
+      "agentTimeoutSeconds": 43200,
+      "outputTokenLimit": 500000
+    },
+    {
+      "id": "skillsbench",
+      "repository": "https://github.com/benchflow-ai/skillsbench.git",
+      "revision": "f860ecf02ef53412a030f8661c83d644b739ff01",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected"
+    },
+    {
+      "id": "tau-bench",
+      "repository": "https://github.com/sierra-research/tau2-bench.git",
+      "revision": "96a3ef92329baf908ffe9dfe188cea34e8701d2a",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected"
+    },
+    {
+      "id": "toolsandbox",
+      "repository": "https://github.com/apple-aiml-research/ToolSandbox.git",
+      "revision": "c8571d7854316d2e1c5f288e59fe1e34e53f6dd1",
+      "integration": "source-auditing",
+      "evaluation": "not-run",
+      "comparison": "not-collected"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "benchmark": {
+    "id": "mentat-longitudinal",
+    "version": "smoke-1",
+    "track": "smoke"
+  },
+  "dataset": {
+    "revision": "fixture-1",
+    "sha256": "f48bf78fdcea0ca3fc44ca817df19f999d7fa42d1a9ae1cfa1006bf0d07fb9f5",
+    "split": "smoke",
+    "source": "benchmarks/examples/episodes.json"
+  },
+  "scorer": {
+    "id": "native-rules",
+    "revision": "1",
+    "config": {
+      "purpose": "protocol smoke only; not learning quality"
+    }
+  },
+  "protocol": {
+    "id": "host-episodes",
+    "revision": "1",
+    "config": {
+      "permission": "deny",
+      "session": "fresh-per-episode",
+      "confirmation": "explicit typed user directives",
+      "candidateActivation": "disabled",
+      "isolation": "local-process-only"
+    },
+    "arms": [
+      {
+        "id": "reset",
+        "memory": "reset"
+      },
+      {
+        "id": "explicit",
+        "memory": "explicit"
+      }
+    ],
+    "maxCalls": 16,
+    "turnTimeoutMs": 10000
+  },
+  "subject": {
+    "id": "mentat",
+    "revision": "fixture-1",
+    "codeSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "harness": "fake",
+    "harnessVersion": "builtin-1",
+    "model": "fake",
+    "modelVersion": "builtin-1",
+    "config": {}
+  },
+  "metrics": [
+    {
+      "id": "protocol.echo",
+      "dimension": "observability",
+      "direction": "higher-better",
+      "unit": "ratio",
+      "min": 0,
+      "max": 1
+    }
+  ],
+  "units": [
+    {
+      "caseId": "format-learn",
+      "familyId": "format",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "format-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "format-probe",
+      "familyId": "format",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "format-probe",
+      "metricIds": ["protocol.echo"]
+    },
+    {
+      "caseId": "constraint-learn",
+      "familyId": "constraint",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "constraint-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "constraint-probe",
+      "familyId": "constraint",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "constraint-probe",
+      "metricIds": ["protocol.echo"]
+    },
+    {
+      "caseId": "format-learn",
+      "familyId": "format",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "format-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "format-probe",
+      "familyId": "format",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "format-probe",
+      "metricIds": ["protocol.echo"]
+    },
+    {
+      "caseId": "constraint-learn",
+      "familyId": "constraint",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "constraint-learn",
+      "metricIds": []
+    },
+    {
+      "caseId": "constraint-probe",
+      "familyId": "constraint",
+      "arm": "explicit",
+      "repetition": 0,
+      "sourceId": "constraint-probe",
+      "metricIds": ["protocol.echo"]
+    }
+  ]
+}

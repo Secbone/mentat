@@ -6,6 +6,7 @@ const resolve = (relative) => fileURLToPath(new URL(`../${relative}`, import.met
 export const workspaceAliases = {
   "@mentat/memory/write-rules": resolve("packages/memory/src/write-rules.mjs"),
   "@mentat/memory-evolution": resolve("packages/memory-evolution/src/index.ts"),
+  "@mentat/benchmark-file": resolve("packages/benchmark-file/src/index.ts"),
   "@mentat/observability": resolve("packages/observability/src/index.ts"),
   "@mentat/transport-acp": resolve("packages/transport-acp/src/index.ts"),
   "@mentat/core/testing": resolve("packages/core/src/testing/contract.ts"),
@@ -14,6 +15,7 @@ export const workspaceAliases = {
   "@mentat/evaluation": resolve("packages/evaluation/src/index.ts"),
   "@mentat/memory-mcp": resolve("packages/memory-mcp/src/index.ts"),
   "@mentat/assistant": resolve("packages/assistant/src/index.ts"),
+  "@mentat/benchmark": resolve("packages/benchmark/src/index.ts"),
   "@mentat/evolution": resolve("packages/evolution/src/index.ts"),
   "@mentat/workspace": resolve("packages/workspace/src/index.ts"),
   "@mentat/session": resolve("packages/session/src/index.ts"),

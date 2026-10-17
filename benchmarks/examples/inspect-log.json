@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "status": "success",
+  "eval": { "task": "synthetic-contract-fixture", "model": "fixture" },
+  "samples": [
+    { "id": "task-a", "epoch": 1, "scores": { "accuracy": { "value": "C" } }, "total_time": 0.5 },
+    { "id": "task-b", "epoch": 1, "scores": { "accuracy": { "value": "I" } }, "total_time": 0.5 }
+  ]
+}

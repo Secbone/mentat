@@ -1,0 +1,70 @@
+{
+  "scope": "Synthetic real-model contract, not public benchmark score. Fresh catalog receipt alone failed; catalog + native read-only readiness probe passed two zero-delay runs. Does not prove universal engine readiness or learning efficacy.",
+  "runs": [
+    {
+      "run": "memory-tools-catalog-ready-v1",
+      "warmupMs": 0,
+      "tools": [],
+      "candidateStored": false,
+      "candidateReadBack": false,
+      "candidateActivated": false,
+      "codeSha256": "ce5603c0386064ee4b6638c6180c5c3fe4f336f857bffa532cc5dba13bce66ec",
+      "evidence": ".mentat/public-evaluations/memory-tools-catalog-ready-v1/result.json",
+      "sha256": "217c07cd67935c2d6e205e74979b75671b0b2ee8acc5f67f4e7dd927b0f7fc79"
+    },
+    {
+      "run": "memory-tools-catalog-ready-v2",
+      "warmupMs": 0,
+      "tools": [],
+      "candidateStored": false,
+      "candidateReadBack": false,
+      "candidateActivated": false,
+      "codeSha256": "faf9f62771b3d80f856139ee040baf3936f1c509e2d2b54415a995178997e9b7",
+      "evidence": ".mentat/public-evaluations/memory-tools-catalog-ready-v2/result.json",
+      "sha256": "c8e354c437c3edb09f8e4fa32f8a72b5d339e01b4153d46fd5c187530382bb77"
+    },
+    {
+      "run": "memory-tools-catalog-ready-v3",
+      "warmupMs": 2000,
+      "tools": ["direct_memory_memory_add", "direct_memory_memory_search"],
+      "candidateStored": true,
+      "candidateReadBack": true,
+      "candidateActivated": false,
+      "codeSha256": "2cc747b541e5cbbd00c5b3bbac6f6d1f6f39c873cf7be1cdae2edb79c735638a",
+      "evidence": ".mentat/public-evaluations/memory-tools-catalog-ready-v3/result.json",
+      "sha256": "340eb118ac5c8aa575ad01be99226cae203671163044214a07bc3f23e9401080"
+    },
+    {
+      "run": "memory-tools-catalog-ready-v4",
+      "warmupMs": 0,
+      "tools": [
+        "direct_memory_memory_ready",
+        "direct_memory_memory_add",
+        "direct_memory_memory_ready",
+        "direct_memory_memory_search"
+      ],
+      "candidateStored": true,
+      "candidateReadBack": true,
+      "candidateActivated": false,
+      "codeSha256": "7afe920c7554dba57a3b5bc69bb699a6d47fbf4ee8398c05225d881de9b2dddb",
+      "evidence": ".mentat/public-evaluations/memory-tools-catalog-ready-v4/result.json",
+      "sha256": "492829c7c555bf9899b1aa6884f810cd853b34de12ecb52225ffad12bc5a69a0"
+    },
+    {
+      "run": "memory-tools-catalog-ready-v5",
+      "warmupMs": 0,
+      "tools": [
+        "direct_memory_memory_ready",
+        "direct_memory_memory_add",
+        "direct_memory_memory_ready",
+        "direct_memory_memory_search"
+      ],
+      "candidateStored": true,
+      "candidateReadBack": true,
+      "candidateActivated": false,
+      "codeSha256": "4aa9a33b81b028465d00c5daf10a9c4304c8c02b70a9f809b991ab4e3b6de5bb",
+      "evidence": ".mentat/public-evaluations/memory-tools-catalog-ready-v5/result.json",
+      "sha256": "8961ec8fd242b4f99047bec7ecf47329fc8df56e81deb274f8da6037bf2bb1b3"
+    }
+  ]
+}
