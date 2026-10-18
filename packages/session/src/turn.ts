@@ -9,7 +9,7 @@ import type {
   Usage,
   UserInput,
 } from "@mentat/core";
-import { finalAnswerIssue } from "@mentat/core";
+import { correctiveInstruction, finalAnswerIssue } from "@mentat/core";
 import { type Diagnostic, observe } from "./trajectory";
 
 export interface TurnResult {
@@ -21,9 +21,13 @@ export interface TurnResult {
   usage?: Usage;
   events: AgentEvent[];
   durationMs: number;
+  /** Number of corrective re-asks issued before this turn settled. */
+  correctiveTurns?: number;
 }
 export interface TurnOptions {
   requireFinalAnswer?: boolean;
+  /** Bounded corrective re-asks when the final answer is empty or leaked protocol. */
+  correctiveRetries?: number;
   timeoutMs?: number;
   cleanupTimeoutMs?: number;
   signal?: AbortSignal;
@@ -70,6 +74,8 @@ export async function runTurn(
   const events: AgentEvent[] = [];
   let text = "";
   let usage: Usage | undefined;
+  let corrective = 0;
+  const maxCorrective = Math.max(0, options.correctiveRetries ?? 0);
   let timer: ReturnType<typeof setTimeout> | undefined;
   let unsubscribe = () => {};
   let complete = false;
@@ -118,6 +124,7 @@ export async function runTurn(
         ...(usage ? { usage } : {}),
         events,
         durationMs: Date.now() - started,
+        ...(corrective > 0 ? { correctiveTurns: corrective } : {}),
       });
     };
   });
@@ -136,6 +143,19 @@ export async function runTurn(
       if (event.type === "run.settled" && event.reason === "done" && options.requireFinalAnswer) {
         const issue = finalAnswerIssue(text);
         if (issue) {
+          if (corrective < maxCorrective) {
+            corrective += 1;
+            trace("output.corrective", { issue, attempt: corrective, maxCorrective });
+            text = "";
+            const retry: UserInput = { text: correctiveInstruction(issue) };
+            void Promise.resolve()
+              .then(() => session.send(retry))
+              .catch((error) => {
+                unusable.add(session);
+                finish("error", String(error));
+              });
+            return;
+          }
           trace("output.invalid", { issue, transportReason: event.reason });
           event = { ...event, reason: "error", error: `invalid final answer: ${issue}` };
         }

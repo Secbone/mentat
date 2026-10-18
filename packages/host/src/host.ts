@@ -66,6 +66,8 @@ export interface HostConfig {
   memoryTools?: AssistantTools;
   /** Reject empty answers and leaked tool protocol without simulating execution. */
   requireFinalAnswer?: boolean;
+  /** Bounded corrective re-asks after an invalid final answer (requires requireFinalAnswer). */
+  correctiveRetries?: number;
   /** Read-only setup probe; expectedOutput is never sent in a prompt. */
   startupToolProbe?: { toolName: string; expectedOutput: string; maxAttempts?: number };
 }
@@ -234,6 +236,9 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
   };
   const execution = (options: TurnOptions = {}): TurnOptions => ({
     ...(config.requireFinalAnswer ? { requireFinalAnswer: true } : {}),
+    ...(config.correctiveRetries !== undefined
+      ? { correctiveRetries: config.correctiveRetries }
+      : {}),
     ...options,
     tracer,
     onDiagnostic: diagnostic,

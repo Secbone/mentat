@@ -171,6 +171,7 @@ async function complete(body: Record<string, unknown>, kind: "reader" | "subject
       scope: sha256(id),
       memoryTools: { memory: "disabled" },
       requireFinalAnswer: true,
+      correctiveRetries: 1,
       history: {
         maxChars: budget,
         ...(typeof body.historyBefore === "number" ? { before: body.historyBefore } : {}),
@@ -211,7 +212,7 @@ async function complete(body: Record<string, unknown>, kind: "reader" | "subject
           hostPolicy:
             "This is a closed-book answer-only request. No tools are available. Return the requested final answer, not a tool call or a promise to search. Use only the supplied evidence.",
         },
-        { timeoutMs, tracer: trace, requireFinalAnswer: true },
+        { timeoutMs, tracer: trace, requireFinalAnswer: true, correctiveRetries: 1 },
       );
       text = result.text;
       reason = result.reason;

@@ -44,6 +44,63 @@ describe("turn execution contract", () => {
     expect(result.events.some((event) => event.type === "tool.start")).toBe(false);
     expect(result.events.at(-1)).toMatchObject({ type: "run.settled", reason: "error" });
   });
+  it("re-asks once after leaked protocol, then accepts the corrected answer", async () => {
+    let calls = 0;
+    let listener: AgentEventListener = () => {};
+    const session: SessionHandle = {
+      id: "s",
+      send: async () => {
+        calls += 1;
+        listener({
+          type: "message.completed",
+          sessionId: "s",
+          message: {
+            role: "assistant",
+            text:
+              calls === 1
+                ? "<｜｜DSML｜｜ calls>fake</｜｜DSML｜｜ calls>"
+                : "the build takes 3 minutes",
+          },
+        });
+        listener({ type: "run.settled", sessionId: "s", reason: "done" });
+      },
+      subscribe: (fn) => {
+        listener = fn;
+        return () => {
+          listener = () => {};
+        };
+      },
+      interrupt: vi.fn(async () => {}),
+      dispose: vi.fn(async () => {}),
+    };
+    const result = await runTurn(
+      session,
+      { text: "answer a question" },
+      { requireFinalAnswer: true, correctiveRetries: 1 },
+    );
+    expect(result.reason).toBe("done");
+    expect(result.text).toBe("the build takes 3 minutes");
+    expect(result.correctiveTurns).toBe(1);
+    expect(calls).toBe(2);
+  });
+  it("stops after the corrective budget is exhausted", async () => {
+    const session = handle(async (listener) => {
+      listener({
+        type: "message.completed",
+        sessionId: "s",
+        message: { role: "assistant", text: "<｜｜DSML｜｜ calls>fake</｜｜DSML｜｜ calls>" },
+      });
+      listener({ type: "run.settled", sessionId: "s", reason: "done" });
+    });
+    const result = await runTurn(
+      session,
+      { text: "answer a question" },
+      { requireFinalAnswer: true, correctiveRetries: 1 },
+    );
+    expect(result.reason).toBe("error");
+    expect(result.error).toContain("tool-protocol-text");
+    expect(result.correctiveTurns).toBe(1);
+  });
   it("allows protocol documentation when answer validation is not requested", async () => {
     const session = handle(async (listener) => {
       listener({
