@@ -41,6 +41,33 @@ describe("translate", () => {
     expect(thinking).toContainEqual({ type: "message.reasoning", sessionId: "s1", text: "why" });
   });
 
+  it("surfaces a failed model call instead of an empty completion", () => {
+    expect(
+      translate(
+        {
+          type: "message_end",
+          message: {
+            role: "assistant",
+            content: [],
+            stopReason: "error",
+            errorMessage: "401: api_key_expired",
+          },
+        },
+        "s1",
+      ),
+    ).toEqual([
+      { type: "run.settled", sessionId: "s1", reason: "error", error: "401: api_key_expired" },
+    ]);
+    expect(
+      translate(
+        { type: "message_end", message: { role: "assistant", content: [], stopReason: "aborted" } },
+        "s1",
+      ),
+    ).toEqual([
+      { type: "run.settled", sessionId: "s1", reason: "aborted", error: "model stopped: aborted" },
+    ]);
+  });
+
   it("maps tool lifecycle events", () => {
     expect(
       translate(

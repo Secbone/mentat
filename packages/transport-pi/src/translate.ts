@@ -52,17 +52,39 @@ export function translate(record: RpcRecord, sessionId: string): AgentEvent[] {
       return events;
     }
     case "message_end": {
-      const message = record.message as { role?: unknown; content?: unknown } | undefined;
-      if (message?.role === "assistant") {
+      const message = record.message as
+        | {
+            role?: unknown;
+            content?: unknown;
+            stopReason?: unknown;
+            errorMessage?: unknown;
+          }
+        | undefined;
+      if (message?.role !== "assistant") return [];
+      // A failed/aborted model call still ends the message; never mask it as a
+      // successful (empty) completion, or the CLI prints nothing and reports done.
+      const stopReason = typeof message.stopReason === "string" ? message.stopReason : undefined;
+      if (stopReason === "error" || stopReason === "aborted") {
+        const detail =
+          typeof message.errorMessage === "string" && message.errorMessage.trim()
+            ? message.errorMessage.trim()
+            : `model stopped: ${stopReason}`;
         return [
           {
-            type: "message.completed",
+            type: "run.settled",
             sessionId,
-            message: { role: "assistant", text: extractText(message.content) },
+            reason: stopReason === "aborted" ? "aborted" : "error",
+            error: detail,
           },
         ];
       }
-      return [];
+      return [
+        {
+          type: "message.completed",
+          sessionId,
+          message: { role: "assistant", text: extractText(message.content) },
+        },
+      ];
     }
     case "tool_execution_start":
       return [
