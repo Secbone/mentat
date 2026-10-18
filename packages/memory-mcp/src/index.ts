@@ -11,7 +11,7 @@ export function memoryMcpSpec(
   return {
     name: "memory",
     command: process.execPath,
-    args: [fileURLToPath(new URL("./server.mjs", import.meta.url))],
+    args: [fileURLToPath(new URL("./loader.mjs", import.meta.url))],
     env: {
       MENTAT_MEMORY_FILE: memoryPath,
       ...(options?.readOnly ? { MENTAT_MEMORY_READ_ONLY: "true" } : {}),

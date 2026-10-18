@@ -7,7 +7,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { describe, expect, it } from "vitest";
 import { memoryMcpSpec } from "./index";
 
-const server = fileURLToPath(new URL("./server.mjs", import.meta.url));
+const server = fileURLToPath(new URL("./loader.mjs", import.meta.url));
 
 function readText(result: Awaited<ReturnType<Client["callTool"]>>): string {
   const blocks = result.content as Array<{ type: string; text?: string }>;
