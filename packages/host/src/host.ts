@@ -1,7 +1,6 @@
-import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import {
   ASSISTANT_PROMPT_VERSION,
   type AssistantTools,
@@ -44,9 +43,15 @@ import {
   type TaskInput,
   type TurnOptions,
 } from "@mentat/session";
-
-const NO_EVIDENCE_POLICY =
-  "No historical reference matched this question. If the answer is not supported by the current request or the provided material, say the information is unavailable instead of guessing, and do not treat an unsuccessful lookup as evidence that a fact never existed.";
+import {
+  readRepoState,
+  resolveHostPaths,
+  resolveMemoryTools,
+  validateServerNames,
+  validateStartupToolProbe,
+} from "./config";
+import { withNoEvidencePolicy } from "./policy";
+import { READINESS_PROBE_POLICY, verifyReadiness } from "./readiness";
 
 export interface HostConfig {
   cwd: string;
@@ -82,58 +87,17 @@ export interface HostOverrides {
 }
 export function createAssistantHost(config: HostConfig, overrides: HostOverrides = {}) {
   const probe = config.startupToolProbe;
-  if (
-    probe &&
-    (!probe.toolName ||
-      !probe.expectedOutput ||
-      !Number.isSafeInteger(probe.maxAttempts ?? 2) ||
-      (probe.maxAttempts ?? 2) < 1 ||
-      (probe.maxAttempts ?? 2) > 3)
-  )
-    throw new Error("invalid startup tool probe");
-  const memoryTools = config.memoryTools ?? {
-    memory: config.memoryPath && config.permissionMode !== "deny" ? "read-write" : "disabled",
-  };
-  if (memoryTools.memory !== "disabled" && !config.memoryPath)
-    throw new Error("memory tools require a file-backed memory repository");
-  const registerMemory = Boolean(
-    config.memoryPath && memoryTools.memory !== "disabled" && memoryTools.transport !== "external",
-  );
-  const names = new Set(registerMemory ? ["memory"] : []);
-  for (const server of config.mcpServers ?? []) {
-    if (!server.name.trim() || names.has(server.name))
-      throw new Error("duplicate or empty MCP server name");
-    names.add(server.name);
-  }
-  if (!overrides.memory && !config.memoryPath)
-    throw new Error("memory implementation or memoryPath required");
-  config = {
-    ...config,
-    cwd: resolve(config.cwd),
-    ...(config.memoryPath ? { memoryPath: resolve(config.memoryPath) } : {}),
-  };
+  validateStartupToolProbe(probe);
+  const { memoryTools, registerMemory } = resolveMemoryTools(config);
+  validateServerNames(registerMemory, config.mcpServers);
+  config = resolveHostPaths(config, overrides);
   const traceId = randomUUID();
   const diagnostic =
     overrides.onDiagnostic ??
     ((d) => {
       process.stderr.write(`[${d.code}] ${d.message}\n`);
     });
-  let revision = "unknown";
-  let dirty: boolean | null = null;
-  try {
-    revision = execFileSync("git", ["rev-parse", "HEAD"], {
-      cwd: config.cwd,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-    }).trim();
-    dirty = Boolean(
-      execFileSync("git", ["status", "--porcelain"], {
-        cwd: config.cwd,
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "ignore"],
-      }).trim(),
-    );
-  } catch {}
+  const { revision, dirty } = readRepoState(config.cwd);
   const file = overrides.trajectory
     ? undefined
     : new FileTrajectoryStore(
@@ -318,49 +282,21 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
           { timeoutMs: config.timeoutMs, onDiagnostic: diagnostic },
         );
         if (probe) {
-          let verified = false;
           try {
-            for (let attempt = 1; attempt <= (probe.maxAttempts ?? 2); attempt++) {
-              emit("session.readiness.start", {
-                sessionId: session.id,
-                attempt,
-                tool: probe.toolName,
-              });
-              const result = await runTurn(
-                session,
-                {
-                  text: `Infrastructure readiness check: call ${probe.toolName} with empty arguments and report its returned diagnostic value.`,
-                  hostPolicy:
-                    "This is a setup probe, not a user task. Use the actual named read-only tool. Do not simulate a call, read/write user memory, or use other tools. A previous unexecuted call is not a successful probe.",
-                },
-                execution({ timeoutMs: config.timeoutMs ?? 30000, requireFinalAnswer: true }),
-              );
-              const ids = new Set(
-                result.events
-                  .filter((event) => event.type === "tool.start" && event.name === probe.toolName)
-                  .map((event) => (event.type === "tool.start" ? event.id : "")),
-              );
-              verified =
-                !result.events.some(
-                  (event) => event.type === "tool.start" && event.name !== probe.toolName,
-                ) &&
-                result.events.some(
-                  (event) =>
-                    event.type === "tool.result" &&
-                    ids.has(event.id) &&
-                    !event.isError &&
-                    event.output.includes(probe.expectedOutput),
-                );
-              emit("session.readiness.end", {
-                sessionId: session.id,
-                attempt,
-                verified,
-                reason: result.reason,
-              });
-              if (verified) break;
-              if (result.reason === "aborted" || result.error === "turn timed out") break;
-            }
-            if (!verified) throw new Error("startup tool probe failed; no user task submitted");
+            await verifyReadiness({
+              sessionId: session.id,
+              probe,
+              emit,
+              probeTurn: () =>
+                runTurn(
+                  session,
+                  {
+                    text: `Infrastructure readiness check: call ${probe.toolName} with empty arguments and report its returned diagnostic value.`,
+                    hostPolicy: READINESS_PROBE_POLICY,
+                  },
+                  execution({ timeoutMs: config.timeoutMs ?? 30000, requireFinalAnswer: true }),
+                ),
+            });
           } catch (error) {
             await closeSession(session);
             throw error;
@@ -409,13 +345,7 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
             };
           // No lexical evidence matched: state the absence so the model abstains
           // instead of fabricating a memory of a fact that was never retrieved.
-          else
-            input = {
-              ...input,
-              hostPolicy: [input.hostPolicy, NO_EVIDENCE_POLICY]
-                .filter((part): part is string => Boolean(part))
-                .join(" "),
-            };
+          else input = withNoEvidencePolicy(input);
         }
         const assembled = await assemblePrompt(memory, config.adapter, input, memoryTools);
         emit("prompt.assembled", {
