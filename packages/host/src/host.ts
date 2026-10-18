@@ -45,6 +45,9 @@ import {
   type TurnOptions,
 } from "@mentat/session";
 
+const NO_EVIDENCE_POLICY =
+  "No historical reference matched this question. If the answer is not supported by the current request or the provided material, say the information is unavailable instead of guessing, and do not treat an unsuccessful lookup as evidence that a fact never existed.";
+
 export interface HostConfig {
   cwd: string;
   adapter: HarnessAdapter;
@@ -403,6 +406,15 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
                   memoryScope: "task",
                 },
               ],
+            };
+          // No lexical evidence matched: state the absence so the model abstains
+          // instead of fabricating a memory of a fact that was never retrieved.
+          else
+            input = {
+              ...input,
+              hostPolicy: [input.hostPolicy, NO_EVIDENCE_POLICY]
+                .filter((part): part is string => Boolean(part))
+                .join(" "),
             };
         }
         const assembled = await assemblePrompt(memory, config.adapter, input, memoryTools);

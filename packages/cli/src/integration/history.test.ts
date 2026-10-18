@@ -7,6 +7,36 @@ import { FileMemoryRepository } from "@mentat/memory-file";
 import { ExperienceStore } from "@mentat/observability";
 import { expect, it } from "vitest";
 
+it("marks the absence of matching evidence so the model abstains instead of guessing", async () => {
+  const root = mkdtempSync(join(tmpdir(), "mentat-history-none-"));
+  const host = createAssistantHost({
+    cwd: root,
+    adapter: createFakeAdapter(),
+    memoryPath: join(root, "memory.json"),
+    experienceDir: join(root, "experience"),
+    history: { maxChars: 3000 },
+  });
+  try {
+    await host.ingestHistory([
+      {
+        id: "past",
+        source: "fixture",
+        timestamp: Date.UTC(2025, 0, 1),
+        messages: [{ role: "user", content: "My cat is Luna." }],
+      },
+    ]);
+    const s = await host.open();
+    await host.turn(s, "What is my passport number?");
+    await host.close();
+    if (!host.logDir) throw new Error("history test requires file tracing");
+    const events = readFileSync(join(host.logDir, "events.jsonl"), "utf8");
+    expect(events).toContain("No historical reference matched this question");
+  } finally {
+    await host.close();
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 it("imports history idempotently, persists reference retrieval and never confirms inferred rules", async () => {
   const root = mkdtempSync(join(tmpdir(), "mentat-history-"));
   const memoryPath = join(root, "memory.json"),
