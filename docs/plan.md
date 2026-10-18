@@ -238,6 +238,10 @@ Archive 保留**非支配的多样变体**（开放探索），而非只留最�
 
 ## 11. 进度
 
+> 以下为**历史里程碑记录**（含旧的包数与命名）。当前状态以 [`CHANGELOG.md`](../CHANGELOG.md)、
+> [`docs/adr/`](adr/) 和各专项报告为准；当前为 **19 个功能包**，`@mentat/runtime` 已拆分移除。
+
+
 - **M0** 完成：pnpm monorepo（`@mentat/core`、`@mentat/cli`），tsc/biome/vitest。
 - **M1** 完成：`AgentEvent` 统一事件流、`HarnessAdapter` 接入缝、`IterableArtifact` 契约、
   cordis 风格 kernel、FakeAdapter、共享 harness 契约测试套件。
