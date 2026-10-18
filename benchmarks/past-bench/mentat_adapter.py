@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 from past_bench.models.content import TextBlock
@@ -100,6 +101,13 @@ class MentatCliAdapter(_OneShotCliAdapter):
         )
         if payload.get("error"):
             return StepResponse(status="error", error=str(payload["error"]), usage=usage)
+
+        memory = payload.get("memory")
+        if isinstance(memory, dict):
+            # Substrate attribution: surface Mentat's memory operations in the
+            # trial log. PAST-Bench's own dispatch metrics parse agent tool calls,
+            # so this is exposed for audit rather than folded into its counters.
+            print(f"[mentat-memory] {json.dumps(memory, sort_keys=True)}", file=sys.stderr, flush=True)
 
         text = str(payload.get("final_output") or "").strip()
         return StepResponse(

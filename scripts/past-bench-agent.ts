@@ -11,6 +11,7 @@
 //     [--memory <file>] [--experience <dir>] [--log-dir <dir>]
 // < prompt-on-stdin
 import { createAssistantHost, createDefaultRegistry } from "@mentat/host";
+import { memoryAttribution } from "@mentat/observability";
 
 function arg(name: string, fallback?: string): string | undefined {
   const index = process.argv.indexOf(name);
@@ -30,7 +31,7 @@ async function main(): Promise<void> {
   const timeoutMs = Number(arg("--timeout-ms") ?? "600000") || 600000;
   const memoryPath = arg("--memory") ?? `${cwd}/.mentat-memory.json`;
   const experienceDir = arg("--experience") ?? `${cwd}/.mentat-experience`;
-  const logDir = arg("--log-dir");
+  const logDir = arg("--log-dir") ?? `${cwd}/.mentat-bench-trace`;
 
   const prompt = (await readStdin()).trim();
   const registry = createDefaultRegistry("full");
@@ -63,6 +64,8 @@ async function main(): Promise<void> {
           input_tokens: result.usage?.inputTokens ?? 0,
           output_tokens: result.usage?.outputTokens ?? 0,
         },
+        // Substrate account for attribution: what memory actually did this task.
+        memory: host.logDir ? memoryAttribution(host.logDir) : null,
       })}\n`,
     );
   } finally {

@@ -4,4 +4,5 @@ export * from "./prompt";
 export * from "./reflect";
 export * from "./reflection";
 export * from "./reflection-evidence";
+export * from "./reflection-trigger";
 export * from "./remember";

@@ -1,6 +1,11 @@
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { inspectTrajectory, readTrajectory, resolveEventData } from "@mentat/observability";
+import {
+  inspectTrajectory,
+  memoryAttribution,
+  readTrajectory,
+  resolveEventData,
+} from "@mentat/observability";
 
 export function benchmarkObservations(dir: string | undefined) {
   const sessionIds = new Set<string>(),
@@ -46,5 +51,6 @@ export function benchmarkObservations(dir: string | undefined) {
     accounting,
     costUsd,
     trajectory: dir ? inspectTrajectory(dir) : null,
+    memory: dir ? memoryAttribution(dir) : null,
   };
 }

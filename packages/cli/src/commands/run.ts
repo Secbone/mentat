@@ -1,4 +1,4 @@
-import type { RememberInput } from "@mentat/assistant";
+import { type RememberInput, reflectionTrigger } from "@mentat/assistant";
 import type { AgentEvent, PermissionMode } from "@mentat/core";
 import { createAssistantHost } from "@mentat/host";
 import { defaultExperienceDir, defaultMemoryPath } from "../lib/paths";
@@ -14,6 +14,7 @@ export async function runCommand(args: string[]): Promise<number> {
   let experienceDir: string | undefined;
   const remember: RememberInput[] = [];
   let reflect = false;
+  let reflectAuto = false;
   let logDir: string | undefined;
   let timeoutMs = 120_000;
   const promptParts: string[] = [];
@@ -80,6 +81,11 @@ export async function runCommand(args: string[]): Promise<number> {
       reflect = true;
       continue;
     }
+    if (arg === "--reflect-auto") {
+      reflect = true;
+      reflectAuto = true;
+      continue;
+    }
     if (arg === "--permission") {
       permission = parsePermissionMode(args[++i]);
       continue;
@@ -136,25 +142,34 @@ export async function runCommand(args: string[]): Promise<number> {
     if (remember.length)
       process.stderr.write(`memory: +${added} (${remember.length - added} duplicate)\n`);
     if (reflect) {
-      try {
-        const reflected = await host.reflect(
-          { task: prompt, outcome: result.reason, tools: record.tools, interactions: [record] },
-          { timeoutMs },
-        );
-        process.stderr.write(`reflect: ${reflected.status} +${reflected.added}\n`);
-        process.stderr.write(
-          `reflect: merged ${reflected.merged}, skipped ${reflected.skipped}, rejected ${reflected.rejected}\n`,
-        );
-        for (const decision of reflected.decisions
-          .filter((decision) => decision.op === "reject")
-          .slice(0, 5))
-          process.stderr.write(`reflect: rejected[${decision.index}]: ${decision.reason}\n`);
-        for (const issue of reflected.issues.slice(0, 5))
-          process.stderr.write(
-            `reflect: ${issue.code}${issue.index !== undefined ? `[${issue.index}]` : ""}: ${issue.message}\n`,
+      // `--reflect-auto` reflects only when there is evidence worth learning
+      // from (corrections or reusable tool failures); plain `--reflect` is an
+      // explicit request and always runs.
+      const trigger = reflectAuto ? reflectionTrigger({ interactions: [record] }) : undefined;
+      if (trigger && !trigger.reflect) {
+        process.stderr.write(`reflect: skipped (${trigger.reason})\n`);
+      } else {
+        if (trigger) process.stderr.write(`reflect: trigger=${trigger.reason}\n`);
+        try {
+          const reflected = await host.reflect(
+            { task: prompt, outcome: result.reason, tools: record.tools, interactions: [record] },
+            { timeoutMs },
           );
-      } catch (error) {
-        process.stderr.write(`reflect: ${String(error)}\n`);
+          process.stderr.write(`reflect: ${reflected.status} +${reflected.added}\n`);
+          process.stderr.write(
+            `reflect: merged ${reflected.merged}, skipped ${reflected.skipped}, rejected ${reflected.rejected}\n`,
+          );
+          for (const decision of reflected.decisions
+            .filter((decision) => decision.op === "reject")
+            .slice(0, 5))
+            process.stderr.write(`reflect: rejected[${decision.index}]: ${decision.reason}\n`);
+          for (const issue of reflected.issues.slice(0, 5))
+            process.stderr.write(
+              `reflect: ${issue.code}${issue.index !== undefined ? `[${issue.index}]` : ""}: ${issue.message}\n`,
+            );
+        } catch (error) {
+          process.stderr.write(`reflect: ${String(error)}\n`);
+        }
       }
     }
     return result.reason === "done" ? 0 : 1;

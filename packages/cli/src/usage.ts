@@ -3,7 +3,7 @@ export const USAGE = `mentat — a self-iterating agent framework
 Usage:
   mentat harness list
   mentat bench list|validate|run|external|import|report|compare|arms|history [options]
-  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--remember "<fact>"]... [--reflect] [--experience <dir>] [--permission <ask|auto|full>]
+  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--remember "<fact>"]... [--reflect] [--reflect-auto] [--experience <dir>] [--permission <ask|auto|full>]
   mentat chat [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--experience <dir>] [--permission <ask|auto|full>]
   mentat loop demo|memory
   mentat memory migrate [--memory <file>] [--snapshot <file>] [--audit <file>]
