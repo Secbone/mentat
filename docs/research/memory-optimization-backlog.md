@@ -60,6 +60,12 @@ DSML 工具协议文本、209 被判错（约占全部错误的 77%）**，真�
    dataset/scorer/protocol 版本，不把新旧分算成提升。
 5. **反思有证据触发 + 归因。** 反思改为由重复纠正/可复用失败经验触发，并暴露 memory
    read/write/injection 计数（同时补上 PAST-Bench 的 `dispatch` 归因）。
+   **已实现（2026-10-18）**：`@mentat/observability` 的 `memoryAttribution` 聚合
+   injections/reads/writes/reflections/history 命中；`@mentat/assistant` 的
+   `reflectionTrigger` 纯函数（显式请求必反思，否则仅在用户纠正或可复用工具失败时触发，
+   不在"任务正常结束"时触发）；CLI `run --reflect-auto`；PAST-Bench 桥输出 `memory`
+   归因块并由适配器记入 trial 日志。PAST-Bench 自身的 `dispatch` 指标仍解析 agent 工具
+   调用，真正的归因桥接待其 trace 格式适配。
 
 验证方式：用冻结的 50 道错题与全量 500 题同一协议复跑，主指标看 DSML 泄漏是否趋零、
 弃答是否提升且已答不退化；本轮改动不涉及检索算法，是低风险止血。
