@@ -1,0 +1,37 @@
+{
+  "id": "3fba361f-1431-4931-ab2a-5bfd03083670",
+  "started_at": "2026-10-17T22:17:15.544426",
+  "updated_at": "2026-10-17T22:24:27.890160",
+  "finished_at": "2026-10-17T22:24:27.890160",
+  "n_total_trials": 1,
+  "stats": {
+    "n_completed_trials": 1,
+    "n_errored_trials": 0,
+    "n_running_trials": 0,
+    "n_pending_trials": 0,
+    "n_cancelled_trials": 0,
+    "n_retries": 0,
+    "evals": {
+      "nop__adhoc": {
+        "n_trials": 1,
+        "n_errors": 0,
+        "metrics": [
+          {
+            "mean": 2e-6
+          }
+        ],
+        "pass_at_k": {},
+        "reward_stats": {
+          "reward": {
+            "2e-06": ["finscope_dcf_valuation__L8i9mAf"]
+          }
+        },
+        "exception_stats": {}
+      }
+    },
+    "n_input_tokens": null,
+    "n_cache_tokens": null,
+    "n_output_tokens": null,
+    "cost_usd": null
+  }
+}

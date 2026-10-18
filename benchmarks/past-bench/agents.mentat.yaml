@@ -1,0 +1,8 @@
+agents:
+  mentat:
+    description: "Mentat self-iterating agent via scripts/past-bench-agent.ts (one host turn per task)."
+    adapter: mentat_cli
+    install_policy: prebaked
+    capabilities: [tool_use, sandbox_file_ops]
+    default_model:
+      model_id: opencode-go/deepseek-v4.1-flash

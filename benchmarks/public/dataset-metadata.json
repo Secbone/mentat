@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "measuredAt": "2026-10-16T05:28:18.585002+00:00",
+  "measuredAt": "2026-10-17T12:39:58.402912+00:00",
   "disk": {
-    "path": "/Users/soar/Code/mentat",
-    "totalBytes": 245107195904,
-    "freeBytes": 121287647232,
+    "path": "/home/secbone/Code/mentat",
+    "totalBytes": 119166468096,
+    "freeBytes": 62516953088,
     "incomingBytes": 0,
     "reserveBytes": 32212254720,
-    "remainingAfterBytes": 121287647232,
+    "remainingAfterBytes": 62516953088,
     "allowed": true
   },
   "datasets": {
