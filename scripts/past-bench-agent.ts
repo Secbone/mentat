@@ -10,7 +10,9 @@
 //     --cwd <workdir> --harness <pi|acp|fake> [--model <id>] [--timeout-ms <n>] \
 //     [--memory <file>] [--experience <dir>] [--log-dir <dir>]
 // < prompt-on-stdin
-import { createAssistantHost, createDefaultRegistry } from "@mentat/host";
+
+import { createDefaultRegistry } from "@mentat/harnesses";
+import { createAssistantHost } from "@mentat/host";
 import { memoryAttribution } from "@mentat/observability";
 
 function arg(name: string, fallback?: string): string | undefined {

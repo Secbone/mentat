@@ -3,10 +3,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { reflectMemories } from "@mentat/assistant";
 import type { AgentEventListener, HarnessAdapter, SessionOptions } from "@mentat/core";
-import { saveReflections } from "@mentat/host";
 import { JsonFileMemoryStore } from "@mentat/memory-file";
 import { SessionRecorder } from "@mentat/observability";
 import { describe, expect, it } from "vitest";
+import { saveReflections } from "../lib/compat";
 
 describe("full interaction reflection", () => {
   it("passes answers, corrections and failed tools to a separate restricted session", async () => {

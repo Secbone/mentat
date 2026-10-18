@@ -1,9 +1,9 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { taskContext } from "@mentat/host";
 import { JsonFileMemoryStore } from "@mentat/memory-file";
 import { describe, expect, it } from "vitest";
+import { taskContext } from "../lib/compat";
 
 describe("host context", () => {
   it("reloads tool-written memories between turns, even without keyword overlap", () => {

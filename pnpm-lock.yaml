@@ -70,6 +70,9 @@ importers:
       '@mentat/evolution':
         specifier: workspace:*
         version: link:../evolution
+      '@mentat/harnesses':
+        specifier: workspace:*
+        version: link:../harnesses
       '@mentat/host':
         specifier: workspace:*
         version: link:../host
@@ -115,6 +118,18 @@ importers:
         specifier: workspace:*
         version: link:../kernel
 
+  packages/harnesses:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/transport-acp':
+        specifier: workspace:*
+        version: link:../transport-acp
+      '@mentat/transport-pi':
+        specifier: workspace:*
+        version: link:../transport-pi
+
   packages/host:
     dependencies:
       '@mentat/assistant':
@@ -138,12 +153,6 @@ importers:
       '@mentat/session':
         specifier: workspace:*
         version: link:../session
-      '@mentat/transport-acp':
-        specifier: workspace:*
-        version: link:../transport-acp
-      '@mentat/transport-pi':
-        specifier: workspace:*
-        version: link:../transport-pi
 
   packages/kernel:
     dependencies:

@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "bin": {
-    "mentat-memory-mcp": "./src/server.mjs"
+    "mentat-memory-mcp": "./src/loader.mjs"
   },
   "dependencies": {
     "@mentat/core": "workspace:*",

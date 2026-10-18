@@ -25,7 +25,8 @@
     "@mentat/transport-pi": "workspace:*",
     "@mentat/workspace": "workspace:*",
     "@mentat/session": "workspace:*",
-    "@mentat/host": "workspace:*"
+    "@mentat/host": "workspace:*",
+    "@mentat/harnesses": "workspace:*"
   },
   "description": "Command parsing, terminal interaction and engine assembly",
   "scripts": {

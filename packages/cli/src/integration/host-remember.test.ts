@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createFakeAdapter } from "@mentat/core";
-import { createAssistantHost, rememberUserFact } from "@mentat/host";
+import { createAssistantHost } from "@mentat/host";
 import {
   buildTurnContext,
   InMemoryMemoryStore,
@@ -12,6 +12,7 @@ import {
 import { JsonFileMemoryStore } from "@mentat/memory-file";
 import { ExperienceStore } from "@mentat/observability";
 import { expect, it } from "vitest";
+import { rememberUserFact } from "../lib/compat";
 
 it("confirms a persisted candidate with evidence of the actual manual directive", async () => {
   const dir = mkdtempSync(join(tmpdir(), "mentat-confirm-"));

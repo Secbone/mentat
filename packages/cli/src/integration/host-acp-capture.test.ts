@@ -2,7 +2,8 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createAssistantHost, createDefaultRegistry } from "@mentat/host";
+import { createDefaultRegistry } from "@mentat/harnesses";
+import { createAssistantHost } from "@mentat/host";
 import { inspectTrajectory, projectExperience } from "@mentat/observability";
 import { expect, it } from "vitest";
 

@@ -18,8 +18,6 @@
     "@mentat/memory": "workspace:*",
     "@mentat/memory-file": "workspace:*",
     "@mentat/memory-mcp": "workspace:*",
-    "@mentat/observability": "workspace:*",
-    "@mentat/transport-pi": "workspace:*",
-    "@mentat/transport-acp": "workspace:*"
+    "@mentat/observability": "workspace:*"
   }
 }

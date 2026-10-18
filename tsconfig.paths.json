@@ -41,6 +41,9 @@
       "@mentat/evolution": [
         "packages/evolution/src/index.ts"
       ],
+      "@mentat/harnesses": [
+        "packages/harnesses/src/index.ts"
+      ],
       "@mentat/workspace": [
         "packages/workspace/src/index.ts"
       ],

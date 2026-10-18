@@ -1,2 +1,2 @@
-export type { AcpRegistration, RegistryOptions } from "@mentat/host";
-export { createDefaultRegistry } from "@mentat/host";
+export type { AcpRegistration, RegistryOptions } from "@mentat/harnesses";
+export { createDefaultRegistry } from "@mentat/harnesses";
