@@ -32,3 +32,14 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
 
 ### Refactor
 - `memory-mcp`: `server.mjs` → `loader.mjs` (it is a loader shim).
+- Extracted `@mentat/harnesses` (engine registry); `@mentat/host` is now
+  engine-agnostic (ADR-0004). `compat.ts` moved to the CLI.
+- Split `host.ts` (585→~515 lines): `config.ts`, `policy.ts`, `readiness.ts`.
+- `assistant/history.ts` reuses `memory`'s tokenizer instead of duplicating it.
+- Root `tsconfig` now type-checks `scripts/**/*.ts`; dropped the redundant
+  `benchmarks/tsconfig.json`.
+- Layering checker verifies the allowed-deps table against real packages.
+
+### Added (continued)
+- `@mentat/benchmark`: `BridgeRegistry` + bridge-contract ADR (ADR-0005).
+- In-package `@mentat/host` contract tests.
