@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -34,11 +34,23 @@ describe("memory MCP server", () => {
     );
     try {
       expect((await client.listTools()).tools.map((tool) => tool.name)).toEqual(["memory_search"]);
-      expect(JSON.parse(readFileSync(receipt, "utf8").trim())).toMatchObject({
-        event: "tools/list-sent",
-        token: "nonce",
-        tools: ["memory_search"],
-      });
+      // The SDK response can reach this process before the child appends its
+      // receipt. Wait for a complete record, matching the production reader.
+      await expect
+        .poll(
+          () => {
+            if (!existsSync(receipt)) return undefined;
+            const text = readFileSync(receipt, "utf8");
+            if (!text.endsWith("\n")) return undefined;
+            return JSON.parse(text.trim());
+          },
+          { timeout: 1000, interval: 10 },
+        )
+        .toMatchObject({
+          event: "tools/list-sent",
+          token: "nonce",
+          tools: ["memory_search"],
+        });
       expect(
         (await client.callTool({ name: "memory_add", arguments: { id: "x", text: "unsupported" } }))
           .isError,

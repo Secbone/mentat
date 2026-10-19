@@ -138,7 +138,9 @@ def main():
                 else:
                     hypothesis,response=client.complete(baseline_prompt)
                 observation,path=verification(response)
-                result.update(hypothesis=hypothesis,finalAnswerValid=not response.get("finalAnswerIssue"),finalAnswerIssue=response.get("finalAnswerIssue"))
+                result.update(hypothesis=hypothesis,finalAnswerValid=not response.get("finalAnswerIssue"),finalAnswerIssue=response.get("finalAnswerIssue"),
+                              correctiveTurns=response.get("correctiveTurns",0),firstAnswerValid=response.get("firstAnswerValid",not response.get("finalAnswerIssue")),
+                              attempts=response.get("attempts",[{"text":hypothesis,"issue":response.get("finalAnswerIssue")}]))
                 if response.get("retrieval"):
                     selection_info=response["retrieval"]
                     selected_sessions={json.loads(p.partition("#msg")[0][len("history:"):])[1] for p in selection_info["selectedIds"]}
@@ -155,6 +157,8 @@ def main():
                 costs=[observation["costUsd"],judge_observation["costUsd"]]
                 result.update(status="completed",correct="yes" in text.lower(),judgeResponse=text,judgeFormatValid=text.strip().lower().rstrip(".") in ["yes","no"],costUsd=sum(costs) if all(c is not None for c in costs) else None)
                 result["usableCorrect"]=result["correct"] and result["finalAnswerValid"]
+                assert not result["correctiveTurns"] or not result["firstAnswerValid"],"correction must be format-only, never retry a valid answer"
+                result["firstAnswerUsableCorrect"]=result["correct"] and result["firstAnswerValid"]
                 result["evidence"].append(judge_path)
             except Exception as error:
                 result["error"]=str(error)

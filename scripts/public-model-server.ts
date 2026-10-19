@@ -39,7 +39,11 @@ const transport = {
   messageDelivery: "serialized-text; system-policy-appended-by-ACP",
   tools: "unsupported; requests with tools are rejected",
   historyProtocol: "shared-corpus-v2",
+  externalHistoryProtocol: "host-materials-v1; caller records retrieval evidence",
   sourceArchive: join(out, "checkout-source.json"),
+  correctiveRetries: 1,
+  correctionPolicy:
+    "one format-only re-ask for empty/protocol output; no grader feedback or retry of a valid wrong answer",
 };
 writeFileSync(join(out, "manifest.json"), JSON.stringify(transport, null, 2), { flag: "wx" });
 const registry = createDefaultRegistry("ask", {
@@ -143,6 +147,22 @@ async function complete(body: Record<string, unknown>, kind: "reader" | "subject
   let text: string, reason: string, evidenceDir: string | undefined;
   if (kind === "subject") {
     assert(body.input && typeof body.input === "object", "subject input required");
+    assert(
+      body.externalHistory === undefined || typeof body.externalHistory === "boolean",
+      "invalid external history mode",
+    );
+    const externalHistory = body.externalHistory === true;
+    assert(
+      !externalHistory || (body.history === undefined && body.corpusId === undefined),
+      "external history cannot also use native history",
+    );
+    if (externalHistory) {
+      const input = body.input as TaskInput;
+      assert(
+        Array.isArray(input.materials) && input.materials.length > 0,
+        "external history requires materials",
+      );
+    }
     const budget = body.historyBudgetChars ?? 12000;
     assert(
       typeof budget === "number" && Number.isSafeInteger(budget) && budget >= 0,
@@ -173,10 +193,14 @@ async function complete(body: Record<string, unknown>, kind: "reader" | "subject
       memoryTools: { memory: "disabled" },
       requireFinalAnswer: true,
       correctiveRetries: 1,
-      history: {
-        maxChars: budget,
-        ...(typeof body.historyBefore === "number" ? { before: body.historyBefore } : {}),
-      },
+      ...(externalHistory
+        ? {}
+        : {
+            history: {
+              maxChars: budget,
+              ...(typeof body.historyBefore === "number" ? { before: body.historyBefore } : {}),
+            },
+          }),
       timeoutMs,
       permissionMode: "deny",
       permission: { request: () => "deny" },
@@ -229,6 +253,26 @@ async function complete(body: Record<string, unknown>, kind: "reader" | "subject
   });
   assert(observations.models.length > 0, "ACP model identity unverified");
   const outputIssue = finalAnswerIssue(text);
+  const attempts: Array<{ text: string; issue: ReturnType<typeof finalAnswerIssue> | null }> = [];
+  let pendingText: string | undefined;
+  let correctiveTurns = 0;
+  if (evidenceDir)
+    for (const event of readTrajectory(evidenceDir)) {
+      const data = resolveEventData(evidenceDir, event) as Record<string, unknown>;
+      if (event.type === "agent.event" && data?.type === "message.completed") {
+        const message = data.message as { text?: string } | undefined;
+        if (typeof message?.text === "string") pendingText = message.text;
+      }
+      if (event.type === "output.corrective") {
+        const previous = pendingText ?? "";
+        attempts.push({ text: previous, issue: finalAnswerIssue(previous) ?? null });
+        pendingText = undefined;
+        correctiveTurns++;
+      }
+    }
+  attempts.push({ text, issue: outputIssue ?? null });
+  const first = attempts[0];
+  assert(first, "missing first response");
   let retrieval: Record<string, unknown> | undefined;
   if (kind === "subject" && evidenceDir)
     for (const event of readTrajectory(evidenceDir)) {
@@ -251,6 +295,9 @@ async function complete(body: Record<string, unknown>, kind: "reader" | "subject
     text,
     reason,
     finalAnswerIssue: outputIssue ?? null,
+    attempts,
+    correctiveTurns,
+    firstAnswerValid: first.issue === null,
     ...(retrieval ? { retrieval } : {}),
     observations,
     evidenceDir,

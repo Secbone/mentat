@@ -27,11 +27,11 @@
 
 共 50 题：30 题原输出含 DSML、20 题普通错答；其中 23 题为无答案题。原样本正确数为 0。该组高度偏向已知错误，只能报告错题恢复情况，不能代表 500 题正确率或无偏提升；不得删掉仍错的题、反复采样答案或把非 DSML 子集正确率当新总分。
 
-按用户要求，先完成检查、提交并验证远端 revision，再启动新模型服务及这一组 50 题。服务固定启动时源码归档，不在运行期间改变已加载模块。每题一次回答和原始判定提示的 DeepSeek 评分，无网络搜索和 Agent 工具。独立工具准备诊断与这条闭卷复测明确分列；本次仍不声称测到自主摄入、记忆反思的公开分数。
+按用户要求，先完成检查、提交并验证远端 revision，再启动新模型服务及这一组 50 题。服务固定启动时源码归档，不在运行期间改变已加载模块。2026-10-19 更新：最新代码提供一次格式纠正重问，因此使用 [v2 协议](../../benchmarks/public/plans/longmemeval-error50-v2.json)，题目、顺序、分层与 v1 完全一致；每题一次初始回答，只有空答案或工具协议文本允许最多一次纠正，不能根据裁判结果重答。保留全部尝试，分别报告首次可用正确数、最终正确数、纠正次数与总成本。原始裁判提示与 DeepSeek 评分不变，无网络搜索和 Agent 工具。独立工具准备诊断与这条闭卷复测明确分列；本次仍不声称测到自主摄入、记忆反思的公开分数。
 
 ```bash
 node --import tsx scripts/public-model-server.ts --out .mentat/public-evaluations/transport-repair-v1 --port 8943 --parallel 4
-.mentat/venvs/public/bin/python benchmarks/public/longmemeval.py --out .mentat/public-evaluations/longmemeval-error50-repair-v1 --base http://127.0.0.1:8943 --selection benchmarks/public/plans/longmemeval-error50-v1.json --agents mentat-episodic --workers 4
+.mentat/venvs/public/bin/python benchmarks/public/longmemeval.py --out .mentat/public-evaluations/longmemeval-error50-repair-v1 --base http://127.0.0.1:8943 --selection benchmarks/public/plans/longmemeval-error50-v2.json --agents mentat-episodic --workers 4
 python3 benchmarks/public/analyze_error_sample.py --run .mentat/public-evaluations/longmemeval-error50-repair-v1 --transport .mentat/public-evaluations/transport-repair-v1 --out .mentat/public-evaluations/longmemeval-error50-repair-v1-analysis.json
 ```
 

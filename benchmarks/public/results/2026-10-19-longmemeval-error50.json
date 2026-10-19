@@ -1,0 +1,782 @@
+{
+  "scope": "fixed-prior-error50-diagnostic",
+  "claimBoundary": "Same50 prior errors as v1, unchanged IDs/order/strata; post-hoc diagnostic, not full-dataset accuracy or unbiased improvement. One initial answer plus at most one format-only corrective re-ask; all attempts retained; no score-based retries or answer selection.",
+  "subject": {
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "revision": "2fb476476ce76f08f0ed88c30a4a1a19b2db6cd3",
+    "codeSha256": "ca551c91093136e94e879b6f82caee3e466aaf84ea835c4f0b0f4eeeb9900adc",
+    "harness": "opencode-acp",
+    "samplingControl": "not-exposed-by-ACP",
+    "messageDelivery": "serialized-text; system-policy-appended-by-ACP",
+    "tools": "unsupported; requests with tools are rejected",
+    "historyProtocol": "shared-corpus-v2",
+    "sourceArchive": "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-error50-20261019-v1/checkout-source.json",
+    "correctiveRetries": 1,
+    "correctionPolicy": "one format-only re-ask for empty/protocol output; no grader feedback or retry of a valid wrong answer",
+    "active": 0,
+    "queued": 0
+  },
+  "before": {
+    "correct": 0,
+    "planned": 50,
+    "dsmlText": 30
+  },
+  "after": {
+    "planned": 50,
+    "scored": 50,
+    "correct": 34,
+    "usableCorrect": 34,
+    "firstAnswerUsableCorrect": 34,
+    "firstAnswerInvalid": 1,
+    "correctiveTurns": 1,
+    "correctedQuestions": 1,
+    "firstDsmlText": 1,
+    "dsmlText": 0,
+    "invalidFinalAnswer": 0,
+    "infrastructureErrors": 0
+  },
+  "byType": {
+    "knowledge-update": {
+      "planned": 6,
+      "scored": 6,
+      "correct": 4,
+      "usableCorrect": 4,
+      "firstAnswerUsableCorrect": 4,
+      "firstAnswerInvalid": 0,
+      "correctiveTurns": 0,
+      "correctedQuestions": 0,
+      "firstDsmlText": 0,
+      "dsmlText": 0,
+      "invalidFinalAnswer": 0,
+      "infrastructureErrors": 0
+    },
+    "multi-session": {
+      "planned": 14,
+      "scored": 14,
+      "correct": 7,
+      "usableCorrect": 7,
+      "firstAnswerUsableCorrect": 7,
+      "firstAnswerInvalid": 0,
+      "correctiveTurns": 0,
+      "correctedQuestions": 0,
+      "firstDsmlText": 0,
+      "dsmlText": 0,
+      "invalidFinalAnswer": 0,
+      "infrastructureErrors": 0
+    },
+    "single-session-assistant": {
+      "planned": 4,
+      "scored": 4,
+      "correct": 3,
+      "usableCorrect": 3,
+      "firstAnswerUsableCorrect": 3,
+      "firstAnswerInvalid": 0,
+      "correctiveTurns": 0,
+      "correctedQuestions": 0,
+      "firstDsmlText": 0,
+      "dsmlText": 0,
+      "invalidFinalAnswer": 0,
+      "infrastructureErrors": 0
+    },
+    "single-session-preference": {
+      "planned": 6,
+      "scored": 6,
+      "correct": 4,
+      "usableCorrect": 4,
+      "firstAnswerUsableCorrect": 4,
+      "firstAnswerInvalid": 0,
+      "correctiveTurns": 0,
+      "correctedQuestions": 0,
+      "firstDsmlText": 0,
+      "dsmlText": 0,
+      "invalidFinalAnswer": 0,
+      "infrastructureErrors": 0
+    },
+    "single-session-user": {
+      "planned": 6,
+      "scored": 6,
+      "correct": 6,
+      "usableCorrect": 6,
+      "firstAnswerUsableCorrect": 6,
+      "firstAnswerInvalid": 0,
+      "correctiveTurns": 0,
+      "correctedQuestions": 0,
+      "firstDsmlText": 0,
+      "dsmlText": 0,
+      "invalidFinalAnswer": 0,
+      "infrastructureErrors": 0
+    },
+    "temporal-reasoning": {
+      "planned": 14,
+      "scored": 14,
+      "correct": 10,
+      "usableCorrect": 10,
+      "firstAnswerUsableCorrect": 10,
+      "firstAnswerInvalid": 1,
+      "correctiveTurns": 1,
+      "correctedQuestions": 1,
+      "firstDsmlText": 1,
+      "dsmlText": 0,
+      "invalidFinalAnswer": 0,
+      "infrastructureErrors": 0
+    }
+  },
+  "byPriorOutput": {
+    "dsml": {
+      "planned": 30,
+      "scored": 30,
+      "correct": 25,
+      "usableCorrect": 25,
+      "firstAnswerUsableCorrect": 25,
+      "firstAnswerInvalid": 1,
+      "correctiveTurns": 1,
+      "correctedQuestions": 1,
+      "firstDsmlText": 1,
+      "dsmlText": 0,
+      "invalidFinalAnswer": 0,
+      "infrastructureErrors": 0
+    },
+    "normal": {
+      "planned": 20,
+      "scored": 20,
+      "correct": 9,
+      "usableCorrect": 9,
+      "firstAnswerUsableCorrect": 9,
+      "firstAnswerInvalid": 0,
+      "correctiveTurns": 0,
+      "correctedQuestions": 0,
+      "firstDsmlText": 0,
+      "dsmlText": 0,
+      "invalidFinalAnswer": 0,
+      "infrastructureErrors": 0
+    }
+  },
+  "abstention": {
+    "planned": 23,
+    "scored": 23,
+    "correct": 19,
+    "usableCorrect": 19,
+    "firstAnswerUsableCorrect": 19,
+    "firstAnswerInvalid": 0,
+    "correctiveTurns": 0,
+    "correctedQuestions": 0,
+    "firstDsmlText": 0,
+    "dsmlText": 0,
+    "invalidFinalAnswer": 0,
+    "infrastructureErrors": 0
+  },
+  "supportCoverage": {
+    "measured": 27,
+    "meanSessionRecall": 0.8950617283950617,
+    "allSupportSessionsRetrieved": 21,
+    "limitation": "Session hit only; does not establish that the selected message contains the supporting fact. Gold labels used only by controller after answer."
+  },
+  "meanReaderInputTokens": 6489.84,
+  "readerTokenCoverage": 50,
+  "costUsdKnown": 0.08966576999999999,
+  "unknownCostRows": 0,
+  "medianReaderAndJudgeMs": 12575.5,
+  "toolAudit": {
+    "transport": "/Users/soar/Code/mentat/.mentat/public-evaluations/transport-error50-20261019-v1",
+    "counts": {
+      "requests": 100,
+      "traces": 100,
+      "protocolFrames": 3201,
+      "wireToolEvents": 0,
+      "normalizedToolEvents": 0,
+      "permissionDecisions": 0
+    },
+    "findings": [],
+    "recordedToolPolicy": "passed",
+    "osNetworkIsolation": "not-verified",
+    "scope": "Recorded ACP frames, normalized tool events, artifact integrity and trace completion. No packet capture or OS filesystem/network sandbox proof; no proof of absence of model training contamination."
+  },
+  "resultsSha256": "5ab2df65fbc9e1bec9e0550bdcebc8ea74fdec7952d64dc6250cff507cb87456",
+  "verifiedModels": ["opencode-go/deepseek-v4.1-flash"],
+  "judgeFormatInvalidCount": 0,
+  "runtimeSource": "2fb476476ce76f08f0ed88c30a4a1a19b2db6cd3 plus uncommitted attempt accounting, protocol documentation and receipt-test repair; exact source archive/codeSha256 in subject",
+  "answerable": {
+    "planned": 27,
+    "correct": 15
+  },
+  "remainingErrors": {
+    "answerable": 12,
+    "abstention": 4,
+    "answerableMissingSupportSessions": 6,
+    "answerableAllSupportSessionsButWrong": 6
+  },
+  "caseResults": [
+    {
+      "question_id": "2b8f3739",
+      "question_type": "multi-session",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 0.6666666666666666,
+      "priorDsml": false
+    },
+    {
+      "question_id": "cc5ded98",
+      "question_type": "knowledge-update",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "e9327a54",
+      "question_type": "single-session-assistant",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": true
+    },
+    {
+      "question_id": "561fabcd",
+      "question_type": "single-session-assistant",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "6e984302",
+      "question_type": "temporal-reasoning",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": false,
+      "correctiveTurns": 1,
+      "supportSessionRecall": 1.0,
+      "priorDsml": true
+    },
+    {
+      "question_id": "gpt4_2c50253f",
+      "question_type": "temporal-reasoning",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": true
+    },
+    {
+      "question_id": "9a707b82",
+      "question_type": "temporal-reasoning",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 0.5,
+      "priorDsml": false
+    },
+    {
+      "question_id": "gpt4_e414231f",
+      "question_type": "temporal-reasoning",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "118b2229",
+      "question_type": "single-session-user",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "gpt4_85da3956",
+      "question_type": "temporal-reasoning",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "95228167",
+      "question_type": "single-session-preference",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": true
+    },
+    {
+      "question_id": "gpt4_8279ba03",
+      "question_type": "temporal-reasoning",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 0.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "38146c39",
+      "question_type": "single-session-preference",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": true
+    },
+    {
+      "question_id": "gpt4_e05b82a6",
+      "question_type": "multi-session",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 0.75,
+      "priorDsml": false
+    },
+    {
+      "question_id": "32260d93",
+      "question_type": "single-session-preference",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": true
+    },
+    {
+      "question_id": "06878be2",
+      "question_type": "single-session-preference",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": true
+    },
+    {
+      "question_id": "1903aded",
+      "question_type": "single-session-assistant",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": true
+    },
+    {
+      "question_id": "2788b940",
+      "question_type": "multi-session",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "e48988bc",
+      "question_type": "single-session-assistant",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "57f827a0",
+      "question_type": "single-session-preference",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "88432d0a_abs",
+      "question_type": "multi-session",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "gpt4_731e37d7",
+      "question_type": "multi-session",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 0.75,
+      "priorDsml": false
+    },
+    {
+      "question_id": "f0853d11",
+      "question_type": "temporal-reasoning",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "0ddfec37_abs",
+      "question_type": "knowledge-update",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": false
+    },
+    {
+      "question_id": "e5ba910e_abs",
+      "question_type": "multi-session",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "f35224e0",
+      "question_type": "multi-session",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "60bf93ed_abs",
+      "question_type": "multi-session",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "gpt4_fe651585_abs",
+      "question_type": "temporal-reasoning",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "09ba9854",
+      "question_type": "multi-session",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "15745da0_abs",
+      "question_type": "single-session-user",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "09ba9854_abs",
+      "question_type": "multi-session",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "gpt4_c27434e8_abs",
+      "question_type": "temporal-reasoning",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "19b5f2b3_abs",
+      "question_type": "single-session-user",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "0edc2aef",
+      "question_type": "single-session-preference",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "gpt4_59149c78",
+      "question_type": "temporal-reasoning",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 0.5,
+      "priorDsml": false
+    },
+    {
+      "question_id": "2698e78f_abs",
+      "question_type": "knowledge-update",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "gpt4_93159ced_abs",
+      "question_type": "temporal-reasoning",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "f685340e_abs",
+      "question_type": "knowledge-update",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "ba358f49_abs",
+      "question_type": "multi-session",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "0862e8bf_abs",
+      "question_type": "single-session-user",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "f4f1d8a4_abs",
+      "question_type": "single-session-user",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "eeda8a6d_abs",
+      "question_type": "multi-session",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "a96c20ee_abs",
+      "question_type": "multi-session",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "2133c1b5_abs",
+      "question_type": "knowledge-update",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "982b5123_abs",
+      "question_type": "temporal-reasoning",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "edced276_abs",
+      "question_type": "multi-session",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "3d86fd0a",
+      "question_type": "single-session-user",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": 1.0,
+      "priorDsml": false
+    },
+    {
+      "question_id": "031748ae_abs",
+      "question_type": "knowledge-update",
+      "correct": false,
+      "usableCorrect": false,
+      "firstAnswerUsableCorrect": false,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "c8090214_abs",
+      "question_type": "temporal-reasoning",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    },
+    {
+      "question_id": "gpt4_70e84552_abs",
+      "question_type": "temporal-reasoning",
+      "correct": true,
+      "usableCorrect": true,
+      "firstAnswerUsableCorrect": true,
+      "firstAnswerValid": true,
+      "correctiveTurns": 0,
+      "supportSessionRecall": null,
+      "priorDsml": true
+    }
+  ],
+  "sourceArtifacts": [
+    {
+      "path": ".mentat/public-evaluations/longmemeval-error50-20261019-v1/manifest.json",
+      "sha256": "12d37bcd3ee62be20c17aff0808e2683b5ed1201ea9f2498766ac3335d3ab851"
+    },
+    {
+      "path": ".mentat/public-evaluations/longmemeval-error50-20261019-v1/selection.json",
+      "sha256": "ecc8e9968f6f679e781a151f9aa394e5c127b1af23961994544dd27f066a1706"
+    },
+    {
+      "path": ".mentat/public-evaluations/longmemeval-error50-20261019-v1/results.jsonl",
+      "sha256": "5ab2df65fbc9e1bec9e0550bdcebc8ea74fdec7952d64dc6250cff507cb87456"
+    },
+    {
+      "path": ".mentat/public-evaluations/longmemeval-error50-20261019-v1/summary.json",
+      "sha256": "f6c1db351f48ae42aed7f6715937d7a2bdf53f8faaf4fdb05d48e70b358e0892"
+    },
+    {
+      "path": ".mentat/public-evaluations/longmemeval-error50-20261019-v1-analysis.json",
+      "sha256": "4e42680bbfe4f15868d4166c640566f32bd4bbb37219e99bd9d97cf444ee77a7"
+    }
+  ]
+}

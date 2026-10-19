@@ -1,0 +1,43 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 1935,
+    "auth_mode": "dev",
+    "with_bot": false
+  },
+  "storage": {
+    "workspace": ".mentat/openviking-new-store"
+  },
+  "embedding": {
+    "max_concurrent": 1,
+    "max_retries": 0,
+    "max_input_tokens": 256,
+    "dense": {
+      "provider": "openai",
+      "model": "bge-small-en-v1.5-f16",
+      "dimension": 384,
+      "api_base": "http://127.0.0.1:8947/v1",
+      "api_key": "local-placeholder",
+      "encoding_format": "float"
+    }
+  },
+  "vlm": {
+    "provider": "openai",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "api_base": "http://127.0.0.1:8945/v1",
+    "api_key": "local-placeholder",
+    "max_concurrent": 2,
+    "max_retries": 0,
+    "timeout": 180
+  },
+  "memory": {
+    "eager_prefetch": true,
+    "extraction_output_format": "json",
+    "session_auto_commit": {
+      "enabled": false
+    }
+  },
+  "agent_evolution": {
+    "enabled": false
+  }
+}

@@ -27,6 +27,11 @@ def summarize(group):
     return {"planned": len(group), "scored": len(valid),
             "correct": sum(r["correct"] for r in valid),
             "usableCorrect": sum(r.get("usableCorrect", False) for r in valid),
+            "firstAnswerUsableCorrect": sum(r.get("firstAnswerUsableCorrect",False) for r in valid),
+            "firstAnswerInvalid": sum(not r.get("firstAnswerValid",False) for r in valid),
+            "correctiveTurns": sum(r.get("correctiveTurns",0) for r in group),
+            "correctedQuestions": sum(r.get("correctiveTurns",0)>0 for r in group),
+            "firstDsmlText": sum("DSML" in r.get("attempts",[{}])[0].get("text","") for r in group),
             "dsmlText": sum("DSML" in r.get("hypothesis", "") for r in group),
             "invalidFinalAnswer": sum(not r.get("finalAnswerValid", False) for r in valid),
             "infrastructureErrors": len(group) - len(valid)}
