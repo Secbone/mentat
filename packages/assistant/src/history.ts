@@ -1,3 +1,4 @@
+import { tokenize as baseTokenize } from "@mentat/memory";
 import type { ExperienceRecord } from "@mentat/session";
 
 /** Historical observations are reference data, never a manual confirmation. */
@@ -111,8 +112,7 @@ export function historicalContext(
       " ",
     ),
   );
-  const tokenize = (text: string) =>
-    (text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? []).filter((word) => !stop.has(word));
+  const tokenize = (text: string) => baseTokenize(text).filter((word) => !stop.has(word));
   const terms = new Set(tokenize(query));
   type Piece = {
     id: string;

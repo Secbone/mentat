@@ -63,7 +63,8 @@ export interface MemoryStore {
   list(): MemoryEntry[];
 }
 
-function tokenize(text: string): string[] {
+/** Shared lowercasing word tokenizer (letters/digits runs), reused by retrievers. */
+export function tokenize(text: string): string[] {
   return text
     .toLowerCase()
     .split(/[^\p{L}\p{N}]+/u)
