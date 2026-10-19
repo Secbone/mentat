@@ -116,7 +116,7 @@ function moduleSpecifiers(path) {
   return specifiers;
 }
 
-export function checkLayering(root) {
+export function checkLayering(root, options = {}) {
   const violations = [];
   const packagesDir = join(root, "packages");
   const packages = new Map();
@@ -129,6 +129,20 @@ export function checkLayering(root) {
     packages.set(manifest.name, { pkgDir, manifest });
   }
   const names = [...packages.keys()].sort((a, b) => b.length - a.length);
+  // Keep the hand-written allowed-deps table honest against the real repo: it
+  // must name real packages and no phantom dependencies. Skipped for partial
+  // fixtures, which only define the packages a given test needs.
+  if (options.verifyAllowedTable) {
+    for (const [name, allowed] of Object.entries(ALLOWED_WORKSPACE_DEPS)) {
+      if (!packages.has(name)) {
+        violations.push(`allowed-deps table names unknown package ${name}`);
+        continue;
+      }
+      for (const dependency of allowed)
+        if (!packages.has(dependency))
+          violations.push(`${name}: allowed dependency ${dependency} is not a package`);
+    }
+  }
   const graph = new Map();
   for (const [name, { pkgDir, manifest }] of packages) {
     const allowed = ALLOWED_WORKSPACE_DEPS[name];
@@ -226,7 +240,7 @@ export function checkLayering(root) {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-  const result = checkLayering(root);
+  const result = checkLayering(root, { verifyAllowedTable: true });
   if (result.violations.length) {
     console.error(
       `layering check failed:\n${result.violations.map((item) => `  ✗ ${item}`).join("\n")}\nSee docs/dev-rules/layering.md`,

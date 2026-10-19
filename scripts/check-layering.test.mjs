@@ -1,9 +1,15 @@
 import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
 import { checkLayering } from "./check-layering.mjs";
+
+test("the real allowed-deps table matches the real packages", () => {
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+  assert.deepEqual(checkLayering(root, { verifyAllowedTable: true }).violations, []);
+});
 
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), "mentat-layering-"));
