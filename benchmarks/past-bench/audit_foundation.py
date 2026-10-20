@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import sys
 from skill_lineage import inherited_reads, validate_transition
+from native_recall_audit import check_selection, identity, read_records
 
 
 def audit(run):
@@ -19,6 +20,7 @@ def audit(run):
     unscored, analysis_changes, pre_dispatch_failures = [], [], []
     previous_skills, inherited_read_cases = {}, []
     skill_transitions, anchor_restorations = 0, 0
+    previous_experience, recall_cases = {}, []
     source = json.loads((run / "subject-source.json").read_text())
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     corrected = "corrective1" in plan["protocol"]
@@ -121,10 +123,22 @@ def audit(run):
 
         if any(e.get("status", "active") == "active" for e in before):
             errors.append(f"unexpected activation requires review: {trial}")
-        semantic_events = []
+        semantic_events, selections, turn_inputs = [], [], []
         for trace_path in (trial / "subject/trace").glob("*/events.jsonl"):
             for line in trace_path.read_text().splitlines():
                 event = json.loads(line)
+                if plan.get("nativeRecall") and event["type"] in {"experience.selection", "turn.start"} and event.get("turnId") == response["taskTurnId"]:
+                    data = event["data"]
+                    if "artifact" in data:
+                        artifact_path = (trace_path.parent / data["artifact"]).resolve()
+                        if not artifact_path.is_relative_to(trace_path.parent.resolve()) or sha(artifact_path) != data["sha256"]:
+                            errors.append(f"invalid native recall artifact: {trial}")
+                            continue
+                        data = json.loads(artifact_path.read_text())
+                    if event["type"] == "experience.selection":
+                        selections.append((event, data))
+                    else:
+                        turn_inputs.append(data["input"])
                 if event["type"] == "agent.event":
                     data = event["data"]
                     if "artifact" in data:
@@ -139,6 +153,34 @@ def audit(run):
                     frame_count += 1
                 if event["type"] == "capture.gap":
                     errors.append(f"capture gap: {trial}")
+        if plan.get("nativeRecall"):
+            experience_before = json.loads((trial / "subject/experience-before.json").read_text())
+            experience_after = json.loads((trial / "subject/experience-after.json").read_text())
+            state_key = (row["family"], row["arm"])
+            expected_experience = []
+            if row["arm"] != "reset" and episode["persistence_allowed"]:
+                if episode["history_mode"] == "from_anchor":
+                    anchor = run / "state" / row["family"].split("/")[-1] / row["arm"] / "anchors" / episode["history_load_anchor"] / "experience"
+                    expected_experience = read_records(anchor)
+                elif episode["history_mode"] == "continue":
+                    expected_experience = previous_experience.get(state_key, [])
+            if identity(experience_before) != identity(expected_experience):
+                errors.append(f"native experience continuation/anchor mismatch: {trial}")
+            if identity(experience_after[:len(experience_before)]) != identity(experience_before) or len(experience_after) != len(experience_before) + 1:
+                errors.append(f"native experience not append-only single turn: {trial}")
+            previous_experience[state_key] = experience_after
+            if len(selections) != 1 or len(turn_inputs) != 1:
+                errors.append(f"missing/duplicate actual native recall selection or turn input: {trial}")
+            else:
+                event, selection = selections[0]
+                errors.extend(f"{problem}: {trial}" for problem in check_selection(experience_before, selection, config["scope"], plan["nativeRecall"]["maxChars"]))
+                if any(record["ts"] > event["ts"] for record in experience_before):
+                    errors.append(f"future native source: {trial}")
+                if selection["text"]:
+                    blocks = [json.loads(line) for line in turn_inputs[0].get("context", "").splitlines()]
+                    if not any(block.get("text") == selection["text"] and block.get("memoryScope") == "task" for block in blocks):
+                        errors.append(f"selected native recall absent from actual turn input: {trial}")
+                recall_cases.append({"taskId": row["taskId"], "arm": row["arm"], "bucket": row["bucket"], "selectedIds": selection["selectedIds"], "chars": selection["chars"]})
         if plan.get("nativeSkillSnapshots"):
             snapshots = [trial / "subject/skills-before.json", trial / "subject/skills-after.json"]
             if not all(p.exists() for p in snapshots):
@@ -172,6 +214,7 @@ def audit(run):
             "changedAnalysisFiles": analysis_changes, "preDispatchFailures": pre_dispatch_failures,
             "skillTransitionsChecked": skill_transitions, "anchorSkillRestorationsChecked": anchor_restorations, "inheritedProcedureReadCases": inherited_read_cases,
             "nativeSessions": len(session_ids), "environmentDispatchReceipts": dispatch_count,
+            "nativeRecallCases": recall_cases,
             "protocolFrames": frame_count, "issues": errors,
             "coverage": "Frozen file hashes, allowlisted controller fields and tools, native tool calls versus real upstream dispatch receipts, effective model, fresh engine sessions, accounting completeness, empty reset memory/procedures and real skill writes/reads; when declared, per-episode skill snapshots, continuation/anchor lineage and reads completed before business writes. Not OS isolation or training contamination proof."}
 

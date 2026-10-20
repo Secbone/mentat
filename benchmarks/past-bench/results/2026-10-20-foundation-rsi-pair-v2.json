@@ -1,0 +1,870 @@
+{
+  "protocol": "paired-foundation-experience-acceptance-v1",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "runDirectory": ".mentat/public-evaluations/past-foundation-rsi-pair-20261020-v2",
+  "planSha256": "7c3143112421f327649f21246a62e8cc33ce216fab24fabd69783770a9867dfc",
+  "acceptancePassed": true,
+  "gates": {
+    "retainedTransferAtLeast50": true,
+    "positiveMatchedTransferGain": true,
+    "verifiedInheritedProcedureReuseWithImprovement": true,
+    "fullRosterAndAudit": true
+  },
+  "reset": {
+    "planned": 8,
+    "scored": 8,
+    "budgetTimeouts": 0,
+    "allTaskMean100": 47.4,
+    "evaluationPlanned": 8,
+    "evaluationMean100": 47.4,
+    "coveredCapabilityEvaluationMacro100": 47.4,
+    "evaluationFamilies100": {
+      "memory_ability/SM01_preference_adoption": 60.0,
+      "memory_ability/SM02_constraint_retention": 76.0,
+      "procedural_ability/PC03_latent_rule_induction_01": 26.8,
+      "procedural_ability/PC04_failure_to_rule_01": 26.8
+    },
+    "coveredCapabilities100": {
+      "memory_ability": 68.0,
+      "procedural_ability": 26.8
+    },
+    "validFinalAnswers": 8,
+    "evaluationValidFinalAnswers": 8,
+    "strictPasses": 0,
+    "evaluationStrictPasses": 0,
+    "episodesWithEnvironmentDispatch": 8,
+    "evaluationEpisodesWithEnvironmentDispatch": 8,
+    "environmentDispatches": 48,
+    "costUsdScored": 0.016145951999999998,
+    "costUsdAllAttempts": 0.016145951999999998,
+    "cases": [
+      {
+        "taskId": "SM01_EVAL_NEAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 60.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_EVAL_FAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 60.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_NEAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 76.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_FAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 76.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I04",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I05",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I04",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I05",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      }
+    ]
+  },
+  "retained": {
+    "planned": 32,
+    "scored": 32,
+    "budgetTimeouts": 0,
+    "allTaskMean100": 69.07781250000001,
+    "evaluationPlanned": 8,
+    "evaluationMean100": 70.295,
+    "coveredCapabilityEvaluationMacro100": 70.295,
+    "evaluationFamilies100": {
+      "memory_ability/SM01_preference_adoption": 60.00000000000001,
+      "memory_ability/SM02_constraint_retention": 70.0,
+      "procedural_ability/PC03_latent_rule_induction_01": 73.04,
+      "procedural_ability/PC04_failure_to_rule_01": 78.14
+    },
+    "coveredCapabilities100": {
+      "memory_ability": 65.0,
+      "procedural_ability": 75.59
+    },
+    "validFinalAnswers": 32,
+    "evaluationValidFinalAnswers": 8,
+    "strictPasses": 2,
+    "evaluationStrictPasses": 0,
+    "episodesWithEnvironmentDispatch": 32,
+    "evaluationEpisodesWithEnvironmentDispatch": 8,
+    "environmentDispatches": 212,
+    "costUsdScored": 0.085573374,
+    "costUsdAllAttempts": 0.085573374,
+    "cases": [
+      {
+        "taskId": "SM01_COLD_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 60.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_LEARN_A_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 88.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_LEARN_B_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 80.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_EVAL_NEAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 80.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_EVAL_FAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 40.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_CONTROL_002",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 80.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_CONTROL_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 80.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_CONTROL_003",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 60.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_COLD_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 69.33,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_LEARN_A_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 100.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_LEARN_B_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 100.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_NEAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 100.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_FAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 40.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_CONTROL_002",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 100.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_CONTROL_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 100.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_CONTROL_003",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 76.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I01",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I02",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 77.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I03",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 71.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I04",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 73.04,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I05",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 73.04,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_C01",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 67.60000000000001,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_C02",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I01",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I02",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 77.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I03",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "reflection",
+        "status": "completed",
+        "score100": 84.6,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I03b",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 74.4,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I04",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 76.44,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I05",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 79.84,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_C01",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_C02",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_C03",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 67.60000000000001,
+        "validFinalAnswer": true
+      }
+    ]
+  },
+  "transferGain100": 22.895000000000003,
+  "verifiedImprovedReuseCases": ["V2_F05_I04", "V2_F05_I05", "V2_F07_I04", "V2_F07_I05"],
+  "retainedBucketMeans100": {
+    "baseline": 45.7325,
+    "control": 64.69090909090909,
+    "evaluation": 70.295,
+    "learn": 83.625,
+    "reflection": 84.6
+  },
+  "audit": {
+    "status": "passed",
+    "scoredTrials": 40,
+    "unscoredTrials": [],
+    "changedAnalysisFiles": [],
+    "preDispatchFailures": [],
+    "skillTransitionsChecked": 40,
+    "anchorSkillRestorationsChecked": 8,
+    "inheritedProcedureReadCases": [
+      {
+        "taskId": "V2_F05_I04",
+        "arm": "memory",
+        "reads": [
+          {
+            "name": "helpdesk-db-migration-triage",
+            "id": "call_00_zw2p269qmlbhu952cwyl65js",
+            "resultSequence": 51,
+            "firstBusinessWriteSequence": 118,
+            "completedBeforeBusinessWrite": true
+          }
+        ]
+      },
+      {
+        "taskId": "V2_F05_I05",
+        "arm": "memory",
+        "reads": [
+          {
+            "name": "helpdesk-db-migration-triage",
+            "id": "call_00_h9f2h210jhbak93fsz1yyy0b",
+            "resultSequence": 71,
+            "firstBusinessWriteSequence": 168,
+            "completedBeforeBusinessWrite": true
+          }
+        ]
+      },
+      {
+        "taskId": "V2_F07_I04",
+        "arm": "memory",
+        "reads": [
+          {
+            "name": "deployment-incident-triage-by-release-hash",
+            "id": "call_00_au79krxucohmaxomq8sesyh8",
+            "resultSequence": 38,
+            "firstBusinessWriteSequence": 126,
+            "completedBeforeBusinessWrite": true
+          }
+        ]
+      },
+      {
+        "taskId": "V2_F07_I05",
+        "arm": "memory",
+        "reads": [
+          {
+            "name": "deployment-incident-triage-by-release-hash",
+            "id": "call_00_lsrn61g9or9p7jpvd1me7s09",
+            "resultSequence": 73,
+            "firstBusinessWriteSequence": 184,
+            "completedBeforeBusinessWrite": true
+          }
+        ]
+      }
+    ],
+    "nativeSessions": 40,
+    "environmentDispatchReceipts": 260,
+    "nativeRecallCases": [
+      {
+        "taskId": "SM01_EVAL_NEAR_001",
+        "arm": "reset",
+        "bucket": "evaluation",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM01_EVAL_FAR_001",
+        "arm": "reset",
+        "bucket": "evaluation",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM01_COLD_001",
+        "arm": "memory",
+        "bucket": "baseline",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM01_LEARN_A_001",
+        "arm": "memory",
+        "bucket": "learn",
+        "selectedIds": [
+          "exp-7936d0ef4a0659a48d1272c8a799eea9#msg0:0",
+          "exp-7936d0ef4a0659a48d1272c8a799eea9#msg1:0"
+        ],
+        "chars": 2111
+      },
+      {
+        "taskId": "SM01_LEARN_B_001",
+        "arm": "memory",
+        "bucket": "learn",
+        "selectedIds": [
+          "exp-7936d0ef4a0659a48d1272c8a799eea9#msg0:0",
+          "exp-7936d0ef4a0659a48d1272c8a799eea9#msg1:0",
+          "exp-22335d9a54a3aae20ac096ef8920eef9#msg0:0",
+          "exp-22335d9a54a3aae20ac096ef8920eef9#msg1:0"
+        ],
+        "chars": 4743
+      },
+      {
+        "taskId": "SM01_EVAL_NEAR_001",
+        "arm": "memory",
+        "bucket": "evaluation",
+        "selectedIds": [
+          "exp-7936d0ef4a0659a48d1272c8a799eea9#msg0:0",
+          "exp-7936d0ef4a0659a48d1272c8a799eea9#msg1:0",
+          "exp-22335d9a54a3aae20ac096ef8920eef9#msg0:0",
+          "exp-22335d9a54a3aae20ac096ef8920eef9#msg1:0",
+          "exp-25761314ddf4a72873593fa29beb4209#msg0:0",
+          "exp-25761314ddf4a72873593fa29beb4209#msg1:0"
+        ],
+        "chars": 6608
+      },
+      {
+        "taskId": "SM01_EVAL_FAR_001",
+        "arm": "memory",
+        "bucket": "evaluation",
+        "selectedIds": [
+          "exp-7936d0ef4a0659a48d1272c8a799eea9#msg0:0",
+          "exp-7936d0ef4a0659a48d1272c8a799eea9#msg1:0",
+          "exp-22335d9a54a3aae20ac096ef8920eef9#msg0:0",
+          "exp-22335d9a54a3aae20ac096ef8920eef9#msg1:0",
+          "exp-25761314ddf4a72873593fa29beb4209#msg0:0",
+          "exp-25761314ddf4a72873593fa29beb4209#msg1:0"
+        ],
+        "chars": 6608
+      },
+      {
+        "taskId": "SM01_CONTROL_002",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM01_CONTROL_001",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM01_CONTROL_003",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM02_EVAL_NEAR_001",
+        "arm": "reset",
+        "bucket": "evaluation",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM02_EVAL_FAR_001",
+        "arm": "reset",
+        "bucket": "evaluation",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM02_COLD_001",
+        "arm": "memory",
+        "bucket": "baseline",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM02_LEARN_A_001",
+        "arm": "memory",
+        "bucket": "learn",
+        "selectedIds": [
+          "exp-1d02c3c38e3b2afb89acf1c7a5ce2338#msg0:0",
+          "exp-1d02c3c38e3b2afb89acf1c7a5ce2338#msg1:0"
+        ],
+        "chars": 1723
+      },
+      {
+        "taskId": "SM02_LEARN_B_001",
+        "arm": "memory",
+        "bucket": "learn",
+        "selectedIds": [
+          "exp-1d02c3c38e3b2afb89acf1c7a5ce2338#msg0:0",
+          "exp-1d02c3c38e3b2afb89acf1c7a5ce2338#msg1:0",
+          "exp-ca1c668e853703ee56b11af41d06b20f#msg0:0",
+          "exp-ca1c668e853703ee56b11af41d06b20f#msg1:0"
+        ],
+        "chars": 4136
+      },
+      {
+        "taskId": "SM02_EVAL_NEAR_001",
+        "arm": "memory",
+        "bucket": "evaluation",
+        "selectedIds": [
+          "exp-1d02c3c38e3b2afb89acf1c7a5ce2338#msg0:0",
+          "exp-1d02c3c38e3b2afb89acf1c7a5ce2338#msg1:0",
+          "exp-ca1c668e853703ee56b11af41d06b20f#msg0:0",
+          "exp-ca1c668e853703ee56b11af41d06b20f#msg1:0",
+          "exp-644e13dd87d936925a77783d8ca8b214#msg0:0",
+          "exp-644e13dd87d936925a77783d8ca8b214#msg1:0"
+        ],
+        "chars": 5848
+      },
+      {
+        "taskId": "SM02_EVAL_FAR_001",
+        "arm": "memory",
+        "bucket": "evaluation",
+        "selectedIds": [
+          "exp-1d02c3c38e3b2afb89acf1c7a5ce2338#msg0:0",
+          "exp-1d02c3c38e3b2afb89acf1c7a5ce2338#msg1:0",
+          "exp-ca1c668e853703ee56b11af41d06b20f#msg0:0",
+          "exp-ca1c668e853703ee56b11af41d06b20f#msg1:0",
+          "exp-644e13dd87d936925a77783d8ca8b214#msg0:0",
+          "exp-644e13dd87d936925a77783d8ca8b214#msg1:0"
+        ],
+        "chars": 5848
+      },
+      {
+        "taskId": "SM02_CONTROL_002",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM02_CONTROL_001",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "SM02_CONTROL_003",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F05_I04",
+        "arm": "reset",
+        "bucket": "evaluation",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F05_I05",
+        "arm": "reset",
+        "bucket": "evaluation",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F05_I01",
+        "arm": "memory",
+        "bucket": "baseline",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F05_I02",
+        "arm": "memory",
+        "bucket": "learn",
+        "selectedIds": [
+          "exp-4a222749a18fcc0f3bc78fc0ad811590#msg0:0",
+          "exp-4a222749a18fcc0f3bc78fc0ad811590#msg1:0"
+        ],
+        "chars": 4351
+      },
+      {
+        "taskId": "V2_F05_I03",
+        "arm": "memory",
+        "bucket": "learn",
+        "selectedIds": [
+          "exp-4a222749a18fcc0f3bc78fc0ad811590#msg0:0",
+          "exp-4a222749a18fcc0f3bc78fc0ad811590#msg1:0",
+          "exp-d45b7cd1018ca26e06b4a440a5169b79#msg0:0",
+          "exp-d45b7cd1018ca26e06b4a440a5169b79#msg1:0"
+        ],
+        "chars": 7901
+      },
+      {
+        "taskId": "V2_F05_I04",
+        "arm": "memory",
+        "bucket": "evaluation",
+        "selectedIds": [
+          "exp-4a222749a18fcc0f3bc78fc0ad811590#msg0:0",
+          "exp-d45b7cd1018ca26e06b4a440a5169b79#msg0:0",
+          "exp-d45b7cd1018ca26e06b4a440a5169b79#msg1:0",
+          "exp-fbe6b65555211fe1710c781a48a29eb6#msg0:0",
+          "exp-fbe6b65555211fe1710c781a48a29eb6#msg1:0"
+        ],
+        "chars": 7334
+      },
+      {
+        "taskId": "V2_F05_I05",
+        "arm": "memory",
+        "bucket": "evaluation",
+        "selectedIds": [
+          "exp-4a222749a18fcc0f3bc78fc0ad811590#msg0:0",
+          "exp-d45b7cd1018ca26e06b4a440a5169b79#msg0:0",
+          "exp-d45b7cd1018ca26e06b4a440a5169b79#msg1:0",
+          "exp-fbe6b65555211fe1710c781a48a29eb6#msg0:0",
+          "exp-fbe6b65555211fe1710c781a48a29eb6#msg1:0"
+        ],
+        "chars": 7334
+      },
+      {
+        "taskId": "V2_F05_C01",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F05_C02",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F07_I04",
+        "arm": "reset",
+        "bucket": "evaluation",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F07_I05",
+        "arm": "reset",
+        "bucket": "evaluation",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F07_I01",
+        "arm": "memory",
+        "bucket": "baseline",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F07_I02",
+        "arm": "memory",
+        "bucket": "learn",
+        "selectedIds": [
+          "exp-a526e7f9a54bca3b7a8c57d9e2c4a58d#msg0:0",
+          "exp-a526e7f9a54bca3b7a8c57d9e2c4a58d#msg1:0"
+        ],
+        "chars": 3995
+      },
+      {
+        "taskId": "V2_F07_I03",
+        "arm": "memory",
+        "bucket": "reflection",
+        "selectedIds": [
+          "exp-a526e7f9a54bca3b7a8c57d9e2c4a58d#msg0:0",
+          "exp-a526e7f9a54bca3b7a8c57d9e2c4a58d#msg1:0",
+          "exp-9c927471a73c04cc4d9698ce330a18ba#msg0:0",
+          "exp-9c927471a73c04cc4d9698ce330a18ba#msg1:0"
+        ],
+        "chars": 7311
+      },
+      {
+        "taskId": "V2_F07_I03b",
+        "arm": "memory",
+        "bucket": "learn",
+        "selectedIds": [
+          "exp-a526e7f9a54bca3b7a8c57d9e2c4a58d#msg0:0",
+          "exp-a526e7f9a54bca3b7a8c57d9e2c4a58d#msg1:0",
+          "exp-9c927471a73c04cc4d9698ce330a18ba#msg0:0",
+          "exp-2d10d847fbc89964e1ee86b3ed8fe21e#msg0:0",
+          "exp-2d10d847fbc89964e1ee86b3ed8fe21e#msg1:0"
+        ],
+        "chars": 7610
+      },
+      {
+        "taskId": "V2_F07_I04",
+        "arm": "memory",
+        "bucket": "evaluation",
+        "selectedIds": [
+          "exp-a526e7f9a54bca3b7a8c57d9e2c4a58d#msg0:0",
+          "exp-a526e7f9a54bca3b7a8c57d9e2c4a58d#msg1:0",
+          "exp-9c927471a73c04cc4d9698ce330a18ba#msg0:0",
+          "exp-2d10d847fbc89964e1ee86b3ed8fe21e#msg0:0",
+          "exp-5d4279fdc0cb27ee8363a5b586491889#msg0:0"
+        ],
+        "chars": 6701
+      },
+      {
+        "taskId": "V2_F07_I05",
+        "arm": "memory",
+        "bucket": "evaluation",
+        "selectedIds": [
+          "exp-a526e7f9a54bca3b7a8c57d9e2c4a58d#msg0:0",
+          "exp-9c927471a73c04cc4d9698ce330a18ba#msg0:0",
+          "exp-9c927471a73c04cc4d9698ce330a18ba#msg1:0",
+          "exp-2d10d847fbc89964e1ee86b3ed8fe21e#msg0:0",
+          "exp-5d4279fdc0cb27ee8363a5b586491889#msg0:0",
+          "exp-5d4279fdc0cb27ee8363a5b586491889#msg1:0"
+        ],
+        "chars": 7630
+      },
+      {
+        "taskId": "V2_F07_C01",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F07_C02",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      },
+      {
+        "taskId": "V2_F07_C03",
+        "arm": "memory",
+        "bucket": "control",
+        "selectedIds": [],
+        "chars": 0
+      }
+    ],
+    "protocolFrames": 3183,
+    "issues": [],
+    "coverage": "Frozen file hashes, allowlisted controller fields and tools, native tool calls versus real upstream dispatch receipts, effective model, fresh engine sessions, accounting completeness, empty reset memory/procedures and real skill writes/reads; when declared, per-episode skill snapshots, continuation/anchor lineage and reads completed before business writes. Not OS isolation or training contamination proof."
+  },
+  "limits": [
+    "Adapted fixed 4 families / 2 capabilities, not official full PAST Overall",
+    "This measures experience-based adaptation and transfer, not autonomous code evolution",
+    "Single run and previously inspected development tasks; no blind-test or statistical reliability claim",
+    "Reset and retained scores reported separately, never merged or selectively replaced",
+    "Same frozen source/model/grader/budgets, no communication judge, failures retained",
+    "Learning/control costs included in retained total; transfer gain is not cost-normalized"
+  ],
+  "acceptanceScope": "Fixed four-family retained-experience transfer score >=50 with positive paired gain and native reuse audit; not a claim of reliable general RSI or official PAST ranking.",
+  "qualityReview": {
+    "excludedTargetsUpdated": 0,
+    "correctTargetsWithMatchingSchema": 4,
+    "requiredUpdatedTargets": 7,
+    "qualityRegressionObserved": false,
+    "strictTransferPasses": {
+      "reset": 0,
+      "memory": 0
+    }
+  },
+  "nativeRecallProtocol": {
+    "maxChars": 8000,
+    "bothArms": true,
+    "wholeMessages": true,
+    "source": "original native user fragments and attributed assistant messages only",
+    "snapshots": true
+  },
+  "frozenExecutionAudit": "Passed against the frozen workspace immediately after all 40 tasks, before publishing these result exports and the updated report. The run retains the source archive and hashes."
+}

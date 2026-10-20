@@ -1,0 +1,140 @@
+{
+  "protocol": "posthoc-rsi-outcome-review-v1",
+  "posthoc": true,
+  "modelCalls": 0,
+  "runDirectory": ".mentat/public-evaluations/past-foundation-rsi-pair-20261020-v2",
+  "sourceResultsSha256": "bbcfee198a171a4f463f955a7e8fc904a6b3427327262f681ae1da1eda591a6d",
+  "summaries": {
+    "reset": {
+      "procedureEvaluationCases": 4,
+      "updatedTargets": 0,
+      "excludedTargetsUpdated": 0,
+      "correctTargetsWithMatchingSchema": 0
+    },
+    "memory": {
+      "procedureEvaluationCases": 4,
+      "updatedTargets": 7,
+      "excludedTargetsUpdated": 0,
+      "correctTargetsWithMatchingSchema": 4
+    }
+  },
+  "cases": [
+    {
+      "taskId": "V2_F05_I04",
+      "arm": "reset",
+      "updatedTargets": [],
+      "requiredTargets": ["TK-P401"],
+      "excludedTargetsUpdated": [],
+      "unexpectedTargetsUpdated": [],
+      "correctTargetsWithMatchingSchema": [],
+      "targetPrecision": null,
+      "targetRecall": 0.0,
+      "schemaMatchAmongRequiredUpdates": null
+    },
+    {
+      "taskId": "V2_F05_I04",
+      "arm": "memory",
+      "updatedTargets": ["TK-P401"],
+      "requiredTargets": ["TK-P401"],
+      "excludedTargetsUpdated": [],
+      "unexpectedTargetsUpdated": [],
+      "correctTargetsWithMatchingSchema": [],
+      "targetPrecision": 1.0,
+      "targetRecall": 1.0,
+      "schemaMatchAmongRequiredUpdates": 0.0
+    },
+    {
+      "taskId": "V2_F05_I05",
+      "arm": "reset",
+      "updatedTargets": [],
+      "requiredTargets": ["TK-Q501", "TK-Q503"],
+      "excludedTargetsUpdated": [],
+      "unexpectedTargetsUpdated": [],
+      "correctTargetsWithMatchingSchema": [],
+      "targetPrecision": null,
+      "targetRecall": 0.0,
+      "schemaMatchAmongRequiredUpdates": null
+    },
+    {
+      "taskId": "V2_F05_I05",
+      "arm": "memory",
+      "updatedTargets": ["TK-Q501", "TK-Q503"],
+      "requiredTargets": ["TK-Q501", "TK-Q503"],
+      "excludedTargetsUpdated": [],
+      "unexpectedTargetsUpdated": [],
+      "correctTargetsWithMatchingSchema": [],
+      "targetPrecision": 1.0,
+      "targetRecall": 1.0,
+      "schemaMatchAmongRequiredUpdates": 0.0
+    },
+    {
+      "taskId": "V2_F07_I04",
+      "arm": "reset",
+      "updatedTargets": [],
+      "requiredTargets": ["TK-U402", "TK-U403"],
+      "excludedTargetsUpdated": [],
+      "unexpectedTargetsUpdated": [],
+      "correctTargetsWithMatchingSchema": [],
+      "targetPrecision": null,
+      "targetRecall": 0.0,
+      "schemaMatchAmongRequiredUpdates": null
+    },
+    {
+      "taskId": "V2_F07_I04",
+      "arm": "memory",
+      "updatedTargets": ["TK-U402", "TK-U403"],
+      "requiredTargets": ["TK-U402", "TK-U403"],
+      "excludedTargetsUpdated": [],
+      "unexpectedTargetsUpdated": [],
+      "correctTargetsWithMatchingSchema": ["TK-U402", "TK-U403"],
+      "targetPrecision": 1.0,
+      "targetRecall": 1.0,
+      "schemaMatchAmongRequiredUpdates": 1.0
+    },
+    {
+      "taskId": "V2_F07_I05",
+      "arm": "reset",
+      "updatedTargets": [],
+      "requiredTargets": ["TK-V502", "TK-V503"],
+      "excludedTargetsUpdated": [],
+      "unexpectedTargetsUpdated": [],
+      "correctTargetsWithMatchingSchema": [],
+      "targetPrecision": null,
+      "targetRecall": 0.0,
+      "schemaMatchAmongRequiredUpdates": null
+    },
+    {
+      "taskId": "V2_F07_I05",
+      "arm": "memory",
+      "updatedTargets": ["TK-V502", "TK-V503"],
+      "requiredTargets": ["TK-V502", "TK-V503"],
+      "excludedTargetsUpdated": [],
+      "unexpectedTargetsUpdated": [],
+      "correctTargetsWithMatchingSchema": ["TK-V502", "TK-V503"],
+      "targetPrecision": 1.0,
+      "targetRecall": 1.0,
+      "schemaMatchAmongRequiredUpdates": 1.0
+    }
+  ],
+  "qualityRegressionObserved": false,
+  "evaluationStrictPasses": {
+    "reset": 0,
+    "memory": 0
+  },
+  "limits": [
+    "Supplementary posthoc review, not a replacement acceptance protocol or official score",
+    "Uses actual service audit snapshots and original expected target/schema contracts",
+    "No-update precision is undefined, not treated as perfect task execution",
+    "Score gain and successful retrieval alone do not establish beneficial or reliable self-improvement"
+  ],
+  "methodOrigin": "The reviewer was developed posthoc for v1; the same review scope was declared in the v2 plan before execution.",
+  "preregisteredForThisRun": {
+    "scope": "evaluation business writes, separate from original grader",
+    "goals": [
+      "no mutations of excluded targets",
+      "correct complete priority/category/tags on required targets",
+      "report strict passes and controls alongside continuous score"
+    ],
+    "doesNotReplacePrimaryAcceptance": true
+  }
+}

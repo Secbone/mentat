@@ -7,7 +7,12 @@ import { createDefaultRegistry } from "@mentat/harnesses";
 import { createAssistantHost } from "@mentat/host";
 import { FileMemoryRepository } from "@mentat/memory-file";
 import { memoryMcpSpec } from "@mentat/memory-mcp";
-import { projectExperience, readTrajectory, resolveEventData } from "@mentat/observability";
+import {
+  ExperienceStore,
+  projectExperience,
+  readTrajectory,
+  resolveEventData,
+} from "@mentat/observability";
 import { FileSkillRepository } from "@mentat/skills-file";
 import { skillsMcpSpec } from "@mentat/skills-mcp";
 import { benchmarkObservations } from "../packages/cli/src/lib/benchmark-observations";
@@ -68,6 +73,8 @@ const tools = JSON.parse(readFileSync(config.toolsPath, "utf8")) as Array<{
 const memoryPath = join(state, "memory.json"),
   experienceDir = join(state, "experience");
 const repository = new FileMemoryRepository(memoryPath);
+const experience = new ExperienceStore(experienceDir);
+writeFileSync(join(out, "experience-before.json"), JSON.stringify(experience.list(), null, 2));
 const before = await repository.snapshot();
 writeFileSync(join(out, "memory-before.json"), JSON.stringify(before, null, 2));
 const memory = memoryMcpSpec(memoryPath, config.scope);
@@ -174,6 +181,7 @@ const host = createAssistantHost({
   model,
   memoryPath,
   experienceDir,
+  nativeHistory: { maxChars: 8000 },
   logDir: join(out, "trace"),
   scope: config.scope,
   timeoutMs,
@@ -240,6 +248,7 @@ try {
 }
 const observations = benchmarkObservations(host.logDir);
 const after = await repository.snapshot();
+writeFileSync(join(out, "experience-after.json"), JSON.stringify(experience.list(), null, 2));
 writeFileSync(join(out, "memory-after.json"), JSON.stringify(after, null, 2));
 writeFileSync(
   join(out, "skills-after.json"),

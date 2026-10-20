@@ -77,9 +77,7 @@
           "memoryScope": "task"
         },
         "prefix": "ONCE-69ca7577-ec30-421a-92bc-d6441211029e",
-        "excluded": [
-          "GUESS-8f37eceb-57f9-41b6-a642-d7c80f8637a6"
-        ]
+        "excluded": ["GUESS-8f37eceb-57f9-41b6-a642-d7c80f8637a6"]
       },
       {
         "scope": "bob",
@@ -170,9 +168,7 @@
         }
       ],
       "observations": {
-        "nativeSessionIds": [
-          "ses_ea90665daffeJrTEALivJqTK10"
-        ],
+        "nativeSessionIds": ["ses_ea90665daffeJrTEALivJqTK10"],
         "models": [
           {
             "requested": "opencode-go/deepseek-v4.1-flash",
@@ -259,9 +255,7 @@
         }
       ],
       "observations": {
-        "nativeSessionIds": [
-          "ses_ea906478fffe4AlCf1T2E8uZR9"
-        ],
+        "nativeSessionIds": ["ses_ea906478fffe4AlCf1T2E8uZR9"],
         "models": [
           {
             "requested": "opencode-go/deepseek-v4.1-flash",
@@ -345,9 +339,7 @@
         }
       ],
       "observations": {
-        "nativeSessionIds": [
-          "ses_ea906301fffeJHyMe1OuvwPFMb"
-        ],
+        "nativeSessionIds": ["ses_ea906301fffeJHyMe1OuvwPFMb"],
         "models": [
           {
             "requested": "opencode-go/deepseek-v4.1-flash",
@@ -436,9 +428,7 @@
         }
       ],
       "observations": {
-        "nativeSessionIds": [
-          "ses_ea90616e4ffez4YQVUKhtR8i4B"
-        ],
+        "nativeSessionIds": ["ses_ea90616e4ffez4YQVUKhtR8i4B"],
         "models": [
           {
             "requested": "opencode-go/deepseek-v4.1-flash",
@@ -529,9 +519,7 @@
         }
       ],
       "observations": {
-        "nativeSessionIds": [
-          "ses_ea905fe22ffe3ztskDX23LQv8X"
-        ],
+        "nativeSessionIds": ["ses_ea905fe22ffe3ztskDX23LQv8X"],
         "models": [
           {
             "requested": "opencode-go/deepseek-v4.1-flash",
@@ -624,9 +612,7 @@
         }
       ],
       "observations": {
-        "nativeSessionIds": [
-          "ses_ea905ea2cffeeMq41BZjzeSwk5"
-        ],
+        "nativeSessionIds": ["ses_ea905ea2cffeeMq41BZjzeSwk5"],
         "models": [
           {
             "requested": "opencode-go/deepseek-v4.1-flash",

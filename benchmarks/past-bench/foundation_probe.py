@@ -290,10 +290,12 @@ def main():
         if source.is_file():
             archive.append({"name": name, "sha256": digest(source), "base64": base64.b64encode(source.read_bytes()).decode()})
     write(args.out / "subject-source.json", archive)
-    plan = {"protocol": "past-foundation-diagnostic-v5", "track": "adapted", "model": MODEL,
+    plan = {"protocol": "past-foundation-diagnostic-v6", "track": "adapted", "model": MODEL,
             "revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "upstreamRevision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=UPSTREAM, text=True).strip(),
             "nativeSkillSnapshots": True, "pairedResetEvaluationOnly": args.reset_evaluation_only,
+            "nativeRecall": {"maxChars": 8000, "bothArms": True, "wholeMessages": True, "source": "original native user fragments and attributed assistant messages only", "snapshots": True},
+            "supplementalQualityReview": {"scope": "evaluation business writes, separate from original grader", "goals": ["no mutations of excluded targets", "correct complete priority/category/tags on required targets", "report strict passes and controls alongside continuous score"], "doesNotReplacePrimaryAcceptance": True},
             "primaryAcceptance": {"bucket": "evaluation", "scoreArm": "memory", "baselineArm": "reset", "minimumScore100": 50, "gain": "strictly positive", "nativeReuseRequired": True} if args.reset_evaluation_only else None,
             "scope": "fixed-four-family-rsi-pair" if args.reset_evaluation_only else "smoke" if args.limit else "fixed-four-family-transfer" if args.buckets else "four-complete-families", "selectedBuckets": args.buckets, "roster": roster,
             "datasetHashes": hashes, "upstreamScorerSourceHashes": sources,
