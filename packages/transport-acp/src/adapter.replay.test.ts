@@ -72,10 +72,12 @@ describe("ACP observed-protocol regression", () => {
         outcome: "selected",
       });
     }
-    const answer = events.find((e) => e.type === "message.completed");
-    expect(
-      answer?.type === "message.completed" ? answer.message.text.match(/"selected"/g) : [],
-    ).toHaveLength(21);
+    // Intermediate narration remains in deltas; completed text is the post-tool answer.
+    const transcript = events
+      .filter((e) => e.type === "message.delta")
+      .map((e) => e.text)
+      .join("");
+    expect(transcript.match(/"selected"/g)).toHaveLength(21);
   });
 
   it.each(["allow", "deny", "error", "no-option"] as const)(

@@ -1,0 +1,218 @@
+{
+  "protocol": "matched-fixed-roster-foundation-comparison-v2",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "baselineProtocol": "past-native-rsi-diagnostic-v2",
+  "newProtocol": "past-foundation-diagnostic-v2",
+  "before": {
+    "planned": 8,
+    "scored": 8,
+    "budgetTimeouts": 0,
+    "allTaskMean100": 22.720000000000002,
+    "evaluationPlanned": 8,
+    "evaluationMean100": 22.720000000000002,
+    "coveredCapabilityEvaluationMacro100": 22.720000000000002,
+    "evaluationFamilies100": {
+      "memory_ability/SM01_preference_adoption": 20.0,
+      "memory_ability/SM02_constraint_retention": 20.0,
+      "procedural_ability/PC03_latent_rule_induction_01": 25.44,
+      "procedural_ability/PC04_failure_to_rule_01": 25.44
+    },
+    "coveredCapabilities100": {
+      "memory_ability": 20.0,
+      "procedural_ability": 25.44
+    },
+    "validFinalAnswers": 4,
+    "evaluationValidFinalAnswers": 4,
+    "strictPasses": 0,
+    "evaluationStrictPasses": 0,
+    "episodesWithEnvironmentDispatch": 0,
+    "evaluationEpisodesWithEnvironmentDispatch": 0,
+    "environmentDispatches": 0,
+    "costUsdScored": 0.006246636,
+    "costUsdAllAttempts": 0.006246636,
+    "cases": [
+      {
+        "taskId": "SM01_EVAL_NEAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_EVAL_FAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "SM02_EVAL_NEAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_FAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I04",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 25.44,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F05_I05",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 25.44,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F07_I04",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 25.44,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I05",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 25.44,
+        "validFinalAnswer": false
+      }
+    ]
+  },
+  "after": {
+    "planned": 8,
+    "scored": 8,
+    "budgetTimeouts": 0,
+    "allTaskMean100": 43.725,
+    "evaluationPlanned": 8,
+    "evaluationMean100": 43.725,
+    "coveredCapabilityEvaluationMacro100": 43.725,
+    "evaluationFamilies100": {
+      "memory_ability/SM01_preference_adoption": 48.0,
+      "memory_ability/SM02_constraint_retention": 58.00000000000001,
+      "procedural_ability/PC03_latent_rule_induction_01": 37.0,
+      "procedural_ability/PC04_failure_to_rule_01": 31.900000000000002
+    },
+    "coveredCapabilities100": {
+      "memory_ability": 53.0,
+      "procedural_ability": 34.45
+    },
+    "validFinalAnswers": 8,
+    "evaluationValidFinalAnswers": 8,
+    "strictPasses": 0,
+    "evaluationStrictPasses": 0,
+    "episodesWithEnvironmentDispatch": 8,
+    "evaluationEpisodesWithEnvironmentDispatch": 8,
+    "environmentDispatches": 72,
+    "costUsdScored": 0.029513058000000002,
+    "costUsdAllAttempts": 0.029513058000000002,
+    "cases": [
+      {
+        "taskId": "SM01_EVAL_NEAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 60.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_EVAL_FAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 36.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_NEAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 40.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_FAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 76.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I04",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 37.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I05",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 37.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I04",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I05",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 37.0,
+        "validFinalAnswer": true
+      }
+    ]
+  },
+  "limits": [
+    "Adapted subset: 4 families across 2 capabilities, not complete official PAST Overall",
+    "One repetition per task; no statistical confidence interval",
+    "Missing judge in both arms; no score inflation by filling judge points",
+    "All pre-registered matched tasks retained; budget failures score zero",
+    "Fixed model, task prompts, schemas, grader and budgets; framework/tool capabilities differ",
+    "Task score and strict pass are separate; this does not establish RSI"
+  ],
+  "deltaAllMean100": 21.005,
+  "deltaEvaluationMacro100": 21.005,
+  "audit": {
+    "status": "passed",
+    "scoredTrials": 8,
+    "unscoredTrials": [],
+    "changedAnalysisFiles": [],
+    "preDispatchFailures": [],
+    "nativeSessions": 8,
+    "environmentDispatchReceipts": 72,
+    "protocolFrames": 1126,
+    "issues": [],
+    "coverage": "Frozen file hashes, allowlisted controller fields and tools, native tool calls versus real upstream dispatch receipts, effective model, fresh engine sessions, accounting completeness, empty reset memory/procedures and real skill writes/reads. Not OS isolation or training contamination proof."
+  },
+  "runDirectory": ".mentat/public-evaluations/past-foundation-eval8-20261019-v2",
+  "planSha256": "bc7b7c136ef7e9a44da778cca109a9ff366a38bbadbbc2e17e35128eace83851"
+}

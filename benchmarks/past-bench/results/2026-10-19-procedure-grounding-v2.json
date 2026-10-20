@@ -1,0 +1,135 @@
+{
+  "protocol": "synthetic-procedure-grounding-v2",
+  "promptVersion": "personal-assistant-v9",
+  "planSha256": "0d3e29d68875f32cd9e7766148eb0412415d416a9945560f7f01f04e9db3ce70",
+  "passed": true,
+  "cases": [
+    {
+      "variant": "complete",
+      "passed": true,
+      "updates": 2,
+      "costUsd": 0.0016026959999999998,
+      "turns": 2,
+      "businessReceipts": 7,
+      "repeatedWrites": 0,
+      "nativeSessionIds": ["ses_eac4140adffepKiFlMG1MBVHCY"],
+      "accountingStatus": "complete",
+      "resultSha256": "9c9be1ac1e348d067e88acafe1cc556311b5fc38af3e62b96499f207c48d16f1"
+    },
+    {
+      "variant": "missing",
+      "passed": true,
+      "updates": 0,
+      "costUsd": 0.0008515619999999999,
+      "turns": 1,
+      "businessReceipts": 2,
+      "repeatedWrites": 0,
+      "nativeSessionIds": ["ses_eac40cbd4ffe5499YKmXWAg8to"],
+      "accountingStatus": "complete",
+      "resultSha256": "83c36ea290ee370496ee4aacd177880b1fa14d577a0637f0f1db2c7ec991e2bf"
+    },
+    {
+      "variant": "stale",
+      "passed": true,
+      "updates": 2,
+      "costUsd": 0.00293604,
+      "turns": 2,
+      "businessReceipts": 7,
+      "repeatedWrites": 0,
+      "nativeSessionIds": ["ses_eac409abcffeFHXTkHROfl9D2O"],
+      "accountingStatus": "complete",
+      "resultSha256": "d871f84afbff2b02e0fc7a7115f226d69acbe8abbac0bae41ad79293746db93c"
+    }
+  ],
+  "limits": "Small independent synthetic integration check; no official benchmark score, RSI gain or general reliability claim.",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "costUsd": 0.005390298,
+  "runDirectory": ".mentat/public-evaluations/procedure-grounding-20261019-v2",
+  "plan": {
+    "protocol": "synthetic-procedure-grounding-v2",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "promptVersion": "personal-assistant-v9",
+    "scriptSha256": "bac3e0ef5d51bfc8db1550d79ca8e4245be518d7d202b598f4e3d54954e1ea3b",
+    "promptSha256": "85b92c99693dfc0482a36efc548b2fa9da7d8834b79180e1e57f5f3faf51e7bb",
+    "cases": ["complete", "missing", "stale"],
+    "task": "Use the saved approved inbound review procedure, or a complete current published replacement, to process parcels. Inspect saved procedures for the matching workflow and read the current published policy. Only update parcels matching that procedure. You must use the parcel tools for processing, then report actual updates and any blocked work.",
+    "repeatTask": "Check the same parcels again against the current published policy. Apply any remaining required changes, avoid unnecessary repeated writes, and report the result.",
+    "currentPolicy": "Published policy revision 3, currently authoritative: only parcels with inspection=confirmed AND sealBroken=true require an update. Set reviewStatus=inspection-needed and reason=seal-confirmed. Leave every other parcel unchanged. A parcel already at these exact values requires no further update. This replaces older procedures; recorded seal damage without confirmed inspection is not sufficient.",
+    "brief": "Inbound review overview only. Inspection evidence and seal condition must be evaluated together. Consult the full approved review procedure for exact decision criteria, review status and reason values. The full procedure is unavailable in this workspace.",
+    "initial": [
+      {
+        "id": "BOX-A",
+        "inspection": "confirmed",
+        "sealBroken": true,
+        "reviewStatus": "pending",
+        "reason": ""
+      },
+      {
+        "id": "BOX-B",
+        "inspection": "pending",
+        "sealBroken": true,
+        "reviewStatus": "pending",
+        "reason": ""
+      },
+      {
+        "id": "BOX-C",
+        "inspection": "confirmed",
+        "sealBroken": false,
+        "reviewStatus": "pending",
+        "reason": ""
+      },
+      {
+        "id": "BOX-D",
+        "inspection": "confirmed",
+        "sealBroken": true,
+        "reviewStatus": "pending",
+        "reason": ""
+      }
+    ],
+    "tools": [
+      {
+        "name": "parcels_list",
+        "description": "List current inbound parcels and their review state.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "policy_get",
+        "description": "Read the current published inbound review policy.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "parcel_update",
+        "description": "Apply an authorized review state and reason to one parcel.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "reviewStatus": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": ["id", "reviewStatus", "reason"],
+          "additionalProperties": false
+        }
+      }
+    ],
+    "timeoutMs": 120000,
+    "steps": 18,
+    "scope": "independent synthetic controls; no official score"
+  }
+}

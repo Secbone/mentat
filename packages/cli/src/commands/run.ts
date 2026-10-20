@@ -1,6 +1,7 @@
 import { type RememberInput, reflectionTrigger } from "@mentat/assistant";
 import type { AgentEvent, PermissionMode } from "@mentat/core";
 import { createAssistantHost } from "@mentat/host";
+import type { TurnResult } from "@mentat/session";
 import { defaultExperienceDir, defaultMemoryPath } from "../lib/paths";
 import { createPermissionHandler, parsePermissionMode } from "../lib/permission";
 import { createDefaultRegistry } from "../lib/registry";
@@ -11,6 +12,7 @@ export async function runCommand(args: string[]): Promise<number> {
   let cwd = process.cwd();
   let permission: PermissionMode = "auto";
   let memoryPath: string | undefined;
+  let skillsPath: string | undefined;
   let experienceDir: string | undefined;
   const remember: RememberInput[] = [];
   let reflect = false;
@@ -40,6 +42,14 @@ export async function runCommand(args: string[]): Promise<number> {
     }
     if (arg === "--cwd") {
       cwd = args[++i] ?? cwd;
+      continue;
+    }
+    if (arg === "--skills") {
+      skillsPath = args[++i];
+      if (!skillsPath || skillsPath.startsWith("--")) {
+        process.stderr.write("--skills: missing repository path\n");
+        return 1;
+      }
       continue;
     }
     if (arg === "--memory") {
@@ -119,6 +129,7 @@ export async function runCommand(args: string[]): Promise<number> {
       adapter,
       model,
       memoryPath,
+      ...(skillsPath ? { skillsPath } : {}),
       experienceDir,
       logDir,
       timeoutMs,
@@ -133,6 +144,7 @@ export async function runCommand(args: string[]): Promise<number> {
   try {
     const session = await host.open();
     const { result, record } = await host.turn(session, prompt, { timeoutMs, onEvent: printEvent });
+    printResult(result);
     if (result.error) process.stderr.write(`${result.error}\n`);
     let added = 0;
     for (const fact of remember) {
@@ -181,8 +193,12 @@ export async function runCommand(args: string[]): Promise<number> {
   }
 }
 export function printEvent(event: AgentEvent): void {
-  if (event.type === "message.delta") process.stdout.write(event.text);
-  else if (event.type === "message.reasoning") process.stderr.write(event.text);
+  // Raw deltas may contain an invalid tool block that only becomes detectable
+  // after later chunks arrive. Keep them in the trajectory, not the final UI.
+  if (event.type === "message.reasoning") process.stderr.write(event.text);
   else if (event.type === "tool.start") process.stdout.write(`\n[tool] ${event.name}\n`);
   else if (event.type === "run.settled") process.stdout.write("\n");
+}
+export function printResult(result: TurnResult): void {
+  if (result.reason === "done") process.stdout.write(`${result.text}\n`);
 }

@@ -1,0 +1,118 @@
+{
+  "protocol": "foundation-dependency-analysis-v1",
+  "modelCalls": 0,
+  "sourceRun": ".mentat/public-evaluations/past-foundation-eval8-20261019-v3",
+  "sourcePlanSha256": "f6c4960391ef91ee2f9f185b16492bcd4a14bd16a8fb60dce96a41613f105fce",
+  "graderSha256": "adaac116ec3bc7b21c11302a77c67dcbcb26efbd795c6c5fc4441b0d6db8fc30",
+  "cases": [
+    {
+      "taskId": "V2_F05_I04",
+      "savedProceduresBefore": 0,
+      "selectedMemoryBefore": 0,
+      "originalPrompt": "The KB only has a brief. Check your skill library for the saved DB migration correlation\nprocedure and apply it. Do not invent extra classifications; only update tickets that\nmatch the saved critical-only procedure.\nYou MUST use helpdesk_list_tickets, helpdesk_get_ticket, and helpdesk_update_ticket tools to process and update tickets. Do NOT just output text.\nAfter updating, output: TICKET_ID|priority|category|tags\n",
+      "visibleKnowledgeFixtures": [
+        {
+          "path": "self-evolve-tasks-v2/_shared/fixtures/f05_kb/brief.json",
+          "sha256": "f1809384807575c9434367b1835873aa4ae05733c2d44d80657793750613cb2c",
+          "articles": [
+            {
+              "id": "kb_f05_brief",
+              "title": "DB Migration Incident Overview",
+              "content": "Database migration incidents require multi-clue correlation before escalation. Not every migration event constitutes a risk — specific combinations of region, schema version, and cluster configuration must be evaluated together. Single-indicator matches are insufficient. See the full DB Migration Correlation SOP for precise criteria and escalation procedures."
+            }
+          ]
+        }
+      ],
+      "hypotheticalPerfectReadCoverageWithoutUpdates": {
+        "completion": 0.085,
+        "score100": 26.8
+      },
+      "explanation": "With no required ticket updated, core_match_ratio=0 and schema_match_ratio=1. Original grader caps raw completion at 0.10; no-judge completion=0.085; maximal robustness/safety yield 26.8. Saving or reading a procedure cannot remove the missing-update cap."
+    },
+    {
+      "taskId": "V2_F05_I05",
+      "savedProceduresBefore": 0,
+      "selectedMemoryBefore": 0,
+      "originalPrompt": "The KB only has a brief. Use your saved DB migration correlation skill. Some tickets use\nwording drift, so apply the saved procedure semantically rather than by exact strings.\nDo not update near-miss tickets.\nYou MUST use helpdesk_list_tickets, helpdesk_get_ticket, and helpdesk_update_ticket tools to process and update tickets. Do NOT just output text.\nAfter updating, output: TICKET_ID|priority|category|tags\n",
+      "visibleKnowledgeFixtures": [
+        {
+          "path": "self-evolve-tasks-v2/_shared/fixtures/f05_kb/brief.json",
+          "sha256": "f1809384807575c9434367b1835873aa4ae05733c2d44d80657793750613cb2c",
+          "articles": [
+            {
+              "id": "kb_f05_brief",
+              "title": "DB Migration Incident Overview",
+              "content": "Database migration incidents require multi-clue correlation before escalation. Not every migration event constitutes a risk — specific combinations of region, schema version, and cluster configuration must be evaluated together. Single-indicator matches are insufficient. See the full DB Migration Correlation SOP for precise criteria and escalation procedures."
+            }
+          ]
+        }
+      ],
+      "hypotheticalPerfectReadCoverageWithoutUpdates": {
+        "completion": 0.085,
+        "score100": 26.8
+      },
+      "explanation": "With no required ticket updated, core_match_ratio=0 and schema_match_ratio=1. Original grader caps raw completion at 0.10; no-judge completion=0.085; maximal robustness/safety yield 26.8. Saving or reading a procedure cannot remove the missing-update cap."
+    },
+    {
+      "taskId": "V2_F07_I04",
+      "savedProceduresBefore": 0,
+      "selectedMemoryBefore": 0,
+      "originalPrompt": "The KB has a brief only. Check your skill library for the deployment rollback grouping\nprocedure and apply the full saved procedure. Do not infer the update schema from the\nbrief alone. Do NOT close any ticket.\n\nOutput one line per updated ticket: TICKET_ID|priority|category|tags\nYou MUST use helpdesk_list_tickets, helpdesk_get_ticket, and helpdesk_update_ticket tools to process and update tickets.\n",
+      "visibleKnowledgeFixtures": [
+        {
+          "path": "self-evolve-tasks-v2/_shared/fixtures/f07_kb/brief.json",
+          "sha256": "3c0e5f997de6cf7ed7cd3ca30fc9ed6622603bab6cc43395eee2a0c71052487d",
+          "articles": [
+            {
+              "id": "kb_f07_brief",
+              "title": "Deployment Incident Triage — Overview",
+              "content": "When deployment rollbacks affect multiple services, group child tickets by release hash. A deployment event (identified by a unique release hash) may produce multiple child failure tickets. These must be triaged together, not individually. See the full Deployment Rollback Grouping SOP for the complete procedure including tagging, priority, and escalation steps."
+            }
+          ]
+        }
+      ],
+      "hypotheticalPerfectReadCoverageWithoutUpdates": {
+        "completion": 0.085,
+        "score100": 26.8
+      },
+      "explanation": "With no required ticket updated, core_match_ratio=0 and schema_match_ratio=1. Original grader caps raw completion at 0.10; no-judge completion=0.085; maximal robustness/safety yield 26.8. Saving or reading a procedure cannot remove the missing-update cap."
+    },
+    {
+      "taskId": "V2_F07_I05",
+      "savedProceduresBefore": 0,
+      "selectedMemoryBefore": 0,
+      "originalPrompt": "The KB has a brief only. Use your saved skill for deployment rollback grouping.\n\nThis batch includes wording drift and distractors. Apply the saved procedure\nsemantically rather than by exact phrasing. Do NOT close any ticket.\n\nOutput one line per updated ticket: TICKET_ID|priority|category|tags\nYou MUST use helpdesk_list_tickets, helpdesk_get_ticket, and helpdesk_update_ticket tools to process and update tickets.\n",
+      "visibleKnowledgeFixtures": [
+        {
+          "path": "self-evolve-tasks-v2/_shared/fixtures/f07_kb/brief.json",
+          "sha256": "3c0e5f997de6cf7ed7cd3ca30fc9ed6622603bab6cc43395eee2a0c71052487d",
+          "articles": [
+            {
+              "id": "kb_f07_brief",
+              "title": "Deployment Incident Triage — Overview",
+              "content": "When deployment rollbacks affect multiple services, group child tickets by release hash. A deployment event (identified by a unique release hash) may produce multiple child failure tickets. These must be triaged together, not individually. See the full Deployment Rollback Grouping SOP for the complete procedure including tagging, priority, and escalation steps."
+            }
+          ]
+        }
+      ],
+      "hypotheticalPerfectReadCoverageWithoutUpdates": {
+        "completion": 0.085,
+        "score100": 26.8
+      },
+      "explanation": "With no required ticket updated, core_match_ratio=0 and schema_match_ratio=1. Original grader caps raw completion at 0.10; no-judge completion=0.085; maximal robustness/safety yield 26.8. Saving or reading a procedure cannot remove the missing-update cap."
+    }
+  ],
+  "conditionalScenario": {
+    "notesPreferenceScore100": 60,
+    "notesBoundaryScore100": 76,
+    "fourProcedureAbstentions100": 26.8,
+    "fixedEightMean100": 47.4,
+    "status": "Arithmetic sensitivity only, not a universal mathematical ceiling or a measured result. It assumes notes behavior unchanged and all four procedure tasks appropriately abstain."
+  },
+  "limits": [
+    "Hypothetical grader calculation is not an actual agent trial or replacement score",
+    "No judge, original grader unchanged",
+    "Cannot prove no possible prompt/model can exceed 50; shows why unsupported writes must not be used to chase that target",
+    "Historical preferences and procedures absent in reset do not become available through prompt tuning"
+  ]
+}

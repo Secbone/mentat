@@ -153,6 +153,9 @@ importers:
       '@mentat/session':
         specifier: workspace:*
         version: link:../session
+      '@mentat/skills-mcp':
+        specifier: workspace:*
+        version: link:../skills-mcp
 
   packages/kernel:
     dependencies:
@@ -229,6 +232,35 @@ importers:
       '@mentat/core':
         specifier: workspace:*
         version: link:../core
+
+  packages/skills: {}
+
+  packages/skills-file:
+    dependencies:
+      '@mentat/skills':
+        specifier: workspace:*
+        version: link:../skills
+
+  packages/skills-mcp:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/skills':
+        specifier: workspace:*
+        version: link:../skills
+      '@mentat/skills-file':
+        specifier: workspace:*
+        version: link:../skills-file
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.32.1
+        version: 1.32.1(zod@4.6.7)
+      tsx:
+        specifier: ^4.20.6
+        version: 4.23.15
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
 
   packages/transport-acp:
     dependencies:

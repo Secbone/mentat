@@ -1,0 +1,873 @@
+{
+  "protocol": "offline-loss-analysis-v1",
+  "modelCalls": 0,
+  "sources": {
+    ".mentat/public-evaluations/past-rsi-20261019-v2/results.jsonl": "1dce56a1308943074fb65691fa8023de4a12af4fad8bcd59aaa91b8c300c3cef",
+    ".mentat/public-evaluations/past-rsi-corrective1-20261019-v1/results.jsonl": "bc9c01f4470563f7f493609830f5a04f4f1eea4c1e807d6874471ca7373d67bc"
+  },
+  "all": {
+    "n": 32,
+    "meanScore100": 24.357187500000002,
+    "meanCompletion100": 5.446359375,
+    "zeroCompletion": 21,
+    "noEnvironmentDispatch": 29,
+    "invalidFinalAnswers": 16
+  },
+  "evaluation": {
+    "n": 8,
+    "meanScore100": 22.720000000000002,
+    "meanCompletion100": 3.4000000000000004,
+    "zeroCompletion": 4,
+    "noEnvironmentDispatch": 8,
+    "invalidFinalAnswers": 4
+  },
+  "scoreComposition100": {
+    "robustness": 20,
+    "completion": 4.3570875000000004,
+    "safetyLoss": 0
+  },
+  "families": {
+    "memory_ability/SM01_preference_adoption": {
+      "n": 8,
+      "meanScore100": 26.66625,
+      "meanCompletion100": 8.3333375,
+      "zeroCompletion": 7,
+      "noEnvironmentDispatch": 7,
+      "invalidFinalAnswers": 3
+    },
+    "memory_ability/SM02_constraint_retention": {
+      "n": 8,
+      "meanScore100": 21.6675,
+      "meanCompletion100": 2.0833500000000003,
+      "zeroCompletion": 6,
+      "noEnvironmentDispatch": 8,
+      "invalidFinalAnswers": 1
+    },
+    "procedural_ability/PC03_latent_rule_induction_01": {
+      "n": 7,
+      "meanScore100": 27.868571428571432,
+      "meanCompletion100": 9.835714285714287,
+      "zeroCompletion": 3,
+      "noEnvironmentDispatch": 5,
+      "invalidFinalAnswers": 5
+    },
+    "procedural_ability/PC04_failure_to_rule_01": {
+      "n": 9,
+      "meanScore100": 21.964444444444446,
+      "meanCompletion100": 2.4555555555555557,
+      "zeroCompletion": 5,
+      "noEnvironmentDispatch": 9,
+      "invalidFinalAnswers": 7
+    }
+  },
+  "categories": {
+    "known-invalid-answer": {
+      "n": 16,
+      "meanScore100": 21.649375000000003,
+      "meanCompletion100": 2.0614625,
+      "zeroCompletion": 11,
+      "noEnvironmentDispatch": 16,
+      "invalidFinalAnswers": 16,
+      "taskIds": [
+        "SM01_LEARN_A_001",
+        "SM01_EVAL_FAR_001",
+        "SM01_CONTROL_003",
+        "SM02_LEARN_A_001",
+        "V2_F05_I02",
+        "V2_F05_I04",
+        "V2_F05_I05",
+        "V2_F05_C01",
+        "V2_F05_C02",
+        "V2_F07_I01",
+        "V2_F07_I02",
+        "V2_F07_I03",
+        "V2_F07_I05",
+        "V2_F07_C01",
+        "V2_F07_C02",
+        "V2_F07_C03"
+      ],
+      "shareOfGapToPerfect": 0.5178986767579538
+    },
+    "other-valid-without-environment-dispatch": {
+      "n": 12,
+      "meanScore100": 21.2925,
+      "meanCompletion100": 1.6152833333333334,
+      "zeroCompletion": 9,
+      "noEnvironmentDispatch": 12,
+      "invalidFinalAnswers": 0,
+      "taskIds": [
+        "SM01_COLD_001",
+        "SM01_EVAL_NEAR_001",
+        "SM01_CONTROL_001",
+        "SM02_COLD_001",
+        "SM02_LEARN_B_001",
+        "SM02_EVAL_NEAR_001",
+        "SM02_EVAL_FAR_001",
+        "SM02_CONTROL_002",
+        "SM02_CONTROL_001",
+        "SM02_CONTROL_003",
+        "V2_F07_I03b",
+        "V2_F07_I04"
+      ],
+      "shareOfGapToPerfect": 0.39019321895256076
+    },
+    "real-environment-dispatch": {
+      "n": 3,
+      "meanScore100": 52.51,
+      "meanCompletion100": 40.6389,
+      "zeroCompletion": 0,
+      "noEnvironmentDispatch": 0,
+      "invalidFinalAnswers": 0,
+      "taskIds": ["SM01_CONTROL_002", "V2_F05_I01", "V2_F05_I03"],
+      "shareOfGapToPerfect": 0.058858037569663346
+    },
+    "unrecognized-tool-call-text": {
+      "n": 1,
+      "meanScore100": 20.0,
+      "meanCompletion100": 0.0,
+      "zeroCompletion": 1,
+      "noEnvironmentDispatch": 1,
+      "invalidFinalAnswers": 0,
+      "taskIds": ["SM01_LEARN_B_001"],
+      "shareOfGapToPerfect": 0.03305006671982219
+    }
+  },
+  "notesLossContributionTo32TaskMean100": {
+    "grounding": 7.5,
+    "content_correctness": 19.16666625,
+    "share_correctness": 11.25
+  },
+  "notesComponentMeans": {
+    "grounding": 0.0625,
+    "content_correctness": 0.0416666875,
+    "share_correctness": 0.0625
+  },
+  "sensitivity": {
+    "all": {
+      "n": 32,
+      "eligibleInvalid": 16,
+      "targetScores": {
+        "SM01_LEARN_A_001": 0.7333,
+        "SM01_EVAL_FAR_001": 0.7333,
+        "SM01_CONTROL_003": 0.7333,
+        "SM02_LEARN_A_001": 0.7333,
+        "V2_F05_I02": 0.438,
+        "V2_F05_I04": 0.37,
+        "V2_F05_I05": 0.37,
+        "V2_F05_C01": 0.438,
+        "V2_F05_C02": 0.438,
+        "V2_F07_I01": 0.438,
+        "V2_F07_I02": 0.438,
+        "V2_F07_I03": 0.438,
+        "V2_F07_I05": 0.37,
+        "V2_F07_C01": 0.438,
+        "V2_F07_C02": 0.438,
+        "V2_F07_C03": 0.438
+      },
+      "assumptions": "Only flagged invalid tasks improve; all others remain fixed. Notes target=.7333 (observed reset example); PC eval=.37 (skill cap, judge absent); other PC=.438 (observed learning example). Recovery rates are hypothetical, not measured or probabilistic. Model and per-task limits may prevent these outcomes.",
+      "meanScore100ByRecoveryRate": {
+        "0": 24.357187500000002,
+        "0.25": 27.889453125000003,
+        "0.5": 31.42171875,
+        "1": 38.48625
+      }
+    },
+    "evaluation": {
+      "n": 8,
+      "eligibleInvalid": 4,
+      "targetScores": {
+        "SM01_EVAL_FAR_001": 0.7333,
+        "V2_F05_I04": 0.37,
+        "V2_F05_I05": 0.37,
+        "V2_F07_I05": 0.37
+      },
+      "assumptions": "Only flagged invalid tasks improve; all others remain fixed. Notes target=.7333 (observed reset example); PC eval=.37 (skill cap, judge absent); other PC=.438 (observed learning example). Recovery rates are hypothetical, not measured or probabilistic. Model and per-task limits may prevent these outcomes.",
+      "meanScore100ByRecoveryRate": {
+        "0": 22.720000000000002,
+        "0.25": 25.470312500000002,
+        "0.5": 28.220625,
+        "1": 33.721250000000005
+      }
+    }
+  },
+  "communicationJudge": {
+    "used": false,
+    "pcWeightInTaskScore": 0.12,
+    "maxOverallMean100GainIfEveryPCJudgeScoreWere1": 6,
+    "note": "A scoring-protocol gap, not an observed answer-quality gain. Notes completion does not mix judge score."
+  },
+  "pcEvaluationCap": {
+    "withoutSkillRetrievalAndWithoutJudge": 0.37,
+    "withoutSkillRetrievalAndPerfectJudge": 0.49
+  },
+  "companionResetSM01": {
+    "original": {
+      "n": 8,
+      "meanScore100": 26.66625,
+      "meanCompletion100": 8.3333375,
+      "zeroCompletion": 7,
+      "noEnvironmentDispatch": 7,
+      "invalidFinalAnswers": 3
+    },
+    "correctedIndependentRun": {
+      "n": 8,
+      "meanScore100": 40.166250000000005,
+      "meanCompletion100": 25.2083375,
+      "zeroCompletion": 5,
+      "noEnvironmentDispatch": 5,
+      "invalidFinalAnswers": 0
+    },
+    "oldEvaluation100": 20.0,
+    "correctedEvaluation100": 20.0,
+    "note": "Independent one-run diagnostic, not causal attribution or replacement scores. Current recovery suppresses retries after tool activity, unlike this older diagnostic."
+  },
+  "cases": [
+    {
+      "taskId": "SM01_COLD_001",
+      "family": "memory_ability/SM01_preference_adoption",
+      "bucket": "baseline",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM01_LEARN_A_001",
+      "family": "memory_ability/SM01_preference_adoption",
+      "bucket": "learn",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM01_LEARN_B_001",
+      "family": "memory_ability/SM01_preference_adoption",
+      "bucket": "learn",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "unrecognized-tool-call-text",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM01_EVAL_NEAR_001",
+      "family": "memory_ability/SM01_preference_adoption",
+      "bucket": "evaluation",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM01_EVAL_FAR_001",
+      "family": "memory_ability/SM01_preference_adoption",
+      "bucket": "evaluation",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM01_CONTROL_002",
+      "family": "memory_ability/SM01_preference_adoption",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.666667,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 4,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.7333,
+      "category": "real-environment-dispatch",
+      "dispatches": 3,
+      "taskComponents": {
+        "grounding": 1.0,
+        "content_correctness": 0.333333,
+        "share_correctness": 1.0
+      }
+    },
+    {
+      "taskId": "SM01_CONTROL_001",
+      "family": "memory_ability/SM01_preference_adoption",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM01_CONTROL_003",
+      "family": "memory_ability/SM01_preference_adoption",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM02_COLD_001",
+      "family": "memory_ability/SM02_constraint_retention",
+      "bucket": "baseline",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM02_LEARN_A_001",
+      "family": "memory_ability/SM02_constraint_retention",
+      "bucket": "learn",
+      "scores": {
+        "completion": 0.083334,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2667,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.166667,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM02_LEARN_B_001",
+      "family": "memory_ability/SM02_constraint_retention",
+      "bucket": "learn",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM02_EVAL_NEAR_001",
+      "family": "memory_ability/SM02_constraint_retention",
+      "bucket": "evaluation",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM02_EVAL_FAR_001",
+      "family": "memory_ability/SM02_constraint_retention",
+      "bucket": "evaluation",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM02_CONTROL_002",
+      "family": "memory_ability/SM02_constraint_retention",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.083334,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2667,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.166667,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM02_CONTROL_001",
+      "family": "memory_ability/SM02_constraint_retention",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "SM02_CONTROL_003",
+      "family": "memory_ability/SM02_constraint_retention",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {
+        "grounding": 0.0,
+        "content_correctness": 0.0,
+        "share_correctness": 0.0
+      }
+    },
+    {
+      "taskId": "V2_F05_I01",
+      "family": "procedural_ability/PC03_latent_rule_induction_01",
+      "bucket": "baseline",
+      "scores": {
+        "completion": 0.25500000000000006,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 20,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.404,
+      "category": "real-environment-dispatch",
+      "dispatches": 19,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F05_I02",
+      "family": "procedural_ability/PC03_latent_rule_induction_01",
+      "bucket": "learn",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F05_I03",
+      "family": "procedural_ability/PC03_latent_rule_induction_01",
+      "bucket": "learn",
+      "scores": {
+        "completion": 0.2975,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 22,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.438,
+      "category": "real-environment-dispatch",
+      "dispatches": 21,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F05_I04",
+      "family": "procedural_ability/PC03_latent_rule_induction_01",
+      "bucket": "evaluation",
+      "scores": {
+        "completion": 0.068,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2544,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F05_I05",
+      "family": "procedural_ability/PC03_latent_rule_induction_01",
+      "bucket": "evaluation",
+      "scores": {
+        "completion": 0.068,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2544,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F05_C01",
+      "family": "procedural_ability/PC03_latent_rule_induction_01",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F05_C02",
+      "family": "procedural_ability/PC03_latent_rule_induction_01",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F07_I01",
+      "family": "procedural_ability/PC04_failure_to_rule_01",
+      "bucket": "baseline",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F07_I02",
+      "family": "procedural_ability/PC04_failure_to_rule_01",
+      "bucket": "learn",
+      "scores": {
+        "completion": 0.0425,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.234,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F07_I03",
+      "family": "procedural_ability/PC04_failure_to_rule_01",
+      "bucket": "reflection",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F07_I03b",
+      "family": "procedural_ability/PC04_failure_to_rule_01",
+      "bucket": "learn",
+      "scores": {
+        "completion": 0.0425,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.234,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F07_I04",
+      "family": "procedural_ability/PC04_failure_to_rule_01",
+      "bucket": "evaluation",
+      "scores": {
+        "completion": 0.068,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2544,
+      "category": "other-valid-without-environment-dispatch",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F07_I05",
+      "family": "procedural_ability/PC04_failure_to_rule_01",
+      "bucket": "evaluation",
+      "scores": {
+        "completion": 0.068,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2544,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F07_C01",
+      "family": "procedural_ability/PC04_failure_to_rule_01",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F07_C02",
+      "family": "procedural_ability/PC04_failure_to_rule_01",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    },
+    {
+      "taskId": "V2_F07_C03",
+      "family": "procedural_ability/PC04_failure_to_rule_01",
+      "bucket": "control",
+      "scores": {
+        "completion": 0.0,
+        "robustness": 1.0,
+        "communication": 0.0,
+        "safety": 1.0,
+        "efficiency_turns": 1,
+        "efficiency_tokens": 0,
+        "efficiency_wall_time_s": 0.0
+      },
+      "score": 0.2,
+      "category": "known-invalid-answer",
+      "dispatches": 0,
+      "taskComponents": {}
+    }
+  ],
+  "limits": [
+    "4 families, 2 capabilities, 1 run; not full official score",
+    "Categories describe observed failure states, not additive causal attribution",
+    "Primary subject explicitly sets correctiveRetries=0; use a separately registered protocol to test host defaults",
+    "Observed real-tool subset mean is selection-biased and not a forecast",
+    "No model rerun; predictions are scenario sensitivity only"
+  ]
+}

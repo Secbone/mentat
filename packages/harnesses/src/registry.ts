@@ -3,6 +3,7 @@ import { AdapterRegistry, createFakeAdapter } from "@mentat/core";
 import type { AcpAdapterOptions } from "@mentat/transport-acp";
 import { createAcpAdapter } from "@mentat/transport-acp";
 import { createPiAdapter } from "@mentat/transport-pi";
+import { createOpenCodeAdapter } from "./opencode";
 
 export interface AcpRegistration {
   binary: string;
@@ -15,6 +16,8 @@ export interface AcpRegistration {
 export interface RegistryOptions {
   /** Explicit ACP registration; defaults to `MENTAT_ACP_BIN` when set. */
   acp?: AcpRegistration;
+  /** OpenCode-specific system-prompt control, separate from generic ACP. */
+  opencode?: AcpRegistration;
 }
 
 function acpFromEnv(): AcpRegistration | undefined {
@@ -38,6 +41,7 @@ export function createDefaultRegistry(
   registry.register(createPiAdapter({ permissionMode }));
 
   const acp = options.acp ?? acpFromEnv();
+  registry.register(createOpenCodeAdapter(options.opencode ?? { binary: "opencode" }));
   if (acp) {
     registry.register(
       createAcpAdapter({

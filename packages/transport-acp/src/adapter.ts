@@ -16,6 +16,13 @@ import type {
 } from "@mentat/core";
 import { renderTurnInput } from "@mentat/core";
 
+export interface McpCatalogReadiness {
+  receiptPath: string;
+  token: string;
+  tools: string[];
+  timeoutMs?: number;
+}
+
 export interface AcpAdapterOptions {
   binary: string;
   baseArgs?: string[];
@@ -26,12 +33,7 @@ export interface AcpAdapterOptions {
   /** Fresh tools/list receipt from the MCP process actually connected by the engine.
    * This proves catalog exchange, not tool permission or model execution.
    */
-  startupReadiness?: {
-    receiptPath: string;
-    token: string;
-    tools: string[];
-    timeoutMs?: number;
-  };
+  startupReadiness?: McpCatalogReadiness | McpCatalogReadiness[];
 }
 
 interface PendingRequest {
@@ -92,10 +94,11 @@ function blockText(content: unknown): string {
 }
 
 function mapStopReason(stopReason: string): "done" | "aborted" | "length" | "error" {
+  if (stopReason === "end_turn") return "done";
   if (stopReason === "cancelled") return "aborted";
-  if (stopReason === "max_tokens") return "length";
+  if (stopReason === "max_tokens" || stopReason === "max_turn_requests") return "length";
   if (stopReason === "refusal") return "error";
-  return "done";
+  return "error";
 }
 
 /**
@@ -382,6 +385,9 @@ class AcpSession implements SessionHandle {
         return;
       }
       case "tool_call":
+        // Pre-tool narration is progress, not the final answer after that action.
+        // Keep delta events for the trace, but require fresh answer text afterwards.
+        this.accumulated = "";
         this.toolContent.delete(String(update.toolCallId ?? ""));
         this.emit({
           type: "tool.start",
@@ -539,7 +545,15 @@ class AcpSession implements SessionHandle {
         sessionId: this.id,
         message: { role: "assistant", text: this.accumulated },
       });
-      this.emit({ type: "run.settled", sessionId: this.id, reason: mapStopReason(stopReason) });
+      const reason = mapStopReason(stopReason);
+      this.emit({
+        type: "run.settled",
+        sessionId: this.id,
+        reason,
+        ...(reason === "error"
+          ? { error: `ACP stopped: ${stopReason || "missing stopReason"}` }
+          : {}),
+      });
     } catch (error) {
       this.emit({
         type: "run.settled",
@@ -593,17 +607,22 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
   if (!Number.isSafeInteger(settleMs) || settleMs < 0 || settleMs > 10000)
     throw new RangeError("ACP startupSettleMs must be an integer from 0 to 10000");
   const baseArgs = options.baseArgs ?? [];
-  const readiness = options.startupReadiness;
-  if (
-    readiness &&
-    (!readiness.receiptPath ||
+  const catalogs = options.startupReadiness
+    ? Array.isArray(options.startupReadiness)
+      ? options.startupReadiness
+      : [options.startupReadiness]
+    : [];
+  if (catalogs.length > 16) throw new RangeError("too many ACP readiness catalogs");
+  for (const readiness of catalogs)
+    if (
+      !readiness.receiptPath ||
       !readiness.token ||
       !readiness.tools.length ||
       !Number.isSafeInteger(readiness.timeoutMs ?? 20000) ||
       (readiness.timeoutMs ?? 20000) <= 0 ||
-      (readiness.timeoutMs ?? 20000) > 60000)
-  )
-    throw new RangeError("invalid ACP startupReadiness");
+      (readiness.timeoutMs ?? 20000) > 60000
+    )
+      throw new RangeError("invalid ACP startupReadiness");
   return {
     id: options.id ?? "acp",
     label: "ACP",
@@ -614,10 +633,9 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
           "ACP adapter cannot replace the agent system prompt; use task-context delivery",
         );
       }
-      const previousReceipts =
-        readiness && existsSync(readiness.receiptPath)
-          ? readFileSync(readiness.receiptPath).length
-          : 0;
+      const previousReceipts = catalogs.map((readiness) =>
+        existsSync(readiness.receiptPath) ? readFileSync(readiness.receiptPath).length : 0,
+      );
       const session = new AcpSession(
         `acp-${++sessionSeq}`,
         {
@@ -635,12 +653,12 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
       );
       try {
         await session.start();
-        if (readiness) {
+        for (const [index, readiness] of catalogs.entries()) {
           const deadline = Date.now() + (readiness.timeoutMs ?? 20000);
           let found = false;
           while (Date.now() < deadline) {
             const fresh = existsSync(readiness.receiptPath)
-              ? readFileSync(readiness.receiptPath).subarray(previousReceipts).toString()
+              ? readFileSync(readiness.receiptPath).subarray(previousReceipts[index]).toString()
               : "";
             found = fresh
               .split("\n")

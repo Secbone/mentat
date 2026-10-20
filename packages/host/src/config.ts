@@ -21,14 +21,20 @@ export function resolveMemoryTools(config: HostConfig): {
   memoryTools: AssistantTools;
   registerMemory: boolean;
 } {
-  const memoryTools = config.memoryTools ?? {
-    memory: config.memoryPath && config.permissionMode !== "deny" ? "read-write" : "disabled",
+  const memoryTools: AssistantTools = {
+    ...(config.memoryTools ?? {
+      memory: config.memoryPath && config.permissionMode !== "deny" ? "read-write" : "disabled",
+    }),
   };
   if (memoryTools.memory !== "disabled" && !config.memoryPath)
     throw new Error("memory tools require a file-backed memory repository");
   const registerMemory = Boolean(
     config.memoryPath && memoryTools.memory !== "disabled" && memoryTools.transport !== "external",
   );
+  if (registerMemory && config.adapter.capabilities().mcpToolNaming === "server-prefixed") {
+    memoryTools.searchName ??= "memory_memory_search";
+    memoryTools.addName ??= "memory_memory_add";
+  }
   return { memoryTools, registerMemory };
 }
 
@@ -51,6 +57,7 @@ export function resolveHostPaths(config: HostConfig, overrides: HostOverrides): 
     ...config,
     cwd: resolve(config.cwd),
     ...(config.memoryPath ? { memoryPath: resolve(config.memoryPath) } : {}),
+    ...(config.skillsPath ? { skillsPath: resolve(config.skillsPath) } : {}),
   };
 }
 

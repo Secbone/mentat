@@ -15,6 +15,8 @@ export interface HarnessCapabilities {
   permissions: boolean;
   /** Actual system-prompt channel support; absent means not declared. */
   systemPrompt?: "replace" | "append" | "task-context";
+  /** Naming of MCP tools exposed by this engine. */
+  mcpToolNaming?: "bare" | "server-prefixed";
 }
 
 /** A stdio MCP server a session should connect to. */
@@ -23,6 +25,8 @@ export interface McpServerSpec {
   command: string;
   args?: string[];
   env?: Record<string, string>;
+  /** Servers implementing Mentat catalog receipts declare their expected tool names. */
+  catalogTools?: string[];
 }
 
 export interface SessionOptions {

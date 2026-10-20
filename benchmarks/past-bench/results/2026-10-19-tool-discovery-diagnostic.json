@@ -1,0 +1,59 @@
+{
+  "protocol": "tool-discovery-diagnostic",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "opencodeVersion": "2.0.25",
+  "primaryRequestSummaries": [
+    {
+      "type": "request",
+      "model": "deepseek-v4.1-flash",
+      "toolNames": [],
+      "toolChoice": null,
+      "messageRoles": ["system", "user"],
+      "mentatSystem": true
+    },
+    {
+      "type": "request",
+      "model": "deepseek-v4.1-flash",
+      "toolNames": [
+        "direct_memory_memory_add",
+        "direct_memory_memory_ready",
+        "direct_memory_memory_search",
+        "environment_notes_get",
+        "environment_notes_list",
+        "environment_notes_share"
+      ],
+      "toolChoice": null,
+      "messageRoles": ["system", "user"],
+      "mentatSystem": true
+    }
+  ],
+  "trials": [
+    {
+      "run": ".mentat/public-evaluations/past-foundation-wire-20261019-v1",
+      "taskId": "SM01_COLD_001",
+      "score": 0.2,
+      "dispatches": 0,
+      "validFinalAnswer": false,
+      "querySha256": "8f2dc65bd3e9eb977a6fbe888e93ca9f211ea6a36ac1be344f070007f8b92eea"
+    },
+    {
+      "run": ".mentat/public-evaluations/past-foundation-wire-20261019-v2",
+      "taskId": "SM01_COLD_001",
+      "score": 0.6,
+      "dispatches": 3,
+      "validFinalAnswer": true,
+      "querySha256": "8f2dc65bd3e9eb977a6fbe888e93ca9f211ea6a36ac1be344f070007f8b92eea"
+    }
+  ],
+  "sourceDifferences": [
+    "packages/benchmark-file/src/environment-server.mjs",
+    "packages/transport-acp/src/adapter.ts",
+    "scripts/past-foundation-turn.ts"
+  ],
+  "limits": [
+    "Single-task diagnostic, not a benchmark score",
+    "Proxy forwards requests unmodified to official OpenCode endpoint",
+    "Only tool names, role names and response metadata logged; no credentials or full messages",
+    "Catalog exchange is not proof that tools entered the model request"
+  ]
+}

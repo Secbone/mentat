@@ -6,7 +6,10 @@ export type FinalAnswerIssue = "empty-answer" | "tool-protocol-text";
 
 export function finalAnswerIssue(text: string): FinalAnswerIssue | undefined {
   if (!text.trim()) return "empty-answer";
-  if (/<[|｜]{1,2}\s*DSML\s*[|｜]{1,2}\s*(?:calls|invoke|parameter)\b/i.test(text))
+  if (
+    /<[|｜]{1,2}\s*DSML\s*[|｜]{1,2}\s*(?:calls|invoke|parameter)\b/i.test(text) ||
+    /<tool_call\b[^>]*>\s*\{[\s\S]*?"(?:name|function)"\s*:/i.test(text)
+  )
     return "tool-protocol-text";
   return undefined;
 }
@@ -18,7 +21,7 @@ export function finalAnswerIssue(text: string): FinalAnswerIssue | undefined {
  */
 export function correctiveInstruction(issue: FinalAnswerIssue): string {
   const base =
-    "Your previous response did not contain a final answer. Reply with the final answer as plain text only. Do not print tool calls or protocol syntax.";
+    "Your previous response did not contain a final answer. Reply with the final answer as plain text only, based on the evidence already available. Do not call tools, repeat actions, or print tool calls or protocol syntax.";
   return issue === "empty-answer"
     ? `Your previous response was empty. ${base} If the evidence is insufficient, state explicitly what is unknown.`
     : `${base} If the evidence is insufficient, state explicitly what is unknown rather than inventing facts, and do not claim a lookup succeeded without a result.`;

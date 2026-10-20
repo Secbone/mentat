@@ -1,0 +1,51 @@
+{
+  "protocol": "synthetic-procedure-grounding-v1",
+  "passed": true,
+  "cases": [
+    {
+      "variant": "complete",
+      "passed": true,
+      "updates": 2,
+      "costUsd": 0.00248616,
+      "turns": 2,
+      "nativeSessionIds": ["ses_eac4790f9ffe1utsKNR0eVK0UQ"],
+      "accountingStatus": "complete",
+      "capture": "matched-captured-fields",
+      "businessReceipts": 7,
+      "repeatedWrites": 0,
+      "resultSha256": "e79c9784e2fed14bd61fe7bd1ebe0c8949b7b650794b214fe88777a0c3a3c499"
+    },
+    {
+      "variant": "missing",
+      "passed": true,
+      "updates": 0,
+      "costUsd": 0.000900894,
+      "turns": 1,
+      "nativeSessionIds": ["ses_eac471d63ffewxTrTqCulUBTVx"],
+      "accountingStatus": "complete",
+      "capture": "matched-captured-fields",
+      "businessReceipts": 2,
+      "repeatedWrites": 0,
+      "resultSha256": "3bb8b291a70d605c55cec8230184d143b75dd481fc53f8edd945b25df2cd2b0a"
+    },
+    {
+      "variant": "stale",
+      "passed": true,
+      "updates": 2,
+      "costUsd": 0.002060508,
+      "turns": 2,
+      "nativeSessionIds": ["ses_eac46f753ffeZgz1ksCk6j4UKA"],
+      "accountingStatus": "complete",
+      "capture": "matched-captured-fields",
+      "businessReceipts": 7,
+      "repeatedWrites": 0,
+      "resultSha256": "edfb13a68c5943329d09ad10bc990fe7246529f02189b509f0c09081cb9ed14a"
+    }
+  ],
+  "limits": "Small independent synthetic integration check; no official benchmark score, RSI gain or general reliability claim.",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "promptVersion": "personal-assistant-v8",
+  "costUsd": 0.0054475619999999995,
+  "runDirectory": ".mentat/public-evaluations/procedure-grounding-20261019-v1",
+  "scriptSha256": "3751b0d9cb4ae4177cd382cb778b151f25e3d406db81b687427b0b42efeba872"
+}

@@ -76,3 +76,34 @@ it("bounds opt-in startup settling and reports it without pretending tools are r
     await session.dispose();
   }
 });
+
+it("requires every declared server catalog, not just memory readiness", async () => {
+  const root = mkdtempSync(join(tmpdir(), "mentat-all-ready-"));
+  const receiptPath = join(root, "memory.jsonl");
+  const adapter = createAcpAdapter({
+    binary: process.execPath,
+    baseArgs: [fileURLToPath(new URL("./__fixtures__/catalog-acp.mjs", import.meta.url))],
+    env: { CATALOG_PATH: receiptPath, CATALOG_TOKEN: "nonce", CATALOG_EMIT: "yes" },
+    startupReadiness: [
+      { receiptPath, token: "nonce", tools: ["memory_search"], timeoutMs: 300 },
+      {
+        receiptPath: join(root, "missing-environment.jsonl"),
+        token: "nonce",
+        tools: ["notes_list"],
+        timeoutMs: 100,
+      },
+    ],
+  });
+  const outgoing: string[] = [];
+  await expect(
+    adapter.createSession(
+      { cwd: root },
+      {
+        onProtocol: (r) => {
+          if (r.direction === "out") outgoing.push(String((r.data as { method?: string }).method));
+        },
+      },
+    ),
+  ).rejects.toThrow("catalog readiness timed out");
+  expect(outgoing).not.toContain("session/prompt");
+});

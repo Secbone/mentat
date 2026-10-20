@@ -3,8 +3,8 @@ export const USAGE = `mentat — a self-iterating agent framework
 Usage:
   mentat harness list
   mentat bench list|validate|run|external|import|report|compare|arms|history [options]
-  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--remember "<fact>"]... [--reflect] [--reflect-auto] [--experience <dir>] [--permission <ask|auto|full>]
-  mentat chat [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--experience <dir>] [--permission <ask|auto|full>]
+  mentat run "<prompt>" [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--skills <file>] [--remember "<fact>"]... [--reflect] [--reflect-auto] [--experience <dir>] [--permission <ask|auto|full>]
+  mentat chat [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--skills <file>] [--experience <dir>] [--permission <ask|auto|full>]
   mentat loop demo|memory
   mentat memory migrate [--memory <file>] [--snapshot <file>] [--audit <file>]
   mentat evolve memory --queries <file> (--facts <file> | --agent [--from-experience] [--experience <dir>] [--recent <n>]) [--model <id>] [--store <dir>] [--memory <file>] [--iterations <n>]
@@ -15,7 +15,8 @@ Usage:
   mentat help
 
 Options:
-  --harness <id>       harness adapter to use (default: fake)
+  --harness <id>       harness adapter: fake, pi, opencode, or configured acp (default: fake)
+  --skills <file>      enable scoped reusable procedures in a separate repository
   --model <id>         model id passed to the harness
   --cwd <path>         working directory (default: process.cwd())
   --permission <mode>  ask | auto | full (default: auto)

@@ -26,11 +26,17 @@
       "@mentat/memory-file": [
         "packages/memory-file/src/index.ts"
       ],
+      "@mentat/skills-file": [
+        "packages/skills-file/src/index.ts"
+      ],
       "@mentat/evaluation": [
         "packages/evaluation/src/index.ts"
       ],
       "@mentat/memory-mcp": [
         "packages/memory-mcp/src/index.ts"
+      ],
+      "@mentat/skills-mcp": [
+        "packages/skills-mcp/src/index.ts"
       ],
       "@mentat/assistant": [
         "packages/assistant/src/index.ts"
@@ -58,6 +64,9 @@
       ],
       "@mentat/models": [
         "packages/models/src/index.ts"
+      ],
+      "@mentat/skills": [
+        "packages/skills/src/index.ts"
       ],
       "@mentat/core": [
         "packages/core/src/index.ts"

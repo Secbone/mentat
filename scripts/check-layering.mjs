@@ -7,11 +7,15 @@ import { fileURLToPath } from "node:url";
 import ts from "typescript";
 
 export const ALLOWED_WORKSPACE_DEPS = {
+  "@mentat/skills": [],
+  "@mentat/skills-file": ["@mentat/skills"],
+  "@mentat/skills-mcp": ["@mentat/core", "@mentat/skills", "@mentat/skills-file"],
   "@mentat/core": [],
   "@mentat/benchmark": [],
   "@mentat/benchmark-file": ["@mentat/benchmark", "@mentat/evaluation"],
   "@mentat/session": ["@mentat/core"],
   "@mentat/host": [
+    "@mentat/skills-mcp",
     "@mentat/core",
     "@mentat/session",
     "@mentat/assistant",
@@ -68,6 +72,7 @@ const TEST_ONLY_DEPS = {
   "@mentat/memory-evolution": ["@mentat/kernel"],
 };
 const PURE_PACKAGES = new Set([
+  "@mentat/skills",
   "@mentat/benchmark",
   "@mentat/session",
   "@mentat/assistant",

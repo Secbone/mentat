@@ -5,7 +5,7 @@ import type { ExperienceRecord } from "@mentat/session";
 import { defaultExperienceDir, defaultMemoryPath } from "../lib/paths";
 import { createPermissionHandler, parsePermissionMode } from "../lib/permission";
 import { createDefaultRegistry } from "../lib/registry";
-import { printEvent } from "./run";
+import { printEvent, printResult } from "./run";
 
 export async function chatCommand(args: string[]): Promise<number> {
   let harnessId = "pi";
@@ -13,6 +13,7 @@ export async function chatCommand(args: string[]): Promise<number> {
   let cwd = process.cwd();
   let permission: PermissionMode = "full";
   let memoryPath: string | undefined;
+  let skillsPath: string | undefined;
   let experienceDir: string | undefined;
   let logDir: string | undefined;
   let timeoutMs = 120_000;
@@ -25,7 +26,13 @@ export async function chatCommand(args: string[]): Promise<number> {
     else if (arg === "--model") model = args[++i];
     else if (arg === "--cwd") cwd = args[++i] ?? cwd;
     else if (arg === "--memory") memoryPath = args[++i];
-    else if (arg === "--experience") experienceDir = args[++i];
+    else if (arg === "--skills") {
+      skillsPath = args[++i];
+      if (!skillsPath || skillsPath.startsWith("--")) {
+        process.stderr.write("--skills: missing repository path\n");
+        return 1;
+      }
+    } else if (arg === "--experience") experienceDir = args[++i];
     else if (arg === "--permission") permission = parsePermissionMode(args[++i]);
     else if (arg === "--yes" || arg === "-y") permission = "full";
   }
@@ -45,6 +52,7 @@ export async function chatCommand(args: string[]): Promise<number> {
       adapter: registry.get(harnessId),
       model,
       memoryPath,
+      ...(skillsPath ? { skillsPath } : {}),
       experienceDir,
       logDir,
       timeoutMs,
@@ -164,6 +172,7 @@ export async function chatCommand(args: string[]): Promise<number> {
           timeoutMs,
           onEvent: printEvent,
         });
+        printResult(result);
         lastOutcome = result.reason;
         interactions.push(record);
         if (result.error) process.stdout.write(`${result.error}\n`);

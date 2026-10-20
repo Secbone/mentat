@@ -43,6 +43,7 @@ import {
   type TaskInput,
   type TurnOptions,
 } from "@mentat/session";
+import { skillsMcpSpec } from "@mentat/skills-mcp";
 import {
   readRepoState,
   resolveHostPaths,
@@ -59,6 +60,8 @@ export interface HostConfig {
   reflectionAdapter?: HarnessAdapter;
   model?: string;
   memoryPath?: string;
+  /** Optional procedural repository, separate from user memory. */
+  skillsPath?: string;
   experienceDir?: string;
   logDir?: string;
   scope?: string;
@@ -72,9 +75,9 @@ export interface HostConfig {
   mcpServers?: McpServerSpec[];
   /** Must describe tools actually exposed and permitted by the selected harness. */
   memoryTools?: AssistantTools;
-  /** Reject empty answers and leaked tool protocol without simulating execution. */
+  /** Defaults to true. Disable explicitly for tasks that quote tool protocols. */
   requireFinalAnswer?: boolean;
-  /** Bounded corrective re-asks after an invalid final answer (requires requireFinalAnswer). */
+  /** Defaults to one; automatic correction is suppressed after any tool activity. */
   correctiveRetries?: number;
   /** Read-only setup probe; expectedOutput is never sent in a prompt. */
   startupToolProbe?: { toolName: string; expectedOutput: string; maxAttempts?: number };
@@ -89,8 +92,23 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
   const probe = config.startupToolProbe;
   validateStartupToolProbe(probe);
   const { memoryTools, registerMemory } = resolveMemoryTools(config);
-  validateServerNames(registerMemory, config.mcpServers);
   config = resolveHostPaths(config, overrides);
+  const skillsServer =
+    config.skillsPath && config.permissionMode !== "deny"
+      ? skillsMcpSpec(config.skillsPath, config.scope)
+      : undefined;
+  const skillPrefix =
+    config.adapter.capabilities().mcpToolNaming === "server-prefixed" ? "procedures_" : "";
+  if (skillsServer)
+    memoryTools.procedures = {
+      listName: `${skillPrefix}skills_list`,
+      viewName: `${skillPrefix}skill_view`,
+      saveName: `${skillPrefix}skill_save`,
+    };
+  validateServerNames(registerMemory, [
+    ...(skillsServer ? [skillsServer] : []),
+    ...(config.mcpServers ?? []),
+  ]);
   const traceId = randomUUID();
   const diagnostic =
     overrides.onDiagnostic ??
@@ -202,10 +220,8 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
       : {}),
   };
   const execution = (options: TurnOptions = {}): TurnOptions => ({
-    ...(config.requireFinalAnswer ? { requireFinalAnswer: true } : {}),
-    ...(config.correctiveRetries !== undefined
-      ? { correctiveRetries: config.correctiveRetries }
-      : {}),
+    requireFinalAnswer: config.requireFinalAnswer ?? true,
+    correctiveRetries: config.correctiveRetries ?? 1,
     ...options,
     tracer,
     onDiagnostic: diagnostic,
@@ -260,7 +276,7 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
             cwd: config.cwd,
             ...(config.model ? { model: config.model } : {}),
             ...assistantPromptOptions(config.adapter, memoryTools),
-            ...(registerMemory || config.mcpServers?.length
+            ...(registerMemory || skillsServer || config.mcpServers?.length
               ? {
                   mcpServers: [
                     ...(config.memoryPath && registerMemory
@@ -274,6 +290,7 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
                         ]
                       : []),
                     ...(config.mcpServers ?? []),
+                    ...(skillsServer ? [skillsServer] : []),
                   ],
                 }
               : {}),

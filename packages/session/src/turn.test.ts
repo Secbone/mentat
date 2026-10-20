@@ -218,3 +218,99 @@ describe("turn execution contract", () => {
     expect(tracer.find("turn.end")).toHaveLength(1);
   });
 });
+
+describe("bounded recovery safety", () => {
+  it("waits for the previous send to finish before correction", async () => {
+    let calls = 0;
+    let busy = false;
+    const session = handle(async (listener) => {
+      if (busy) throw Error("transport busy");
+      busy = true;
+      calls++;
+      listener({
+        type: "message.completed",
+        sessionId: "s",
+        message: { role: "assistant", text: calls === 1 ? "" : "recovered" },
+      });
+      listener({ type: "run.settled", sessionId: "s", reason: "done" });
+      await new Promise((resolve) => setTimeout(resolve, 5));
+      busy = false;
+    });
+    expect(
+      await runTurn(session, { text: "task" }, { requireFinalAnswer: true, correctiveRetries: 1 }),
+    ).toMatchObject({ reason: "done", text: "recovered", correctiveTurns: 1 });
+  });
+
+  it("never retries an invalid answer after a tool, including a failed tool", async () => {
+    for (const isError of [false, true]) {
+      const tracer = new MemoryTracer();
+      const send = vi.fn(async (listener: AgentEventListener) => {
+        listener({ type: "tool.start", sessionId: "s", id: "write", name: "share", input: {} });
+        listener({
+          type: "tool.result",
+          sessionId: "s",
+          id: "write",
+          output: "unknown outcome",
+          isError,
+        });
+        listener({ type: "run.settled", sessionId: "s", reason: "done" });
+      });
+      const result = await runTurn(
+        handle(send),
+        { text: "share" },
+        { requireFinalAnswer: true, correctiveRetries: 1, tracer },
+      );
+      expect(result.reason).toBe("error");
+      expect(result.correctiveTurns).toBeUndefined();
+      expect(send).toHaveBeenCalledOnce();
+      expect(tracer.find("output.invalid")[0]?.data).toMatchObject({
+        correctionSuppressed: "tool-activity",
+      });
+    }
+  });
+
+  it("rejects an unfinished tool even with a plausible final answer", async () => {
+    const session = handle(async (listener) => {
+      listener({ type: "tool.start", sessionId: "s", id: "write", name: "share", input: {} });
+      listener({
+        type: "message.completed",
+        sessionId: "s",
+        message: { role: "assistant", text: "Shared." },
+      });
+      listener({ type: "run.settled", sessionId: "s", reason: "done" });
+    });
+    expect(await runTurn(session, { text: "share" })).toMatchObject({
+      reason: "error",
+      error: "run ended with unfinished tool calls",
+    });
+    expect(session.interrupt).toHaveBeenCalledOnce();
+    await expect(runTurn(session, { text: "again" })).rejects.toThrow("unusable");
+  });
+
+  it("keeps correction within the original timeout and does not send a queued retry after expiry", async () => {
+    const send = vi.fn(async (listener: AgentEventListener) => {
+      listener({ type: "run.settled", sessionId: "s", reason: "done" });
+      await new Promise((resolve) => setTimeout(resolve, 40));
+    });
+    const session = handle(send);
+    const result = await runTurn(
+      session,
+      { text: "task" },
+      { requireFinalAnswer: true, correctiveRetries: 1, timeoutMs: 10 },
+    );
+    expect(result.error).toBe("turn timed out");
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(send).toHaveBeenCalledOnce();
+  });
+
+  it.each([-1, 0.5, Infinity, NaN])(
+    "rejects invalid correction budget %s without dispatch",
+    async (correctiveRetries) => {
+      const send = vi.fn(async () => {});
+      await expect(runTurn(handle(send), { text: "task" }, { correctiveRetries })).rejects.toThrow(
+        "retry budget",
+      );
+      expect(send).not.toHaveBeenCalled();
+    },
+  );
+});

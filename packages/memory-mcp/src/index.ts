@@ -10,6 +10,7 @@ export function memoryMcpSpec(
 ): McpServerSpec {
   return {
     name: "memory",
+    catalogTools: options?.readOnly ? ["memory_search"] : ["memory_search", "memory_add"],
     command: process.execPath,
     args: [fileURLToPath(new URL("./loader.mjs", import.meta.url))],
     env: {

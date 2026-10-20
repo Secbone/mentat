@@ -26,7 +26,7 @@ export interface TurnResult {
 }
 export interface TurnOptions {
   requireFinalAnswer?: boolean;
-  /** Bounded corrective re-asks when the final answer is empty or leaked protocol. */
+  /** Bounded corrective re-asks before any tool activity; never replay tool-bearing runs. */
   correctiveRetries?: number;
   timeoutMs?: number;
   cleanupTimeoutMs?: number;
@@ -68,6 +68,9 @@ export async function runTurn(
   if (unusable.has(session)) throw new Error("session is unusable after cancellation or timeout");
   const timeoutMs = options.timeoutMs ?? 120_000;
   if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) throw new RangeError("invalid turn timeout");
+  const maxCorrective = options.correctiveRetries ?? 0;
+  if (!Number.isSafeInteger(maxCorrective) || maxCorrective < 0)
+    throw new RangeError("invalid corrective retry budget");
   running.add(session);
   const turnId = options.turnId ?? crypto.randomUUID();
   const started = Date.now();
@@ -75,7 +78,9 @@ export async function runTurn(
   let text = "";
   let usage: Usage | undefined;
   let corrective = 0;
-  const maxCorrective = Math.max(0, options.correctiveRetries ?? 0);
+  let hadToolActivity = false;
+  const pendingTools = new Set<string>();
+  let sending = Promise.resolve();
   let timer: ReturnType<typeof setTimeout> | undefined;
   let unsubscribe = () => {};
   let complete = false;
@@ -132,6 +137,17 @@ export async function runTurn(
     unusable.add(session);
     finish("aborted", "turn cancelled");
   };
+  // A terminal event can arrive before send() releases its transport lock.
+  // Chain corrections after that promise, within the original turn deadline.
+  const send = (next: UserInput) => {
+    sending = sending.then(async () => {
+      if (!complete) await session.send(next);
+    });
+    void sending.catch((error) => {
+      unusable.add(session);
+      finish("error", String(error));
+    });
+  };
   try {
     trace("turn.start", { input: input as unknown as import("@mentat/core").JsonValue });
     unsubscribe = session.subscribe((event) => {
@@ -140,23 +156,35 @@ export async function runTurn(
         trace("invariant.violation", { code: "SESSION_MISMATCH", eventSessionId: event.sessionId });
         return;
       }
+      if (event.type === "tool.start" || event.type === "tool.update") {
+        hadToolActivity = true;
+        pendingTools.add(event.id);
+      }
+      if (event.type === "tool.result") {
+        hadToolActivity = true;
+        pendingTools.delete(event.id);
+      }
+      if (event.type === "run.settled" && event.reason === "done" && pendingTools.size) {
+        trace("output.incomplete", { pendingToolIds: [...pendingTools] });
+        unusable.add(session);
+        event = { ...event, reason: "error", error: "run ended with unfinished tool calls" };
+      }
       if (event.type === "run.settled" && event.reason === "done" && options.requireFinalAnswer) {
         const issue = finalAnswerIssue(text);
         if (issue) {
-          if (corrective < maxCorrective) {
+          if (corrective < maxCorrective && !hadToolActivity) {
             corrective += 1;
             trace("output.corrective", { issue, attempt: corrective, maxCorrective });
             text = "";
             const retry: UserInput = { text: correctiveInstruction(issue) };
-            void Promise.resolve()
-              .then(() => session.send(retry))
-              .catch((error) => {
-                unusable.add(session);
-                finish("error", String(error));
-              });
+            send(retry);
             return;
           }
-          trace("output.invalid", { issue, transportReason: event.reason });
+          trace("output.invalid", {
+            issue,
+            transportReason: event.reason,
+            correctionSuppressed: hadToolActivity ? "tool-activity" : "budget-exhausted",
+          });
           event = { ...event, reason: "error", error: `invalid final answer: ${issue}` };
         }
       }
@@ -177,15 +205,7 @@ export async function runTurn(
       finish("error", "turn timed out");
     }, timeoutMs);
     if (options.signal?.aborted) abort();
-    else
-      void Promise.resolve()
-        .then(() => {
-          if (!complete) return session.send(input);
-        })
-        .catch((error) => {
-          unusable.add(session);
-          finish("error", String(error));
-        });
+    else send(input);
     return await result;
   } catch (error) {
     unusable.add(session);

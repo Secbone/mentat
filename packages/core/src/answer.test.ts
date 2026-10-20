@@ -8,6 +8,10 @@ describe("finalAnswerIssue", () => {
       "tool-protocol-text",
     );
     expect(finalAnswerIssue("the build takes 3 minutes")).toBeUndefined();
+    expect(finalAnswerIssue('<tool_call> {"name":"lookup","arguments":{}} </tool_call>')).toBe(
+      "tool-protocol-text",
+    );
+    expect(finalAnswerIssue("The <tool_call> element identifies a call.")).toBeUndefined();
     // Documentation that merely mentions the token outside a call is not flagged.
     expect(finalAnswerIssue("the DSML tool syntax is documented here")).toBeUndefined();
   });

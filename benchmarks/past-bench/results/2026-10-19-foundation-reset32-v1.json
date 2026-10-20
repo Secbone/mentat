@@ -1,0 +1,606 @@
+{
+  "protocol": "matched-reset32-foundation-comparison-v1",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "baselineProtocol": "past-native-rsi-diagnostic-v2",
+  "newProtocol": "past-foundation-diagnostic-v1",
+  "before": {
+    "planned": 32,
+    "scored": 32,
+    "budgetTimeouts": 0,
+    "allTaskMean100": 24.357187500000002,
+    "evaluationPlanned": 8,
+    "evaluationMean100": 22.720000000000002,
+    "coveredCapabilityEvaluationMacro100": 22.720000000000002,
+    "evaluationFamilies100": {
+      "memory_ability/SM01_preference_adoption": 20.0,
+      "memory_ability/SM02_constraint_retention": 20.0,
+      "procedural_ability/PC03_latent_rule_induction_01": 25.44,
+      "procedural_ability/PC04_failure_to_rule_01": 25.44
+    },
+    "coveredCapabilities100": {
+      "memory_ability": 20.0,
+      "procedural_ability": 25.44
+    },
+    "validFinalAnswers": 16,
+    "evaluationValidFinalAnswers": 4,
+    "strictPasses": 0,
+    "evaluationStrictPasses": 0,
+    "episodesWithEnvironmentDispatch": 3,
+    "evaluationEpisodesWithEnvironmentDispatch": 0,
+    "environmentDispatches": 43,
+    "costUsdScored": 0.03906222,
+    "costUsdAllAttempts": 0.03906222,
+    "cases": [
+      {
+        "taskId": "SM01_COLD_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_LEARN_A_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "SM01_LEARN_B_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_EVAL_NEAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_EVAL_FAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "SM01_CONTROL_002",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 73.33,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_CONTROL_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_CONTROL_003",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "SM02_COLD_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_LEARN_A_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 26.669999999999998,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "SM02_LEARN_B_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_NEAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_FAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_CONTROL_002",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 26.669999999999998,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_CONTROL_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_CONTROL_003",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I01",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 40.400000000000006,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I02",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F05_I03",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 43.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I04",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 25.44,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F05_I05",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 25.44,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F05_C01",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F05_C02",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F07_I01",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F07_I02",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 23.400000000000002,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F07_I03",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "reflection",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F07_I03b",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 23.400000000000002,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I04",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 25.44,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I05",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 25.44,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F07_C01",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F07_C02",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F07_C03",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 20.0,
+        "validFinalAnswer": false
+      }
+    ]
+  },
+  "after": {
+    "planned": 32,
+    "scored": 31,
+    "budgetTimeouts": 1,
+    "allTaskMean100": 59.8771875,
+    "evaluationPlanned": 8,
+    "evaluationMean100": 45.324999999999996,
+    "coveredCapabilityEvaluationMacro100": 45.324999999999996,
+    "evaluationFamilies100": {
+      "memory_ability/SM01_preference_adoption": 60.0,
+      "memory_ability/SM02_constraint_retention": 76.0,
+      "procedural_ability/PC03_latent_rule_induction_01": 18.5,
+      "procedural_ability/PC04_failure_to_rule_01": 26.8
+    },
+    "coveredCapabilities100": {
+      "memory_ability": 68.0,
+      "procedural_ability": 22.650000000000002
+    },
+    "validFinalAnswers": 31,
+    "evaluationValidFinalAnswers": 7,
+    "strictPasses": 1,
+    "evaluationStrictPasses": 0,
+    "episodesWithEnvironmentDispatch": 32,
+    "evaluationEpisodesWithEnvironmentDispatch": 8,
+    "environmentDispatches": 258,
+    "costUsdScored": 0.08782066799999999,
+    "costUsdAllAttempts": 0.08960228399999999,
+    "cases": [
+      {
+        "taskId": "SM01_COLD_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 60.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_LEARN_A_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 88.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_LEARN_B_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 60.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_EVAL_NEAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 60.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_EVAL_FAR_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 60.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_CONTROL_002",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 86.67,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_CONTROL_001",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 80.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM01_CONTROL_003",
+        "family": "memory_ability/SM01_preference_adoption",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 60.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_COLD_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 69.33,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_LEARN_A_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 100.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_LEARN_B_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 76.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_NEAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 76.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_EVAL_FAR_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 76.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_CONTROL_002",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 100.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_CONTROL_001",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 88.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "SM02_CONTROL_003",
+        "family": "memory_ability/SM02_constraint_retention",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 76.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I01",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 43.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I02",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 43.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I03",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 43.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_I04",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "error",
+        "score100": 0.0,
+        "validFinalAnswer": false
+      },
+      {
+        "taskId": "V2_F05_I05",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 37.0,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_C01",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 67.60000000000001,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F05_C02",
+        "family": "procedural_ability/PC03_latent_rule_induction_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 43.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I01",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "baseline",
+        "status": "completed",
+        "score100": 64.2,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I02",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 76.67,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I03",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "reflection",
+        "status": "completed",
+        "score100": 43.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I03b",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "learn",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I04",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_I05",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "evaluation",
+        "status": "completed",
+        "score100": 26.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_C01",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 43.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_C02",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 43.8,
+        "validFinalAnswer": true
+      },
+      {
+        "taskId": "V2_F07_C03",
+        "family": "procedural_ability/PC04_failure_to_rule_01",
+        "bucket": "control",
+        "status": "completed",
+        "score100": 67.60000000000001,
+        "validFinalAnswer": true
+      }
+    ]
+  },
+  "limits": [
+    "Adapted subset: 4 families across 2 capabilities, not complete official PAST Overall",
+    "One repetition per task; no statistical confidence interval",
+    "Missing judge in both arms; no score inflation by filling judge points",
+    "All 32 planned tasks and 8 evaluation tasks retained; budget failures score zero",
+    "Fixed model, task prompts, schemas, grader and budgets; framework/tool capabilities differ",
+    "Task score and strict pass are separate; this does not establish RSI"
+  ],
+  "deltaAllMean100": 35.519999999999996,
+  "deltaEvaluationMacro100": 22.604999999999993,
+  "audit": {
+    "status": "passed",
+    "scoredTrials": 31,
+    "unscoredTrials": [
+      {
+        "taskId": "V2_F05_I04",
+        "arm": "reset",
+        "reason": "unfinished subject: error: turn timed out"
+      }
+    ],
+    "changedAnalysisFiles": [],
+    "preDispatchFailures": [],
+    "nativeSessions": 32,
+    "environmentDispatchReceipts": 258,
+    "protocolFrames": 3779,
+    "issues": [],
+    "coverage": "Frozen file hashes, allowlisted controller fields and tools, native tool calls versus real upstream dispatch receipts, effective model, fresh engine sessions, accounting completeness, empty reset memory/procedures and real skill writes/reads. Not OS isolation or training contamination proof."
+  }
+}

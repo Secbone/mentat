@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // MCP-to-upstream task tools. Only a controller-owned Unix socket is reachable.
-import { readFileSync } from "node:fs";
+import { appendFileSync, readFileSync } from "node:fs";
 import { request } from "node:http";
 import { isAbsolute } from "node:path";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -94,7 +94,19 @@ function dispatch(name, args) {
   );
   return pending;
 }
-server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  if (process.env.MENTAT_MCP_READY_FILE && process.env.MENTAT_MCP_READY_TOKEN)
+    appendFileSync(
+      process.env.MENTAT_MCP_READY_FILE,
+      `${JSON.stringify({
+        event: "tools/list-sent",
+        token: process.env.MENTAT_MCP_READY_TOKEN,
+        tools: tools.map((tool) => tool.name),
+        pid: process.pid,
+      })}\n`,
+    );
+  return { tools };
+});
 server.setRequestHandler(CallToolRequestSchema, async ({ params }) => {
   if (!names.has(params.name))
     return {
