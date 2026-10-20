@@ -14,6 +14,7 @@ export async function runCommand(args: string[]): Promise<number> {
   let memoryPath: string | undefined;
   let skillsPath: string | undefined;
   let experienceDir: string | undefined;
+  let recallChars: number | undefined;
   const remember: RememberInput[] = [];
   let reflect = false;
   let reflectAuto = false;
@@ -54,6 +55,14 @@ export async function runCommand(args: string[]): Promise<number> {
     }
     if (arg === "--memory") {
       memoryPath = args[++i] ?? memoryPath;
+      continue;
+    }
+    if (arg === "--recall-chars") {
+      recallChars = Number(args[++i]);
+      if (!Number.isSafeInteger(recallChars) || recallChars < 0) {
+        process.stderr.write("--recall-chars: expected a nonnegative integer\n");
+        return 1;
+      }
       continue;
     }
     if (arg === "--experience") {
@@ -131,6 +140,7 @@ export async function runCommand(args: string[]): Promise<number> {
       memoryPath,
       ...(skillsPath ? { skillsPath } : {}),
       experienceDir,
+      ...(recallChars !== undefined ? { nativeHistory: { maxChars: recallChars } } : {}),
       logDir,
       timeoutMs,
       permissionMode: permission,

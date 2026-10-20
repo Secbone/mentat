@@ -28,6 +28,8 @@ export interface MessageEvidence {
 
 /** One finished task's trajectory summary; the fuel for offline evolution. */
 export interface ExperienceRecord {
+  /** Host-owned user/project boundary for native interaction recall. */
+  scope?: string;
   id: string;
   /** Imported observations preserve their date/roles; they are not verified task outcomes. */
   imported?: { source: string; sessionId: string; timestampKnown?: boolean; order?: number };
@@ -71,6 +73,7 @@ export function sessionEvidence(sessionId: string): string {
 }
 
 export interface ExperienceBase {
+  scope?: string;
   prompt: string;
   input?: TaskInput;
   cwd: string;
@@ -88,6 +91,7 @@ export class SessionRecorder {
       ts: Date.now(),
       prompt: base.prompt,
       cwd: base.cwd,
+      ...(base.scope !== undefined ? { scope: base.scope } : {}),
       harness: base.harness,
       ...(base.model ? { model: base.model } : {}),
       outcome: "error",

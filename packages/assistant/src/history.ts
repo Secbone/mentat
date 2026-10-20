@@ -101,7 +101,7 @@ export function historicalExperience(session: HistoricalSession, cwd: string): E
 export function historicalContext(
   records: ExperienceRecord[],
   query: string,
-  options: { maxChars: number; before?: number },
+  options: { maxChars: number; before?: number; wholeMessages?: boolean },
 ) {
   if (!Number.isSafeInteger(options.maxChars) || options.maxChars < 0)
     throw new RangeError("invalid historical context budget");
@@ -134,8 +134,12 @@ export function historicalContext(
       continue;
     eligibleSessions++;
     for (const [messageIndex, message] of (record.messages ?? []).entries()) {
-      for (let offset = 0; offset < message.text.length; offset += 1000) {
-        const content = message.text.slice(offset, offset + 1200);
+      const stride = options.wholeMessages ? Math.max(1, message.text.length) : 1000;
+      for (let offset = 0; offset < message.text.length; offset += stride) {
+        const content = message.text.slice(
+          offset,
+          options.wholeMessages ? undefined : offset + 1200,
+        );
         const id = `${record.id}#msg${messageIndex}:${offset}`;
         const text = JSON.stringify({
           source: record.imported.source,
@@ -143,6 +147,13 @@ export function historicalContext(
           date: record.imported.timestampKnown === false ? null : new Date(record.ts).toISOString(),
           ...(record.imported.order !== undefined ? { order: record.imported.order } : {}),
           role: message.role,
+          ...(options.wholeMessages
+            ? {
+                sourceMemoryScope: message.fragments?.[0]?.memoryScope ?? "unspecified",
+                engineOutcome: record.outcome,
+                ...(record.scope !== undefined ? { scope: record.scope } : {}),
+              }
+            : {}),
           pointer: id,
           content,
         });
@@ -228,6 +239,8 @@ export function historicalContext(
     omittedChunks: matchingChunks - selected.filter((p) => p.score > 0).length,
     chars,
     selectedSessions: bySession.size,
-    strategy: "bm25-session-diversity-neighbors-v1",
+    strategy: options.wholeMessages
+      ? "bm25-atomic-messages-v1"
+      : "bm25-session-diversity-neighbors-v1",
   };
 }

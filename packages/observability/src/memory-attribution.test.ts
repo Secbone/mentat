@@ -19,6 +19,7 @@ describe("memoryAttribution", () => {
     store.emit("memory.write", { request: {}, result: { op: "dedup" } });
     store.emit("reflection.end", { status: "ok", added: 1, merged: 0, skipped: 2, rejected: 0 });
     store.emit("history.selection", { matchingChunks: 5, selectedIds: ["x", "y"] });
+    store.emit("experience.selection", { selectedIds: ["native-user"] });
     await store.close();
 
     const attr = memoryAttribution(store.dir);
@@ -31,6 +32,8 @@ describe("memoryAttribution", () => {
     expect(attr.reflections).toBe(1);
     expect(attr.reflectionApplied.added).toBe(1);
     expect(attr.historySelections).toBe(1);
+    expect(attr.nativeSelections).toBe(1);
+    expect(attr.nativeRetrievedEntries).toBe(1);
     expect(attr.historyMatchedChunks).toBe(5);
     expect(attr.historyRetrievedEntries).toBe(2);
     rmSync(root, { recursive: true, force: true });

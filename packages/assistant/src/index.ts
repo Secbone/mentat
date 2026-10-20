@@ -1,5 +1,6 @@
 export * from "./assembly";
 export * from "./history";
+export * from "./native-history";
 export * from "./prompt";
 export * from "./reflect";
 export * from "./reflection";

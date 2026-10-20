@@ -15,6 +15,7 @@ export async function chatCommand(args: string[]): Promise<number> {
   let memoryPath: string | undefined;
   let skillsPath: string | undefined;
   let experienceDir: string | undefined;
+  let recallChars: number | undefined;
   let logDir: string | undefined;
   let timeoutMs = 120_000;
 
@@ -30,6 +31,12 @@ export async function chatCommand(args: string[]): Promise<number> {
       skillsPath = args[++i];
       if (!skillsPath || skillsPath.startsWith("--")) {
         process.stderr.write("--skills: missing repository path\n");
+        return 1;
+      }
+    } else if (arg === "--recall-chars") {
+      recallChars = Number(args[++i]);
+      if (!Number.isSafeInteger(recallChars) || recallChars < 0) {
+        process.stderr.write("--recall-chars: expected a nonnegative integer\n");
         return 1;
       }
     } else if (arg === "--experience") experienceDir = args[++i];
@@ -54,6 +61,7 @@ export async function chatCommand(args: string[]): Promise<number> {
       memoryPath,
       ...(skillsPath ? { skillsPath } : {}),
       experienceDir,
+      ...(recallChars !== undefined ? { nativeHistory: { maxChars: recallChars } } : {}),
       logDir,
       timeoutMs,
       permissionMode: permission,

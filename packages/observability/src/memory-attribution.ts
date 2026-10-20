@@ -25,6 +25,9 @@ export interface MemoryAttribution {
   reflectionApplied: Record<string, number>;
   /** Imported-history retrieval selections (LongMemEval-style ingestion). */
   historySelections: number;
+  /** Native experience recall, separate from imported historical data. */
+  nativeSelections: number;
+  nativeRetrievedEntries: number;
   /** Query chunks with a positive score (candidate evidence). */
   historyMatchedChunks: number;
   /** Reference pieces actually placed in the injected context. */
@@ -42,6 +45,8 @@ const zero = (): MemoryAttribution => ({
   reflections: 0,
   reflectionApplied: {},
   historySelections: 0,
+  nativeSelections: 0,
+  nativeRetrievedEntries: 0,
   historyMatchedChunks: 0,
   historyRetrievedEntries: 0,
 });
@@ -78,6 +83,10 @@ export function memoryAttribution(dir: string): MemoryAttribution {
         out.reflections += 1;
         for (const key of ["added", "merged", "skipped", "rejected"])
           if (typeof data[key] === "number") out.reflectionApplied[key] = data[key] as number;
+        break;
+      case "experience.selection":
+        out.nativeSelections += 1;
+        out.nativeRetrievedEntries += Array.isArray(data.selectedIds) ? data.selectedIds.length : 0;
         break;
       case "history.selection":
         out.historySelections += 1;
