@@ -9,7 +9,7 @@ Usage:
   mentat memory migrate [--memory <file>] [--snapshot <file>] [--audit <file>]
   mentat evolve memory --queries <file> (--facts <file> | --agent [--from-experience] [--experience <dir>] [--recent <n>]) [--model <id>] [--store <dir>] [--memory <file>] [--iterations <n>]
   mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
-  mentat trace [<run-dir>] [--raw|--all|--tree|--follow|--summary|--check|--errors|--context|--memory] [--tool <id>]
+  mentat trace [<run-dir>] [--raw|--all|--tree|--follow|--summary|--check|--errors|--context|--memory|--recall] [--tool <id>] [--turn <id>]
   mentat trace compare <before-dir> <after-dir>
   mentat trace feedback <run-dir> --turn <id> [--score <0..1>] [--correction "<text>"]
   mentat help

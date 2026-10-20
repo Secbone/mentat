@@ -4,6 +4,7 @@ import {
   inspectTrajectory,
   memoryAttribution,
   readTrajectory,
+  recallAttribution,
   resolveEventData,
 } from "@mentat/observability";
 
@@ -52,5 +53,6 @@ export function benchmarkObservations(dir: string | undefined) {
     costUsd,
     trajectory: dir ? inspectTrajectory(dir) : null,
     memory: dir ? memoryAttribution(dir) : null,
+    recall: dir ? recallAttribution(dir) : null,
   };
 }

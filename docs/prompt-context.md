@@ -2,7 +2,35 @@
 
 # Prompt 与上下文管理
 
-`@mentat/assistant` 管理个人助理策略与每轮记忆快照，harness 负责模型调用、工具循环和会话历史。策略位于 `packages/assistant/src/prompt.ts`，当前版本为 `personal-assistant-v3`。修改行为规则时升级版本，并复测既有约束案例。
+`@mentat/assistant` 管理个人助理策略与每轮记忆快照，harness 负责模型调用、工具循环和会话历史。策略位于 `packages/assistant/src/prompt.ts`，当前版本为 `personal-assistant-v11`。修改行为规则时升级版本，并复测既有约束案例。下文带日期的实验记录保留各自版本的历史事实。
+
+## 当前上下文与通用性边界（2026-10-20）
+
+通用 system prompt 提供来源与作用域、当前授权、证据核验、工具执行、经验学习和结果报告原则，不提供特定任务族的业务规则。工具目录来自当前环境；业务规则来自当前用户请求、适用来源或真实交互形成的有证据技能。v11 将会议分享中的角色/权限提示、特定分类字段提示和日期场景提示收敛为通用的目标/授权边界、精确参数和来源时间原则，没有把旧场景提示迁到评测专用 prompt。
+
+每轮输入由用户原文、可选宿主运行政策、引用材料及有效记忆快照组成。引用材料可以包含导入历史，以及显式开启的 `HostConfig.nativeHistory: { maxChars: 8000 }` 原生历史召回；CLI 对应 `--recall-chars 8000`，默认关闭。原生历史按 scope 隔离（未指定时仅同 cwd 的无 scope 历史），用户消息只取原始 user fragments，保留助手角色、时间和消息指针，排除宿主策略、引用材料和递归历史；每条消息完整选入或省略，不将候选自动激活。原生召回预算与默认 6,000 字符的有效记忆快照预算分别计算，并非整个模型上下文的统一上限。
+
+技能通过实际工具查找、读取后进入交互；宿主不会预先填入已知标准流程。OpenCode 专用 adapter 把策略交给原生 `agent.system` 替换默认主代理提示，工具与权限仍由 harness 执行；通用 ACP 的 task-context 能力边界见下文。`prompt.assembled`、`experience.selection` 和原生协议用于核验实际传递内容。
+
+PAST 适配器仅负责原题、原工具和运行限制，不向通用策略添加解题指导。此前 v6 用语义化 family 名作为 scope，且 cwd 包含 family 路径，可能向引擎暴露测试分类。新 v7 在控制端为每个 family 随机分配不透明 scope（同一运行内稳定、跨 family 不共享），使用每个 episode 独立的随机 OS 临时工作目录。审计核对 namespace 映射、存储 scope 和原生 `session/new` 的实际 cwd。原始题目与工具描述本身仍保留，不清洗题目或业务 ID。此隔离不是 OS 文件/网络沙箱。
+
+v10 的 70.295 保留为此前固定开发题结果，不沿用为 v11 成绩。清理后的能力表现需新协议复测，再在多领域、未用于调试的任务上验证通用性。
+
+## 召回证据与归因
+
+`@mentat/observability` 的 `recallAttribution(dir, { turnId? })` 输出独立的 v1 证据报告。`memoryAttribution` 为兼容保留旧的选择/API 调用计数，其中 `injections` 是 `context.selection` 次数，不证明非空内容实际进入模型；新的投影和诊断读取 `recall`，不能将两者相加。
+
+宿主记录 `recall.start / selection / error / blocked`。选择元数据包含来源种类、原始条目/消息指针、可获得的 scope、角色、生效状态、版本、复用范围、原文摘要哈希及预算遗漏。用户角色不等于已确认偏好，候选保持候选；缺少版本或遗漏 ID 时保留未知。哈希针对日志可见的脱敏表示，不证明未捕获的原始字节。该元数据不加入模型输入。
+
+报告按有效记忆快照（`memory`）、原生历史、导入历史、完整技能读取和技能目录分别归类。自动召回要依次核对选择哈希、`prompt.assembled` 对应区块、实际 turn 输入，以及同一连接中捕获的 ACP `session/prompt` 请求；Host 为协议记录绑定 connectionId，避免将别的会话当成本次发送。仅有宿主输入时标记 `host-input-only`，不计为捕获到的注入。空选择、读取失败、未完成、不可解析/部分结果和预算阻断分别统计。
+
+显式工具读取以 `tool.result` 成功完成为准。空搜索仍可算成功调用，但不能算命中；失败、仅开始或部分输出不算有效命中。候选条目的状态和技能版本保留在来源中；`skills_list` 返回的目录元数据不等于读过完整技能。
+
+调用方可通过观察专用的 `HostConfig.actionEffects` 声明工具的 `read / write / unknown` 语义，例如 `{ update_record: "write", get_record: "read" }`。这份声明不进入 prompt，不授予权限；通用核心不根据名字猜测工具效果。归因检查证据可用事件是否早于实际声明的写操作开始；没有写操作、缺少传输记录或存在更早的未知操作时，时序可能为 `null`。声明本身和真实业务效果仍应由具体接入方核对。
+
+使用 `pnpm dev trace <run-dir> --recall [--turn <turn-id>]` 查看报告；benchmark observations 同时输出 `recall`。旧轨迹缺少该证据时标为 unavailable，不从旧计数补造发送或检索调用。日志证明的是可观测的证据提供和顺序，不能证明模型注意、语义理解或因果收益；业务正确性与保留/移除经验对照仍需独立评估。
+
+PAST 的 v8 适配器在结果中单列 `recallAttribution`，并独立核对来源 ID、内容哈希、原生请求、读取结果和写入时序。原生/导入历史不重命名为 `memory_search` 或有效 memory 文件，技能目录不算完整读取，不自动确认候选，不覆盖原始评分。原有 memory 调用投影改为只计成功 search/add，排除失败调用和 readiness 探针；该修正通过新协议记录，不追溯改写旧成绩。
 
 个人助理反思与显式确认也归assistant；记忆规则归memory，文件与审计归memory-file，经验轨迹归observability，MCP服务归memory-mcp。CLI只装配这些公开接口。
 

@@ -28,9 +28,12 @@ import { createMemoryAccess, type MemoryAccess } from "@mentat/memory";
 import { FileMemoryRepository } from "@mentat/memory-file";
 import { memoryMcpSpec } from "@mentat/memory-mcp";
 import {
+  type ActionEffect,
   ExperienceStore,
   FileTrajectoryStore,
   projectExperience,
+  type RecallKind,
+  recallSelection,
   redact,
 } from "@mentat/observability";
 import {
@@ -78,6 +81,8 @@ export interface HostConfig {
   mcpServers?: McpServerSpec[];
   /** Must describe tools actually exposed and permitted by the selected harness. */
   memoryTools?: AssistantTools;
+  /** Observation-only action semantics; never inserted into the model prompt. Missing effects remain unknown. */
+  actionEffects?: Record<string, ActionEffect>;
   /** Defaults to true. Disable explicitly for tasks that quote tool protocols. */
   requireFinalAnswer?: boolean;
   /** Defaults to one; automatic correction is suppressed after any tool activity. */
@@ -221,6 +226,25 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
     harness: config.adapter.id,
     capabilities: config.adapter.capabilities(),
   });
+  emit("recall.policy", {
+    schemaVersion: 1,
+    reads: {
+      ...(memoryTools.memory !== "disabled"
+        ? { [memoryTools.searchName ?? "memory_search"]: "memory" }
+        : {}),
+      ...(memoryTools.procedures
+        ? {
+            [memoryTools.procedures.listName]: "procedure-catalog",
+            [memoryTools.procedures.viewName]: "procedure",
+          }
+        : {}),
+    },
+    internalTools: [
+      ...(memoryTools.memory === "read-write" ? [memoryTools.addName ?? "memory_add"] : []),
+      ...(memoryTools.procedures?.saveName ? [memoryTools.procedures.saveName] : []),
+    ],
+    actionEffects: config.actionEffects ?? {},
+  });
   const adapterDeps = {
     onDiagnostic: (record: { code: string; message: string }) => emit("adapter.diagnostic", record),
     ...(config.protocolLog
@@ -306,7 +330,16 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
                 }
               : {}),
           },
-          { ...adapterDeps, onPermission: config.permission },
+          {
+            ...adapterDeps,
+            ...(config.protocolLog
+              ? {
+                  onProtocol: (record: { direction: "in" | "out"; data: unknown }) =>
+                    emit("adapter.protocol", { ...record, connectionId: sessionSpan }),
+                }
+              : {}),
+            onPermission: config.permission,
+          },
           { timeoutMs: config.timeoutMs, onDiagnostic: diagnostic },
         );
         if (probe) {
@@ -355,15 +388,41 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
         ...(config.model ? { model: config.model } : {}),
       });
       emit("task.input", { turnId, input });
+      const recalling = async <T>(kind: RecallKind, operation: () => T | Promise<T>) => {
+        const recallId = randomUUID();
+        emit("recall.start", { turnId, recallId, kind });
+        try {
+          return { recallId, value: await operation() };
+        } catch (error) {
+          emit("recall.error", { turnId, recallId, kind, error: String(error) });
+          throw error;
+        }
+      };
       try {
         if (config.nativeHistory) {
-          const recall = nativeContext(readExperience(), input.text, {
-            ...config.nativeHistory,
-            cwd: config.cwd,
-            scope: config.scope,
-            before: config.nativeHistory.before ?? Date.now(),
-          });
+          const nativeHistory = config.nativeHistory;
+          const operation = await recalling("native-history", () =>
+            nativeContext(readExperience(), input.text, {
+              ...nativeHistory,
+              cwd: config.cwd,
+              scope: config.scope,
+              before: nativeHistory.before ?? Date.now(),
+            }),
+          );
+          const recall = operation.value;
           emit("experience.selection", { turnId, ...recall });
+          emit(
+            "recall.selection",
+            recallSelection({
+              turnId,
+              recallId: operation.recallId,
+              kind: "native-history",
+              contextName: `quoted-material-${(input.materials?.length ?? 0) + 1}`,
+              text: recall.text,
+              selectedIds: recall.selectedIds,
+              omittedMatchingCount: recall.omittedChunks,
+            }),
+          );
           if (recall.text)
             input = {
               ...input,
@@ -379,8 +438,24 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
             };
         }
         if (config.history) {
-          const history = historicalContext(readExperience(), input.text, config.history);
+          const historyOptions = config.history;
+          const operation = await recalling("imported-history", () =>
+            historicalContext(readExperience(), input.text, historyOptions),
+          );
+          const history = operation.value;
           emit("history.selection", { turnId, ...history });
+          emit(
+            "recall.selection",
+            recallSelection({
+              turnId,
+              recallId: operation.recallId,
+              kind: "imported-history",
+              contextName: `quoted-material-${(input.materials?.length ?? 0) + 1}`,
+              text: history.text,
+              selectedIds: history.selectedIds,
+              omittedMatchingCount: history.omittedChunks,
+            }),
+          );
           if (history.text)
             input = {
               ...input,
@@ -398,17 +473,36 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
           // instead of fabricating a memory of a fact that was never retrieved.
           else input = withNoEvidencePolicy(input);
         }
-        const assembled = await assemblePrompt(memory, config.adapter, input, memoryTools);
+        const operation = await recalling("memory", () =>
+          assemblePrompt(memory, config.adapter, input, memoryTools),
+        );
+        const assembled = operation.value;
+        emit(
+          "recall.selection",
+          recallSelection({
+            turnId,
+            recallId: operation.recallId,
+            kind: "memory",
+            contextName: "memory",
+            text: assembled.assembly.selection.text,
+            selectedIds: assembled.assembly.selection.selectedIds,
+            sourceRefs: assembled.assembly.selection.sourceRefs,
+            omittedIds: assembled.assembly.selection.omittedIds,
+            blocked: assembled.blocked,
+          }),
+        );
         emit("prompt.assembled", {
           turnId,
           parentSpanId: sessionSpans.get(session),
           sessionId: session.id,
           ...assembled.assembly,
         });
-        if (assembled.blocked)
+        if (assembled.blocked) {
+          emit("recall.blocked", { turnId, reason: "required constraints exceed context budget" });
           throw new Error(
             `context budget cannot fit required constraints: ${assembled.assembly.selection.omittedRequiredIds.join(", ")}`,
           );
+        }
         began = true;
         const result = await runTurn(
           session,

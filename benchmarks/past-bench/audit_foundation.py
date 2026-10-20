@@ -7,6 +7,8 @@ from pathlib import Path
 import sys
 from skill_lineage import inherited_reads, validate_transition
 from native_recall_audit import check_selection, identity, read_records
+from subject_boundary import validate_scope_map, validate_workspace
+from recall_adapter import action_effects, project_recall, validate_report
 
 
 def audit(run):
@@ -21,6 +23,9 @@ def audit(run):
     previous_skills, inherited_read_cases = {}, []
     skill_transitions, anchor_restorations = 0, 0
     previous_experience, recall_cases = {}, []
+    isolation = plan.get("subjectIsolation")
+    if isolation:
+        errors.extend(validate_scope_map(isolation, {r["family"] for r in plan["roster"]}))
     source = json.loads((run / "subject-source.json").read_text())
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     corrected = "corrective1" in plan["protocol"]
@@ -65,8 +70,15 @@ def audit(run):
         expected_catalog = [{"name": t.name, "description": t.description, "inputSchema": t.input_schema} for t in task.tools]
         if catalog != expected_catalog:
             errors.append(f"model tool schemas differ from task allowlist: {trial}")
-        if set(config) != {"socketPath", "token", "toolsPath", "query", "stateDir", "scope", "reflect", "timeoutMs", "maxSteps"}:
+        expected_fields = {"socketPath", "token", "toolsPath", "query", "stateDir", "scope", "reflect", "timeoutMs", "maxSteps"}
+        if plan.get("recallAttribution"):
+            expected_fields.add("actionEffects")
+        if set(config) != expected_fields:
             errors.append(f"non-allowlisted controller fields: {trial}")
+        if plan.get("recallAttribution") and config["actionEffects"] != action_effects(toolspec["name"] for toolspec in catalog):
+            errors.append(f"action-effect mapping differs from task tool semantics: {trial}")
+        if isolation and config["scope"] != isolation.get("scopes", {}).get(row["family"]):
+            errors.append(f"subject scope differs from frozen opaque namespace: {trial}")
         response_path = trial / "subject/response.json"
         if not response_path.exists():
             errors.append(f"missing subject evidence: {trial}")
@@ -99,6 +111,10 @@ def audit(run):
         if obs["accounting"]["status"] != "complete":
             errors.append(f"incomplete native accounting: {trial}")
         before = json.loads((trial / "subject/memory-before.json").read_text())["entries"]
+        if isolation:
+            after = json.loads((trial / "subject/memory-after.json").read_text())["entries"]
+            if any(entry.get("scope") != config["scope"] for entry in before + after):
+                errors.append(f"memory contains non-opaque or cross-family scope: {trial}")
         if row["arm"] != "reset" and episode["persistence_allowed"] and episode["history_mode"] == "from_anchor":
             anchor = run / "state" / row["family"].split("/")[-1] / row["arm"] / "anchors" / episode["history_load_anchor"] / "memory.json"
             seed = json.loads(anchor.read_text()) if anchor.exists() else []
@@ -123,10 +139,19 @@ def audit(run):
 
         if any(e.get("status", "active") == "active" for e in before):
             errors.append(f"unexpected activation requires review: {trial}")
-        semantic_events, selections, turn_inputs = [], [], []
+        semantic_events, selections, turn_inputs, engine_cwds, recall_events = [], [], [], [], []
         for trace_path in (trial / "subject/trace").glob("*/events.jsonl"):
             for line in trace_path.read_text().splitlines():
                 event = json.loads(line)
+                if plan.get("recallAttribution"):
+                    data = event.get("data", {})
+                    if "artifact" in data:
+                        artifact_path = (trace_path.parent / data["artifact"]).resolve()
+                        if not artifact_path.is_relative_to(trace_path.parent.resolve()) or sha(artifact_path) != data["sha256"]:
+                            errors.append(f"invalid recall evidence artifact: {trial}")
+                            continue
+                        data = json.loads(artifact_path.read_text())
+                    recall_events.append({**event, "data": data})
                 if plan.get("nativeRecall") and event["type"] in {"experience.selection", "turn.start"} and event.get("turnId") == response["taskTurnId"]:
                     data = event["data"]
                     if "artifact" in data:
@@ -151,11 +176,34 @@ def audit(run):
                         semantic_events.append({"seq": event["seq"], "data": data})
                 if event["type"] == "adapter.protocol":
                     frame_count += 1
+                    if isolation:
+                        data = event["data"]
+                        if "artifact" in data:
+                            artifact_path = (trace_path.parent / data["artifact"]).resolve()
+                            if not artifact_path.is_relative_to(trace_path.parent.resolve()) or sha(artifact_path) != data["sha256"]:
+                                errors.append(f"invalid workspace protocol artifact: {trial}")
+                                continue
+                            data = json.loads(artifact_path.read_text())
+                        frame = data.get("data", {})
+                        if data.get("direction") == "out" and frame.get("method") == "session/new":
+                            engine_cwds.append(frame["params"]["cwd"])
                 if event["type"] == "capture.gap":
                     errors.append(f"capture gap: {trial}")
+        if plan.get("recallAttribution"):
+            native_report = response["observations"].get("recall")
+            errors.extend(f"{problem}: {trial}" for problem in validate_report(native_report, recall_events, response["taskTurnId"]))
+            policy = next((e["data"] for e in recall_events if e["type"] == "recall.policy"), {})
+            if policy.get("actionEffects") != config["actionEffects"]:
+                errors.append(f"host action effects differ from controller declaration: {trial}")
+            if row.get("recallAttribution") != project_recall(native_report, response["taskTurnId"]):
+                errors.append(f"PAST native recall projection mismatch: {trial}")
         if plan.get("nativeRecall"):
             experience_before = json.loads((trial / "subject/experience-before.json").read_text())
             experience_after = json.loads((trial / "subject/experience-after.json").read_text())
+            if isolation:
+                errors.extend(f"{problem}: {trial}" for problem in validate_workspace(response.get("workspace", ""), engine_cwds, experience_after))
+                if any(record.get("scope") != config["scope"] for record in experience_after):
+                    errors.append(f"native experience contains non-opaque or cross-family scope: {trial}")
             state_key = (row["family"], row["arm"])
             expected_experience = []
             if row["arm"] != "reset" and episode["persistence_allowed"]:
@@ -204,7 +252,7 @@ def audit(run):
                     expected_skills = previous_skills.get(state_key, [])
             if skills_before != expected_skills:
                 errors.append(f"procedural history/anchor restoration mismatch: {trial}")
-            errors.extend(f"{problem}: {trial}" for problem in validate_transition(skills_before, skills_after, response["calls"], episode["family_id"]))
+            errors.extend(f"{problem}: {trial}" for problem in validate_transition(skills_before, skills_after, response["calls"], config["scope"] if isolation else episode["family_id"]))
             skill_transitions += 1
             previous_skills[state_key] = skills_after
             reads = inherited_reads(skills_before, response["calls"], semantic_events)

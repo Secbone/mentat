@@ -1,6 +1,7 @@
 /** PAST diagnostic subject: real task tools, fresh sessions, native memory lifecycle. */
 import { randomUUID } from "node:crypto";
-import { mkdirSync, readFileSync, statfsSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, statfsSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { environmentMcpSpec } from "@mentat/benchmark-file";
 import { createDefaultRegistry } from "@mentat/harnesses";
@@ -30,11 +31,13 @@ const allowed = [
   "reflect",
   "timeoutMs",
   "maxSteps",
+  "actionEffects",
 ];
 if (
   Object.keys(config).some((key) => !allowed.includes(key)) ||
   typeof config.query !== "string" ||
   typeof config.scope !== "string" ||
+  !/^ctx-[0-9a-f]{32}$/.test(config.scope) ||
   typeof config.reflect !== "boolean"
 )
   throw new Error("invalid controller fields");
@@ -44,8 +47,8 @@ const disk = statfsSync(process.cwd(), { bigint: true });
 if (disk.bavail * disk.bsize < 30n * 1024n ** 3n) throw new Error("disk reserve below 30 GiB");
 mkdirSync(out);
 mkdirSync(state, { recursive: true });
-const cwd = join(out, "work");
-mkdirSync(cwd);
+// The engine may expose cwd to the model. Keep family/bucket/arm names out of it.
+const cwd = mkdtempSync(join(tmpdir(), "mentat-task-"));
 const model = "opencode-go/deepseek-v4.1-flash";
 const timeoutMs = config.timeoutMs ?? 180000;
 const maxSteps = config.maxSteps ?? 25;
@@ -201,6 +204,7 @@ const host = createAssistantHost({
     searchName: "direct_memory_memory_search",
     addName: "direct_memory_memory_add",
   },
+  actionEffects: config.actionEffects,
   permission: { request: () => "deny" },
   permissionMode: "declared-task-tools-only",
   requireFinalAnswer: true,
@@ -268,6 +272,12 @@ const calls = (
 ).filter((call) => call.kind === "call");
 if (calls.some((call) => !enabled.includes(String(call.name))))
   throw new Error("tool outside allowlist executed");
-const payload = { ...(response as object), taskTurnId: taskTurn.turnId, calls, observations };
+const payload = {
+  ...(response as object),
+  workspace: cwd,
+  taskTurnId: taskTurn.turnId,
+  calls,
+  observations,
+};
 writeFileSync(join(out, "response.json"), JSON.stringify(payload, null, 2), { flag: "wx" });
 process.stdout.write(`${JSON.stringify({ response: join(out, "response.json") })}\n`);

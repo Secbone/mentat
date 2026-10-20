@@ -11,6 +11,15 @@ export function buildTurnContext(
   requiredIds: string[];
   omittedRequiredIds: string[];
   selectedIds: string[];
+  /** Observation metadata, separate from model-visible text. */
+  sourceRefs?: Array<{
+    id: string;
+    scope?: string;
+    state: string;
+    version?: number;
+    basis?: string;
+    role?: string;
+  }>;
   decisions: Array<{ id: string; selected: boolean; reason: string }>;
   budget: { maxChars: number; usedChars: number };
 } {
@@ -83,6 +92,16 @@ export function buildTurnContext(
   return {
     text: lines.join("\n"),
     selectedIds,
+    sourceRefs: all
+      .filter((entry) => selectedIds.includes(entry.id))
+      .map((entry) => ({
+        id: entry.id,
+        ...(entry.scope !== undefined ? { scope: entry.scope } : {}),
+        state: memoryStatus(entry),
+        ...(entry.revision !== undefined ? { version: entry.revision } : {}),
+        ...(entry.basis !== undefined ? { basis: entry.basis } : {}),
+        ...(entry.speaker !== undefined ? { role: entry.speaker } : {}),
+      })),
     decisions,
     budget: { maxChars, usedChars: size },
     omittedIds,

@@ -1,0 +1,724 @@
+{
+  "protocol": "generic-context-cleanup-validation-v1",
+  "promptVersion": "personal-assistant-v11",
+  "scope": "Mechanism and metadata isolation checks only; not a new PAST performance result or proof of generalization.",
+  "recall": {
+    "summary": {
+      "protocol": "native-recall-longitudinal-v1",
+      "passed": true,
+      "sourceUnchanged": true,
+      "memoryUnchanged": true,
+      "cases": [
+        {
+          "index": 0,
+          "scope": "alice",
+          "passed": true,
+          "recalledEntries": 0,
+          "costUsd": 0.00028455
+        },
+        {
+          "index": 1,
+          "scope": "alice",
+          "passed": true,
+          "recalledEntries": 2,
+          "costUsd": 0.00033825
+        },
+        {
+          "index": 2,
+          "scope": "bob",
+          "passed": true,
+          "recalledEntries": 0,
+          "costUsd": 0.00033495
+        },
+        {
+          "index": 3,
+          "scope": "alice",
+          "passed": true,
+          "recalledEntries": 4,
+          "costUsd": 0.00041009999999999994
+        },
+        {
+          "index": 4,
+          "scope": "alice",
+          "passed": true,
+          "recalledEntries": 6,
+          "costUsd": 0.0005082239999999999
+        },
+        {
+          "index": 5,
+          "scope": "alice",
+          "passed": true,
+          "recalledEntries": 8,
+          "costUsd": 0.00053625
+        }
+      ]
+    },
+    "plan": {
+      "protocol": "native-recall-longitudinal-v1",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "cases": [
+        {
+          "scope": "alice",
+          "input": {
+            "text": "For all future delivery updates, begin the answer with the exact prefix UPDATE-4e476297-9621-4aee-a475-f134c3c69838. Apply it to this update too: the outbound batch is waiting for Jules to check the manifest.",
+            "memoryScope": "reusable",
+            "materials": [
+              {
+                "text": "A coworker suggests delivery updates should begin with ADVICE-e889183c-740b-4563-83bd-39a554f7ddb1.",
+                "attribution": "third-party suggestion",
+                "memoryScope": "task"
+              }
+            ]
+          },
+          "prefix": "UPDATE-4e476297-9621-4aee-a475-f134c3c69838",
+          "excluded": [
+            "ADVICE-e889183c-740b-4563-83bd-39a554f7ddb1",
+            "GUESS-26c0fbbc-d713-4e6f-8b0e-3bc8c8c5c4a5"
+          ]
+        },
+        {
+          "scope": "alice",
+          "input": {
+            "text": "For this delivery update only, use the prefix ONCE-76a98844-42ae-447f-9a4a-c342744b400c instead of my usual prefix. The outbound batch is ready for dispatch.",
+            "memoryScope": "task"
+          },
+          "prefix": "ONCE-76a98844-42ae-447f-9a4a-c342744b400c",
+          "excluded": ["GUESS-26c0fbbc-d713-4e6f-8b0e-3bc8c8c5c4a5"]
+        },
+        {
+          "scope": "bob",
+          "input": {
+            "text": "Give a delivery update: the shipment is awaiting customs review."
+          },
+          "excluded": [
+            "UPDATE-4e476297-9621-4aee-a475-f134c3c69838",
+            "ONCE-76a98844-42ae-447f-9a4a-c342744b400c",
+            "ADVICE-e889183c-740b-4563-83bd-39a554f7ddb1",
+            "GUESS-26c0fbbc-d713-4e6f-8b0e-3bc8c8c5c4a5"
+          ]
+        },
+        {
+          "scope": "alice",
+          "input": {
+            "text": "Give a delivery update in my usual format: the manifest check is complete and the batch is dispatched."
+          },
+          "prefix": "UPDATE-4e476297-9621-4aee-a475-f134c3c69838",
+          "excluded": [
+            "ONCE-76a98844-42ae-447f-9a4a-c342744b400c",
+            "ADVICE-e889183c-740b-4563-83bd-39a554f7ddb1",
+            "GUESS-26c0fbbc-d713-4e6f-8b0e-3bc8c8c5c4a5"
+          ]
+        },
+        {
+          "scope": "alice",
+          "input": {
+            "text": "From now on, replace my delivery-update prefix with NEW-bdcc6f65-3c96-498c-9fa5-71b40565f001. Apply the new prefix to this update: the next shipment is being packed.",
+            "memoryScope": "reusable"
+          },
+          "prefix": "NEW-bdcc6f65-3c96-498c-9fa5-71b40565f001",
+          "excluded": [
+            "UPDATE-4e476297-9621-4aee-a475-f134c3c69838",
+            "ONCE-76a98844-42ae-447f-9a4a-c342744b400c",
+            "ADVICE-e889183c-740b-4563-83bd-39a554f7ddb1",
+            "GUESS-26c0fbbc-d713-4e6f-8b0e-3bc8c8c5c4a5"
+          ]
+        },
+        {
+          "scope": "alice",
+          "input": {
+            "text": "Give a delivery update in my usual format: packing is complete and the carrier pickup is scheduled."
+          },
+          "prefix": "NEW-bdcc6f65-3c96-498c-9fa5-71b40565f001",
+          "excluded": [
+            "UPDATE-4e476297-9621-4aee-a475-f134c3c69838",
+            "ONCE-76a98844-42ae-447f-9a4a-c342744b400c",
+            "ADVICE-e889183c-740b-4563-83bd-39a554f7ddb1",
+            "GUESS-26c0fbbc-d713-4e6f-8b0e-3bc8c8c5c4a5"
+          ]
+        }
+      ],
+      "frozen": {
+        "packages/assistant/src/native-history.ts": "7e2ed9cd5df165cee2feb3de6120c857f09ee46470bc70363a3e49b30ba1fcce",
+        "packages/assistant/src/history.ts": "ad5864e9b480808cbf093ece12b85205462f9789576e5ae64a5d98c7fe69ca9f",
+        "packages/assistant/src/prompt.ts": "87c0b12619185b7c0c2512b2c5be7a377a3240ad4e11d213a480c597323f14a0",
+        "packages/host/src/host.ts": "1a26f519807aa03b443bc644aeed966ff0656d911d248b24ac48c7883369e871",
+        "packages/session/src/experience.ts": "0e6d71930bc7da2c4f6a7bd98f40318d405f36f077e0062abd506a203c88f0e0",
+        "scripts/opencode-native-recall-probe.ts": "c95b94b3153ef9c86ee59fa3796b23d72ff7692493bd5afaf3951b65738c9dd8"
+      },
+      "maxChars": 8000,
+      "timeoutMs": 120000,
+      "limits": "Synthetic independent checks; no benchmark score or general reliability claim."
+    },
+    "responses": [
+      {
+        "index": 0,
+        "passed": true,
+        "scope": "alice",
+        "response": {
+          "reason": "done",
+          "text": "UPDATE-4e476297-9621-4aee-a475-f134c3c69838\n\nThe outbound batch is waiting for Jules to check the manifest."
+        },
+        "selections": [
+          {
+            "turnId": "9b25213e-cb50-4f82-90fd-17092ab16840",
+            "text": "",
+            "selectedIds": [],
+            "eligibleSessions": 0,
+            "matchingChunks": 0,
+            "omittedChunks": 0,
+            "chars": 0,
+            "selectedSessions": 0,
+            "strategy": "bm25-atomic-messages-v1",
+            "sourceKind": "native-interaction",
+            "excludedMessages": 0
+          }
+        ],
+        "observations": {
+          "nativeSessionIds": ["ses_ea8c36807ffe12yGQhWv3xdz7K"],
+          "models": [
+            {
+              "requested": "opencode-go/deepseek-v4.1-flash",
+              "effective": "opencode-go/deepseek-v4.1-flash"
+            }
+          ],
+          "accounting": {
+            "status": "complete",
+            "sessions": [
+              {
+                "id": "ses_ea8c36807ffe12yGQhWv3xdz7K",
+                "cost": 0.00028455,
+                "tokens_input": 1269,
+                "tokens_output": 37,
+                "tokens_reasoning": 120,
+                "tokens_cache_read": 0,
+                "tokens_cache_write": 0,
+                "model": null,
+                "version": "2.0.25"
+              }
+            ],
+            "missing": []
+          },
+          "costUsd": 0.00028455,
+          "trajectory": {
+            "traceId": "745613ac-2f0c-4718-8bcf-8e97fcbb15ef",
+            "status": "complete",
+            "events": 39,
+            "turns": 1,
+            "gaps": 0,
+            "violations": [],
+            "capture": {
+              "status": "unverified",
+              "protocolFrames": 0,
+              "tools": 0,
+              "permissionRequests": 0,
+              "issues": [],
+              "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+              "nonTextToolResults": 0
+            }
+          },
+          "memory": {
+            "injections": 1,
+            "injectedEntries": 0,
+            "omittedEntries": 0,
+            "omittedRequired": 0,
+            "searches": 0,
+            "writes": 0,
+            "writeOps": {},
+            "reflections": 0,
+            "reflectionApplied": {},
+            "historySelections": 0,
+            "nativeSelections": 1,
+            "nativeRetrievedEntries": 0,
+            "historyMatchedChunks": 0,
+            "historyRetrievedEntries": 0
+          }
+        }
+      },
+      {
+        "index": 1,
+        "passed": true,
+        "scope": "alice",
+        "response": {
+          "reason": "done",
+          "text": "ONCE-76a98844-42ae-447f-9a4a-c342744b400c\n\nThe outbound batch is ready for dispatch."
+        },
+        "selections": [
+          {
+            "turnId": "76805766-e791-407b-b34f-2182414df940",
+            "text": "{\"source\":\"native-interaction\",\"session\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a\",\"date\":\"2026-10-20T02:55:55.585Z\",\"role\":\"user\",\"sourceMemoryScope\":\"reusable\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg0:0\",\"content\":\"For all future delivery updates, begin the answer with the exact prefix UPDATE-4e476297-9621-4aee-a475-f134c3c69838. Apply it to this update too: the outbound batch is waiting for Jules to check the manifest.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a\",\"date\":\"2026-10-20T02:55:55.585Z\",\"role\":\"assistant\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg1:0\",\"content\":\"UPDATE-4e476297-9621-4aee-a475-f134c3c69838\\n\\nThe outbound batch is waiting for Jules to check the manifest.\"}",
+            "selectedIds": [
+              "exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg0:0",
+              "exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg1:0"
+            ],
+            "eligibleSessions": 1,
+            "matchingChunks": 2,
+            "omittedChunks": 0,
+            "chars": 861,
+            "selectedSessions": 1,
+            "strategy": "bm25-atomic-messages-v1",
+            "sourceKind": "native-interaction",
+            "excludedMessages": 0
+          }
+        ],
+        "observations": {
+          "nativeSessionIds": ["ses_ea8c351c7ffeDGuzFsxNcHwTow"],
+          "models": [
+            {
+              "requested": "opencode-go/deepseek-v4.1-flash",
+              "effective": "opencode-go/deepseek-v4.1-flash"
+            }
+          ],
+          "accounting": {
+            "status": "complete",
+            "sessions": [
+              {
+                "id": "ses_ea8c351c7ffeDGuzFsxNcHwTow",
+                "cost": 0.00033825,
+                "tokens_input": 1679,
+                "tokens_output": 35,
+                "tokens_reasoning": 109,
+                "tokens_cache_read": 0,
+                "tokens_cache_write": 0,
+                "model": null,
+                "version": "2.0.25"
+              }
+            ],
+            "missing": []
+          },
+          "costUsd": 0.00033825,
+          "trajectory": {
+            "traceId": "ed748ec4-5cf5-411b-9465-460fb9f16bac",
+            "status": "complete",
+            "events": 37,
+            "turns": 1,
+            "gaps": 0,
+            "violations": [],
+            "capture": {
+              "status": "unverified",
+              "protocolFrames": 0,
+              "tools": 0,
+              "permissionRequests": 0,
+              "issues": [],
+              "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+              "nonTextToolResults": 0
+            }
+          },
+          "memory": {
+            "injections": 1,
+            "injectedEntries": 0,
+            "omittedEntries": 0,
+            "omittedRequired": 0,
+            "searches": 0,
+            "writes": 0,
+            "writeOps": {},
+            "reflections": 0,
+            "reflectionApplied": {},
+            "historySelections": 0,
+            "nativeSelections": 1,
+            "nativeRetrievedEntries": 2,
+            "historyMatchedChunks": 0,
+            "historyRetrievedEntries": 0
+          }
+        }
+      },
+      {
+        "index": 2,
+        "passed": true,
+        "scope": "bob",
+        "response": {
+          "reason": "done",
+          "text": "**Subject:** Delivery update — shipment awaiting customs review\n\nHi [Customer],\n\nA quick update on your shipment: it is currently awaiting customs review. This is a standard clearance step, and the shipment is in held status until the review is completed.\n\nNo action is needed from you at this time. I'll follow up as soon as customs releases the shipment or if any additional information is required.\n\nThanks for your patience.\n\nBest regards,\n[Your name]\n\n---\n\nWant me to tailor it — customer name, tracking number, destination country, or an expected clearance timeline? I've left those out rather than guess, since no shipment details were provided."
+        },
+        "selections": [
+          {
+            "turnId": "6cd71f9e-fcfa-4f0f-a715-7bb4fb27f12d",
+            "text": "",
+            "selectedIds": [],
+            "eligibleSessions": 0,
+            "matchingChunks": 0,
+            "omittedChunks": 0,
+            "chars": 0,
+            "selectedSessions": 0,
+            "strategy": "bm25-atomic-messages-v1",
+            "sourceKind": "native-interaction",
+            "excludedMessages": 0
+          }
+        ],
+        "observations": {
+          "nativeSessionIds": ["ses_ea8c337d5ffeH2fEC1nskU09gz"],
+          "models": [
+            {
+              "requested": "opencode-go/deepseek-v4.1-flash",
+              "effective": "opencode-go/deepseek-v4.1-flash"
+            }
+          ],
+          "accounting": {
+            "status": "complete",
+            "sessions": [
+              {
+                "id": "ses_ea8c337d5ffeH2fEC1nskU09gz",
+                "cost": 0.00033495,
+                "tokens_input": 1145,
+                "tokens_output": 130,
+                "tokens_reasoning": 142,
+                "tokens_cache_read": 0,
+                "tokens_cache_write": 0,
+                "model": null,
+                "version": "2.0.25"
+              }
+            ],
+            "missing": []
+          },
+          "costUsd": 0.00033495,
+          "trajectory": {
+            "traceId": "5a72103a-1ecb-43b8-a022-8cec0aaf4911",
+            "status": "complete",
+            "events": 49,
+            "turns": 1,
+            "gaps": 0,
+            "violations": [],
+            "capture": {
+              "status": "unverified",
+              "protocolFrames": 0,
+              "tools": 0,
+              "permissionRequests": 0,
+              "issues": [],
+              "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+              "nonTextToolResults": 0
+            }
+          },
+          "memory": {
+            "injections": 1,
+            "injectedEntries": 0,
+            "omittedEntries": 0,
+            "omittedRequired": 0,
+            "searches": 0,
+            "writes": 0,
+            "writeOps": {},
+            "reflections": 0,
+            "reflectionApplied": {},
+            "historySelections": 0,
+            "nativeSelections": 1,
+            "nativeRetrievedEntries": 0,
+            "historyMatchedChunks": 0,
+            "historyRetrievedEntries": 0
+          }
+        }
+      },
+      {
+        "index": 3,
+        "passed": true,
+        "scope": "alice",
+        "response": {
+          "reason": "done",
+          "text": "UPDATE-4e476297-9621-4aee-a475-f134c3c69838\n\nThe manifest check is complete and the outbound batch has been dispatched."
+        },
+        "selections": [
+          {
+            "turnId": "cad04fc0-1327-4173-b2b4-86a7a15f357a",
+            "text": "{\"source\":\"native-interaction\",\"session\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a\",\"date\":\"2026-10-20T02:55:55.585Z\",\"role\":\"user\",\"sourceMemoryScope\":\"reusable\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg0:0\",\"content\":\"For all future delivery updates, begin the answer with the exact prefix UPDATE-4e476297-9621-4aee-a475-f134c3c69838. Apply it to this update too: the outbound batch is waiting for Jules to check the manifest.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a\",\"date\":\"2026-10-20T02:55:55.585Z\",\"role\":\"assistant\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg1:0\",\"content\":\"UPDATE-4e476297-9621-4aee-a475-f134c3c69838\\n\\nThe outbound batch is waiting for Jules to check the manifest.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5\",\"date\":\"2026-10-20T02:56:01.205Z\",\"role\":\"user\",\"sourceMemoryScope\":\"task\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5#msg0:0\",\"content\":\"For this delivery update only, use the prefix ONCE-76a98844-42ae-447f-9a4a-c342744b400c instead of my usual prefix. The outbound batch is ready for dispatch.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5\",\"date\":\"2026-10-20T02:56:01.205Z\",\"role\":\"assistant\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5#msg1:0\",\"content\":\"ONCE-76a98844-42ae-447f-9a4a-c342744b400c\\n\\nThe outbound batch is ready for dispatch.\"}",
+            "selectedIds": [
+              "exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg0:0",
+              "exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg1:0",
+              "exp-78d76a55bbcd2716212f8c3ff9f399d5#msg0:0",
+              "exp-78d76a55bbcd2716212f8c3ff9f399d5#msg1:0"
+            ],
+            "eligibleSessions": 2,
+            "matchingChunks": 4,
+            "omittedChunks": 0,
+            "chars": 1644,
+            "selectedSessions": 2,
+            "strategy": "bm25-atomic-messages-v1",
+            "sourceKind": "native-interaction",
+            "excludedMessages": 0
+          }
+        ],
+        "observations": {
+          "nativeSessionIds": ["ses_ea8c31bf3ffetB5AtqXT8VIZdr"],
+          "models": [
+            {
+              "requested": "opencode-go/deepseek-v4.1-flash",
+              "effective": "opencode-go/deepseek-v4.1-flash"
+            }
+          ],
+          "accounting": {
+            "status": "complete",
+            "sessions": [
+              {
+                "id": "ses_ea8c31bf3ffetB5AtqXT8VIZdr",
+                "cost": 0.00041009999999999994,
+                "tokens_input": 2058,
+                "tokens_output": 38,
+                "tokens_reasoning": 131,
+                "tokens_cache_read": 0,
+                "tokens_cache_write": 0,
+                "model": null,
+                "version": "2.0.25"
+              }
+            ],
+            "missing": []
+          },
+          "costUsd": 0.00041009999999999994,
+          "trajectory": {
+            "traceId": "3ae4a487-ab00-4e47-8b8b-a32eabf9f051",
+            "status": "complete",
+            "events": 41,
+            "turns": 1,
+            "gaps": 0,
+            "violations": [],
+            "capture": {
+              "status": "unverified",
+              "protocolFrames": 0,
+              "tools": 0,
+              "permissionRequests": 0,
+              "issues": [],
+              "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+              "nonTextToolResults": 0
+            }
+          },
+          "memory": {
+            "injections": 1,
+            "injectedEntries": 0,
+            "omittedEntries": 0,
+            "omittedRequired": 0,
+            "searches": 0,
+            "writes": 0,
+            "writeOps": {},
+            "reflections": 0,
+            "reflectionApplied": {},
+            "historySelections": 0,
+            "nativeSelections": 1,
+            "nativeRetrievedEntries": 4,
+            "historyMatchedChunks": 0,
+            "historyRetrievedEntries": 0
+          }
+        }
+      },
+      {
+        "index": 4,
+        "passed": true,
+        "scope": "alice",
+        "response": {
+          "reason": "done",
+          "text": "NEW-bdcc6f65-3c96-498c-9fa5-71b40565f001\n\nThe next shipment is being packed."
+        },
+        "selections": [
+          {
+            "turnId": "78b728ef-7e6f-4a09-91f5-f96184a0bd49",
+            "text": "{\"source\":\"native-interaction\",\"session\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a\",\"date\":\"2026-10-20T02:55:55.585Z\",\"role\":\"user\",\"sourceMemoryScope\":\"reusable\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg0:0\",\"content\":\"For all future delivery updates, begin the answer with the exact prefix UPDATE-4e476297-9621-4aee-a475-f134c3c69838. Apply it to this update too: the outbound batch is waiting for Jules to check the manifest.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a\",\"date\":\"2026-10-20T02:55:55.585Z\",\"role\":\"assistant\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg1:0\",\"content\":\"UPDATE-4e476297-9621-4aee-a475-f134c3c69838\\n\\nThe outbound batch is waiting for Jules to check the manifest.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5\",\"date\":\"2026-10-20T02:56:01.205Z\",\"role\":\"user\",\"sourceMemoryScope\":\"task\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5#msg0:0\",\"content\":\"For this delivery update only, use the prefix ONCE-76a98844-42ae-447f-9a4a-c342744b400c instead of my usual prefix. The outbound batch is ready for dispatch.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5\",\"date\":\"2026-10-20T02:56:01.205Z\",\"role\":\"assistant\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5#msg1:0\",\"content\":\"ONCE-76a98844-42ae-447f-9a4a-c342744b400c\\n\\nThe outbound batch is ready for dispatch.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-62990eff28819fc4f5b7f56e44141863\",\"date\":\"2026-10-20T02:56:15.560Z\",\"role\":\"user\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-62990eff28819fc4f5b7f56e44141863#msg0:0\",\"content\":\"Give a delivery update in my usual format: the manifest check is complete and the batch is dispatched.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-62990eff28819fc4f5b7f56e44141863\",\"date\":\"2026-10-20T02:56:15.560Z\",\"role\":\"assistant\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-62990eff28819fc4f5b7f56e44141863#msg1:0\",\"content\":\"UPDATE-4e476297-9621-4aee-a475-f134c3c69838\\n\\nThe manifest check is complete and the outbound batch has been dispatched.\"}",
+            "selectedIds": [
+              "exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg0:0",
+              "exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg1:0",
+              "exp-78d76a55bbcd2716212f8c3ff9f399d5#msg0:0",
+              "exp-78d76a55bbcd2716212f8c3ff9f399d5#msg1:0",
+              "exp-62990eff28819fc4f5b7f56e44141863#msg0:0",
+              "exp-62990eff28819fc4f5b7f56e44141863#msg1:0"
+            ],
+            "eligibleSessions": 3,
+            "matchingChunks": 5,
+            "omittedChunks": 0,
+            "chars": 2414,
+            "selectedSessions": 3,
+            "strategy": "bm25-atomic-messages-v1",
+            "sourceKind": "native-interaction",
+            "excludedMessages": 0
+          }
+        ],
+        "observations": {
+          "nativeSessionIds": ["ses_ea8c303c4ffefBhx1kh4m9E3sj"],
+          "models": [
+            {
+              "requested": "opencode-go/deepseek-v4.1-flash",
+              "effective": "opencode-go/deepseek-v4.1-flash"
+            }
+          ],
+          "accounting": {
+            "status": "complete",
+            "sessions": [
+              {
+                "id": "ses_ea8c303c4ffefBhx1kh4m9E3sj",
+                "cost": 0.0005082239999999999,
+                "tokens_input": 2980,
+                "tokens_output": 39,
+                "tokens_reasoning": 56,
+                "tokens_cache_read": 1408,
+                "tokens_cache_write": 0,
+                "model": null,
+                "version": "2.0.25"
+              }
+            ],
+            "missing": []
+          },
+          "costUsd": 0.0005082239999999999,
+          "trajectory": {
+            "traceId": "cd610a92-3fe0-4edd-8a24-75bfe52f11c8",
+            "status": "complete",
+            "events": 33,
+            "turns": 1,
+            "gaps": 0,
+            "violations": [],
+            "capture": {
+              "status": "unverified",
+              "protocolFrames": 0,
+              "tools": 0,
+              "permissionRequests": 0,
+              "issues": [],
+              "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+              "nonTextToolResults": 0
+            }
+          },
+          "memory": {
+            "injections": 1,
+            "injectedEntries": 0,
+            "omittedEntries": 0,
+            "omittedRequired": 0,
+            "searches": 0,
+            "writes": 0,
+            "writeOps": {},
+            "reflections": 0,
+            "reflectionApplied": {},
+            "historySelections": 0,
+            "nativeSelections": 1,
+            "nativeRetrievedEntries": 6,
+            "historyMatchedChunks": 0,
+            "historyRetrievedEntries": 0
+          }
+        }
+      },
+      {
+        "index": 5,
+        "passed": true,
+        "scope": "alice",
+        "response": {
+          "reason": "done",
+          "text": "NEW-bdcc6f65-3c96-498c-9fa5-71b40565f001\n\nPacking is complete and the carrier pickup is scheduled."
+        },
+        "selections": [
+          {
+            "turnId": "6d136ff4-aa30-4625-8012-7db582fddc4e",
+            "text": "{\"source\":\"native-interaction\",\"session\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a\",\"date\":\"2026-10-20T02:55:55.585Z\",\"role\":\"user\",\"sourceMemoryScope\":\"reusable\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg0:0\",\"content\":\"For all future delivery updates, begin the answer with the exact prefix UPDATE-4e476297-9621-4aee-a475-f134c3c69838. Apply it to this update too: the outbound batch is waiting for Jules to check the manifest.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a\",\"date\":\"2026-10-20T02:55:55.585Z\",\"role\":\"assistant\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg1:0\",\"content\":\"UPDATE-4e476297-9621-4aee-a475-f134c3c69838\\n\\nThe outbound batch is waiting for Jules to check the manifest.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5\",\"date\":\"2026-10-20T02:56:01.205Z\",\"role\":\"user\",\"sourceMemoryScope\":\"task\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5#msg0:0\",\"content\":\"For this delivery update only, use the prefix ONCE-76a98844-42ae-447f-9a4a-c342744b400c instead of my usual prefix. The outbound batch is ready for dispatch.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5\",\"date\":\"2026-10-20T02:56:01.205Z\",\"role\":\"assistant\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-78d76a55bbcd2716212f8c3ff9f399d5#msg1:0\",\"content\":\"ONCE-76a98844-42ae-447f-9a4a-c342744b400c\\n\\nThe outbound batch is ready for dispatch.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-62990eff28819fc4f5b7f56e44141863\",\"date\":\"2026-10-20T02:56:15.560Z\",\"role\":\"user\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-62990eff28819fc4f5b7f56e44141863#msg0:0\",\"content\":\"Give a delivery update in my usual format: the manifest check is complete and the batch is dispatched.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-62990eff28819fc4f5b7f56e44141863\",\"date\":\"2026-10-20T02:56:15.560Z\",\"role\":\"assistant\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-62990eff28819fc4f5b7f56e44141863#msg1:0\",\"content\":\"UPDATE-4e476297-9621-4aee-a475-f134c3c69838\\n\\nThe manifest check is complete and the outbound batch has been dispatched.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-1322a1f38d5bdacdf458b79323f55785\",\"date\":\"2026-10-20T02:56:22.138Z\",\"role\":\"user\",\"sourceMemoryScope\":\"reusable\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-1322a1f38d5bdacdf458b79323f55785#msg0:0\",\"content\":\"From now on, replace my delivery-update prefix with NEW-bdcc6f65-3c96-498c-9fa5-71b40565f001. Apply the new prefix to this update: the next shipment is being packed.\"}\n{\"source\":\"native-interaction\",\"session\":\"exp-1322a1f38d5bdacdf458b79323f55785\",\"date\":\"2026-10-20T02:56:22.138Z\",\"role\":\"assistant\",\"sourceMemoryScope\":\"unspecified\",\"engineOutcome\":\"done\",\"scope\":\"alice\",\"pointer\":\"exp-1322a1f38d5bdacdf458b79323f55785#msg1:0\",\"content\":\"NEW-bdcc6f65-3c96-498c-9fa5-71b40565f001\\n\\nThe next shipment is being packed.\"}",
+            "selectedIds": [
+              "exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg0:0",
+              "exp-7bd8d95d1dab46d4d4138f8ef62e6f7a#msg1:0",
+              "exp-78d76a55bbcd2716212f8c3ff9f399d5#msg0:0",
+              "exp-78d76a55bbcd2716212f8c3ff9f399d5#msg1:0",
+              "exp-62990eff28819fc4f5b7f56e44141863#msg0:0",
+              "exp-62990eff28819fc4f5b7f56e44141863#msg1:0",
+              "exp-1322a1f38d5bdacdf458b79323f55785#msg0:0",
+              "exp-1322a1f38d5bdacdf458b79323f55785#msg1:0"
+            ],
+            "eligibleSessions": 4,
+            "matchingChunks": 6,
+            "omittedChunks": 0,
+            "chars": 3201,
+            "selectedSessions": 4,
+            "strategy": "bm25-atomic-messages-v1",
+            "sourceKind": "native-interaction",
+            "excludedMessages": 0
+          }
+        ],
+        "observations": {
+          "nativeSessionIds": ["ses_ea8c2ea41ffeJ1l8p2cKvn894U"],
+          "models": [
+            {
+              "requested": "opencode-go/deepseek-v4.1-flash",
+              "effective": "opencode-go/deepseek-v4.1-flash"
+            }
+          ],
+          "accounting": {
+            "status": "complete",
+            "sessions": [
+              {
+                "id": "ses_ea8c2ea41ffeJ1l8p2cKvn894U",
+                "cost": 0.00053625,
+                "tokens_input": 2831,
+                "tokens_output": 38,
+                "tokens_reasoning": 148,
+                "tokens_cache_read": 0,
+                "tokens_cache_write": 0,
+                "model": null,
+                "version": "2.0.25"
+              }
+            ],
+            "missing": []
+          },
+          "costUsd": 0.00053625,
+          "trajectory": {
+            "traceId": "10044edf-7638-4052-a70a-b59892301e79",
+            "status": "complete",
+            "events": 43,
+            "turns": 1,
+            "gaps": 0,
+            "violations": [],
+            "capture": {
+              "status": "unverified",
+              "protocolFrames": 0,
+              "tools": 0,
+              "permissionRequests": 0,
+              "issues": [],
+              "coverage": "Captured ACP tool inputs, terminal content/text and permission requests/decision presence only; capture completeness and task correctness are not verified.",
+              "nonTextToolResults": 0
+            }
+          },
+          "memory": {
+            "injections": 1,
+            "injectedEntries": 0,
+            "omittedEntries": 0,
+            "omittedRequired": 0,
+            "searches": 0,
+            "writes": 0,
+            "writeOps": {},
+            "reflections": 0,
+            "reflectionApplied": {},
+            "historySelections": 0,
+            "nativeSelections": 1,
+            "nativeRetrievedEntries": 8,
+            "historyMatchedChunks": 0,
+            "historyRetrievedEntries": 0
+          }
+        }
+      }
+    ],
+    "costUsd": 0.002412324
+  },
+  "isolationSmoke": {
+    "runDirectory": ".mentat/public-evaluations/generic-context-isolation-smoke-20261020-v1",
+    "planSha256": "6ff049bc412455e1828000aa30967dcd25254a0076834370411e39b699a85138",
+    "protocol": "past-foundation-diagnostic-v7",
+    "subjectIsolation": {
+      "protocol": "opaque-scopes-and-workspaces-v1",
+      "scopes": {
+        "memory_ability/SM02_constraint_retention": "ctx-7cc5bda1bed14a578d341f50459989db"
+      },
+      "workspace": "fresh randomly named OS temporary directory per episode"
+    },
+    "workspace": "/var/folders/h5/ybw1xdcs26n3lyxsshm4pbgh0000gn/T/mentat-task-j83h3u",
+    "persistedScopes": ["ctx-7cc5bda1bed14a578d341f50459989db"],
+    "costUsd": 0.001471098,
+    "audit": {
+      "status": "passed",
+      "scoredTrials": 1,
+      "unscoredTrials": [],
+      "changedAnalysisFiles": [],
+      "preDispatchFailures": [],
+      "skillTransitionsChecked": 1,
+      "anchorSkillRestorationsChecked": 0,
+      "inheritedProcedureReadCases": [],
+      "nativeSessions": 1,
+      "environmentDispatchReceipts": 3,
+      "nativeRecallCases": [
+        {
+          "taskId": "SM02_COLD_001",
+          "arm": "memory",
+          "bucket": "baseline",
+          "selectedIds": [],
+          "chars": 0
+        }
+      ],
+      "protocolFrames": 63,
+      "issues": [],
+      "coverage": "Frozen file hashes, allowlisted controller fields and tools, native tool calls versus real upstream dispatch receipts, effective model, fresh engine sessions, accounting completeness, empty reset memory/procedures and real skill writes/reads; when declared, per-episode skill snapshots, continuation/anchor lineage and reads completed before business writes. Not OS isolation or training contamination proof."
+    },
+    "limit": "One cold-start episode; does not test full family/anchor restoration under v7."
+  }
+}

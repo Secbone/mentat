@@ -3,6 +3,7 @@ import { join } from "node:path";
 import {
   inspectTrajectory,
   readTrajectory,
+  recallAttribution,
   resolveEventData,
   summarizeTrajectory,
 } from "@mentat/observability";
@@ -64,6 +65,11 @@ export async function traceCommand(args: string[]): Promise<number> {
         ["running", "incomplete", "interrupted"].includes(value.status))
       ? 1
       : 0;
+  }
+  if (args.includes("--recall")) {
+    const value = recallAttribution(dir, { turnId: option(args, "--turn") });
+    process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
+    return value.issues.length ? 1 : 0;
   }
   if (args.includes("--tree") && !args.includes("--follow")) {
     const events = readTrajectory(dir);

@@ -1,5 +1,42 @@
 # PAST-Bench ↔ Mentat (minimal bridge)
 
+## Current diagnostic runner and context boundary
+
+The fixed-family diagnostic uses `foundation_probe.py` and
+`../../scripts/past-foundation-turn.ts`; the one-shot adapter below is historical.
+The current protocol is `past-foundation-diagnostic-v8`, with the shared
+`personal-assistant-v11` policy. No PAST-specific solution hints are added to that
+policy. Original task text and schemas are preserved, while evaluation tools and
+closed-book restrictions stay in the evaluation adapter.
+
+Each run assigns random, opaque scope IDs per family. The mapping stays in the
+controller plan, with the same ID used across a family's episodes and independent
+reset/retained stores. Every episode uses a fresh OS temporary working directory
+whose path contains no family, arm or bucket labels. `audit_foundation.py` checks
+the frozen mapping, persisted memory/experience/skill scopes and actual outgoing
+ACP `session/new` cwd. Temporary workspaces are retained for diagnosis; this is
+metadata isolation, not OS-level file or network isolation.
+
+The v6 score 70.295 is a historical development-subset result, not a v7 result.
+Do not overwrite earlier runs or recompute their scores under the new context.
+See [context policy](../../docs/prompt-context.md) and
+[evaluation history](../../docs/research/past-foundation-2026-10-19.md).
+
+v8 additionally exports native recall evidence alongside the legacy grader.
+`recall_adapter.py` distinguishes active-memory context, native/imported history,
+explicit searches, complete procedure reads and catalogs; it checks actual source
+identities, captured requests, completed reads and pre-write sequence evidence.
+Historical context never becomes an invented `memory_search` call or an active
+memory artifact. The legacy projection now counts only successful search/add
+calls and excludes infrastructure readiness probes. Original scores are retained;
+the separate native evidence is not a posthoc score override.
+
+Inspect a subject trace with `pnpm dev trace <trace-dir> --recall`. Action-effect
+annotations are controller/observer metadata only, not model instructions or
+permission grants. Unrecognized tools stay `unknown` rather than being guessed
+read-only. For missing protocol capture or unknown operation ordering, delivery
+and timing remain unverified. See the context policy for the evidence limits.
+
 Bridge that lets [PAST-Bench](https://github.com/Gen-Verse/PAST-Bench) evaluate
 Mentat as the subject agent. Upstream, PAST-Bench resolves agents from a fixed
 `_ADAPTERS` map; we register a Mentat adapter into that map at runtime instead of

@@ -1,15 +1,14 @@
 import { readTrajectory, resolveEventData } from "./trajectory";
 
 /**
- * Aggregated memory-operation attribution for one trajectory. This is the
- * substrate-side account of what memory actually did during a run, so a failed
- * answer can be attributed to "not retrieved / not injected" versus "injected
- * but not followed" instead of a single opaque score.
+ * Legacy instrumentation counters retained for compatibility. Selections and
+ * API searches are attempts, not proof of model delivery or evidence use.
+ * Use recallAttribution for source, actual delivery and action-order evidence.
  */
 export interface MemoryAttribution {
-  /** context.selection calls (memory injected into a turn). */
+  /** Legacy context.selection attempt count; not proof of a nonempty injection. Use recallAttribution for delivery evidence. */
   injections: number;
-  /** Entries actually placed in an injected context. */
+  /** Entries selected by legacy context.selection; delivery is verified separately. */
   injectedEntries: number;
   /** Entries dropped for budget or task-local scope. */
   omittedEntries: number;

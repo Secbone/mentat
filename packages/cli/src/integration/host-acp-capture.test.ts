@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createDefaultRegistry } from "@mentat/harnesses";
 import { createAssistantHost } from "@mentat/host";
-import { inspectTrajectory, projectExperience } from "@mentat/observability";
+import { inspectTrajectory, projectExperience, recallAttribution } from "@mentat/observability";
 import { expect, it } from "vitest";
 
 it("audits captured ACP fields and reconstructs updated experience from durable host logs", async () => {
@@ -27,6 +27,7 @@ it("audits captured ACP fields and reconstructs updated experience from durable 
   });
   let turnId = "";
   try {
+    await host.remember({ text: "Use a compact final summary.", kind: "preference" });
     const session = await host.open();
     const { record, result } = await host.turn(session, "replay");
     turnId = result.turnId;
@@ -41,6 +42,14 @@ it("audits captured ACP fields and reconstructs updated experience from durable 
     await host.close();
   }
   if (!host.logDir) throw Error("missing trace");
+  const recall = recallAttribution(host.logDir, { turnId });
+  expect(recall.status).toBe("observed");
+  expect(recall.evidence.find((item) => item.kind === "memory")).toMatchObject({
+    method: "context",
+    outcome: "hit",
+    delivery: "captured-request",
+    sources: [expect.objectContaining({ state: "active", basis: "user", role: "user" })],
+  });
   expect(inspectTrajectory(host.logDir)).toMatchObject({
     violations: [],
     gaps: 0,

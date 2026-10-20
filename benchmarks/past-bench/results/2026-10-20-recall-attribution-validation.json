@@ -1,0 +1,2398 @@
+{
+  "protocol": "recall-attribution-validation-v1",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "purpose": "Mechanism verification only; not a new full PAST or paired performance result.",
+  "genericProbe": {
+    "runDirectory": ".mentat/public-evaluations/recall-attribution-20261020-v1",
+    "summary": {
+      "protocol": "native-recall-longitudinal-v1",
+      "passed": true,
+      "sourceUnchanged": true,
+      "memoryUnchanged": true,
+      "cases": [
+        {
+          "index": 0,
+          "scope": "alice",
+          "passed": true,
+          "recalledEntries": 0,
+          "costUsd": 0.000572136
+        },
+        {
+          "index": 1,
+          "scope": "alice",
+          "passed": true,
+          "recalledEntries": 2,
+          "costUsd": 0.000550236
+        },
+        {
+          "index": 2,
+          "scope": "bob",
+          "passed": true,
+          "recalledEntries": 0,
+          "costUsd": 0.00044823599999999997
+        },
+        {
+          "index": 3,
+          "scope": "alice",
+          "passed": true,
+          "recalledEntries": 4,
+          "costUsd": 0.00038265
+        },
+        {
+          "index": 4,
+          "scope": "alice",
+          "passed": true,
+          "recalledEntries": 6,
+          "costUsd": 0.00045825
+        },
+        {
+          "index": 5,
+          "scope": "alice",
+          "passed": true,
+          "recalledEntries": 8,
+          "costUsd": 0.0005895
+        }
+      ]
+    },
+    "cases": [
+      {
+        "index": 0,
+        "passed": true,
+        "recall": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "a08bec73-2c6f-4c58-980f-86319c5e60d0",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "255ec625-48c9-4ef0-9057-46d43c79bf13",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 15,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": false,
+              "hostInputMatched": false,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "a08bec73-2c6f-4c58-980f-86319c5e60d0",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "7a99fc6f-353d-4530-8607-c183b6fd7e19",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 18,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        }
+      },
+      {
+        "index": 1,
+        "passed": true,
+        "recall": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "cab6a4ab-3c28-405b-8554-ff80aa9edcf0",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "d8ae3c9d-e890-4ebe-8318-0dc8397059c8",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "hit",
+              "sources": [
+                {
+                  "id": "exp-af2c1e9f9fdc5440c6a957153075014b#msg0:0",
+                  "scope": "alice",
+                  "role": "user",
+                  "date": "2026-10-20T06:17:50.140Z",
+                  "memoryScope": "reusable",
+                  "contentSha256": "e0b9af974c78f04a838cdc4a2c6b916ecabb95ded5886320a45fd2d25cd07bbb"
+                },
+                {
+                  "id": "exp-af2c1e9f9fdc5440c6a957153075014b#msg1:0",
+                  "scope": "alice",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:17:50.140Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "d8211a77d323c368fcb21cbc9ef3baa398209b831074545587bde3ed35d2f2fd"
+                }
+              ],
+              "selectionSequence": 15,
+              "availableSequence": 22,
+              "delivery": "captured-request",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "027ea4284195d0f3ada55ddf4d631c753aba0b8dd7b53055d7e5c7250939acf6",
+                "chars": 1087,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "cab6a4ab-3c28-405b-8554-ff80aa9edcf0",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "187fc71e-8fc2-4089-9b57-7cb80e3a585e",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 18,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        }
+      },
+      {
+        "index": 2,
+        "passed": true,
+        "recall": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "0d944c8f-d89e-438a-a9f4-29f2ecedb0f2",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "9c83a13b-4a16-44c2-84e7-b3085472d2ba",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 15,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": false,
+              "hostInputMatched": false,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "0d944c8f-d89e-438a-a9f4-29f2ecedb0f2",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "6f1c3e8d-d26a-4748-84b8-384256d215c1",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 18,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        }
+      },
+      {
+        "index": 3,
+        "passed": true,
+        "recall": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "d5868dfa-8245-4ddd-ab35-a6a93fd09f0b",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "ee072a26-f8de-43ca-b169-8598b023d11a",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "hit",
+              "sources": [
+                {
+                  "id": "exp-af2c1e9f9fdc5440c6a957153075014b#msg0:0",
+                  "scope": "alice",
+                  "role": "user",
+                  "date": "2026-10-20T06:17:50.140Z",
+                  "memoryScope": "reusable",
+                  "contentSha256": "e0b9af974c78f04a838cdc4a2c6b916ecabb95ded5886320a45fd2d25cd07bbb"
+                },
+                {
+                  "id": "exp-af2c1e9f9fdc5440c6a957153075014b#msg1:0",
+                  "scope": "alice",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:17:50.140Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "d8211a77d323c368fcb21cbc9ef3baa398209b831074545587bde3ed35d2f2fd"
+                },
+                {
+                  "id": "exp-e627d68e2283b34d4d5254a3cb0ab726#msg0:0",
+                  "scope": "alice",
+                  "role": "user",
+                  "date": "2026-10-20T06:17:59.018Z",
+                  "memoryScope": "task",
+                  "contentSha256": "75c48a0595d12e769e96c18937a8dcc29be6a7d69f26d3120314719966bd39fd"
+                },
+                {
+                  "id": "exp-e627d68e2283b34d4d5254a3cb0ab726#msg1:0",
+                  "scope": "alice",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:17:59.018Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "2c4ae98eb0943f01fd9b36d67687f09451b96b0638374577d0f1c42a5999f19c"
+                }
+              ],
+              "selectionSequence": 15,
+              "availableSequence": 22,
+              "delivery": "captured-request",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "cccaea4f8218d4aa1c7e94fc91accda6ad7749962771b0876c993e55c9c89753",
+                "chars": 1992,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "d5868dfa-8245-4ddd-ab35-a6a93fd09f0b",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "ceea26da-39f7-4de9-b320-3338a18c4e8d",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 18,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        }
+      },
+      {
+        "index": 4,
+        "passed": true,
+        "recall": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "fac2ed9d-780d-40a4-9b4a-97ecef3d9c48",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "c3950d9a-b5e3-4009-aa9b-713ce1e5ee2a",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "hit",
+              "sources": [
+                {
+                  "id": "exp-af2c1e9f9fdc5440c6a957153075014b#msg0:0",
+                  "scope": "alice",
+                  "role": "user",
+                  "date": "2026-10-20T06:17:50.140Z",
+                  "memoryScope": "reusable",
+                  "contentSha256": "e0b9af974c78f04a838cdc4a2c6b916ecabb95ded5886320a45fd2d25cd07bbb"
+                },
+                {
+                  "id": "exp-af2c1e9f9fdc5440c6a957153075014b#msg1:0",
+                  "scope": "alice",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:17:50.140Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "d8211a77d323c368fcb21cbc9ef3baa398209b831074545587bde3ed35d2f2fd"
+                },
+                {
+                  "id": "exp-e627d68e2283b34d4d5254a3cb0ab726#msg0:0",
+                  "scope": "alice",
+                  "role": "user",
+                  "date": "2026-10-20T06:17:59.018Z",
+                  "memoryScope": "task",
+                  "contentSha256": "75c48a0595d12e769e96c18937a8dcc29be6a7d69f26d3120314719966bd39fd"
+                },
+                {
+                  "id": "exp-e627d68e2283b34d4d5254a3cb0ab726#msg1:0",
+                  "scope": "alice",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:17:59.018Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "2c4ae98eb0943f01fd9b36d67687f09451b96b0638374577d0f1c42a5999f19c"
+                },
+                {
+                  "id": "exp-dbb784a22d1bb86369fd370e3dffac3c#msg0:0",
+                  "scope": "alice",
+                  "role": "user",
+                  "date": "2026-10-20T06:18:13.726Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "573dc4dc1b2103492109b35e7bbad5a7b52d94d48722e11fd395ebcbc8514aad"
+                },
+                {
+                  "id": "exp-dbb784a22d1bb86369fd370e3dffac3c#msg1:0",
+                  "scope": "alice",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:18:13.726Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "0ed98d0619ceaf2a82c8555c022c625d9db88cbe3e6e6ab321590aa240d7ded7"
+                }
+              ],
+              "selectionSequence": 15,
+              "availableSequence": 22,
+              "delivery": "captured-request",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "c2729f651e2e358b3565aeb6fa0e5703236cb21425353fedb4c71245ca2706a2",
+                "chars": 2752,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "fac2ed9d-780d-40a4-9b4a-97ecef3d9c48",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "8516fa25-1a9b-48cb-b3d5-34c19a8d146c",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 18,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        }
+      },
+      {
+        "index": 5,
+        "passed": true,
+        "recall": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "63a696ac-78a0-42e9-b8b5-d9ec7ba93ff8",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "b43a9460-03aa-4cb5-9cde-127e46b8b430",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "hit",
+              "sources": [
+                {
+                  "id": "exp-af2c1e9f9fdc5440c6a957153075014b#msg0:0",
+                  "scope": "alice",
+                  "role": "user",
+                  "date": "2026-10-20T06:17:50.140Z",
+                  "memoryScope": "reusable",
+                  "contentSha256": "e0b9af974c78f04a838cdc4a2c6b916ecabb95ded5886320a45fd2d25cd07bbb"
+                },
+                {
+                  "id": "exp-af2c1e9f9fdc5440c6a957153075014b#msg1:0",
+                  "scope": "alice",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:17:50.140Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "d8211a77d323c368fcb21cbc9ef3baa398209b831074545587bde3ed35d2f2fd"
+                },
+                {
+                  "id": "exp-e627d68e2283b34d4d5254a3cb0ab726#msg0:0",
+                  "scope": "alice",
+                  "role": "user",
+                  "date": "2026-10-20T06:17:59.018Z",
+                  "memoryScope": "task",
+                  "contentSha256": "75c48a0595d12e769e96c18937a8dcc29be6a7d69f26d3120314719966bd39fd"
+                },
+                {
+                  "id": "exp-e627d68e2283b34d4d5254a3cb0ab726#msg1:0",
+                  "scope": "alice",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:17:59.018Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "2c4ae98eb0943f01fd9b36d67687f09451b96b0638374577d0f1c42a5999f19c"
+                },
+                {
+                  "id": "exp-dbb784a22d1bb86369fd370e3dffac3c#msg0:0",
+                  "scope": "alice",
+                  "role": "user",
+                  "date": "2026-10-20T06:18:13.726Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "573dc4dc1b2103492109b35e7bbad5a7b52d94d48722e11fd395ebcbc8514aad"
+                },
+                {
+                  "id": "exp-dbb784a22d1bb86369fd370e3dffac3c#msg1:0",
+                  "scope": "alice",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:18:13.726Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "0ed98d0619ceaf2a82c8555c022c625d9db88cbe3e6e6ab321590aa240d7ded7"
+                },
+                {
+                  "id": "exp-cf692df805e94d74739e45e5ffc6ba82#msg0:0",
+                  "scope": "alice",
+                  "role": "user",
+                  "date": "2026-10-20T06:18:18.341Z",
+                  "memoryScope": "reusable",
+                  "contentSha256": "9ae11b5f0bd43946b652f3ac5941dd16a05712c9b549278e94642bc4faddc8ea"
+                },
+                {
+                  "id": "exp-cf692df805e94d74739e45e5ffc6ba82#msg1:0",
+                  "scope": "alice",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:18:18.341Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "55610e91e7b6322c6901084774b0c3c2fa394d21a55623c5156fdee7aa881576"
+                }
+              ],
+              "selectionSequence": 15,
+              "availableSequence": 22,
+              "delivery": "captured-request",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "aeab2b83263f3f90a9f6f30ca9b68939ebf332c53acaf9ed67ca882fea5118e8",
+                "chars": 3619,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "63a696ac-78a0-42e9-b8b5-d9ec7ba93ff8",
+              "firstKnownWriteSequence": null,
+              "unknownActionTools": [],
+              "recallId": "c6ae73d6-ed1c-4d53-8acc-6921360df24e",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 18,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        }
+      }
+    ],
+    "costUsd": 0.003001008
+  },
+  "pastSmoke": {
+    "runDirectory": ".mentat/public-evaluations/past-recall-attribution-smoke-20261020-v1",
+    "protocol": "past-foundation-diagnostic-v8",
+    "planSha256": "c4928cdd188b451f72d820c5b364c1191b950b2ff67c6bd82c7e34965ed5dde5",
+    "recallProtocol": {
+      "schemaVersion": 1,
+      "projection": "separate native source/delivery/order evidence; no legacy score overrides",
+      "memoryCallCounting": "successful real search/add calls only; readiness probes excluded"
+    },
+    "audit": {
+      "status": "passed",
+      "scoredTrials": 5,
+      "unscoredTrials": [],
+      "changedAnalysisFiles": [],
+      "preDispatchFailures": [],
+      "skillTransitionsChecked": 5,
+      "anchorSkillRestorationsChecked": 2,
+      "inheritedProcedureReadCases": [],
+      "nativeSessions": 5,
+      "environmentDispatchReceipts": 15,
+      "nativeRecallCases": [
+        {
+          "taskId": "SM02_COLD_001",
+          "arm": "memory",
+          "bucket": "baseline",
+          "selectedIds": [],
+          "chars": 0
+        },
+        {
+          "taskId": "SM02_LEARN_A_001",
+          "arm": "memory",
+          "bucket": "learn",
+          "selectedIds": [
+            "exp-eabe1a281f40b034055f4e9976c100f4#msg0:0",
+            "exp-eabe1a281f40b034055f4e9976c100f4#msg1:0"
+          ],
+          "chars": 1719
+        },
+        {
+          "taskId": "SM02_LEARN_B_001",
+          "arm": "memory",
+          "bucket": "learn",
+          "selectedIds": [
+            "exp-eabe1a281f40b034055f4e9976c100f4#msg0:0",
+            "exp-eabe1a281f40b034055f4e9976c100f4#msg1:0",
+            "exp-77f6693cc23f18cf6825d07ba0d76350#msg0:0",
+            "exp-77f6693cc23f18cf6825d07ba0d76350#msg1:0"
+          ],
+          "chars": 4784
+        },
+        {
+          "taskId": "SM02_EVAL_NEAR_001",
+          "arm": "memory",
+          "bucket": "evaluation",
+          "selectedIds": [
+            "exp-eabe1a281f40b034055f4e9976c100f4#msg0:0",
+            "exp-eabe1a281f40b034055f4e9976c100f4#msg1:0",
+            "exp-77f6693cc23f18cf6825d07ba0d76350#msg0:0",
+            "exp-77f6693cc23f18cf6825d07ba0d76350#msg1:0",
+            "exp-ad89032f96cd07a2ba5d21655e02c7e0#msg0:0",
+            "exp-ad89032f96cd07a2ba5d21655e02c7e0#msg1:0"
+          ],
+          "chars": 6731
+        },
+        {
+          "taskId": "SM02_EVAL_FAR_001",
+          "arm": "memory",
+          "bucket": "evaluation",
+          "selectedIds": [
+            "exp-eabe1a281f40b034055f4e9976c100f4#msg0:0",
+            "exp-eabe1a281f40b034055f4e9976c100f4#msg1:0",
+            "exp-77f6693cc23f18cf6825d07ba0d76350#msg0:0",
+            "exp-77f6693cc23f18cf6825d07ba0d76350#msg1:0",
+            "exp-ad89032f96cd07a2ba5d21655e02c7e0#msg0:0",
+            "exp-ad89032f96cd07a2ba5d21655e02c7e0#msg1:0"
+          ],
+          "chars": 6731
+        }
+      ],
+      "protocolFrames": 455,
+      "issues": [],
+      "coverage": "Frozen file hashes, allowlisted controller fields and tools, native tool calls versus real upstream dispatch receipts, effective model, fresh engine sessions, accounting completeness, empty reset memory/procedures and real skill writes/reads; when declared, per-episode skill snapshots, continuation/anchor lineage and reads completed before business writes. Not OS isolation or training contamination proof."
+    },
+    "cases": [
+      {
+        "taskId": "SM02_COLD_001",
+        "bucket": "baseline",
+        "rawScore": 0.6933,
+        "taskComponents": {
+          "grounding": 1.0,
+          "content_correctness": 0.833333,
+          "share_correctness": 0.0
+        },
+        "legacyRetrievalSignals": {
+          "expected_signal": "memory",
+          "memory_read_count": 1,
+          "memory_injection_count": 0,
+          "skill_read_count": 0,
+          "session_search_count": 0,
+          "retrieval_signal_count": 1,
+          "explicit_retrieval_count": 1,
+          "explicit_signal_used": true,
+          "used_expected_signal": true,
+          "retrieval_before_first_update": false,
+          "explicit_retrieval_before_first_update": false,
+          "retrieval_before_final_response": true,
+          "first_retrieval_at": null,
+          "first_write_at": "2026-10-20T06:18:35.935288+00:00",
+          "first_write_endpoint": "http://localhost:27105/notes/share"
+        },
+        "nativeRecallProjection": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "turnId": "99702045-6243-4ac0-9740-622ac0e93032",
+          "byKind": {
+            "memory": {
+              "attempts": 2,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "hits": 0,
+              "empty": 2,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "imported-history": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 1,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            }
+          },
+          "legacyScoreOverride": false,
+          "limits": [
+            "Historical context is not relabelled as memory_search or confirmed active memory.",
+            "Catalog metadata is separate from complete procedure reads.",
+            "Availability is not proof of semantic correctness, model attention or causal benefit."
+          ]
+        },
+        "nativeRecallEvidence": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 2,
+              "hits": 0,
+              "empty": 2,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "99702045-6243-4ac0-9740-622ac0e93032",
+              "firstKnownWriteSequence": 133,
+              "unknownActionTools": [],
+              "recallId": "06cb0614-d49b-4240-bc63-d1b22db7c255",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 18,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": false,
+              "hostInputMatched": false,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "99702045-6243-4ac0-9740-622ac0e93032",
+              "firstKnownWriteSequence": 133,
+              "unknownActionTools": [],
+              "recallId": "261ff37c-cc28-4f2e-8335-0feee38661d7",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 21,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            },
+            {
+              "turnId": "99702045-6243-4ac0-9740-622ac0e93032",
+              "firstKnownWriteSequence": 133,
+              "unknownActionTools": [],
+              "recallId": "call_00_rglluows0ixc1qqjhkkep3vl",
+              "kind": "memory",
+              "method": "tool",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 87,
+              "availableSequence": null,
+              "delivery": "adapter-result",
+              "assemblyMatched": null,
+              "hostInputMatched": null,
+              "beforeFirstWrite": null,
+              "issues": []
+            },
+            {
+              "turnId": "99702045-6243-4ac0-9740-622ac0e93032",
+              "firstKnownWriteSequence": 133,
+              "unknownActionTools": [],
+              "recallId": "call_01_l6txv0ubo621xyk0wjr0gwrp",
+              "kind": "procedure-catalog",
+              "method": "tool",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 90,
+              "availableSequence": null,
+              "delivery": "adapter-result",
+              "assemblyMatched": null,
+              "hostInputMatched": null,
+              "beforeFirstWrite": null,
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        },
+        "costUsd": 0.001680534
+      },
+      {
+        "taskId": "SM02_LEARN_A_001",
+        "bucket": "learn",
+        "rawScore": 1.0,
+        "taskComponents": {
+          "grounding": 1.0,
+          "content_correctness": 0.833333,
+          "share_correctness": 1.0
+        },
+        "legacyRetrievalSignals": {
+          "expected_signal": "memory",
+          "memory_read_count": 1,
+          "memory_injection_count": 0,
+          "skill_read_count": 0,
+          "session_search_count": 0,
+          "retrieval_signal_count": 1,
+          "explicit_retrieval_count": 1,
+          "explicit_signal_used": true,
+          "used_expected_signal": true,
+          "retrieval_before_first_update": false,
+          "explicit_retrieval_before_first_update": false,
+          "retrieval_before_final_response": true,
+          "first_retrieval_at": null,
+          "first_write_at": "2026-10-20T06:19:01.858158+00:00",
+          "first_write_endpoint": "http://localhost:27105/notes/share"
+        },
+        "nativeRecallProjection": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "turnId": "fbd26f3f-131b-4571-8b61-c728ff42bf15",
+          "byKind": {
+            "memory": {
+              "attempts": 2,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "hits": 0,
+              "empty": 2,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 1
+            },
+            "imported-history": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            }
+          },
+          "legacyScoreOverride": false,
+          "limits": [
+            "Historical context is not relabelled as memory_search or confirmed active memory.",
+            "Catalog metadata is separate from complete procedure reads.",
+            "Availability is not proof of semantic correctness, model attention or causal benefit."
+          ]
+        },
+        "nativeRecallEvidence": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 2,
+              "hits": 0,
+              "empty": 2,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 1
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "fbd26f3f-131b-4571-8b61-c728ff42bf15",
+              "firstKnownWriteSequence": 159,
+              "unknownActionTools": [],
+              "recallId": "ba695768-b13a-426e-b486-8a5738dba2bf",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "hit",
+              "sources": [
+                {
+                  "id": "exp-eabe1a281f40b034055f4e9976c100f4#msg0:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "user",
+                  "date": "2026-10-20T06:18:40.883Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "0f67d6e47a4b69b65a1c810b022bb6e30ab20e015d97327ebd874bdcedea2309"
+                },
+                {
+                  "id": "exp-eabe1a281f40b034055f4e9976c100f4#msg1:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:18:40.883Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "9c56d512c0827811bddea0c81747df1e9c42c5896facbd2334b0aeecdffd749b"
+                }
+              ],
+              "selectionSequence": 18,
+              "availableSequence": 25,
+              "delivery": "captured-request",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": true,
+              "selection": {
+                "contentSha256": "3d6423b02e579f8825fd4c9e7125a159996818310e849a6d76694ac15e7f4326",
+                "chars": 1718,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "fbd26f3f-131b-4571-8b61-c728ff42bf15",
+              "firstKnownWriteSequence": 159,
+              "unknownActionTools": [],
+              "recallId": "0160b3e7-920a-4383-91dc-6298f8bd2446",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 21,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            },
+            {
+              "turnId": "fbd26f3f-131b-4571-8b61-c728ff42bf15",
+              "firstKnownWriteSequence": 159,
+              "unknownActionTools": [],
+              "recallId": "call_01_tXbKEdFTnkkqVRZ9jX8q4526",
+              "kind": "memory",
+              "method": "tool",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 44,
+              "availableSequence": null,
+              "delivery": "adapter-result",
+              "assemblyMatched": null,
+              "hostInputMatched": null,
+              "beforeFirstWrite": null,
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        },
+        "costUsd": 0.0038542740000000004
+      },
+      {
+        "taskId": "SM02_LEARN_B_001",
+        "bucket": "learn",
+        "rawScore": 1.0,
+        "taskComponents": {
+          "grounding": 1.0,
+          "content_correctness": 1.0,
+          "share_correctness": 1.0
+        },
+        "legacyRetrievalSignals": {
+          "expected_signal": "memory",
+          "memory_read_count": 1,
+          "memory_injection_count": 0,
+          "skill_read_count": 0,
+          "session_search_count": 0,
+          "retrieval_signal_count": 1,
+          "explicit_retrieval_count": 1,
+          "explicit_signal_used": true,
+          "used_expected_signal": true,
+          "retrieval_before_first_update": false,
+          "explicit_retrieval_before_first_update": false,
+          "retrieval_before_final_response": true,
+          "first_retrieval_at": null,
+          "first_write_at": "2026-10-20T06:19:28.970966+00:00",
+          "first_write_endpoint": "http://localhost:27105/notes/share"
+        },
+        "nativeRecallProjection": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "turnId": "f381cc2c-10e4-4609-a3b5-8b78be0e0835",
+          "byKind": {
+            "memory": {
+              "attempts": 2,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "hits": 1,
+              "empty": 1,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 1
+            },
+            "native-history": {
+              "attempts": 1,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 1
+            },
+            "imported-history": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            }
+          },
+          "legacyScoreOverride": false,
+          "limits": [
+            "Historical context is not relabelled as memory_search or confirmed active memory.",
+            "Catalog metadata is separate from complete procedure reads.",
+            "Availability is not proof of semantic correctness, model attention or causal benefit."
+          ]
+        },
+        "nativeRecallEvidence": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 2,
+              "hits": 1,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "evidenceAvailableBeforeWrite": 1
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 1
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "f381cc2c-10e4-4609-a3b5-8b78be0e0835",
+              "firstKnownWriteSequence": 115,
+              "unknownActionTools": [],
+              "recallId": "ae8d5c8b-df18-4738-a5f4-4998a3c4e19b",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "hit",
+              "sources": [
+                {
+                  "id": "exp-eabe1a281f40b034055f4e9976c100f4#msg0:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "user",
+                  "date": "2026-10-20T06:18:40.883Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "0f67d6e47a4b69b65a1c810b022bb6e30ab20e015d97327ebd874bdcedea2309"
+                },
+                {
+                  "id": "exp-eabe1a281f40b034055f4e9976c100f4#msg1:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:18:40.883Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "9c56d512c0827811bddea0c81747df1e9c42c5896facbd2334b0aeecdffd749b"
+                },
+                {
+                  "id": "exp-77f6693cc23f18cf6825d07ba0d76350#msg0:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "user",
+                  "date": "2026-10-20T06:19:12.822Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "5fa4d8488cf37bc09fe0c9dbffd71565bee1caa3f50ba913cc85c8f60c57f9e0"
+                },
+                {
+                  "id": "exp-77f6693cc23f18cf6825d07ba0d76350#msg1:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:19:12.822Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "8fa0958354f2665749f097f479dc704807df7de15b138813b6b30fe7a82793e2"
+                }
+              ],
+              "selectionSequence": 18,
+              "availableSequence": 25,
+              "delivery": "captured-request",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": true,
+              "selection": {
+                "contentSha256": "d81b8baa2f20eec32fcb91c390f6c1b9d3eba5e0f4798263b935c8a4650cafc1",
+                "chars": 4783,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "f381cc2c-10e4-4609-a3b5-8b78be0e0835",
+              "firstKnownWriteSequence": 115,
+              "unknownActionTools": [],
+              "recallId": "2f1cc567-f4f5-482b-a903-08262a3207d8",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 21,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            },
+            {
+              "turnId": "f381cc2c-10e4-4609-a3b5-8b78be0e0835",
+              "firstKnownWriteSequence": 115,
+              "unknownActionTools": [],
+              "recallId": "call_00_Qoe4d2zSGogyFj8AcScE7114",
+              "kind": "memory",
+              "method": "tool",
+              "outcome": "hit",
+              "sources": [
+                {
+                  "id": "mem-1tpz6xt",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "state": "candidate",
+                  "version": 1,
+                  "basis": "inference",
+                  "contentSha256": "91c59c1b1644dabdb0f8027f7590179dd5e4b347bf27de032a3c4bfe3d842a74"
+                }
+              ],
+              "selectionSequence": 97,
+              "availableSequence": 103,
+              "delivery": "adapter-result",
+              "assemblyMatched": null,
+              "hostInputMatched": null,
+              "beforeFirstWrite": true,
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        },
+        "costUsd": 0.0022585379999999996
+      },
+      {
+        "taskId": "SM02_EVAL_NEAR_001",
+        "bucket": "evaluation",
+        "rawScore": 0.4,
+        "taskComponents": {
+          "grounding": 1.0,
+          "content_correctness": 1.0,
+          "share_correctness": 1.0
+        },
+        "legacyRetrievalSignals": {
+          "expected_signal": "memory",
+          "memory_read_count": 0,
+          "memory_injection_count": 0,
+          "skill_read_count": 0,
+          "session_search_count": 0,
+          "retrieval_signal_count": 0,
+          "explicit_retrieval_count": 0,
+          "explicit_signal_used": false,
+          "used_expected_signal": false,
+          "retrieval_before_first_update": false,
+          "explicit_retrieval_before_first_update": false,
+          "retrieval_before_final_response": false,
+          "first_retrieval_at": null,
+          "first_write_at": "2026-10-20T06:19:51.991403+00:00",
+          "first_write_endpoint": "http://localhost:27105/notes/share"
+        },
+        "nativeRecallProjection": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "turnId": "3c5bd7cf-6547-4ffb-b080-30874c11f72e",
+          "byKind": {
+            "memory": {
+              "attempts": 1,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 1
+            },
+            "imported-history": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 1,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            }
+          },
+          "legacyScoreOverride": false,
+          "limits": [
+            "Historical context is not relabelled as memory_search or confirmed active memory.",
+            "Catalog metadata is separate from complete procedure reads.",
+            "Availability is not proof of semantic correctness, model attention or causal benefit."
+          ]
+        },
+        "nativeRecallEvidence": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 1
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 1,
+              "hits": 0,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "3c5bd7cf-6547-4ffb-b080-30874c11f72e",
+              "firstKnownWriteSequence": 131,
+              "unknownActionTools": [],
+              "recallId": "1284743f-96cd-4539-b3dc-47e15fc07573",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "hit",
+              "sources": [
+                {
+                  "id": "exp-eabe1a281f40b034055f4e9976c100f4#msg0:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "user",
+                  "date": "2026-10-20T06:18:40.883Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "0f67d6e47a4b69b65a1c810b022bb6e30ab20e015d97327ebd874bdcedea2309"
+                },
+                {
+                  "id": "exp-eabe1a281f40b034055f4e9976c100f4#msg1:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:18:40.883Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "9c56d512c0827811bddea0c81747df1e9c42c5896facbd2334b0aeecdffd749b"
+                },
+                {
+                  "id": "exp-77f6693cc23f18cf6825d07ba0d76350#msg0:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "user",
+                  "date": "2026-10-20T06:19:12.822Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "5fa4d8488cf37bc09fe0c9dbffd71565bee1caa3f50ba913cc85c8f60c57f9e0"
+                },
+                {
+                  "id": "exp-77f6693cc23f18cf6825d07ba0d76350#msg1:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:19:12.822Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "8fa0958354f2665749f097f479dc704807df7de15b138813b6b30fe7a82793e2"
+                },
+                {
+                  "id": "exp-ad89032f96cd07a2ba5d21655e02c7e0#msg0:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "user",
+                  "date": "2026-10-20T06:19:33.373Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "c452e6898575cafeae79a2e06fac6ae23c8cd8793c0d4f096fe2014314c1954b"
+                },
+                {
+                  "id": "exp-ad89032f96cd07a2ba5d21655e02c7e0#msg1:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:19:33.373Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "bffec3059067c80be5f26ad1b2ac157f7f93ef32e1f75437af7472d6fb5a9982"
+                }
+              ],
+              "selectionSequence": 18,
+              "availableSequence": 25,
+              "delivery": "captured-request",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": true,
+              "selection": {
+                "contentSha256": "682aa019f5938f39ff6303b370fda73cd36ed215ea665f99068f89f6c0b11952",
+                "chars": 6730,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "3c5bd7cf-6547-4ffb-b080-30874c11f72e",
+              "firstKnownWriteSequence": 131,
+              "unknownActionTools": [],
+              "recallId": "c74cb676-1e33-479f-982e-9db23ae6ab29",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 21,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            },
+            {
+              "turnId": "3c5bd7cf-6547-4ffb-b080-30874c11f72e",
+              "firstKnownWriteSequence": 131,
+              "unknownActionTools": [],
+              "recallId": "call_01_3GKERwkNTOGBkFQHSqkT7847",
+              "kind": "procedure-catalog",
+              "method": "tool",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 42,
+              "availableSequence": null,
+              "delivery": "adapter-result",
+              "assemblyMatched": null,
+              "hostInputMatched": null,
+              "beforeFirstWrite": null,
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        },
+        "costUsd": 0.004428024
+      },
+      {
+        "taskId": "SM02_EVAL_FAR_001",
+        "bucket": "evaluation",
+        "rawScore": 1.0,
+        "taskComponents": {
+          "grounding": 1.0,
+          "content_correctness": 1.0,
+          "share_correctness": 1.0
+        },
+        "legacyRetrievalSignals": {
+          "expected_signal": "memory",
+          "memory_read_count": 1,
+          "memory_injection_count": 0,
+          "skill_read_count": 0,
+          "session_search_count": 0,
+          "retrieval_signal_count": 1,
+          "explicit_retrieval_count": 1,
+          "explicit_signal_used": true,
+          "used_expected_signal": true,
+          "retrieval_before_first_update": false,
+          "explicit_retrieval_before_first_update": false,
+          "retrieval_before_final_response": true,
+          "first_retrieval_at": null,
+          "first_write_at": "2026-10-20T06:20:18.950484+00:00",
+          "first_write_endpoint": "http://localhost:27105/notes/share"
+        },
+        "nativeRecallProjection": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "turnId": "5954d694-cdb8-4704-8900-fdbb2e320bf8",
+          "byKind": {
+            "memory": {
+              "attempts": 2,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "hits": 1,
+              "empty": 1,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 1
+            },
+            "native-history": {
+              "attempts": 1,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 1
+            },
+            "imported-history": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "unverified": 0,
+              "evidenceBeforeWrite": 0
+            }
+          },
+          "legacyScoreOverride": false,
+          "limits": [
+            "Historical context is not relabelled as memory_search or confirmed active memory.",
+            "Catalog metadata is separate from complete procedure reads.",
+            "Availability is not proof of semantic correctness, model attention or causal benefit."
+          ]
+        },
+        "nativeRecallEvidence": {
+          "schemaVersion": 1,
+          "status": "observed",
+          "toolPolicyAvailable": true,
+          "byKind": {
+            "memory": {
+              "attempts": 2,
+              "hits": 1,
+              "empty": 1,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 1,
+              "evidenceAvailableBeforeWrite": 1
+            },
+            "native-history": {
+              "attempts": 1,
+              "hits": 1,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 1,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 1
+            },
+            "imported-history": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            },
+            "procedure-catalog": {
+              "attempts": 0,
+              "hits": 0,
+              "empty": 0,
+              "failed": 0,
+              "blocked": 0,
+              "incomplete": 0,
+              "unparsed": 0,
+              "capturedContextInjections": 0,
+              "successfulToolReads": 0,
+              "evidenceAvailableBeforeWrite": 0
+            }
+          },
+          "evidence": [
+            {
+              "turnId": "5954d694-cdb8-4704-8900-fdbb2e320bf8",
+              "firstKnownWriteSequence": 167,
+              "unknownActionTools": [],
+              "recallId": "5f657e04-8d9b-4cfa-87ca-c147bc44d942",
+              "kind": "native-history",
+              "method": "context",
+              "outcome": "hit",
+              "sources": [
+                {
+                  "id": "exp-eabe1a281f40b034055f4e9976c100f4#msg0:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "user",
+                  "date": "2026-10-20T06:18:40.883Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "0f67d6e47a4b69b65a1c810b022bb6e30ab20e015d97327ebd874bdcedea2309"
+                },
+                {
+                  "id": "exp-eabe1a281f40b034055f4e9976c100f4#msg1:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:18:40.883Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "9c56d512c0827811bddea0c81747df1e9c42c5896facbd2334b0aeecdffd749b"
+                },
+                {
+                  "id": "exp-77f6693cc23f18cf6825d07ba0d76350#msg0:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "user",
+                  "date": "2026-10-20T06:19:12.822Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "5fa4d8488cf37bc09fe0c9dbffd71565bee1caa3f50ba913cc85c8f60c57f9e0"
+                },
+                {
+                  "id": "exp-77f6693cc23f18cf6825d07ba0d76350#msg1:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:19:12.822Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "8fa0958354f2665749f097f479dc704807df7de15b138813b6b30fe7a82793e2"
+                },
+                {
+                  "id": "exp-ad89032f96cd07a2ba5d21655e02c7e0#msg0:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "user",
+                  "date": "2026-10-20T06:19:33.373Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "c452e6898575cafeae79a2e06fac6ae23c8cd8793c0d4f096fe2014314c1954b"
+                },
+                {
+                  "id": "exp-ad89032f96cd07a2ba5d21655e02c7e0#msg1:0",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "date": "2026-10-20T06:19:33.373Z",
+                  "memoryScope": "unspecified",
+                  "contentSha256": "bffec3059067c80be5f26ad1b2ac157f7f93ef32e1f75437af7472d6fb5a9982"
+                }
+              ],
+              "selectionSequence": 18,
+              "availableSequence": 25,
+              "delivery": "captured-request",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": true,
+              "selection": {
+                "contentSha256": "682aa019f5938f39ff6303b370fda73cd36ed215ea665f99068f89f6c0b11952",
+                "chars": 6730,
+                "omittedIds": null,
+                "omittedMatchingCount": 0
+              },
+              "issues": []
+            },
+            {
+              "turnId": "5954d694-cdb8-4704-8900-fdbb2e320bf8",
+              "firstKnownWriteSequence": 167,
+              "unknownActionTools": [],
+              "recallId": "6fbbc92b-4693-4e6a-b96b-add8d877dfd7",
+              "kind": "memory",
+              "method": "context",
+              "outcome": "empty",
+              "sources": [],
+              "selectionSequence": 21,
+              "availableSequence": null,
+              "delivery": "none",
+              "assemblyMatched": true,
+              "hostInputMatched": true,
+              "beforeFirstWrite": null,
+              "selection": {
+                "contentSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "chars": 0,
+                "omittedIds": []
+              },
+              "issues": []
+            },
+            {
+              "turnId": "5954d694-cdb8-4704-8900-fdbb2e320bf8",
+              "firstKnownWriteSequence": 167,
+              "unknownActionTools": [],
+              "recallId": "call_01_gCtEQDD4vGdWNOPAXmwn1513",
+              "kind": "memory",
+              "method": "tool",
+              "outcome": "hit",
+              "sources": [
+                {
+                  "id": "mem-1tpz6xt",
+                  "scope": "ctx-5f55910569a344489377d94572613f5f",
+                  "role": "assistant",
+                  "state": "candidate",
+                  "version": 1,
+                  "basis": "inference",
+                  "contentSha256": "91c59c1b1644dabdb0f8027f7590179dd5e4b347bf27de032a3c4bfe3d842a74"
+                }
+              ],
+              "selectionSequence": 64,
+              "availableSequence": 72,
+              "delivery": "adapter-result",
+              "assemblyMatched": null,
+              "hostInputMatched": null,
+              "beforeFirstWrite": true,
+              "issues": []
+            }
+          ],
+          "issues": [],
+          "limits": [
+            "Captured redacted source representation and transport availability only; not proof the model used or understood it.",
+            "Original source validity and actual business outcomes require separate audits; no memory is activated here.",
+            "Unknown action effects or missing protocol capture produce unknown timing/delivery, never inferred success.",
+            "Procedure catalogs are metadata, not complete procedure reads. Legacy traces without recall.selection/policy are not assigned fabricated injections."
+          ]
+        },
+        "costUsd": 0.0036913140000000002
+      }
+    ],
+    "costUsd": 0.015912684
+  },
+  "limits": [
+    "Single family and one repetition; no full 40/26-family score claim.",
+    "Captured requests and native tool results do not prove model attention or causal benefit.",
+    "Legacy scorer output preserved; history never relabelled as memory_search or active memory.",
+    "Frozen-source audit completed before exporting this report and documentation."
+  ]
+}

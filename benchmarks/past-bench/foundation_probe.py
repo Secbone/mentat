@@ -22,6 +22,8 @@ import time
 import uuid
 from collections import Counter
 from urllib.parse import urlparse
+from subject_boundary import ISOLATION_PROTOCOL, new_subject_scopes
+from recall_adapter import action_effects, memory_call_counts, project_recall
 
 ROOT = Path(__file__).resolve().parents[2]
 UPSTREAM = ROOT / ".mentat/upstream/past-bench"
@@ -77,9 +79,7 @@ def artifact(state, response=None):
     counts = Counter(c["name"] for c in calls)
     result["internal_tools"].update(
         tool_call_counts=dict(counts),
-        memory_calls=sum(v for k, v in counts.items() if k.startswith("direct_memory_memory_")),
-        memory_read_count=counts["direct_memory_memory_search"],
-        memory_write_count=counts["direct_memory_memory_add"],
+        **memory_call_counts(calls),
     )
     # Project actual native procedural artifacts; never synthesize skill contents.
     skill_path = state / "skills.json"
@@ -158,7 +158,7 @@ def tool_server(path, token, task, writer, trace_id):
     return server, dispatcher, thread, count
 
 
-def run_episode(task, episode, arm, state, out, timeout, port_offset):
+def run_episode(task, episode, arm, state, out, timeout, port_offset, subject_scope):
     out.mkdir(parents=True)
     task.apply_port_offset(port_offset)
     # Never reuse or reset a service that belongs to another experiment.
@@ -184,7 +184,8 @@ def run_episode(task, episode, arm, state, out, timeout, port_offset):
             with ServiceManager(task.services, cwd=UPSTREAM):
                 config = {"socketPath": str(Path(socket_dir) / "task.sock"), "token": token,
                           "toolsPath": str(out / "tools.json"), "query": task.prompt.text,
-                          "stateDir": str(state), "scope": episode.family_id,
+                          "stateDir": str(state), "scope": subject_scope,
+                          "actionEffects": action_effects(t.name for t in task.tools),
                           "reflect": arm == "reflect" and episode.bucket not in {"baseline", "evaluation", "control"},
                           "timeoutMs": timeout * 1000, "maxSteps": task.environment.max_turns}
                 write(out / "controller.json", config)
@@ -234,6 +235,7 @@ def run_episode(task, episode, arm, state, out, timeout, port_offset):
                   validFinalAnswer=response["reason"] == "done", answerError=response.get("error"),
                   nativeMemory=response["observations"]["memory"], reflection=response["reflection"],
                   nativeCalls=response["calls"], nativeModels=response["observations"]["models"],
+                  recallAttribution=project_recall(response["observations"].get("recall"), response["taskTurnId"]),
                   activeBefore=len(before["memory_entries"]), activeAfter=len(after["memory_entries"]),
                   candidateAfter=sum(r.get("status") == "candidate" for r in after["native_entries"]))
     return result
@@ -261,6 +263,7 @@ def main():
     assert 30 <= args.timeout <= 300 and args.limit >= 0
     assert shutil.disk_usage(ROOT).free >= 30 * 1024 ** 3
     args.out.mkdir()
+    subject_scopes = new_subject_scopes(args.families)
     sequences, tasks, roster, hashes = {}, {}, [], {}
     for family in args.families:
         path = args.out / "manifests" / f"{Path(family).name}.yaml"
@@ -290,10 +293,12 @@ def main():
         if source.is_file():
             archive.append({"name": name, "sha256": digest(source), "base64": base64.b64encode(source.read_bytes()).decode()})
     write(args.out / "subject-source.json", archive)
-    plan = {"protocol": "past-foundation-diagnostic-v6", "track": "adapted", "model": MODEL,
+    plan = {"protocol": "past-foundation-diagnostic-v8", "track": "adapted", "model": MODEL,
             "revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "upstreamRevision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=UPSTREAM, text=True).strip(),
             "nativeSkillSnapshots": True, "pairedResetEvaluationOnly": args.reset_evaluation_only,
+            "subjectIsolation": {"protocol": ISOLATION_PROTOCOL, "scopes": subject_scopes, "workspace": "fresh randomly named OS temporary directory per episode"},
+            "recallAttribution": {"schemaVersion": 1, "projection": "separate native source/delivery/order evidence; no legacy score overrides", "memoryCallCounting": "successful real search/add calls only; readiness probes excluded"},
             "nativeRecall": {"maxChars": 8000, "bothArms": True, "wholeMessages": True, "source": "original native user fragments and attributed assistant messages only", "snapshots": True},
             "supplementalQualityReview": {"scope": "evaluation business writes, separate from original grader", "goals": ["no mutations of excluded targets", "correct complete priority/category/tags on required targets", "report strict passes and controls alongside continuous score"], "doesNotReplacePrimaryAcceptance": True},
             "primaryAcceptance": {"bucket": "evaluation", "scoreArm": "memory", "baselineArm": "reset", "minimumScore100": 50, "gain": "strictly positive", "nativeReuseRequired": True} if args.reset_evaluation_only else None,
@@ -331,7 +336,7 @@ def main():
                 record = {"family": family, "arm": arm, "index": index, "taskId": task.task_id, "bucket": episode.bucket, "stage": episode.stage, "transferDistance": episode.transfer_distance}
                 print(f"START {family} {arm} {index + 1}/{len(sequence.episodes)} {episode.bucket}", flush=True)
                 try:
-                    result = run_episode(task, episode, arm, state, out, args.timeout, args.port_offset)
+                    result = run_episode(task, episode, arm, state, out, args.timeout, args.port_offset, subject_scopes[family])
                     record.update(result)
                 except Exception as error:
                     record.update(status="error", error=str(error), passed=None, task_score=None)
