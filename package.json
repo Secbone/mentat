@@ -21,7 +21,10 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "test:architecture": "node --test scripts/check-layering.test.mjs",
-    "check": "node scripts/gen-aliases.mjs && node scripts/check-layering.mjs && node --test scripts/check-layering.test.mjs && tsc --noEmit && vitest run && biome check ."
+    "test:audits": "python3 -m unittest discover -s benchmarks/past-bench -p 'test_*.py' && python3 -m unittest discover -s benchmarks/swe-bench -p 'test_*.py'",
+    "check": "node scripts/gen-aliases.mjs && node scripts/check-layering.mjs && node --test scripts/check-layering.test.mjs && tsc --noEmit && pnpm typecheck:packages && vitest run && pnpm test:experiments && pnpm test:audits && biome check .",
+    "test:experiments": "node --import tsx --test experiments/personal-assistant/runner.test.ts && tsc --noEmit -p experiments/personal-assistant/tsconfig.json",
+    "typecheck:packages": "pnpm -r typecheck"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",

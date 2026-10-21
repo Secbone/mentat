@@ -31,14 +31,17 @@ server.registerTool(
     },
   },
   run(({ query, limit }) =>
-    rankSkills(repository.list(scope), query, limit).map(
-      ({ name, description, applicability, version }) => ({
-        name,
-        description,
-        applicability,
-        version,
-      }),
-    ),
+    rankSkills(
+      repository.list(scope).filter((skill) => skill.status !== "retired"),
+      query,
+      limit,
+    ).map(({ name, description, applicability, version, status }) => ({
+      name,
+      description,
+      applicability,
+      version,
+      status: status ?? "draft",
+    })),
   ),
 );
 server.registerTool(
@@ -50,8 +53,8 @@ server.registerTool(
   },
   run(({ name }) => {
     const skill = repository.get(name, scope);
-    if (!skill) throw new Error("skill not found in current scope");
-    return skill;
+    if (!skill || skill.status === "retired") throw new Error("skill not found in current scope");
+    return { ...skill, status: skill.status ?? "draft" };
   }),
 );
 server.registerTool(

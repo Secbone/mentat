@@ -47,6 +47,76 @@ function signalValue(signals: { name: string; value: number }[] | undefined): nu
 }
 
 describe("SelfIterationLoop", () => {
+  it("counts consecutive failures and resets the failure budget after acceptance", async () => {
+    const result = await new SelfIterationLoop({
+      workspace: new InMemoryWorkspace(root()),
+      proposer: new ScriptedProposer([propose(0), propose(2), propose(1), propose(3)]),
+      evaluator: new FunctionEvaluator([readKnob]),
+      config: { maxIterations: 4, maxFailures: 2 },
+    }).run();
+    expect(result.records).toHaveLength(4);
+    expect(result.best.id).toBe("cand-3");
+  });
+  it("keeps rejected tradeoffs for exploration without publishing them", async () => {
+    const workspace = new InMemoryWorkspace(root());
+    const loop = new SelfIterationLoop({
+      workspace,
+      proposer: new ScriptedProposer([propose(2)]),
+      evaluator: {
+        evaluate: async (c) => [
+          { name: "quality", value: c.id === "root" ? 0.5 : 1, direction: "higher-better" },
+          { name: "noise", value: c.id === "root" ? 0 : 0.4, direction: "lower-better" },
+        ],
+      },
+      config: { maxIterations: 1 },
+    });
+    const result = await loop.run();
+    expect(result.records[0]?.accepted).toBe(false);
+    expect(result.archive.best()?.id).toBe("cand-2");
+    expect(result.best.id).toBe("root");
+    expect(workspace.current().id).toBe("root");
+  });
+
+  it("rejects deletion and forged replacement of protected artifacts", async () => {
+    for (const artifacts of [
+      undefined,
+      [],
+      [knob(1)],
+      [{ ...knob(99), version: "knob:1", protected: true }],
+    ]) {
+      const workspace = new InMemoryWorkspace({
+        ...root(),
+        artifacts: [knob(1, { protected: true })],
+      });
+      const result = await new SelfIterationLoop({
+        workspace,
+        proposer: new ScriptedProposer([() => ({ id: "bad", description: "bypass", artifacts })]),
+        evaluator: new FunctionEvaluator([readKnob]),
+        config: { maxIterations: 1 },
+      }).run();
+      expect(result.records[0]?.reason).toBe("protected artifact");
+    }
+  });
+
+  it("rolls back an evaluated candidate with an incomplete metric vector", async () => {
+    const workspace = new InMemoryWorkspace(root());
+    const loop = new SelfIterationLoop({
+      workspace,
+      proposer: new ScriptedProposer([propose(2)]),
+      evaluator: {
+        evaluate: async (c) =>
+          c.id === "root"
+            ? [
+                { name: "quality", value: 1, direction: "higher-better" },
+                { name: "safety", value: 1, direction: "higher-better" },
+              ]
+            : [{ name: "quality", value: 2, direction: "higher-better" }],
+      },
+      config: { maxIterations: 1 },
+    });
+    await expect(loop.run()).rejects.toThrow("metric contract changed");
+    expect(workspace.current().id).toBe("root");
+  });
   it("accepts an improvement, then rolls back a regression, keeping lineage", async () => {
     const workspace = new InMemoryWorkspace(root(1));
     const loop = new SelfIterationLoop({

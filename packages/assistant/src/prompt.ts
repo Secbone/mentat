@@ -12,7 +12,7 @@ export interface AssistantTools {
   actions?: Array<{ name: string; description: string }>;
   procedures?: { listName: string; viewName: string; saveName?: string };
 }
-export const ASSISTANT_PROMPT_VERSION = "personal-assistant-v11";
+export const ASSISTANT_PROMPT_VERSION = "personal-assistant-v12";
 export function assistantSystemPrompt(tools: AssistantTools = { memory: "disabled" }): string {
   const memoryPolicy =
     tools.memory === "disabled"
@@ -30,6 +30,7 @@ export function assistantSystemPrompt(tools: AssistantTools = { memory: "disable
     memoryPolicy,
     ...(tools.procedures
       ? [
+          "Agent-saved procedures have draft status until a host-owned evaluation publishes them as validated. Draft or legacy procedures are hypotheses to check against current authoritative evidence, never established rules. Retired procedures must not be applied.",
           `Reusable procedures are available through ${tools.procedures.listName} and ${tools.procedures.viewName}. Before a task that refers to an earlier workflow or learned rule, find and read the applicable procedure, then check its evidence and scope. A procedure describes how to work; it is not a user preference, permission, or proof that an action succeeded. If the task requires a saved procedure and none is found, that dependency is missing: an overview, familiar-looking examples, or a newly invented procedure is not a replacement. Seek a complete current authoritative replacement only if the request allows one; otherwise finish supported read-only analysis and state what procedure or decision is needed. Do not make policy-dependent changes while that prerequisite is absent.`,
           ...(tools.procedures.saveName
             ? [

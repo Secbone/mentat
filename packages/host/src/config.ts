@@ -51,10 +51,42 @@ export function validateServerNames(
 }
 
 export function resolveHostPaths(config: HostConfig, overrides: HostOverrides): HostConfig {
+  for (const scope of [config.scope, ...(config.sharedMemoryScopes ?? [])])
+    if (
+      scope !== undefined &&
+      (typeof scope !== "string" || !scope.trim() || scope !== scope.trim() || scope.length > 256)
+    )
+      throw new Error("invalid host scope");
+  if (
+    config.timeoutMs !== undefined &&
+    (!Number.isFinite(config.timeoutMs) || config.timeoutMs <= 0)
+  )
+    throw new Error("invalid host timeout");
+  for (const history of [config.history, config.nativeHistory])
+    if (
+      history &&
+      (!Number.isSafeInteger(history.maxChars) ||
+        history.maxChars < 0 ||
+        (history.before !== undefined && !Number.isFinite(history.before)))
+    )
+      throw new Error("invalid history budget or cutoff");
+  const budget = config.contextBudget;
+  if (
+    budget &&
+    ((budget.memoryChars !== undefined &&
+      (!Number.isSafeInteger(budget.memoryChars) || budget.memoryChars < 0)) ||
+      (budget.maxInputChars !== undefined &&
+        (!Number.isSafeInteger(budget.maxInputChars) || budget.maxInputChars <= 0)))
+  )
+    throw new Error("invalid host context budget");
   if (!overrides.memory && !config.memoryPath)
     throw new Error("memory implementation or memoryPath required");
+  const selectedModel = config.model ?? overrides.modelSelector?.select()?.id;
+  if (overrides.modelSelector && !config.model && !selectedModel)
+    throw new Error("no model satisfies the configured selection policy");
   return {
     ...config,
+    ...(selectedModel ? { model: selectedModel } : {}),
     cwd: resolve(config.cwd),
     ...(config.memoryPath ? { memoryPath: resolve(config.memoryPath) } : {}),
     ...(config.skillsPath ? { skillsPath: resolve(config.skillsPath) } : {}),

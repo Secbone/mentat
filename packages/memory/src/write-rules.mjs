@@ -23,12 +23,10 @@ export function isRetrievable(entry, includeCandidates = false) {
   return false;
 }
 
-export function deriveId(key) {
-  let hash = 0;
-  for (let i = 0; i < key.length; i += 1) {
-    hash = (Math.imul(hash, 31) + key.charCodeAt(i)) | 0;
-  }
-  return `mem-${(hash >>> 0).toString(36)}`;
+export function deriveId(_key) {
+  // The stable lookup identity is (scope, key); IDs must not use a lossy key hash.
+  // Existing IDs are preserved on update, so old evidence pointers remain valid.
+  return `mem-${crypto.randomUUID()}`;
 }
 
 function withOptional(target, request) {

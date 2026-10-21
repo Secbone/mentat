@@ -20,11 +20,20 @@ export class ModelCatalog {
   }
 
   add(model: ModelDescriptor): void {
-    this.models.set(model.id, model);
+    if (
+      !model.id?.trim() ||
+      !model.provider?.trim() ||
+      !Number.isSafeInteger(model.contextWindow) ||
+      model.contextWindow <= 0 ||
+      (model.costPerMtok !== undefined &&
+        (!Number.isFinite(model.costPerMtok) || model.costPerMtok < 0))
+    )
+      throw new Error("invalid model descriptor");
+    this.models.set(model.id, { ...model });
   }
 
   list(): ModelDescriptor[] {
-    return [...this.models.values()];
+    return [...this.models.values()].map((model) => ({ ...model }));
   }
 
   /** Pick the cheapest model that satisfies the preferences, if any. */
@@ -35,13 +44,15 @@ export class ModelCatalog {
       candidates = candidates.filter((model) => model.contextWindow >= minContextWindow);
     }
     if (maxCostPerMtok !== undefined) {
-      candidates = candidates.filter((model) => (model.costPerMtok ?? 0) <= maxCostPerMtok);
+      candidates = candidates.filter(
+        (model) => model.costPerMtok !== undefined && model.costPerMtok <= maxCostPerMtok,
+      );
     }
     if (preferProviders && preferProviders.length > 0) {
       const preferred = candidates.filter((model) => preferProviders.includes(model.provider));
       if (preferred.length > 0) candidates = preferred;
     }
-    candidates.sort((a, b) => (a.costPerMtok ?? 0) - (b.costPerMtok ?? 0));
+    candidates.sort((a, b) => (a.costPerMtok ?? Infinity) - (b.costPerMtok ?? Infinity));
     return candidates[0];
   }
 }

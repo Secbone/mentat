@@ -152,3 +152,9 @@ pnpm bench:smoke
 框架初始冒烟：`pnpm check` 通过19包分层检查、7项架构测试、63个测试文件中的242项行为测试，1项Docker测试默认跳过；19个子包独立类型检查通过。端到端冒烟完成16个 fake host 任务、4条合成上游契约记录、同版本配对比较与趋势导出。该初始冒烟没有执行上游框架或付费模型，不能将这些记录解释为公开评测成绩。
 
 2026-10-16 的预检与首轮真实模型试点见[统一评测报告](research/unified-evaluation-2026-10-16.md)。原生评分新增 `json-criteria`，要求完整 JSON，可核验字段相等、数值边界和顶层字段集合；条件反馈只在先前回答未满足指定结构时执行，`runtime.correctiveTurns` 记录实际纠正轮次。业务评分与 `reflection.status` 独立，反思异常不阻断业务对照。真实 ACP 计划可设置 `isolateOpenCode` 和 `requireModelConfirmation`，逐任务保存请求/实际模型确认与只读原生会话账目；无法核验的费用保持未知。公开 Oracle 试点是独立的 adapted 阅读诊断，公开集主清单的完整上游接入状态没有因此改变。
+
+## 2026-10-21 演化选择与最终验收边界
+
+通用演化 CLI 现在区分 --training-queries（可提供给 proposer）、--queries（多轮开发/选择）和 --test-queries（选择结束后的单次终测）。不能将开发集分数写成独立最终验收结果；最终分数仍只代表其声明的 scorer，recall/noise 不等于任务质量。不同 query split 的文本重复会阻断，语义交叉需在数据设计阶段另行检查。
+
+统一结果落盘新增 publication manifest。只有 complete 状态的结果能被读取为已发布；写入中断或失败保留在 history 中，不因部分文件已存在而被当作完整结果。历史没有 manifest 的记录继续按已有 plan/source/integrity 校验读取，不重写旧分数。

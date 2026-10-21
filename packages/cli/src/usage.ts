@@ -7,8 +7,8 @@ Usage:
   mentat chat [--harness <id>] [--model <id>] [--cwd <path>] [--memory <file>] [--skills <file>] [--experience <dir>] [--recall-chars <n>] [--permission <ask|auto|full>]
   mentat loop demo|memory
   mentat memory migrate [--memory <file>] [--snapshot <file>] [--audit <file>]
-  mentat evolve memory --queries <file> (--facts <file> | --agent [--from-experience] [--experience <dir>] [--recent <n>]) [--model <id>] [--store <dir>] [--memory <file>] [--iterations <n>]
-  mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"]
+  mentat evolve memory --queries <selection-file> (--facts <file> | --agent --training-queries <file> [--from-experience] [--experience <dir>] [--recent <n>]) [--test-queries <final-test-file>] [--model <id>] [--store <dir>] [--memory <file>] [--iterations <n>]
+  mentat iterate --target <dir> --task "<goal>" --check "<cmd>" [--eval "<cmd>"] [--prepare "<isolated-environment-setup>"]
   mentat trace [<run-dir>] [--raw|--all|--tree|--follow|--summary|--check|--errors|--context|--memory|--recall] [--tool <id>] [--turn <id>]
   mentat trace compare <before-dir> <after-dir>
   mentat trace feedback <run-dir> --turn <id> [--score <0..1>] [--correction "<text>"]

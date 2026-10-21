@@ -275,6 +275,10 @@ export function projectExperience(dir: string, base: ExperienceBase, turnId: str
       recorder.handle(resolveEventData(dir, event) as unknown as import("@mentat/core").AgentEvent);
   return {
     ...recorder.snapshot(),
+    ts:
+      source?.ts ??
+      events.find((event) => event.turnId === turnId && event.type === "turn.start")?.ts ??
+      recorder.snapshot().ts,
     id:
       savedData?.evidenceId ??
       `exp-${createHash("sha256")

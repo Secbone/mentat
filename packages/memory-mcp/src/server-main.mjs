@@ -39,6 +39,9 @@ const observe = (type, data) => {
 };
 const access = createMemoryAccess(new FileMemoryRepository(file), {
   scope: process.env.MENTAT_MEMORY_SCOPE,
+  sharedScopes: process.env.MENTAT_MEMORY_SHARED_SCOPES
+    ? JSON.parse(process.env.MENTAT_MEMORY_SHARED_SCOPES)
+    : undefined,
   observe,
   onObserverError: (error) => console.error(`memory observation failed: ${String(error)}`),
 });
@@ -93,13 +96,18 @@ if (process.env.MENTAT_MEMORY_READ_ONLY !== "true")
         text: z.string(),
         tags: z.array(z.string()).optional(),
         evidence: z.string().optional(),
+        kind: z.enum(["fact", "preference", "constraint", "method", "candidate"]).optional(),
+        condition: z.string().optional(),
+        applicability: z.enum(["task", "reusable", "unresolved"]).optional(),
       },
     },
-    async ({ id, text, tags, evidence }) => {
+    async ({ id, text, tags, evidence, kind, condition, applicability }) => {
       const decision = await access.propose({
         text,
         key: id,
-        kind: "fact",
+        kind: kind ?? "fact",
+        ...(condition !== undefined ? { condition } : {}),
+        ...(applicability !== undefined ? { applicability } : {}),
         ...(tags ? { tags } : {}),
         ...(evidence ? { evidence } : {}),
       });

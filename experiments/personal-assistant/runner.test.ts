@@ -87,7 +87,7 @@ test("hung engines time out", async () => {
   const handle = session(async () => {});
   const result = await sendTurn(handle, "prompt", 10);
   assert.equal(result.reason, "error");
-  assert.match(result.error ?? "", /timeout/);
+  assert.match(result.error ?? "", /timed out|timeout/);
 });
 
 test("Chinese paraphrase retrieval failure is observable independently of model quality", () => {

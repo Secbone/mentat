@@ -18,7 +18,16 @@ describe("memory MCP server", () => {
   it("exposes a read-only catalog and acknowledges actual catalog exchange", async () => {
     const root = mkdtempSync(join(tmpdir(), "mentat-readonly-"));
     const receipt = join(root, "catalog.jsonl");
-    const spec = memoryMcpSpec(join(root, "memory.json"), undefined, undefined, { readOnly: true });
+    const file = join(root, "memory.json");
+    writeFileSync(
+      file,
+      JSON.stringify([
+        { id: "a", text: "secret shared", scope: "alice", createdAt: 1 },
+        { id: "b", text: "secret own", scope: "bob", createdAt: 1 },
+        { id: "c", text: "secret private", scope: "charlie", createdAt: 1 },
+      ]),
+    );
+    const spec = memoryMcpSpec(file, "bob", undefined, { readOnly: true, sharedScopes: ["alice"] });
     const client = new Client({ name: "read-only", version: "0.0.0" });
     await client.connect(
       new StdioClientTransport({
@@ -34,6 +43,15 @@ describe("memory MCP server", () => {
     );
     try {
       expect((await client.listTools()).tools.map((tool) => tool.name)).toEqual(["memory_search"]);
+      const shared = await client.callTool({
+        name: "memory_search",
+        arguments: { query: "secret" },
+      });
+      expect(
+        JSON.parse(readText(shared))
+          .map((entry: { id: string }) => entry.id)
+          .sort(),
+      ).toEqual(["a", "b"]);
       // The SDK response can reach this process before the child appends its
       // receipt. Wait for a complete record, matching the production reader.
       await expect
@@ -75,7 +93,14 @@ describe("memory MCP server", () => {
 
     await client.callTool({
       name: "memory_add",
-      arguments: { id: "m1", text: "the build takes 3 minutes", evidence: "exp:claimed-user#msg0" },
+      arguments: {
+        id: "m1",
+        text: "the build takes 3 minutes",
+        evidence: "exp:claimed-user#msg0",
+        kind: "method",
+        condition: "during builds",
+        applicability: "reusable",
+      },
     });
     const found = await client.callTool({
       name: "memory_search",
@@ -98,6 +123,12 @@ describe("memory MCP server", () => {
     expect(entries[0]?.text).toBe("the build takes 3 minutes");
     expect(entries[0]?.status).toBe("candidate");
     expect(entries[0]?.basis).toBe("inference");
+    expect(entries[0]).toMatchObject({
+      kind: "method",
+      condition: "during builds",
+      applicability: "reusable",
+      status: "candidate",
+    });
     const audit = JSON.parse(readFileSync(`${file}.audit.jsonl`, "utf8").trim());
     expect(audit.request.speaker).toBe("assistant");
     expect(audit.entry.status).toBe("candidate");

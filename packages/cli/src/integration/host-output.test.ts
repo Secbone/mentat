@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { type AcpRegistration, createDefaultRegistry } from "@mentat/harnesses";
 import { createAssistantHost } from "@mentat/host";
-import { inspectTrajectory, readTrajectory } from "@mentat/observability";
+import { ExperienceStore, inspectTrajectory, readTrajectory } from "@mentat/observability";
 
 import { expect, it, vi } from "vitest";
 import { runCommand } from "../commands/run";
@@ -17,6 +17,49 @@ const fixture = fileURLToPath(
 const response = (text: string) => ({
   updates: [{ sessionUpdate: "agent_message_chunk", content: { type: "text", text } }],
   result: { stopReason: "end_turn" },
+});
+
+it("preserves conflicting native and assistant termination evidence through persisted experience", async () => {
+  const cwd = mkdtempSync(join(tmpdir(), "mentat-termination-"));
+  const experienceDir = join(cwd, "experience");
+  const text =
+    "Maximum steps for this agent have been reached, so no further tool calls can be made.\nPartial result.";
+  const host = createAssistantHost({
+    cwd,
+    experienceDir,
+    memoryPath: join(cwd, "memory.json"),
+    memoryTools: { memory: "disabled" },
+    adapter: createAcpAdapter({
+      binary: process.execPath,
+      baseArgs: [fixture],
+      env: { ACP_TEST_TURNS: JSON.stringify([response(text)]) },
+    }),
+  });
+  try {
+    const session = await host.open();
+    const { result, record } = await host.turn(session, "task");
+    expect(result).toMatchObject({
+      reason: "done",
+      termination: { source: "acp", rawReason: "end_turn", cause: "turn-ended" },
+      completion: {
+        response: "present",
+        verification: "unverified",
+        warnings: [{ code: "assistant-reported-step-limit", source: "assistant" }],
+      },
+    });
+    expect(record).toMatchObject({
+      termination: result.termination,
+      completion: result.completion,
+    });
+    expect(
+      new ExperienceStore(experienceDir).list().find((item) => item.id === record.id),
+    ).toMatchObject({
+      termination: result.termination,
+      completion: result.completion,
+    });
+  } finally {
+    await host.close();
+  }
 });
 
 it("validates and corrects by default, preserving the original task in experience and audit", async () => {

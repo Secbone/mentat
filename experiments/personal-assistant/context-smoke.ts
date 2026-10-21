@@ -3,9 +3,9 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { assistantPromptOptions, reflectMemories } from "@mentat/assistant";
-import { saveReflections, taskContext } from "@mentat/host";
 import { ExperienceStore, SessionRecorder } from "@mentat/observability";
 import { createAcpAdapter } from "@mentat/transport-acp";
+import { saveReflections, taskContext } from "./memory";
 
 // Two model calls: one frozen held-out constraint probe, one reflection replay.
 // This is a smoke check, not a new benchmark score. Historical trial files stay intact.

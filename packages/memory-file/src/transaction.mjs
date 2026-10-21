@@ -12,6 +12,7 @@ import {
 } from "node:fs";
 import { dirname } from "node:path";
 import { decideWrite } from "@mentat/memory/write-rules";
+import { withFileLock } from "@mentat/storage-file/lock";
 
 function atomic(path, value) {
   const tmp = `${path}.${randomUUID()}.tmp`;
@@ -39,6 +40,7 @@ function entriesAt(path) {
   const value = JSON.parse(readFileSync(path, "utf8"));
   if (
     !Array.isArray(value) ||
+    new Set(value.map((entry) => entry?.id)).size !== value.length ||
     value.some(
       (e) =>
         !e ||
@@ -92,49 +94,10 @@ function recover(path) {
 }
 export function withMemoryLock(path, fn) {
   mkdirSync(dirname(path), { recursive: true });
-  // Exclusive file carries its owner at acquisition; never guess that a live owner is stale.
-  const lock = `${path}.lock`;
-  const deadline = Date.now() + 2000;
-  let fd;
-  for (;;) {
-    try {
-      fd = openSync(lock, "wx", 0o600);
-      writeFileSync(fd, String(process.pid));
-      break;
-    } catch (error) {
-      if (error.code !== "EEXIST") throw error;
-      // Serialize dead-owner recovery; re-read under the recovery lock so a
-      // second contender cannot remove a new writer's lock using stale evidence.
-      let recoveryFd;
-      try {
-        recoveryFd = openSync(`${lock}.recovery`, "wx", 0o600);
-        const owner = Number(readFileSync(lock, "utf8"));
-        if (Number.isSafeInteger(owner) && owner > 0) {
-          try {
-            process.kill(owner, 0);
-          } catch (check) {
-            if (check.code === "ESRCH") rmSync(lock, { force: true });
-          }
-        }
-      } catch (recoveryError) {
-        if (!["EEXIST", "ENOENT"].includes(recoveryError.code)) throw recoveryError;
-      } finally {
-        if (recoveryFd !== undefined) {
-          closeSync(recoveryFd);
-          rmSync(`${lock}.recovery`, { force: true });
-        }
-      }
-      if (Date.now() >= deadline) throw new Error("memory is locked; retry later");
-      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 10);
-    }
-  }
-  try {
+  return withFileLock(`${path}.lock`, () => {
     recover(path);
     return fn();
-  } finally {
-    closeSync(fd);
-    rmSync(lock, { force: true });
-  }
+  });
 }
 export function memoryRevision(entries) {
   return createHash("sha256").update(JSON.stringify(entries)).digest("hex");

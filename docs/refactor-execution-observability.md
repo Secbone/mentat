@@ -113,6 +113,19 @@ pnpm dev trace feedback <run-dir> --turn <turnId> --score 0 --correction "遗漏
 
 反馈必须引用真实轮次；score 范围 0..1。ExperienceStore 读取时关联轨迹内和外部反馈，buildExperienceDigest 加入来源、纠正及 trace/turn 引用。没有反馈时明确 quality=unverified。历史事件的重读和经验重建不调用模型或工具，不自动重放副作用。
 
+### 执行终止与任务验证（2026-10-21）
+
+`reason=done` 只代表执行正常结束，CLI 的零退出码也不代表任务质量通过。`run.settled`、`TurnResult` 和经验记录新增以下可选字段，旧记录缺失时保持未知，不回填推断：
+
+- `termination`：`cause`、`source`、可选 `rawReason`，区分正常结束、token/request 上限、取消、主机超时、错误和未知。ACP 原生原因原样保留；其他旧 transport 没有精确证据时标为 unknown。
+- `completion`：是否存在响应文本（不等于交付物）、`verification=unverified` 和带来源的 warnings。会话层不根据最终文本、工具数量或测试命令名称自动认定任务成功。
+
+部分 OpenCode 运行只返回 `end_turn`，却在最终文本开头自述达到步数上限。ACP 兼容层仅识别已观察到的固定开头，将其标记为 `assistant-reported-step-limit`；不改写原生终止原因，不当作确定的预算耗尽，也不宣称覆盖所有版本/语言。结构化 `max_tokens`、`max_turn_requests` 则分别记录为对应上限，保留 `reason=length`。CLI 展示预算受限的部分响应并输出终止提示；协议泄漏等 error 响应继续不作为正常正文输出。
+
+这些字段进入轨迹、持久化经验、反思元数据及 SWE 统一导入。反思不将 warning 当成用户认可或能力提升证据。SWE 主体遇到 length 时仍允许收集补丁并独立评分，运行错误继续阻止发布模型分数。官方 reward 与执行状态并列保留：预算耗尽仍可能通过验证，正常结束也可能验证失败。没有增加重试、修改预算或重新解释既有成绩。
+
+验证：`pnpm check` 通过，93 个 Vitest 文件、376 passed / 1 skipped，PAST Python 18 项、SWE Python 11 项。新增覆盖原生终止原因、未知值、助手自述与引用文本、超时、部分输出、持久化经验和预算受限但独立评分通过。首次沙箱执行的 Unix socket 测试报 EPERM，授权后完整重跑通过。另对 NodeBB 原始协议帧和最终文本作离线分析，结果在 `.mentat/swe-bench/nodebb-rosetta-2g-v2/termination-analysis.json`，保留原响应摘要和事件 ID；未重放工具或调用模型，原始成绩未改。
+
 ## 复现实验与验证范围
 
 ```bash

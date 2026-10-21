@@ -11,6 +11,20 @@ const session = {
   ],
 };
 describe("historical observations", () => {
+  it("isolates imported observations by host scope and unscoped workspace", () => {
+    const alice = historicalExperience(session, "/alice", "alice");
+    const unscoped = historicalExperience(session, "/alice");
+    expect(
+      historicalContext([alice, unscoped], "Luna", { maxChars: 5000, scope: "bob" }).selectedIds,
+    ).toEqual([]);
+    expect(historicalContext([alice], "Luna", { maxChars: 5000 }).selectedIds).toEqual([]);
+    expect(
+      historicalContext([unscoped], "Luna", { maxChars: 5000, cwd: "/bob" }).selectedIds,
+    ).toEqual([]);
+    expect(
+      historicalContext([alice], "Luna", { maxChars: 5000, scope: "alice" }).selectedIds.length,
+    ).toBeGreaterThan(0);
+  });
   it("preserves adjacent evidence and excludes future sessions while ranking informative terms", () => {
     const make = (id: string, timestamp: number, messages: typeof session.messages) =>
       historicalExperience({ ...session, id, timestamp, messages }, "/fixture");

@@ -1,5 +1,5 @@
 import type { Signal } from "@mentat/core";
-import { scoreOf } from "./pareto";
+import { scoreOf, validateSignals } from "./pareto";
 import type { Candidate, IterationRecord } from "./types";
 
 export interface ArchivedCandidate extends Candidate {
@@ -24,11 +24,13 @@ export class Archive {
   }
 
   add(candidate: Candidate, meta: { parentId?: string; signals: Signal[] }): ArchivedCandidate {
+    if (this.entries.has(candidate.id)) throw new Error("duplicate archived candidate identity");
+    validateSignals(meta.signals);
     const entry: ArchivedCandidate = {
       id: candidate.id,
       version: candidate.version,
-      artifacts: candidate.artifacts,
-      signals: meta.signals,
+      artifacts: [...candidate.artifacts],
+      signals: structuredClone(meta.signals),
       children: 0,
       ...(meta.parentId ? { parentId: meta.parentId } : {}),
     };

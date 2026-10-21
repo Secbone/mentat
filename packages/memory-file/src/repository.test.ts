@@ -9,6 +9,30 @@ import { FileMemoryRepository } from "./repository";
 const path = () => join(mkdtempSync(join(tmpdir(), "mentat-repository-")), "memory.json");
 const user = (text: string) => ({ text, basis: "user" as const, speaker: "user" as const });
 describe("file memory consistency", () => {
+  it("preserves colliding legacy hashes and stable identity on subsequent updates", async () => {
+    const repository = new FileMemoryRepository(path()),
+      access = createMemoryAccess(repository);
+    const a = await access.confirm({ key: "an", text: "first" });
+    const b = await access.confirm({ key: "c0", text: "second" });
+    expect(a.entry?.id).not.toBe(b.entry?.id);
+    expect((await repository.snapshot()).entries).toHaveLength(2);
+    expect((await access.confirm({ key: "an", text: "updated" })).entry?.id).toBe(a.entry?.id);
+  });
+
+  it("isolates unscoped data and supports only explicitly shared reads", async () => {
+    const repository = new FileMemoryRepository(path());
+    const alice = createMemoryAccess(repository, { scope: "alice" });
+    await alice.confirm({ text: "private" });
+    await createMemoryAccess(repository).confirm({ text: "local" });
+    expect((await createMemoryAccess(repository).search({})).map((x) => x.text)).toEqual(["local"]);
+    expect((await alice.search({})).map((x) => x.text)).toEqual(["private"]);
+    const shared = createMemoryAccess(repository, { scope: "bob", sharedScopes: ["alice"] });
+    expect((await shared.search({})).map((x) => x.text)).toEqual(["private"]);
+    await shared.propose({ text: "proposal", scope: "alice" });
+    expect((await repository.snapshot()).entries.find((x) => x.text === "proposal")?.scope).toBe(
+      "bob",
+    );
+  });
   it("preserves two pre-existing writers and reloads reads", () => {
     const file = path(),
       a = new JsonFileMemoryStore(file),

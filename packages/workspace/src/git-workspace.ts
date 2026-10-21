@@ -1,4 +1,7 @@
 import { execFileSync } from "node:child_process";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type { Candidate, Proposal, Workspace } from "@mentat/evolution";
 
 export interface GitIdentity {
@@ -25,15 +28,80 @@ function git(cwd: string, args: string[]): string {
  * `rollback` hard-resets to the parent, `commit` keeps the accepted commit.
  */
 export class GitWorkspace implements Workspace {
-  private readonly cwd: string;
+  readonly cwd: string;
   private readonly identity: GitIdentity;
   private readonly parents = new Map<string, string>();
   private head: string;
+  private proposing = false;
+  private source?: { cwd: string; head: string; temp: string };
+
+  /** A proposer only edits an owned detached worktree, never the caller's files. */
+  static isolated(cwd: string): GitWorkspace {
+    const source = new GitWorkspace(cwd);
+    const temp = mkdtempSync(join(tmpdir(), "mentat-evolution-")),
+      work = join(temp, "work");
+    try {
+      git(cwd, ["worktree", "add", "--detach", work, source.head]);
+      const workspace = new GitWorkspace(work);
+      workspace.source = { cwd, head: source.head, temp };
+      return workspace;
+    } catch (error) {
+      try {
+        git(cwd, ["worktree", "remove", "--force", work]);
+      } catch {}
+      rmSync(temp, { recursive: true, force: true });
+      throw error;
+    }
+  }
+
+  async publish(candidate: Candidate): Promise<void> {
+    if (!this.source) return;
+    const source = new GitWorkspace(this.source.cwd);
+    if (source.head !== this.source.head)
+      throw new Error("source HEAD changed; publication refused");
+    if (candidate.id !== this.head)
+      throw new Error("publication requires the active accepted candidate");
+    git(this.source.cwd, ["merge", "--ff-only", candidate.id]);
+  }
+
+  async dispose(): Promise<void> {
+    if (!this.source) return;
+    const source = this.source;
+    git(source.cwd, ["worktree", "remove", "--force", this.cwd]);
+    rmSync(source.temp, { recursive: true, force: true });
+    this.source = undefined;
+  }
 
   constructor(cwd: string, options: GitWorkspaceOptions = {}) {
     this.cwd = cwd;
     this.identity = options.identity ?? { name: "mentat", email: "mentat@localhost" };
     this.head = git(cwd, ["rev-parse", "HEAD"]);
+    this.assertClean();
+  }
+
+  private assertClean(): void {
+    if (git(this.cwd, ["status", "--porcelain"]).length)
+      throw new Error("evolution requires a clean worktree; existing changes were preserved");
+  }
+
+  async begin(): Promise<void> {
+    this.assertClean();
+    if (git(this.cwd, ["rev-parse", "HEAD"]) !== this.head)
+      throw new Error("workspace HEAD changed outside the evolution transaction");
+    this.proposing = true;
+  }
+
+  async abort(): Promise<void> {
+    if (!this.proposing) return;
+    git(this.cwd, ["reset", "--hard", this.head]);
+    git(this.cwd, ["clean", "-fd"]);
+    this.proposing = false;
+  }
+
+  async checkout(candidate: Candidate): Promise<void> {
+    this.assertClean();
+    git(this.cwd, ["reset", "--hard", candidate.id]);
+    this.head = candidate.id;
   }
 
   current(): Candidate {
@@ -58,6 +126,7 @@ export class GitWorkspace implements Workspace {
     const sha = git(this.cwd, ["rev-parse", "HEAD"]);
     this.parents.set(sha, this.head);
     this.head = sha;
+    this.proposing = false;
     return { id: sha, version: sha, artifacts: [] };
   }
 

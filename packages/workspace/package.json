@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@mentat/core": "workspace:*",
-    "@mentat/evolution": "workspace:*"
+    "@mentat/evolution": "workspace:*",
+    "@mentat/storage-file": "workspace:*"
   },
   "description": "Versioned Git and JSON candidate workspaces"
 }

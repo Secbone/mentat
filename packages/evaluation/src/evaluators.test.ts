@@ -34,12 +34,12 @@ describe("JsonCommandEvaluator", () => {
     });
   });
 
-  it("reports a failed evaluation as a regression signal", async () => {
+  it("fails the evaluation rather than replacing the metric contract", async () => {
     const evaluator = new JsonCommandEvaluator({
       cwd,
       command: "node",
       args: ["-e", "process.exit(1)"],
     });
-    expect((await evaluator.evaluate(candidate))[0]?.name).toBe("eval.failed");
+    await expect(evaluator.evaluate(candidate)).rejects.toThrow("evaluation command failed");
   });
 });

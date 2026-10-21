@@ -22,6 +22,8 @@ export interface ReflectionBatch {
   records: Array<{
     ref: string;
     outcome: string;
+    termination?: ExperienceRecord["termination"];
+    completion?: ExperienceRecord["completion"];
     tools: string[];
     error?: string;
     feedback?: ExperienceRecord["feedback"];
@@ -52,6 +54,8 @@ export function buildReflectionBatch(
     batch.records.push({
       ref,
       outcome: record.outcome,
+      ...(record.termination ? { termination: structuredClone(record.termination) } : {}),
+      ...(record.completion ? { completion: structuredClone(record.completion) } : {}),
       tools: [...record.tools],
       ...(record.error ? { error: record.error } : {}),
       ...(record.feedback?.length ? { feedback: structuredClone(record.feedback) } : {}),

@@ -1,4 +1,4 @@
-import { mkdtempSync } from "node:fs";
+import { appendFileSync, mkdtempSync, readdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { AgentEvent } from "@mentat/core";
@@ -12,6 +12,26 @@ import {
 } from "./experience";
 
 describe("SessionRecorder + ExperienceStore", () => {
+  it("quarantines a torn tail before the next append without hiding middle corruption", () => {
+    const dir = mkdtempSync(join(tmpdir(), "mentat-exp-torn-"));
+    const diagnostics: string[] = [],
+      store = new ExperienceStore(dir, { onDiagnostic: (d) => diagnostics.push(d.code) });
+    const first = new SessionRecorder({ prompt: "first", cwd: dir, harness: "fake" }).snapshot();
+    store.append(first);
+    const name = readdirSync(dir).find((x) => x.endsWith(".jsonl"));
+    if (!name) throw new Error("missing experience log");
+    const path = join(dir, name);
+    appendFileSync(path, '{"id":"partial');
+    expect(store.list()).toHaveLength(1);
+    store.append({ ...first, id: "second" });
+    expect(store.list()).toHaveLength(2);
+    const torn = readdirSync(dir).find((x) => x.endsWith(".torn"));
+    if (!torn) throw new Error("missing quarantined tail");
+    expect(readFileSync(join(dir, torn), "utf8")).toBe('{"id":"partial');
+    expect(diagnostics).toContain("EXPERIENCE_TORN_TAIL");
+    appendFileSync(path, "broken\n");
+    expect(() => store.list()).toThrow("corrupt experience");
+  });
   it("captures authoritative answers without reasoning and returns isolated snapshots", () => {
     const recorder = new SessionRecorder({ prompt: "task", cwd: "/tmp", harness: "fake" });
     recorder.handle({ type: "message.reasoning", sessionId: "s", text: "private reasoning" });

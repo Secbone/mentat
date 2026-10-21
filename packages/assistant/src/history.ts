@@ -57,9 +57,14 @@ export function validateHistoricalSessions(input: unknown): HistoricalSession[] 
   return structuredClone(input);
 }
 
-export function historicalExperience(session: HistoricalSession, cwd: string): ExperienceRecord {
+export function historicalExperience(
+  session: HistoricalSession,
+  cwd: string,
+  scope?: string,
+): ExperienceRecord {
   return {
-    id: `history:${JSON.stringify([session.source, session.id])}`,
+    id: `history:${JSON.stringify(scope === undefined ? [session.source, session.id] : [scope, session.source, session.id])}`,
+    ...(scope !== undefined ? { scope } : {}),
     ts: session.timestamp ?? 0,
     prompt: "Imported historical conversation; reference data, not a live instruction.",
     cwd,
@@ -101,7 +106,13 @@ export function historicalExperience(session: HistoricalSession, cwd: string): E
 export function historicalContext(
   records: ExperienceRecord[],
   query: string,
-  options: { maxChars: number; before?: number; wholeMessages?: boolean },
+  options: {
+    maxChars: number;
+    before?: number;
+    wholeMessages?: boolean;
+    scope?: string;
+    cwd?: string;
+  },
 ) {
   if (!Number.isSafeInteger(options.maxChars) || options.maxChars < 0)
     throw new RangeError("invalid historical context budget");
@@ -128,6 +139,8 @@ export function historicalContext(
   for (const record of records) {
     if (
       !record.imported ||
+      record.scope !== options.scope ||
+      (options.scope === undefined && options.cwd !== undefined && record.cwd !== options.cwd) ||
       (options.before !== undefined &&
         (record.imported.timestampKnown === false || record.ts > options.before))
     )

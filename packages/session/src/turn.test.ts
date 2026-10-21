@@ -24,6 +24,58 @@ function handle(send: (listener: AgentEventListener) => Promise<void>): SessionH
   };
 }
 describe("turn execution contract", () => {
+  it("keeps output, termination and verification separate in result, trace and experience", async () => {
+    const { SessionRecorder } = await import("./experience");
+    const recorder = new SessionRecorder({ prompt: "task", cwd: "/tmp", harness: "fake" });
+    const tracer = new MemoryTracer();
+    const session = handle(async (listener) => {
+      listener({
+        type: "message.completed",
+        sessionId: "s",
+        message: { role: "assistant", text: "partial work" },
+      });
+      listener({
+        type: "run.settled",
+        sessionId: "s",
+        reason: "length",
+        termination: { source: "acp", cause: "request-limit", rawReason: "max_turn_requests" },
+      });
+    });
+    const result = await runTurn(
+      session,
+      { text: "task" },
+      { tracer, onEvent: (event) => recorder.handle(event) },
+    );
+    expect(result).toMatchObject({
+      reason: "length",
+      text: "partial work",
+      termination: { cause: "request-limit", rawReason: "max_turn_requests" },
+      completion: { response: "present", verification: "unverified" },
+    });
+    expect(recorder.snapshot()).toMatchObject({
+      outcome: "length",
+      termination: result.termination,
+      completion: result.completion,
+    });
+    expect(result.events.at(-1)).toMatchObject({
+      termination: result.termination,
+      completion: result.completion,
+    });
+    expect(JSON.stringify(tracer)).toContain("request-limit");
+  });
+
+  it("does not promote legacy normal termination to confirmed completion", async () => {
+    const session = handle(async (listener) => {
+      listener({ type: "run.settled", sessionId: "s", reason: "done" });
+    });
+    const result = await runTurn(session, { text: "task" });
+    expect(result).toMatchObject({
+      reason: "done",
+      termination: { source: "transport", cause: "unknown" },
+      completion: { response: "absent", verification: "unverified" },
+    });
+  });
+
   it("rejects leaked protocol as an incomplete answer without manufacturing tool events", async () => {
     const tracer = new MemoryTracer();
     const session = handle(async (listener) => {
@@ -150,6 +202,8 @@ describe("turn execution contract", () => {
     expect(await runTurn(session, { text: "task" }, { timeoutMs: 10, tracer })).toMatchObject({
       reason: "error",
       error: "turn timed out",
+      termination: { source: "host", cause: "timeout" },
+      completion: { response: "absent", verification: "unverified" },
     });
     expect(session.interrupt).toHaveBeenCalledOnce();
     expect(session.dispose).toHaveBeenCalledOnce();

@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   ASSISTANT_PROMPT_VERSION,
@@ -48,6 +47,7 @@ import {
   type TurnOptions,
 } from "@mentat/session";
 import { skillsMcpSpec } from "@mentat/skills-mcp";
+import { createFragmentIngestor } from "./capture";
 import {
   readRepoState,
   resolveHostPaths,
@@ -57,6 +57,7 @@ import {
 } from "./config";
 import { withNoEvidencePolicy } from "./policy";
 import { READINESS_PROBE_POLICY, verifyReadiness } from "./readiness";
+import { awaitRecall } from "./recall";
 
 export interface HostConfig {
   cwd: string;
@@ -69,10 +70,14 @@ export interface HostConfig {
   experienceDir?: string;
   logDir?: string;
   scope?: string;
+  /** Explicit additional memory namespaces readable by this host. */
+  sharedMemoryScopes?: string[];
   permission?: PermissionHandler;
   permissionMode?: string;
   protocolLog?: boolean;
   timeoutMs?: number;
+  /** Per-turn serialized input guard; independent of the engine's session context window. */
+  contextBudget?: { maxInputChars?: number; memoryChars?: number };
   /** Opt-in retrieval of imported historical observations; never confirms a user rule. */
   history?: { maxChars: number; before?: number };
   /** Opt-in scoped recall of original native interactions, without confirming candidates. */
@@ -91,6 +96,8 @@ export interface HostConfig {
   startupToolProbe?: { toolName: string; expectedOutput: string; maxAttempts?: number };
 }
 export interface HostOverrides {
+  /** Structural seam for ModelCatalog or another host-owned routing policy. */
+  modelSelector?: { select(): { id: string } | undefined };
   memory?: MemoryAccess;
   experience?: ExperienceSink & { list?: () => ExperienceRecord[] };
   trajectory?: Tracer;
@@ -123,6 +130,17 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
     ((d) => {
       process.stderr.write(`[${d.code}] ${d.message}\n`);
     });
+  const experience =
+    overrides.experience ??
+    new ExperienceStore(config.experienceDir ?? join(config.cwd, ".mentat", "experience"), {
+      onDiagnostic: diagnostic,
+    });
+  const readExperience = () => {
+    if (typeof experience.list !== "function")
+      throw new Error("history requires a readable experience repository");
+    return experience.list();
+  };
+  if (config.history || config.nativeHistory) readExperience();
   const { revision, dirty } = readRepoState(config.cwd);
   const file = overrides.trajectory
     ? undefined
@@ -152,70 +170,27 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
       diagnostic({ code: "OBSERVABILITY_WRITE", message: String(error) });
     }
   };
-  const fragmentOffsets = new Map<string, number>();
-  const ingest = () => {
-    if (!file) return;
-    const dir = join(file.dir, "fragments");
-    if (!existsSync(dir)) return;
-    for (const name of readdirSync(dir).filter((name) => name.endsWith(".jsonl"))) {
-      const lines = readFileSync(join(dir, name), "utf8").split("\n");
-      let offset = fragmentOffsets.get(name) ?? 0;
-      for (; offset < lines.length - 1; offset++) {
-        const line = lines[offset];
-        if (!line) continue;
-        try {
-          const record = JSON.parse(line) as {
-            traceId: string;
-            eventId: string;
-            type: string;
-            data: JsonValue;
-            sourceSeq: number;
-            source: string;
-            ts: number;
-          };
-          if (record.traceId !== traceId) throw new Error("fragment trace mismatch");
-          emit(record.type, {
-            source: record.source,
-            sourceEventId: record.eventId,
-            sourceSeq: record.sourceSeq,
-            sourceTs: record.ts,
-            record: record.data,
-          });
-        } catch (error) {
-          emit("capture.gap", { fragment: name, line: offset, error: String(error) });
-        }
-      }
-      fragmentOffsets.set(name, offset);
-    }
-  };
+  const ingest = createFragmentIngestor(file?.dir, traceId, emit);
   const memory =
     overrides.memory ??
     (config.memoryPath
       ? createMemoryAccess(new FileMemoryRepository(config.memoryPath), {
           scope: config.scope,
+          sharedScopes: config.sharedMemoryScopes,
           observe: emit,
           onObserverError: (error) =>
             diagnostic({ code: "MEMORY_OBSERVER_FAILED", message: String(error) }),
         })
       : undefined);
   if (!memory) throw new Error("memory implementation or memoryPath required");
-  const experience =
-    overrides.experience ??
-    new ExperienceStore(config.experienceDir ?? join(config.cwd, ".mentat", "experience"));
-  const readExperience = () => {
-    if (typeof experience.list !== "function")
-      throw new Error("history requires a readable experience repository");
-    return experience.list();
-  };
-  if (config.history || config.nativeHistory) readExperience();
-  if (
-    config.nativeHistory &&
-    (!Number.isSafeInteger(config.nativeHistory.maxChars) ||
-      config.nativeHistory.maxChars < 0 ||
-      (config.nativeHistory.before !== undefined && !Number.isFinite(config.nativeHistory.before)))
-  )
-    throw new Error("invalid native history budget or cutoff");
   const sessions = new Set<SessionHandle>();
+  const shutdown = new AbortController();
+  const activeTurns = new Map<
+    SessionHandle,
+    { controller: AbortController; settled: Promise<void>; resolve: () => void }
+  >();
+  const reflections = new Set<Promise<void>>();
+  let closing: Promise<void> | undefined;
   const sessionSpans = new WeakMap<SessionHandle, string>();
   const knownTurns = new Set<string>();
   let closed = false;
@@ -255,9 +230,11 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
       : {}),
   };
   const execution = (options: TurnOptions = {}): TurnOptions => ({
+    timeoutMs: config.timeoutMs,
     requireFinalAnswer: config.requireFinalAnswer ?? true,
     correctiveRetries: config.correctiveRetries ?? 1,
     ...options,
+    signal: options.signal ? AbortSignal.any([shutdown.signal, options.signal]) : shutdown.signal,
     tracer,
     onDiagnostic: diagnostic,
   });
@@ -269,7 +246,9 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
       if (closed) throw new Error("host is closed");
       const sessions = validateHistoricalSessions(input);
       const existing = new Map(readExperience().map((record) => [record.id, record]));
-      const pending = sessions.map((session) => historicalExperience(session, config.cwd));
+      const pending = sessions.map((session) =>
+        historicalExperience(session, config.cwd, config.scope),
+      );
       for (const record of pending) {
         const previous = existing.get(record.id);
         if (
@@ -320,7 +299,10 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
                             config.memoryPath,
                             config.scope,
                             file ? { traceId, dir: file.dir } : undefined,
-                            { readOnly: memoryTools.memory === "read-only" },
+                            {
+                              readOnly: memoryTools.memory === "read-only",
+                              sharedScopes: config.sharedMemoryScopes,
+                            },
                           ),
                         ]
                       : []),
@@ -340,8 +322,12 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
               : {}),
             onPermission: config.permission,
           },
-          { timeoutMs: config.timeoutMs, onDiagnostic: diagnostic },
+          { timeoutMs: config.timeoutMs, onDiagnostic: diagnostic, signal: shutdown.signal },
         );
+        if (closed) {
+          await closeSession(session);
+          throw new Error("host is closed");
+        }
         if (probe) {
           try {
             await verifyReadiness({
@@ -355,13 +341,21 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
                     text: `Infrastructure readiness check: call ${probe.toolName} with empty arguments and report its returned diagnostic value.`,
                     hostPolicy: READINESS_PROBE_POLICY,
                   },
-                  execution({ timeoutMs: config.timeoutMs ?? 30000, requireFinalAnswer: true }),
+                  execution({
+                    timeoutMs: config.timeoutMs ?? 30000,
+                    requireFinalAnswer: true,
+                    signal: shutdown.signal,
+                  }),
                 ),
             });
           } catch (error) {
             await closeSession(session);
             throw error;
           }
+        }
+        if (closed) {
+          await closeSession(session);
+          throw new Error("host is closed");
         }
         sessions.add(session);
         sessionSpans.set(session, sessionSpan);
@@ -375,7 +369,22 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
     async turn(session: SessionHandle, task: string | TaskInput, options: TurnOptions = {}) {
       if (closed || !sessions.has(session))
         throw new Error("session is not owned by an active host");
+      if (activeTurns.has(session)) throw new Error("session already has an active turn");
       let input = normalizeTaskInput(task);
+      const timeoutMs = options.timeoutMs ?? config.timeoutMs ?? 120_000;
+      if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) throw new Error("invalid turn timeout");
+      const controller = new AbortController();
+      let settleTurn = () => {};
+      const settled = new Promise<void>((resolve) => {
+        settleTurn = resolve;
+      });
+      activeTurns.set(session, { controller, settled, resolve: settleTurn });
+      const deadline = Date.now() + timeoutMs;
+      const signal = AbortSignal.any([
+        controller.signal,
+        shutdown.signal,
+        ...(options.signal ? [options.signal] : []),
+      ]);
       let began = false;
       const turnId = options.turnId ?? randomUUID();
       knownTurns.add(turnId);
@@ -392,7 +401,7 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
         const recallId = randomUUID();
         emit("recall.start", { turnId, recallId, kind });
         try {
-          return { recallId, value: await operation() };
+          return { recallId, value: await awaitRecall(operation, signal, deadline) };
         } catch (error) {
           emit("recall.error", { turnId, recallId, kind, error: String(error) });
           throw error;
@@ -440,7 +449,11 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
         if (config.history) {
           const historyOptions = config.history;
           const operation = await recalling("imported-history", () =>
-            historicalContext(readExperience(), input.text, historyOptions),
+            historicalContext(readExperience(), input.text, {
+              ...historyOptions,
+              scope: config.scope,
+              cwd: config.cwd,
+            }),
           );
           const history = operation.value;
           emit("history.selection", { turnId, ...history });
@@ -474,7 +487,7 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
           else input = withNoEvidencePolicy(input);
         }
         const operation = await recalling("memory", () =>
-          assemblePrompt(memory, config.adapter, input, memoryTools),
+          assemblePrompt(memory, config.adapter, input, memoryTools, config.contextBudget),
         );
         const assembled = operation.value;
         emit(
@@ -498,9 +511,9 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
           ...assembled.assembly,
         });
         if (assembled.blocked) {
-          emit("recall.blocked", { turnId, reason: "required constraints exceed context budget" });
+          emit("recall.blocked", { turnId, reason: assembled.blockedReason });
           throw new Error(
-            `context budget cannot fit required constraints: ${assembled.assembly.selection.omittedRequiredIds.join(", ")}`,
+            `context budget cannot fit required constraints or input: ${assembled.assembly.selection.omittedRequiredIds.join(", ")}; ${assembled.blockedReason}`,
           );
         }
         began = true;
@@ -509,6 +522,8 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
           assembled.input,
           execution({
             ...options,
+            timeoutMs: Math.max(1, deadline - Date.now()),
+            signal,
             turnId,
             parentSpanId: sessionSpans.get(session),
             onEvent: (event) => {
@@ -567,13 +582,21 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
           reason: "error",
           error: String(error),
         });
-        experience.append(recorder.snapshot());
+        try {
+          experience.append(recorder.snapshot());
+        } catch (writeError) {
+          diagnostic({ code: "EXPERIENCE_WRITE_FAILED", message: String(writeError) });
+        }
         emit("task.turn.error", { turnId, sessionId: session.id, error: String(error) });
         throw error;
+      } finally {
+        activeTurns.delete(session);
+        settleTurn();
       }
     },
     async remember(input: RememberInput) {
-      const result = await rememberUserFact(memory, experience, input, config.cwd);
+      if (closed) throw new Error("host is closed");
+      const result = await rememberUserFact(memory, experience, input, config.cwd, config.scope);
       emit("memory.confirm", { result });
       if (
         typeof input === "string" &&
@@ -590,17 +613,36 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
       return result;
     },
     async reflect(input: ReflectionInput, options: TurnOptions = {}) {
+      if (closed) throw new Error("host is closed");
+      if (
+        input.interactions?.some(
+          (record) =>
+            record.scope !== config.scope ||
+            (config.scope === undefined && record.cwd !== config.cwd),
+        )
+      )
+        throw new Error("reflection source is outside the host scope");
       const spanId = randomUUID();
+      let settleReflection = () => {};
+      const settled = new Promise<void>((resolve) => {
+        settleReflection = resolve;
+      });
+      reflections.add(settled);
       emit("reflection.start", { spanId, evidence: input.interactions?.map((r) => r.id) });
       try {
         const parsed = await reflectMemories(config.reflectionAdapter ?? config.adapter, {
           ...input,
-          existingMemories: await memory.search({ statuses: ["candidate", "active"] }),
+          existingMemories: await awaitRecall(
+            () => memory.search({ statuses: ["candidate", "active"] }),
+            execution(options).signal ?? shutdown.signal,
+            Date.now() + (options.timeoutMs ?? config.timeoutMs ?? 120_000),
+          ),
           cwd: config.cwd,
           ...(config.model ? { model: config.model } : {}),
           execution: { ...execution({ ...options, turnId: spanId }), deps: adapterDeps },
         });
         emit("reflection.parsed", { spanId, ...parsed });
+        if (closed) throw new Error("host closed during reflection");
         const applied =
           parsed.status === "invalid"
             ? {
@@ -618,9 +660,13 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
       } catch (error) {
         emit("reflection.error", { spanId, error: String(error) });
         throw error;
+      } finally {
+        reflections.delete(settled);
+        settleReflection();
       }
     },
     feedback(data: { turnId: string; accepted?: boolean; correction?: string; score?: number }) {
+      if (closed) throw new Error("host is closed");
       if (!knownTurns.has(data.turnId)) throw new Error("feedback refers to an unknown turn");
       if (
         data.score !== undefined &&
@@ -631,6 +677,9 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
     },
     async release(session: SessionHandle) {
       if (!sessions.delete(session)) return;
+      const active = activeTurns.get(session);
+      active?.controller.abort();
+      await active?.settled;
       try {
         await closeSession(session);
         emit("session.dispose", { sessionId: session.id });
@@ -639,23 +688,29 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
       }
     },
     async close() {
-      if (closed) return;
+      if (closing) return closing;
       closed = true;
-      for (const session of sessions) {
-        try {
-          await closeSession(session);
-        } catch (error) {
-          emit("session.dispose.error", { sessionId: session.id, error: String(error) });
+      shutdown.abort();
+      closing = (async () => {
+        await Promise.all([...activeTurns.values()].map((turn) => turn.settled));
+        await Promise.all(reflections);
+        for (const session of sessions) {
+          try {
+            await closeSession(session);
+          } catch (error) {
+            emit("session.dispose.error", { sessionId: session.id, error: String(error) });
+          }
         }
-      }
-      sessions.clear();
-      ingest();
-      emit("task.end", { traceId });
-      try {
-        await file?.close();
-      } catch (error) {
-        diagnostic({ code: "TRAJECTORY_CLOSE_FAILED", message: String(error) });
-      }
+        sessions.clear();
+        ingest();
+        emit("task.end", { traceId });
+        try {
+          await file?.close();
+        } catch (error) {
+          diagnostic({ code: "TRAJECTORY_CLOSE_FAILED", message: String(error) });
+        }
+      })();
+      return closing;
     },
   };
 }

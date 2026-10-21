@@ -7,6 +7,10 @@ import type { Candidate, Proposal } from "./types";
  */
 export interface Workspace {
   current(): Candidate;
+  /** Establish a clean transaction boundary before a proposer can mutate state. */
+  begin?(): Promise<void>;
+  /** Undo a failed proposal or partially failed materialization. */
+  abort?(): Promise<void>;
   /** Observable change evidence, captured before evaluation or rollback. */
   inspect?(candidate: Candidate): Promise<import("@mentat/core").JsonValue>;
   apply(proposal: Proposal): Promise<Candidate>;
@@ -14,6 +18,8 @@ export interface Workspace {
   rollback(child: Candidate): Promise<void>;
   /** Make a candidate the active base (used for open-ended branching). */
   checkout?(candidate: Candidate): Promise<void>;
+  /** Finalize the selected accepted candidate after exploratory branches finish. */
+  settle?(candidate: Candidate): Promise<void>;
 }
 
 let counter = 0;
@@ -22,9 +28,11 @@ let counter = 0;
 export class InMemoryWorkspace implements Workspace {
   private active: Candidate;
   private readonly parents = new Map<string, Candidate>();
+  private readonly identities: Set<string>;
 
   constructor(root: Candidate) {
     this.active = root;
+    this.identities = new Set([root.id]);
   }
 
   current(): Candidate {
@@ -32,6 +40,8 @@ export class InMemoryWorkspace implements Workspace {
   }
 
   async apply(proposal: Proposal): Promise<Candidate> {
+    if (this.identities.has(proposal.id)) throw new Error("candidate identity already exists");
+    this.identities.add(proposal.id);
     const parent = this.active;
     const child: Candidate = {
       id: proposal.id,

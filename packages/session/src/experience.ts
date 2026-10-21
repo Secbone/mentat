@@ -1,4 +1,11 @@
-import type { AgentEvent, JsonValue, StopReason, Usage } from "@mentat/core";
+import type {
+  AgentEvent,
+  JsonValue,
+  RunCompletion,
+  RunTermination,
+  StopReason,
+  Usage,
+} from "@mentat/core";
 import { type EvidenceFragment, inputFragments, type TaskInput } from "./input";
 export type RecordedToolCall =
   | {
@@ -43,6 +50,8 @@ export interface ExperienceRecord {
   harness: string;
   model?: string;
   outcome: StopReason;
+  termination?: RunTermination;
+  completion?: RunCompletion;
   error?: string;
   usage?: Usage;
   toolErrors: number;
@@ -116,6 +125,8 @@ export class SessionRecorder {
         break;
       case "run.settled":
         this.record.outcome = event.reason;
+        if (event.termination) this.record.termination = structuredClone(event.termination);
+        if (event.completion) this.record.completion = structuredClone(event.completion);
         if (event.error) this.record.error = event.error;
         break;
       case "message.completed": {

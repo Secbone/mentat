@@ -17,6 +17,7 @@ export async function rememberUserFact(
   experience: ExperienceSink,
   input: RememberInput,
   cwd: string,
+  scope?: string,
 ) {
   const text = typeof input === "string" ? input : input.text;
   if (
@@ -28,6 +29,7 @@ export async function rememberUserFact(
     prompt: text,
     input: { text, memoryScope: "reusable" },
     cwd,
+    ...(scope !== undefined ? { scope } : {}),
     harness: "manual",
   });
   recorder.handle({ type: "run.settled", sessionId: recorder.snapshot().id, reason: "done" });

@@ -210,5 +210,12 @@ export function printEvent(event: AgentEvent): void {
   else if (event.type === "run.settled") process.stdout.write("\n");
 }
 export function printResult(result: TurnResult): void {
-  if (result.reason === "done") process.stdout.write(`${result.text}\n`);
+  // Interrupted runs may still contain useful partial output.
+  if (result.text && result.reason !== "error") process.stdout.write(`${result.text}\n`);
+  if (result.reason !== "done")
+    process.stderr.write(`[execution stopped: ${result.termination?.cause ?? result.reason}]\n`);
+  if (
+    result.completion?.warnings.some((warning) => warning.code === "assistant-reported-step-limit")
+  )
+    process.stderr.write("[assistant reports a step limit; task completion is unverified]\n");
 }

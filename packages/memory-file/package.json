@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@mentat/memory": "workspace:*"
+    "@mentat/memory": "workspace:*",
+    "@mentat/storage-file": "workspace:*"
   },
   "description": "File-backed memory, audit persistence and migration"
 }

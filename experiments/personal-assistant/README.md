@@ -1,3 +1,7 @@
+> 2026-10-21 接口维护：runner 使用 personal-assistant-evidence-v2，复用 session/runTurn 和当前上下文 API；反思采用带来源的完整交互，模型产物保持候选，不再经 rememberFact 确认为用户规则。旧结果保留旧口径。该 runner 仍是直接 ACP 的 adapted 机制实验；当前公共 Host 的统一产品评测入口见 [评测框架](../../docs/benchmark-framework.md)。
+>
+> pnpm test:experiments 执行 7 项无模型回归和实验目录类型检查；pnpm check 已包含该门禁。下面历史命令与结果按各自日期解释，不能当作新版本成绩。
+
 # 个人助理连续任务实验
 
 实验检验 Mentat 能否在多次使用后减少用户重复解释、正确复用处理方法，并适应偏好变化。判定依据是后续任务的质量、用户纠正次数和总成本；记忆数量、召回率和代码提交数量只用于解释过程。

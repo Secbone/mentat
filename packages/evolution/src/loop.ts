@@ -2,7 +2,7 @@ import type { JsonValue, Signal, Tracer } from "@mentat/core";
 import { Archive } from "./archive";
 import type { Evaluator } from "./evaluator";
 import type { Gate } from "./gate";
-import { dominates } from "./pareto";
+import { assertComparableSignals, dominates, validateSignals } from "./pareto";
 import type { Proposer } from "./proposer";
 import type { Candidate, IterationRecord, LoopConfig, Proposal } from "./types";
 import type { Workspace } from "./workspace";
@@ -16,6 +16,7 @@ export interface LoopDeps {
   config?: Partial<LoopConfig>;
   tracer?: Tracer;
   onIteration?: (record: IterationRecord) => void;
+  onDiagnostic?: (error: unknown) => void;
 }
 
 const signalsJson = (signals: Signal[]): JsonValue => signals as unknown as JsonValue;
@@ -39,11 +40,10 @@ interface StepOutcome {
 }
 
 function touchesProtected(parent: Candidate, proposal: Proposal): boolean {
-  if (!proposal.artifacts) return false;
-  const previous = new Map(parent.artifacts.map((artifact) => [artifact.id, artifact]));
-  for (const artifact of proposal.artifacts) {
-    const prev = previous.get(artifact.id);
-    if (prev?.protected && prev.version !== artifact.version) return true;
+  for (const artifact of parent.artifacts.filter((item) => item.protected)) {
+    const replacements = (proposal.artifacts ?? []).filter((item) => item.id === artifact.id);
+    // Retain the trusted implementation itself, not model-supplied metadata or code.
+    if (replacements.length !== 1 || replacements[0] !== artifact) return true;
   }
   return false;
 }
@@ -61,6 +61,7 @@ export class SelfIterationLoop {
   private readonly config: LoopConfig;
   private readonly tracer?: Tracer;
   private readonly onIteration?: (record: IterationRecord) => void;
+  private readonly onDiagnostic?: (error: unknown) => void;
 
   constructor(deps: LoopDeps) {
     this.workspace = deps.workspace;
@@ -69,12 +70,26 @@ export class SelfIterationLoop {
     if (deps.gates) this.gates = deps.gates;
     this.archive = deps.archive ?? new Archive();
     this.config = { maxIterations: 5, ...deps.config };
+    if (
+      !Number.isSafeInteger(this.config.maxIterations) ||
+      this.config.maxIterations < 0 ||
+      (this.config.maxFailures !== undefined &&
+        (!Number.isSafeInteger(this.config.maxFailures) || this.config.maxFailures < 0))
+    )
+      throw new Error("invalid evolution iteration budget");
     if (deps.tracer) this.tracer = deps.tracer;
     if (deps.onIteration) this.onIteration = deps.onIteration;
+    this.onDiagnostic = deps.onDiagnostic;
   }
 
   private trace(type: string, data?: JsonValue): void {
-    this.tracer?.emit(type, data);
+    try {
+      this.tracer?.emit(type, data);
+    } catch (error) {
+      try {
+        this.onDiagnostic?.(error);
+      } catch {}
+    }
   }
 
   async run(): Promise<LoopResult> {
@@ -83,6 +98,7 @@ export class SelfIterationLoop {
     let currentSignals: Signal[];
     try {
       currentSignals = await this.evaluator.evaluate(current);
+      validateSignals(currentSignals);
     } catch (error) {
       this.trace("evaluation.error", { candidateId: current.id, error: String(error) });
       throw error;
@@ -99,6 +115,8 @@ export class SelfIterationLoop {
     });
 
     const records: IterationRecord[] = [];
+    let published = current;
+    let publishedSignals = currentSignals;
     const maxFailures = this.config.maxFailures ?? Number.POSITIVE_INFINITY;
     const useArchive = this.config.parentSelection === "archive";
     let failures = 0;
@@ -114,7 +132,9 @@ export class SelfIterationLoop {
           parent = sampled;
           parentSignals = sampled.signals;
           if (sampled.id !== this.workspace.current().id) {
-            await this.workspace.checkout?.(sampled);
+            if (!this.workspace.checkout)
+              throw new Error("archive branching requires checkout support");
+            await this.workspace.checkout(sampled);
           }
         }
       }
@@ -125,14 +145,26 @@ export class SelfIterationLoop {
       this.onIteration?.(outcome.record);
 
       if (outcome.record.accepted && outcome.child && outcome.after) {
+        failures = 0;
         current = outcome.child;
         currentSignals = outcome.after;
+        if (dominates(currentSignals, publishedSignals)) {
+          published = current;
+          publishedSignals = currentSignals;
+        }
       } else {
         failures += 1;
       }
     }
 
-    const best = this.archive.best() ?? current;
+    // Exploration may keep rejected stepping stones; publication must not use them.
+    const best = published;
+    if (this.workspace.current().id !== best.id) {
+      if (!this.workspace.checkout)
+        throw new Error("restoring published candidate requires checkout support");
+      await this.workspace.checkout(best);
+    }
+    await this.workspace.settle?.(best);
     this.trace("loop.end", { best: candidateJson(best), iterations: records.length });
     return { best, records, archive: this.archive };
   }
@@ -149,8 +181,10 @@ export class SelfIterationLoop {
     });
     let proposal: Proposal;
     try {
+      await this.workspace.begin?.();
       proposal = await this.proposer.propose(parent, before);
     } catch (error) {
+      await this.workspace.abort?.();
       this.trace("proposal.error", { iteration, error: String(error) });
       throw error;
     }
@@ -168,6 +202,7 @@ export class SelfIterationLoop {
     });
 
     if (touchesProtected(parent, proposal)) {
+      await this.workspace.abort?.();
       this.trace("iteration.gate", {
         iteration,
         passed: false,
@@ -183,6 +218,7 @@ export class SelfIterationLoop {
     try {
       child = await this.workspace.apply(proposal);
     } catch (error) {
+      await this.workspace.abort?.();
       const reason = error instanceof Error ? error.message : String(error);
       this.trace("iteration.apply", { iteration, failed: true, reason });
       return {
@@ -233,6 +269,7 @@ export class SelfIterationLoop {
 
       this.trace("evaluation.start", { iteration, candidateId: child.id });
       const after = await this.evaluator.evaluate(child);
+      assertComparableSignals(after, before);
       this.trace("evaluation.end", {
         iteration,
         candidateId: child.id,

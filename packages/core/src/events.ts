@@ -7,8 +7,30 @@ export interface Usage {
   costUsd?: number;
 }
 
-/** Why a run stopped. */
+/** Execution stop category, never a task-correctness or acceptance verdict. */
 export type StopReason = "done" | "aborted" | "error" | "length";
+
+/** Observable termination evidence; preserve native reasons instead of inferring success. */
+export interface RunTermination {
+  cause:
+    | "turn-ended"
+    | "token-limit"
+    | "request-limit"
+    | "cancelled"
+    | "timeout"
+    | "error"
+    | "unknown";
+  source: "acp" | "host" | "transport";
+  rawReason?: string;
+}
+
+/** Session output assessment. Task verification belongs to a separate evaluator/feedback. */
+export interface RunCompletion {
+  response: "present" | "absent";
+  verification: "unverified";
+  /** Assistant claims are advisory, not engine-confirmed termination causes. */
+  warnings: Array<{ code: "assistant-reported-step-limit"; source: "assistant"; text: string }>;
+}
 
 export interface Message {
   role: "assistant" | "user";
@@ -80,6 +102,13 @@ export type AgentEvent =
     }
   | { type: "usage"; sessionId: string; usage: Usage }
   | { type: "context.compacting"; sessionId: string; reason: string }
-  | { type: "run.settled"; sessionId: string; reason: StopReason; error?: string };
+  | {
+      type: "run.settled";
+      sessionId: string;
+      reason: StopReason;
+      error?: string;
+      termination?: RunTermination;
+      completion?: RunCompletion;
+    };
 
 export type AgentEventListener = (event: AgentEvent) => void;

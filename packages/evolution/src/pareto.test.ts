@@ -29,8 +29,12 @@ describe("dominates", () => {
     );
   });
 
-  it("ignores metrics only present on one side", () => {
-    expect(dominates([higher("a", 2), higher("extra", 0)], [higher("a", 1)])).toBe(true);
+  it("rejects missing, added or direction-changed metrics", () => {
+    expect(dominates([higher("a", 2), higher("extra", 0)], [higher("a", 1)])).toBe(false);
+    expect(dominates([higher("a", 2)], [higher("a", 1), higher("safe", 1)])).toBe(false);
+    expect(dominates([lower("a", 0)], [higher("a", 1)])).toBe(false);
+    expect(() => dominates([higher("a", NaN)], [higher("a", 1)])).toThrow();
+    expect(() => dominates([higher("a", 2), higher("a", 3)], [higher("a", 1)])).toThrow();
   });
 
   it("is false for identical vectors", () => {

@@ -1,7 +1,36 @@
+import { chmodSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { ContainerRunner, dockerRunArgs } from "./container";
 
 describe("dockerRunArgs", () => {
+  it("reclaims an owned container after the Docker client times out", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "mentat-container-cleanup-")),
+      docker = join(dir, "docker"),
+      receipt = join(dir, "cleanup.json");
+    writeFileSync(
+      docker,
+      `#!/usr/bin/env node
+const fs=require('node:fs'),a=process.argv.slice(2);
+if(a[0]==='run'){fs.writeFileSync(a[a.indexOf('--cidfile')+1],'a'.repeat(64));setInterval(()=>{},1000)}
+else {fs.writeFileSync(${JSON.stringify(receipt)},JSON.stringify(a));}
+`,
+    );
+    chmodSync(docker, 0o700);
+    const result = await new ContainerRunner(docker).run({
+      cwd: dir,
+      image: "fake",
+      command: ["task"],
+      timeoutMs: 300,
+    });
+    expect(result.timedOut).toBe(true);
+    expect(JSON.parse(readFileSync(receipt, "utf8"))).toEqual([
+      "rm",
+      "--force",
+      expect.stringMatching(/^mentat-/),
+    ]);
+  });
   it("mounts the workspace and disables the network by default", () => {
     const args = dockerRunArgs({
       image: "alpine:3",

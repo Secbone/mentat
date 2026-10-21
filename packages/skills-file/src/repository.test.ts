@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
@@ -33,4 +33,30 @@ it("fails closed on corruption instead of replacing procedural evidence", () => 
   const repository = new FileSkillRepository(path);
   expect(() => repository.list()).toThrow();
   expect(() => repository.save(draft, 0)).toThrow();
+});
+
+it("keeps agent revisions as drafts and requires host-owned evaluation evidence to publish", () => {
+  const path = join(mkdtempSync(join(tmpdir(), "mentat-skills-publish-")), "skills.json");
+  const repo = new FileSkillRepository(path);
+  expect(repo.save(draft, 0).status).toBe("draft");
+  expect(() =>
+    repo.review(draft.name, draft.scope, 1, {
+      status: "validated",
+      evaluation: { id: "eval", passed: false, evidence: ["trace"] },
+    }),
+  ).toThrow("passing evaluation");
+  const skill = repo.review(draft.name, draft.scope, 1, {
+    status: "validated",
+    evaluation: { id: "eval", passed: true, evidence: ["trace"] },
+  });
+  expect(skill.status).toBe("validated");
+  expect(repo.save({ ...draft, content: "new unverified steps" }, 2).status).toBe("draft");
+  expect(readdirSync(`${path}.versions`)).toHaveLength(2);
+  expect(repo.history(draft.name, draft.scope).map((skill) => skill.version)).toEqual([1, 2, 3]);
+  expect(repo.restore(draft.name, draft.scope, 1, 3)).toMatchObject({
+    version: 4,
+    status: "draft",
+    content: draft.content,
+  });
+  expect(() => repo.restore(draft.name, "other", 1, 4)).toThrow("version not found");
 });

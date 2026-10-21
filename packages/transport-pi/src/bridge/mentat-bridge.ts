@@ -28,18 +28,15 @@ interface UiLike {
 
 function registerMcpServers(pi: PiLike): void {
   const raw = process.env.MENTAT_MCP_SERVERS;
-  if (!raw || !pi.registerMcpServer) return;
-  try {
-    const servers = JSON.parse(raw) as Array<{ name: string } & McpServerConfig>;
-    for (const server of servers) {
-      pi.registerMcpServer(server.name, {
-        command: server.command,
-        args: server.args ?? [],
-        env: server.env ?? {},
-      });
-    }
-  } catch {
-    /* ignore a malformed spec */
+  if (!raw) return;
+  if (!pi.registerMcpServer) throw new Error("Pi MCP registration is unavailable");
+  const servers = JSON.parse(raw) as Array<{ name: string } & McpServerConfig>;
+  for (const server of servers) {
+    pi.registerMcpServer(server.name, {
+      command: server.command,
+      args: server.args ?? [],
+      env: server.env ?? {},
+    });
   }
 }
 
@@ -59,7 +56,7 @@ export default function mentatBridge(pi: PiLike): void {
     const toolName = String(record.toolName ?? record.tool ?? record.name ?? "tool");
     const input = record.input ?? record.args ?? null;
     const ui = (ctx as { ui?: UiLike } | undefined)?.ui;
-    if (!ui?.confirm) return;
+    if (!ui?.confirm) return { block: true, reason: "mentat permission bridge unavailable" };
 
     const allowed = await ui.confirm(`mentat: ${toolName}`, JSON.stringify({ toolName, input }));
     if (!allowed) return { block: true, reason: `blocked by mentat (${toolName})` };

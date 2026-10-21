@@ -15,6 +15,19 @@ export interface BenchmarkCatalogEntry {
 /** Selection policy, not a claim that datasets or upstream agent bridges are installed. */
 export const BENCHMARK_CATALOG: readonly BenchmarkCatalogEntry[] = [
   {
+    id: "swe-bench-pro-v2",
+    name: "SWE-bench Pro V2",
+    priority: "extended",
+    dimensions: ["task-quality", "tool-use", "transfer"],
+    source: "https://github.com/scaleapi/SWE-bench_Pro-os",
+    runtime: "Harbor; offline agent phase; fresh-sandbox patch replay",
+    integration: "upstream-bridge-required",
+    selection:
+      "642 tasks; begin with three preselected development cases in different repositories",
+    limitations:
+      "Pin V2 separately from 731-task v1; reduced-budget reset samples do not establish RSI or a leaderboard score",
+  },
+  {
     id: "mentat-longitudinal",
     name: "Mentat longitudinal",
     priority: "core",

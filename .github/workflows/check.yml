@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: "22"
           cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - run: pnpm install --frozen-lockfile
-      - name: Full gate (aliases, layering, typecheck, tests, lint)
+      - name: Full gate (aliases, layering, typecheck, tests, Python audits, lint)
         run: pnpm check

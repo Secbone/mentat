@@ -5,6 +5,9 @@
       "@mentat/memory/write-rules": [
         "packages/memory/src/write-rules.mjs"
       ],
+      "@mentat/storage-file/lock": [
+        "packages/storage-file/src/lock.mjs"
+      ],
       "@mentat/memory-evolution": [
         "packages/memory-evolution/src/index.ts"
       ],
@@ -19,6 +22,9 @@
       ],
       "@mentat/core/testing": [
         "packages/core/src/testing/contract.ts"
+      ],
+      "@mentat/storage-file": [
+        "packages/storage-file/src/index.ts"
       ],
       "@mentat/transport-pi": [
         "packages/transport-pi/src/index.ts"

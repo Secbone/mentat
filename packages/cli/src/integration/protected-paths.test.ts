@@ -36,7 +36,7 @@ it("the CLI default protects the relocated evolution code and rolls back its mod
     const session = await create(options, deps);
     const send = session.send.bind(session);
     session.send = async (input, sendOptions) => {
-      writeFileSync(join(repo, protectedFile), "export const value = 2;\n");
+      writeFileSync(join(options.cwd, protectedFile), "export const value = 2;\n");
       await send(input, sendOptions);
     };
     return session;

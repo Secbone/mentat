@@ -2,6 +2,8 @@ import type {
   AdapterDeps,
   AgentEvent,
   HarnessAdapter,
+  RunCompletion,
+  RunTermination,
   SessionHandle,
   SessionOptions,
   StopReason,
@@ -16,6 +18,9 @@ export interface TurnResult {
   turnId: string;
   sessionId: string;
   reason: StopReason;
+  /** Optional only for compatibility with older callers constructing results. */
+  termination?: RunTermination;
+  completion?: RunCompletion;
   text: string;
   error?: string;
   usage?: Usage;
@@ -40,10 +45,19 @@ export interface TurnOptions {
 const running = new WeakSet<SessionHandle>();
 const unusable = new WeakSet<SessionHandle>();
 const disposed = new WeakSet<SessionHandle>();
+const closing = new WeakMap<SessionHandle, Promise<void>>();
 export async function closeSession(session: SessionHandle, timeoutMs?: number): Promise<void> {
   if (disposed.has(session)) return;
-  disposed.add(session);
-  await boundedCleanup(() => session.dispose(), timeoutMs);
+  const pending = closing.get(session);
+  if (pending) return pending;
+  const action = boundedCleanup(() => session.dispose(), timeoutMs);
+  closing.set(session, action);
+  try {
+    await action;
+    disposed.add(session);
+  } finally {
+    closing.delete(session);
+  }
 }
 export async function boundedCleanup(action: () => Promise<void>, timeoutMs = 1000): Promise<void> {
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -66,6 +80,7 @@ export async function runTurn(
 ): Promise<TurnResult> {
   if (running.has(session)) throw new Error("session already has an active turn");
   if (unusable.has(session)) throw new Error("session is unusable after cancellation or timeout");
+  if (disposed.has(session)) throw new Error("session is disposed");
   const timeoutMs = options.timeoutMs ?? 120_000;
   if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) throw new RangeError("invalid turn timeout");
   const maxCorrective = options.correctiveRetries ?? 0;
@@ -79,6 +94,13 @@ export async function runTurn(
   let usage: Usage | undefined;
   let corrective = 0;
   let hadToolActivity = false;
+  let termination: RunTermination | undefined;
+  let warnings: RunCompletion["warnings"] = [];
+  const completion = (): RunCompletion => ({
+    response: text.trim() ? "present" : "absent",
+    verification: "unverified",
+    warnings: structuredClone(warnings),
+  });
   const pendingTools = new Set<string>();
   let sending = Promise.resolve();
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -101,11 +123,18 @@ export async function runTurn(
     finish = (reason, error) => {
       if (complete) return;
       complete = true;
+      termination ??= {
+        source: "host",
+        cause: reason === "aborted" ? "cancelled" : reason === "error" ? "error" : "unknown",
+      };
+      const assessed = completion();
       if (!events.some((event) => event.type === "run.settled")) {
         const terminal: AgentEvent = {
           type: "run.settled",
           sessionId: session.id,
           reason,
+          termination,
+          completion: assessed,
           ...(error ? { error } : {}),
         };
         events.push(terminal);
@@ -119,11 +148,19 @@ export async function runTurn(
           options.onDiagnostic?.({ code: "OBSERVER_FAILED", message: String(observerError) });
         }
       }
-      trace("turn.end", { reason, error: error ?? null, durationMs: Date.now() - started });
+      trace("turn.end", {
+        reason,
+        termination: { ...termination },
+        completion: { ...assessed },
+        error: error ?? null,
+        durationMs: Date.now() - started,
+      });
       resolve({
         turnId,
         sessionId: session.id,
         reason,
+        termination,
+        completion: assessed,
         text,
         ...(error ? { error } : {}),
         ...(usage ? { usage } : {}),
@@ -155,6 +192,19 @@ export async function runTurn(
       if (event.sessionId !== session.id) {
         trace("invariant.violation", { code: "SESSION_MISMATCH", eventSessionId: event.sessionId });
         return;
+      }
+      if (event.type === "run.settled") {
+        warnings = event.completion?.warnings ?? [];
+        termination = event.termination ?? {
+          source: "transport",
+          cause:
+            event.reason === "aborted"
+              ? "cancelled"
+              : event.reason === "error"
+                ? "error"
+                : "unknown",
+        };
+        event = { ...event, termination, completion: completion() };
       }
       if (event.type === "tool.start" || event.type === "tool.update") {
         hadToolActivity = true;
@@ -202,6 +252,7 @@ export async function runTurn(
     options.signal?.addEventListener("abort", abort, { once: true });
     timer = setTimeout(() => {
       unusable.add(session);
+      termination = { source: "host", cause: "timeout" };
       finish("error", "turn timed out");
     }, timeoutMs);
     if (options.signal?.aborted) abort();

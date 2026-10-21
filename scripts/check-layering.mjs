@@ -7,12 +7,13 @@ import { fileURLToPath } from "node:url";
 import ts from "typescript";
 
 export const ALLOWED_WORKSPACE_DEPS = {
+  "@mentat/storage-file": [],
   "@mentat/skills": [],
-  "@mentat/skills-file": ["@mentat/skills"],
+  "@mentat/skills-file": ["@mentat/skills", "@mentat/storage-file"],
   "@mentat/skills-mcp": ["@mentat/core", "@mentat/skills", "@mentat/skills-file"],
   "@mentat/core": [],
   "@mentat/benchmark": [],
-  "@mentat/benchmark-file": ["@mentat/benchmark", "@mentat/evaluation"],
+  "@mentat/benchmark-file": ["@mentat/benchmark", "@mentat/evaluation", "@mentat/storage-file"],
   "@mentat/session": ["@mentat/core"],
   "@mentat/host": [
     "@mentat/skills-mcp",
@@ -29,12 +30,12 @@ export const ALLOWED_WORKSPACE_DEPS = {
   "@mentat/evolution": ["@mentat/core", "@mentat/kernel"],
   "@mentat/models": ["@mentat/core"],
   "@mentat/memory": [],
-  "@mentat/memory-file": ["@mentat/memory"],
-  "@mentat/observability": ["@mentat/core", "@mentat/session"],
+  "@mentat/memory-file": ["@mentat/memory", "@mentat/storage-file"],
+  "@mentat/observability": ["@mentat/core", "@mentat/session", "@mentat/storage-file"],
   "@mentat/memory-mcp": ["@mentat/core", "@mentat/memory", "@mentat/memory-file"],
   "@mentat/memory-evolution": ["@mentat/core", "@mentat/evolution", "@mentat/memory"],
   "@mentat/evaluation": ["@mentat/core", "@mentat/evolution"],
-  "@mentat/workspace": ["@mentat/core", "@mentat/evolution"],
+  "@mentat/workspace": ["@mentat/core", "@mentat/evolution", "@mentat/storage-file"],
   "@mentat/assistant": [
     "@mentat/session",
     "@mentat/core",
@@ -131,6 +132,13 @@ export function checkLayering(root, options = {}) {
     if (!existsSync(manifestPath)) continue;
     const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
     if (!manifest.name?.startsWith("@mentat/")) continue;
+    if (
+      options.verifyAllowedTable &&
+      (!manifest.scripts?.typecheck || !existsSync(join(pkgDir, "tsconfig.json")))
+    )
+      violations.push(
+        `${manifest.name}: every package requires a runnable typecheck and tsconfig.json`,
+      );
     packages.set(manifest.name, { pkgDir, manifest });
   }
   const names = [...packages.keys()].sort((a, b) => b.length - a.length);

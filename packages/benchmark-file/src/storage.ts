@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import {
   appendFileSync,
+  existsSync,
   lstatSync,
   mkdirSync,
   readdirSync,
@@ -17,6 +18,7 @@ import {
   validatePlan,
   validateRun,
 } from "@mentat/benchmark";
+import { atomicJson, withFileLock } from "@mentat/storage-file";
 import { defaultResultAdapters, type ResultAdapterRegistry } from "./adapters";
 import { sha256 } from "./digest";
 import { renderReport } from "./report";
@@ -31,6 +33,7 @@ export function createRunDirectory(path: string, plan: RunPlan) {
   mkdirSync(path);
   writeFileSync(join(path, "plan.json"), `${JSON.stringify(plan, null, 2)}\n`, { flag: "wx" });
   writeFileSync(join(path, "events.jsonl"), "", { flag: "wx" });
+  atomicJson(join(path, "manifest.json"), { status: "running" });
 }
 export function appendResult(path: string, result: TrialResult) {
   appendFileSync(
@@ -70,6 +73,20 @@ export function makeRun(
   });
 }
 export function saveRun(path: string, run: BenchmarkRun, source: unknown) {
+  return withFileLock(join(path, "publication.lock"), () => {
+    if (existsSync(join(path, "integrity.json")))
+      throw new Error("benchmark result already published");
+    atomicJson(join(path, "manifest.json"), { status: "saving" });
+    try {
+      saveRunFiles(path, run, source);
+      atomicJson(join(path, "manifest.json"), { status: "complete" });
+    } catch (error) {
+      atomicJson(join(path, "manifest.json"), { status: "failed", error: String(error) });
+      throw error;
+    }
+  });
+}
+function saveRunFiles(path: string, run: BenchmarkRun, source: unknown) {
   validateRun(run);
   assert(sha256(canonical(source)) === run.provenance.artifactSha256, "source digest mismatch");
   const encoded = `${JSON.stringify(run, null, 2)}\n`;
@@ -81,6 +98,12 @@ export function saveRun(path: string, run: BenchmarkRun, source: unknown) {
   });
 }
 export function readRun(path: string): BenchmarkRun {
+  const manifest = join(path, "manifest.json");
+  if (existsSync(manifest))
+    assert(
+      JSON.parse(readFileSync(manifest, "utf8")).status === "complete",
+      "benchmark publication is incomplete",
+    );
   const raw = readFileSync(join(path, "run.json"), "utf8");
   const integrity = JSON.parse(readFileSync(join(path, "integrity.json"), "utf8"));
   assert(sha256(raw) === integrity.runSha256, "run file integrity mismatch");

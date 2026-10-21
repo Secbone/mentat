@@ -3,11 +3,11 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { assistantPromptOptions } from "@mentat/assistant";
-import { taskContext } from "@mentat/host";
 import { buildTurnContext, type MemoryEntry } from "@mentat/memory";
 import { JsonFileMemoryStore } from "@mentat/memory-file";
 import { memoryMcpSpec } from "@mentat/memory-mcp";
 import { createAcpAdapter } from "@mentat/transport-acp";
+import { taskContext } from "./memory";
 import { acpPermission, sendTurn } from "./runner";
 
 const sourceArg = process.argv.indexOf("--source");

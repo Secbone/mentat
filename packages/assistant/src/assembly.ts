@@ -7,9 +7,13 @@ export async function assemblePrompt(
   adapter: HarnessAdapter,
   task: string | TaskInput,
   tools?: AssistantTools,
+  budget: { maxInputChars?: number; memoryChars?: number } = {},
 ) {
   const input = normalizeTaskInput(task);
-  const snapshot = await memory.context(input.text);
+  const maxInputChars = budget.maxInputChars ?? 100_000;
+  if (!Number.isSafeInteger(maxInputChars) || maxInputChars <= 0)
+    throw new Error("invalid input context budget");
+  const snapshot = await memory.context(input.text, budget.memoryChars);
   const contexts = [
     ...(input.hostPolicy !== undefined ? [{ name: "host-policy", text: input.hostPolicy }] : []),
     ...(input.materials?.map((material, index) => ({
@@ -32,16 +36,24 @@ export async function assemblePrompt(
     contexts,
     selection: snapshot,
   };
+  const assembledInput = {
+    text: input.text,
+    ...(input.hostPolicy !== undefined ? { hostPolicy: input.hostPolicy } : {}),
+    context:
+      references.length === 1
+        ? snapshot.text
+        : references.map((part) => JSON.stringify(part)).join("\n"),
+  };
+  const usedChars =
+    JSON.stringify(assembledInput).length + (assembly.sections[0]?.text?.length ?? 0);
   return {
-    assembly,
-    input: {
-      text: input.text,
-      ...(input.hostPolicy !== undefined ? { hostPolicy: input.hostPolicy } : {}),
-      context:
-        references.length === 1
-          ? snapshot.text
-          : references.map((part) => JSON.stringify(part)).join("\n"),
-    },
-    blocked: snapshot.omittedRequiredIds.length > 0,
+    assembly: { ...assembly, budget: { maxInputChars, usedChars } },
+    input: assembledInput,
+    blocked: snapshot.omittedRequiredIds.length > 0 || usedChars > maxInputChars,
+    blockedReason: snapshot.omittedRequiredIds.length
+      ? "required constraints exceed context budget"
+      : usedChars > maxInputChars
+        ? "assembled input exceeds context budget"
+        : undefined,
   };
 }

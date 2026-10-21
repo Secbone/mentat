@@ -9,12 +9,12 @@ import {
   reflectMemories,
 } from "@mentat/assistant";
 import type { AgentEvent, HarnessAdapter, SessionHandle } from "@mentat/core";
-import { saveReflections, taskContext } from "@mentat/host";
 import { buildTurnContext, type MemoryEntry } from "@mentat/memory";
 import { JsonFileMemoryStore } from "@mentat/memory-file";
 import { memoryMcpSpec } from "@mentat/memory-mcp";
 import { type ExperienceRecord, SessionRecorder } from "@mentat/observability";
 import { createAcpAdapter } from "@mentat/transport-acp";
+import { saveReflections, taskContext } from "./memory";
 import { acpPermission, parentCheckpoint, sendTurn, taskInput } from "./runner";
 
 interface Episode {

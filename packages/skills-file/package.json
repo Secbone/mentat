@@ -9,6 +9,10 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@mentat/skills": "workspace:*"
+    "@mentat/skills": "workspace:*",
+    "@mentat/storage-file": "workspace:*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   }
 }

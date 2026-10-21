@@ -1,5 +1,5 @@
-import { randomUUID } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { createHash, randomUUID } from "node:crypto";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { type Candidate, FunctionEvaluator, GateChain, SelfIterationLoop } from "@mentat/evolution";
 import { type MemoryEntry, MemoryService } from "@mentat/memory";
@@ -31,6 +31,8 @@ export async function evolveCommand(args: string[]): Promise<number> {
   let memoryPath = defaultMemoryPath(process.cwd());
   let factsPath: string | undefined;
   let queriesPath: string | undefined;
+  let trainingQueriesPath: string | undefined;
+  let testQueriesPath: string | undefined;
   let iterations = 0;
   let useAgent = false;
   let harnessId = "pi";
@@ -47,7 +49,9 @@ export async function evolveCommand(args: string[]): Promise<number> {
     else if (arg === "--memory") memoryPath = args[++i] ?? memoryPath;
     else if (arg === "--facts") factsPath = args[++i];
     else if (arg === "--queries") queriesPath = args[++i];
-    else if (arg === "--iterations") iterations = Number(args[++i] ?? "0") || 0;
+    else if (arg === "--training-queries") trainingQueriesPath = args[++i];
+    else if (arg === "--test-queries") testQueriesPath = args[++i];
+    else if (arg === "--iterations") iterations = Number(args[++i] ?? "0");
     else if (arg === "--agent") useAgent = true;
     else if (arg === "--model") model = args[++i];
     else if (arg === "--from-experience") fromExperience = true;
@@ -58,13 +62,57 @@ export async function evolveCommand(args: string[]): Promise<number> {
     process.stderr.write("evolve memory: --queries is required (and --facts unless --agent)\n");
     return 1;
   }
+  if (!Number.isSafeInteger(iterations) || iterations < 0)
+    throw new Error("invalid evolution iteration budget");
   if (fromExperience && !useAgent) {
     process.stderr.write("evolve memory: --from-experience requires --agent\n");
+    return 1;
+  }
+  if (useAgent && !trainingQueriesPath) {
+    process.stderr.write(
+      "evolve memory: --agent requires --training-queries separate from selection --queries\n",
+    );
     return 1;
   }
 
   const facts = factsPath ? (JSON.parse(readFileSync(factsPath, "utf8")) as MemoryEntry[]) : [];
   const queries = JSON.parse(readFileSync(queriesPath, "utf8")) as RecallQuery[];
+  const trainingQueries = trainingQueriesPath
+    ? (JSON.parse(readFileSync(trainingQueriesPath, "utf8")) as RecallQuery[])
+    : [];
+  const testQueries = testQueriesPath
+    ? (JSON.parse(readFileSync(testQueriesPath, "utf8")) as RecallQuery[])
+    : [];
+  const validateQueries = (rows: RecallQuery[]) => {
+    if (
+      !Array.isArray(rows) ||
+      rows.some(
+        (q) =>
+          !q ||
+          typeof q.query !== "string" ||
+          !q.query.trim() ||
+          typeof q.expectId !== "string" ||
+          !q.expectId.trim(),
+      )
+    )
+      throw new Error("invalid recall queries");
+  };
+  validateQueries(queries);
+  validateQueries(trainingQueries);
+  validateQueries(testQueries);
+  if (
+    !queries.length ||
+    (useAgent && !trainingQueries.length) ||
+    (testQueriesPath && !testQueries.length)
+  )
+    throw new Error("query splits must not be empty");
+  const seen = new Set<string>();
+  for (const split of [trainingQueries, queries, testQueries]) {
+    const keys = split.map((q) => q.query.trim().toLowerCase());
+    if (new Set(keys).size !== keys.length || keys.some((key) => seen.has(key)))
+      throw new Error("training, selection and test queries overlap");
+    for (const key of keys) seen.add(key);
+  }
   const rebuild = (snapshot: ArtifactSnapshot) =>
     memoryArtifact(snapshot.id, snapshot.snapshot as unknown as MemoryEntry[]);
 
@@ -81,8 +129,13 @@ export async function evolveCommand(args: string[]): Promise<number> {
     metadata: { operation: "evolve-memory", model: model ?? null, harness: harnessId },
   });
   tracer.emit("evolution.input", {
+    protocol: "memory-evolution-split-v2",
     facts: facts as unknown as import("@mentat/core").JsonValue,
     queries: queries as unknown as import("@mentat/core").JsonValue,
+    trainingQueries: trainingQueries as unknown as import("@mentat/core").JsonValue,
+    testQueriesSha256: testQueriesPath
+      ? createHash("sha256").update(JSON.stringify(testQueries)).digest("hex")
+      : null,
   });
   const runner = async (prompt: string) => {
     const result = await runOnce(
@@ -96,7 +149,7 @@ export async function evolveCommand(args: string[]): Promise<number> {
     return result.text;
   };
   const proposer = useAgent
-    ? createAgentMemoryProposer(queries, runner, digest)
+    ? createAgentMemoryProposer(trainingQueries, runner, digest)
     : new RuleMemoryProposer(facts);
 
   const loop = new SelfIterationLoop({
@@ -109,6 +162,21 @@ export async function evolveCommand(args: string[]): Promise<number> {
   });
   try {
     const result = await loop.run();
+    if (testQueriesPath) {
+      const final = {
+        candidateId: result.best.id,
+        queriesSha256: createHash("sha256").update(JSON.stringify(testQueries)).digest("hex"),
+        signals: (await new FunctionEvaluator([recallTask(testQueries)]).evaluate(result.best)).map(
+          ({ name, value, direction }) => ({ name, value, direction }),
+        ),
+        role: "final-only; never used for proposals, selection or publication decisions",
+      };
+      writeFileSync(join(tracer.dir, "final-evaluation.json"), JSON.stringify(final, null, 2), {
+        flag: "wx",
+        mode: 0o600,
+      });
+      tracer.emit("evaluation.final", final);
+    }
 
     process.stdout.write("iter  child        gate   accepted  recall  noise\n");
     for (const record of result.records) {

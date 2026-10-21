@@ -10,12 +10,12 @@ import {
   reflectMemories,
 } from "@mentat/assistant";
 import type { AgentEvent, HarnessAdapter, SessionHandle } from "@mentat/core";
-import { saveReflections, taskContext } from "@mentat/host";
 import { rememberFact } from "@mentat/memory";
 import { JsonFileMemoryStore } from "@mentat/memory-file";
 import { memoryMcpSpec } from "@mentat/memory-mcp";
 import { SessionRecorder } from "@mentat/observability";
 import { createAcpAdapter } from "@mentat/transport-acp";
+import { saveReflections, taskContext } from "./memory";
 import { acpPermission } from "./runner";
 
 const root = resolve(".mentat/experiments/personal-assistant");

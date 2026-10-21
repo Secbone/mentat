@@ -46,6 +46,9 @@ importers:
       '@mentat/evaluation':
         specifier: workspace:*
         version: link:../evaluation
+      '@mentat/storage-file':
+        specifier: workspace:*
+        version: link:../storage-file
       '@modelcontextprotocol/sdk':
         specifier: ^1.32.1
         version: 1.32.1(zod@4.6.7)
@@ -186,6 +189,9 @@ importers:
       '@mentat/memory':
         specifier: workspace:*
         version: link:../memory
+      '@mentat/storage-file':
+        specifier: workspace:*
+        version: link:../storage-file
 
   packages/memory-mcp:
     dependencies:
@@ -226,6 +232,9 @@ importers:
       '@mentat/session':
         specifier: workspace:*
         version: link:../session
+      '@mentat/storage-file':
+        specifier: workspace:*
+        version: link:../storage-file
 
   packages/session:
     dependencies:
@@ -240,6 +249,9 @@ importers:
       '@mentat/skills':
         specifier: workspace:*
         version: link:../skills
+      '@mentat/storage-file':
+        specifier: workspace:*
+        version: link:../storage-file
 
   packages/skills-mcp:
     dependencies:
@@ -262,6 +274,8 @@ importers:
         specifier: ^4.6.7
         version: 4.6.7
 
+  packages/storage-file: {}
+
   packages/transport-acp:
     dependencies:
       '@mentat/core':
@@ -282,6 +296,9 @@ importers:
       '@mentat/evolution':
         specifier: workspace:*
         version: link:../evolution
+      '@mentat/storage-file':
+        specifier: workspace:*
+        version: link:../storage-file
 
 packages:
 

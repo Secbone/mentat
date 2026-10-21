@@ -66,3 +66,14 @@ it("does not run a manually disposed effect again", async () => {
   await ctx.dispose();
   expect(count).toBe(1);
 });
+it("does not resurrect an unregistered service when sibling overrides dispose out of order", async () => {
+  const root = new Context();
+  const a = root.fork("a"),
+    b = root.fork("b");
+  a.provide("service", "a");
+  b.provide("service", "b");
+  await a.dispose();
+  expect(root.get("service")).toBe("b");
+  await b.dispose();
+  expect(root.has("service")).toBe(false);
+});

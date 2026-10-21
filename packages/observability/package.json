@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@mentat/core": "workspace:*",
-    "@mentat/session": "workspace:*"
+    "@mentat/session": "workspace:*",
+    "@mentat/storage-file": "workspace:*"
   },
   "description": "Experience recording, summaries and JSONL execution traces"
 }

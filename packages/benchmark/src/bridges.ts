@@ -53,10 +53,21 @@ export class BridgeRegistry {
   }
 }
 
-/** Current integration state of the eleven selected public sets + the native track. */
+/** Current integration state of the selected public sets and native track. */
 export function defaultBridges(): BridgeRegistry {
   const registry = new BridgeRegistry();
   for (const bridge of [
+    {
+      id: "swe-bench-pro-v2",
+      source: "https://github.com/scaleapi/SWE-bench_Pro-os",
+      revision: "66f92766bba642462d4bbe5479e83f91f9211862",
+      runner: "harbor",
+      home: "benchmarks/swe-bench",
+      resultAdapter: "harbor-trials-v1",
+      integration: "subject-bridged",
+      notes:
+        "Pro V2 development samples: two Python cases passed fresh-sandbox replay; NodeBB separately passed on isolated VZ/Rosetta, including tracked-source-only replay. Different runtime snapshots are not pooled. Not a full run or RSI result. See benchmarks/swe-bench/README.md",
+    },
     {
       id: "mentat-longitudinal",
       source: "experiments/personal-assistant",

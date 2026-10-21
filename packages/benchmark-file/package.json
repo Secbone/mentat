@@ -14,7 +14,8 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
     "@mentat/benchmark": "workspace:*",
-    "@mentat/evaluation": "workspace:*"
+    "@mentat/evaluation": "workspace:*",
+    "@mentat/storage-file": "workspace:*"
   },
   "description": "Benchmark result adapters, immutable file storage, external execution and reports"
 }

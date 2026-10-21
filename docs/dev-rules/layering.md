@@ -6,25 +6,30 @@
 
 | 包 | 职责 | 生产 workspace 依赖 |
 |---|---|---|
-| `@mentat/core` | 统一协议、制品契约、事件、JSON工具、harness注册与测试契约 | 无 |
-| `@mentat/benchmark` | 评测契约、能力清单、连续任务与配对分析 | 无 |
-| `@mentat/benchmark-file` | 上游结果接入、文件存储、外部运行与报告 | benchmark、evaluation |
-| `@mentat/session` | 会话执行、轨迹与经验契约、统一超时取消 | core |
-| `@mentat/host` | 默认装配与资源关闭、可替换服务注入 | core、session、assistant、memory、memory-file、memory-mcp、observability、transport-pi、transport-acp |
-| `@mentat/kernel` | 插件生命周期、服务容器和作用域 | core |
-| `@mentat/evolution` | 提案、门、评测接口、选择、归档及演化循环 | core、kernel |
-| `@mentat/models` | 模型目录、选择与模型制品 | core |
-| `@mentat/memory` | 记忆类型、查询、写入规则、状态转换和上下文选择 | 无 |
-| `@mentat/memory-file` | JSON记忆文件、写入审计与旧数据迁移 | memory |
-| `@mentat/memory-mcp` | 记忆MCP协议与服务进程启动配置 | core、memory、memory-file |
-| `@mentat/memory-evolution` | 记忆制品、记忆提案与演化评测、结果应用 | core、evolution、memory |
-| `@mentat/observability` | 文件轨迹、内容存储、派生经验、摘要与查询 | core、session |
-| `@mentat/workspace` | Git与JSON候选工作区、提交、恢复与回滚 | core、evolution |
-| `@mentat/evaluation` | 本地命令与容器执行、命令门、外部评测器 | core、evolution |
-| `@mentat/assistant` | 个人助理策略、每轮上下文、完整交互反思与显式确认 | core、memory、session |
-| `@mentat/transport-pi` | Pi RPC协议、事件翻译、权限bridge | core |
-| `@mentat/transport-acp` | ACP协议、事件翻译和会话管理 | core |
-| `@mentat/cli` | 参数解析、终端交互、命令与引擎装配 | 按实际使用声明以上包 |
+| `@mentat/assistant` | 通用策略、上下文装配、反思和显式确认 | core、memory、session |
+| `@mentat/benchmark` | 纯评测契约、计划校验、配对分析 | 无 |
+| `@mentat/benchmark-file` | 上游结果接入、冻结源码、结果发布与报告 | benchmark、evaluation、storage-file |
+| `@mentat/cli` | 命令解析、终端交互及应用流程装配 | benchmark、benchmark-file、assistant、core、evaluation、evolution、memory、memory-evolution、memory-file、observability、transport-pi、workspace、session、host、harnesses |
+| `@mentat/core` | 统一协议、事件、制品与 harness 契约 | 无 |
+| `@mentat/evaluation` | 命令/进程组执行、容器回收与评测器 | core、evolution |
+| `@mentat/evolution` | 提案、门、完整指标比较、探索归档与发布选择 | core、kernel |
+| `@mentat/harnesses` | 引擎特有策略、MCP 配置与默认注册 | core、transport-pi、transport-acp |
+| `@mentat/host` | 宿主装配、访问边界、召回、执行与资源关闭 | core、session、assistant、memory、memory-file、memory-mcp、observability、skills-mcp |
+| `@mentat/kernel` | 插件、作用域与服务注册生命周期 | core |
+| `@mentat/memory` | 记忆规则、状态、访问策略与上下文选择 | 无 |
+| `@mentat/memory-evolution` | 记忆制品、召回代理评估及演化结果应用 | core、evolution、memory |
+| `@mentat/memory-file` | 记忆事务日志、审计与恢复 | memory、storage-file |
+| `@mentat/memory-mcp` | 记忆工具协议与子进程入口 | core、memory、memory-file |
+| `@mentat/models` | 模型目录与成本/上下文选择策略 | core |
+| `@mentat/observability` | 轨迹、经验、内容存储、审计与召回归因 | core、session、storage-file |
+| `@mentat/session` | 会话执行、超时取消、轨迹与经验契约 | core |
+| `@mentat/skills` | 流程知识契约、状态和排序 | 无 |
+| `@mentat/skills-file` | 流程知识版本、宿主审查、恢复与持久化 | skills、storage-file |
+| `@mentat/skills-mcp` | 流程工具；模型只能保存草稿，不能发布验证状态 | core、skills、skills-file |
+| `@mentat/storage-file` | 通用文件锁、死进程恢复与原子 JSON 写入，不承载领域规则 | 无 |
+| `@mentat/transport-acp` | ACP 连接、内容翻译、会话与权限 | core |
+| `@mentat/transport-pi` | Pi 协议、事件翻译与权限桥 | core |
+| `@mentat/workspace` | 隔离 Git 工作区与不可变候选快照 | core、evolution、storage-file |
 
 表中的名称省略 `@mentat/` 前缀。`models` 和 `memory-evolution` 的测试使用kernel验证制品应用，但生产代码不依赖kernel；依赖放在 `devDependencies`，由检查脚本限制用途。
 
@@ -89,3 +94,19 @@ node_modules/.bin/tsc --noEmit -p experiments/personal-assistant/tsconfig.json
 执行与可观测性重构阶段形成17个功能包；上面的2026-10-15验证记录是此前15包拆分基线，重构实现和验证见 [执行、记忆与可观测性重构](../refactor-execution-observability.md)。assistant禁止依赖文件实现和终端，session只依赖core，observability实现session契约；host负责默认装配。不要让领域包反向导入host。
 
 2026-10-16新增 benchmark 与 benchmark-file 后为19个功能包。benchmark 保持纯契约与分析，benchmark-file 负责运行文件和外部执行；Mentat Subject 的 host 装配在 CLI，两个新包均不依赖 host 或 transport。公开评测集环境和 scorer 留在上游框架，接入说明见 [评测框架](../benchmark-framework.md)。
+
+## 2026-10-21 正确性与恢复边界
+
+当前为 24 个功能包。新增 storage-file 仅抽象跨模块共用的文件锁与原子 JSON 写入；锁的原生 JavaScript 入口可供不加载 TypeScript 的 Node 子进程使用。memory-file、skills-file、workspace、observability、benchmark-file 复用该层，领域策略仍留在各自子包。
+
+Host 的协议片段摄取移入 capture.ts，召回等待移入 recall.ts；ACP 的连接与内容翻译分别移入 connection.ts 和 content.ts。HostOverrides.modelSelector 可注入 ModelCatalog 或其他宿主路由策略；显式 model 优先，选不到模型时报错，不隐式改用其他模型。
+
+未绑定 scope 只访问未分区记忆；跨 scope 只允许显式 sharedMemoryScopes 读取。导入历史和反思同样受 Host 的 scope/cwd 边界约束。旧 ID 不重写，新记忆使用 UUID；旧数据缺少 scope 时不会自动猜测归属。
+
+演化实验采用完整且固定的指标集合。Archive.best 仅表示探索排序；LoopResult.best 是已接受且不使已发布指标退化的候选。protected 制品必须保留可信原对象，不能由提案自报相同版本替换。候选快照不可覆盖，当前指针只在提交时原子更新；重启不会恢复正在评估的候选。
+
+iterate 默认使用独立 detached worktree，开始时拒绝脏目录，发布时再次检查原 HEAD 与工作区，只允许快进。依赖不会从原目录共享；需要时用 --prepare 'pnpm install --offline' 初始化独立环境。它是工作区隔离，不是进程文件权限沙箱。
+
+pnpm check 同时运行 TypeScript 行为测试和 PAST Python 审计测试。历史验证记录保留其日期及包数量，不能替代当前检查。
+
+2026-10-21 验证：24 包分层检查、8 项架构规则测试、360 项行为测试及 18 项 Python 审计通过；Docker 实机测试按原开关跳过。全部 24 包独立类型检查及旧个人助理实验的 7 项回归/类型检查通过，格式检查通过，无真实模型调用。故障复现现已进入持续回归，详见 [当前架构评审](../architecture-review.md)。

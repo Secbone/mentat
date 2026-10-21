@@ -10,6 +10,9 @@ export interface Skill {
   createdAt: number;
   updatedAt: number;
   origin: "agent-procedure";
+  /** Agent saves are drafts; only host-owned evaluation can publish a revision. */
+  status?: "draft" | "validated" | "retired";
+  evaluation?: { id: string; passed: boolean; evidence: string[] };
 }
 export type SkillDraft = Pick<
   Skill,
@@ -19,6 +22,14 @@ export interface SkillRepository {
   list(scope?: string): Skill[];
   get(name: string, scope?: string): Skill | undefined;
   save(draft: SkillDraft, expectedVersion: number): Skill;
+  history(name: string, scope?: string): Skill[];
+  restore(name: string, scope: string | undefined, version: number, expectedVersion: number): Skill;
+  review(
+    name: string,
+    scope: string | undefined,
+    expectedVersion: number,
+    review: { status: "validated" | "retired"; evaluation: NonNullable<Skill["evaluation"]> },
+  ): Skill;
 }
 export function validateSkill(draft: SkillDraft): void {
   if (!/^[a-z0-9][a-z0-9_-]{0,63}$/.test(draft.name)) throw new Error("invalid skill name");

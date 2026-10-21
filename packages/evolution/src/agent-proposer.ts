@@ -72,6 +72,9 @@ export class AgentProposer implements Proposer {
     });
     await this.options.runner(prompt, { cwd: this.options.cwd });
     this.counter += 1;
-    return { id: `${this.id}-${this.counter}`, description: this.options.task };
+    return {
+      id: `${this.id}-${crypto.randomUUID()}-${this.counter}`,
+      description: this.options.task,
+    };
   }
 }

@@ -10,6 +10,14 @@ const models: ModelDescriptor[] = [
 ];
 
 describe("ModelCatalog", () => {
+  it("never treats an unknown model price as a free model", () => {
+    const catalog = new ModelCatalog([
+      { id: "unknown", provider: "a", contextWindow: 2000 },
+      ...models,
+    ]);
+    expect(catalog.select({ maxCostPerMtok: 0 })).toBeUndefined();
+    expect(catalog.select()?.id).toBe("small");
+  });
   it("filters by context window and cost, then picks cheapest", () => {
     const catalog = new ModelCatalog(models);
     expect(catalog.select({ minContextWindow: 16000, maxCostPerMtok: 5 })?.id).toBe("mid");

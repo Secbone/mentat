@@ -10,12 +10,23 @@ import {
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseReflectedMemories, reflectionPrompt } from "@mentat/assistant";
+import {
+  applyReflections,
+  buildReflectionBatch,
+  parseEvidenceReflection,
+  reflectionPrompt,
+} from "@mentat/assistant";
 import type { AgentEvent, SessionHandle } from "@mentat/core";
-import { buildMemoryContext, InMemoryMemoryStore, rememberFact } from "@mentat/memory";
-import { JsonFileMemoryStore } from "@mentat/memory-file";
+import {
+  buildTurnContext,
+  createMemoryAccess,
+  InMemoryMemoryStore,
+  rememberFact,
+} from "@mentat/memory";
+import { FileMemoryRepository, JsonFileMemoryStore } from "@mentat/memory-file";
 import { memoryMcpSpec } from "@mentat/memory-mcp";
 import { SessionRecorder } from "@mentat/observability";
+import { runTurn } from "@mentat/session";
 import { createAcpAdapter } from "@mentat/transport-acp";
 
 export type Arm = "A" | "B" | "C" | "C0";
@@ -91,54 +102,13 @@ export async function sendTurn(
   text: string,
   timeoutMs: number,
 ): Promise<TurnResult> {
-  const start = Date.now();
-  const events: AgentEvent[] = [];
-  let completed = "";
-  let delta = "";
-  let reason = "error";
-  let error: string | undefined;
-  let settled: (() => void) | undefined;
-  const finished = new Promise<void>((resolveFinished) => {
-    settled = resolveFinished;
-  });
-  const unsubscribe = session.subscribe((event) => {
-    events.push(event);
-    if (event.type === "message.delta") delta += event.text;
-    if (event.type === "message.completed") completed = event.message.text;
-    if (event.type === "run.settled") {
-      reason = event.reason;
-      error = event.error;
-      settled?.();
-    }
-  });
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  try {
-    await Promise.race([
-      (async () => {
-        await session.send({ text });
-        await finished;
-      })(),
-      new Promise<never>((_resolve, reject) => {
-        timer = setTimeout(() => reject(new Error(`turn timeout after ${timeoutMs}ms`)), timeoutMs);
-      }),
-    ]);
-  } catch (caught) {
-    reason = "error";
-    error = caught instanceof Error ? caught.message : String(caught);
-  } finally {
-    if (timer) clearTimeout(timer);
-    unsubscribe();
-  }
-  if (!(completed || delta).trim() && reason === "done") {
-    reason = "error";
-    error = "engine settled without an assistant answer";
-  }
+  const result = await runTurn(session, { text }, { timeoutMs, requireFinalAnswer: true });
   return {
-    text: completed || delta,
-    reason,
-    ...(error ? { error } : {}),
-    wallTimeMs: Date.now() - start,
-    events,
+    text: result.text,
+    reason: result.reason,
+    error: result.error,
+    wallTimeMs: result.durationMs,
+    events: result.events,
   };
 }
 
@@ -149,7 +119,7 @@ export function lexicalDiagnostic(
   // Used by the offline diagnostic command without modifying the memory implementation.
   const store = new InMemoryMemoryStore();
   for (const entry of entries) store.add(entry);
-  return { retrieved: store.search({ text: query }), context: buildMemoryContext(store, query) };
+  return { retrieved: store.search({ text: query }), context: buildTurnContext(store, query).text };
 }
 
 async function run(): Promise<void> {
@@ -198,6 +168,7 @@ async function run(): Promise<void> {
     writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`);
   write(join(out, "config.json"), {
     model,
+    protocol: "personal-assistant-evidence-v2",
     datasetPath,
     datasetSha256: createHash("sha256").update(datasetText).digest("hex"),
     seedPath: seedPath || null,
@@ -214,7 +185,7 @@ async function run(): Promise<void> {
     semantics: {
       A: "new sessions, no MCP, no inherited memory",
       B: "human-confirmed prior feedback injected in full; retrieval-independent upper bound",
-      C: "current chat MCP prompt and exact generic /reflect prompt; no manual memory writes",
+      C: "MCP candidates plus complete attributed reflection; no automatic confirmation",
       C0: "same tools/prompt as C, but a fresh empty memory for every task; controls tool availability",
     },
     instrumentation: "transparent ACP relay records native model/usage metadata",
@@ -289,6 +260,7 @@ async function run(): Promise<void> {
         if (injectMemory && !cold) {
           context += `\n已保存的历史记忆（仅在相关且未被当前明确指令更新时采用）：\n${memory
             .list()
+            .filter((entry) => (entry.status ?? "active") === "active")
             .map((entry) => `- ${entry.text}`)
             .join("\n")}`;
         }
@@ -315,6 +287,33 @@ async function run(): Promise<void> {
         }
         const finalTurn = revision ?? first;
         let reflection: TurnResult | undefined;
+        let reflectionApplication: Awaited<ReturnType<typeof applyReflections>> | undefined;
+        const interactionEvidence = [first, ...(revision ? [revision] : [])].map((turn, index) => {
+          const text = index === 0 ? episode.input.prompt : (episode.afterResponseFeedback ?? "");
+          const recorder = new SessionRecorder({
+            prompt: text,
+            cwd,
+            harness,
+            model,
+            input: {
+              text,
+              ...(index === 0
+                ? {
+                    hostPolicy: "Simulation: draft only; do not send, purchase or schedule.",
+                    materials: [
+                      {
+                        text: episode.input.source,
+                        attribution: "supplied task material",
+                        memoryScope: "task" as const,
+                      },
+                    ],
+                  }
+                : {}),
+            },
+          });
+          for (const event of turn.events) recorder.handle(event);
+          return recorder.snapshot();
+        });
         if (arm === "B" && finalTurn.reason === "done") {
           if (episode.afterResponseFeedback) rememberFact(memory, episode.afterResponseFeedback);
           if (episode.phase === "change") rememberFact(memory, episode.input.prompt);
@@ -324,23 +323,30 @@ async function run(): Promise<void> {
           finalTurn.reason === "done" &&
           ["learn", "noise", "change", "exception"].includes(episode.phase)
         ) {
-          // Exactly the current chat /reflect payload: deliberately no full conversation.
-          const reflector = await adapter.createSession({ cwd, model }, deps);
+          const reflectionInput = {
+            task: "Reflect on attributed interactions",
+            outcome: finalTurn.reason,
+            tools: [...new Set(interactionEvidence.flatMap((record) => record.tools))],
+            interactions: interactionEvidence,
+            existingMemories: memory.list(),
+          };
+          const batch = buildReflectionBatch(interactionEvidence, memory.list());
+          const reflector = await adapter.createSession(
+            { cwd, model },
+            { onPermission: { request: () => "deny" } },
+          );
           try {
-            reflection = await invoke(
-              reflector,
-              reflectionPrompt({
-                task: "(interactive chat)",
-                outcome: finalTurn.reason,
-                tools: [],
-              }),
-            );
+            reflection = await invoke(reflector, reflectionPrompt(reflectionInput, batch));
           } finally {
             await reflector.dispose();
           }
           if (reflection.reason === "done") {
-            const latest = new JsonFileMemoryStore(memoryPath);
-            for (const fact of parseReflectedMemories(reflection.text)) rememberFact(latest, fact);
+            const parsed = parseEvidenceReflection(reflection.text, batch);
+            if (parsed.status === "ok")
+              reflectionApplication = await applyReflections(
+                createMemoryAccess(new FileMemoryRepository(memoryPath)),
+                parsed.candidates,
+              );
           }
         }
         const after = new JsonFileMemoryStore(memoryPath).list();
@@ -377,10 +383,12 @@ async function run(): Promise<void> {
           first,
           revision: revision ?? null,
           reflection: reflection ?? null,
+          reflectionApplication: reflectionApplication ?? null,
+          interactionEvidence,
           memoryBefore: inherited,
           memoryAfter: after,
           injection: context,
-          retrievalDiagnostic: buildMemoryContext(new JsonFileMemoryStore(memoryPath), input),
+          retrievalDiagnostic: buildTurnContext(new JsonFileMemoryStore(memoryPath), input).text,
           nativeModels: native.filter((entry) => entry.type === "model"),
           nativeAcpUsage: native.filter((entry) => entry.type === "acpUsage"),
           usage: {

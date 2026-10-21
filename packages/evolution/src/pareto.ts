@@ -1,7 +1,32 @@
 import type { Signal } from "@mentat/core";
 
 function index(signals: Signal[]): Map<string, Signal> {
+  validateSignals(signals);
   return new Map(signals.map((signal) => [signal.name, signal]));
+}
+
+export function validateSignals(signals: Signal[]): void {
+  if (!Array.isArray(signals) || !signals.length) throw new Error("empty evaluation signals");
+  const names = new Set<string>();
+  for (const signal of signals) {
+    if (
+      !signal ||
+      typeof signal.name !== "string" ||
+      !signal.name.trim() ||
+      names.has(signal.name) ||
+      !Number.isFinite(signal.value) ||
+      !["higher-better", "lower-better"].includes(signal.direction)
+    )
+      throw new Error("invalid or duplicate evaluation signal");
+    names.add(signal.name);
+  }
+}
+
+export function assertComparableSignals(a: Signal[], b: Signal[]): void {
+  const am = index(a),
+    bm = index(b);
+  if (am.size !== bm.size || [...bm].some(([name, s]) => am.get(name)?.direction !== s.direction))
+    throw new Error("evaluation metric contract changed");
 }
 
 /** +1 if `a` is better, -1 if worse, 0 if equal, for one metric. */
@@ -13,13 +38,13 @@ function compare(a: Signal, b: Signal): number {
 }
 
 /**
- * `a` Pareto-dominates `b` when it is at least as good on every shared metric
- * and strictly better on at least one. Comparing only shared metrics keeps it
- * safe when a proposal adds or removes a measured dimension.
+ * Only complete vectors with identical metric names and directions can dominate.
  */
 export function dominates(a: Signal[], b: Signal[]): boolean {
   const am = index(a);
   const bm = index(b);
+  if (am.size !== bm.size || [...bm].some(([name, s]) => am.get(name)?.direction !== s.direction))
+    return false;
   let strictlyBetter = false;
   for (const [name, bs] of bm) {
     const as = am.get(name);
@@ -53,6 +78,7 @@ export function paretoFront(list: Signal[][]): number[] {
 
 /** Scalarize signals for parent *selection* only (never for accepting changes). */
 export function scoreOf(signals: Signal[]): number {
+  validateSignals(signals);
   let score = 0;
   for (const signal of signals) {
     score += signal.direction === "higher-better" ? signal.value : -signal.value;

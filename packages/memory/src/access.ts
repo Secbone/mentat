@@ -26,10 +26,20 @@ export function createMemoryAccess(
   repository: MemoryRepository,
   options: {
     scope?: string;
+    /** Explicit read-only sharing; absence never grants access to other namespaces. */
+    sharedScopes?: string[];
     observe?: (type: string, data: unknown) => void;
     onObserverError?: (error: unknown) => void;
   } = {},
 ): MemoryAccess {
+  if (options.sharedScopes !== undefined && !Array.isArray(options.sharedScopes))
+    throw new Error("shared memory scopes must be an array");
+  for (const scope of [options.scope, ...(options.sharedScopes ?? [])])
+    if (
+      scope !== undefined &&
+      (typeof scope !== "string" || !scope.trim() || scope !== scope.trim())
+    )
+      throw new Error("invalid memory scope");
   const notify = (type: string, data: unknown) => {
     try {
       options.observe?.(type, data);
@@ -41,13 +51,17 @@ export function createMemoryAccess(
     const snapshot = await repository.snapshot();
     const store = new InMemoryMemoryStore();
     for (const entry of snapshot.entries)
-      if (!options.scope || !entry.scope || entry.scope === options.scope) store.add(entry);
+      if (
+        entry.scope === options.scope ||
+        (entry.scope !== undefined && options.sharedScopes?.includes(entry.scope))
+      )
+        store.add(entry);
     return { store, revision: snapshot.revision };
   };
   const write = async (request: WriteRequest, confirmed: boolean) => {
     const bound = {
       ...request,
-      ...(options.scope ? { scope: options.scope } : {}),
+      scope: options.scope,
       basis: confirmed ? ("user" as const) : ("inference" as const),
       speaker: confirmed ? ("user" as const) : ("assistant" as const),
     };

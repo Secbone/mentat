@@ -37,6 +37,10 @@ export class AgentDataProposer implements Proposer {
     const output = await this.options.runner(prompt, { cwd: this.options.cwd });
     const artifacts = this.options.parse(output, parent);
     this.counter += 1;
-    return { id: `${this.id}-${this.counter}`, description: this.options.task, artifacts };
+    return {
+      id: `${this.id}-${crypto.randomUUID()}-${this.counter}`,
+      description: this.options.task,
+      artifacts,
+    };
   }
 }

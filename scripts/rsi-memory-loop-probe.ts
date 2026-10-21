@@ -55,13 +55,14 @@ save("plan.json", {
   sourceResponseSha256: createHash("sha256")
     .update(readFileSync(join(trial, "subject/response.json")))
     .digest("hex"),
-  protocol: "native-memory-evolution-three-proposals-v1",
+  protocol: "native-memory-evolution-three-proposals-v2",
   iterations: 3,
   proposer: "existing evolve memory --agent --from-experience",
   evaluator: "existing recallTask + memoryGate",
   limits: [
     "ID-recall proxy, not semantic correctness",
     "only paraphrase holdout of same facts",
+    "paraphrase queries are selection/development probes, not an independent final acceptance set",
     "proposer policy and evaluator fixed",
     "iterations are proposals, not necessarily accepted generations",
     "no code edits or automatic user-rule confirmation",
@@ -92,8 +93,10 @@ try {
     model,
     "--agent",
     "--from-experience",
-    "--queries",
+    "--training-queries",
     join(out, "train-queries.json"),
+    "--queries",
+    join(out, "heldout-queries.json"),
     "--store",
     join(out, "store"),
     "--memory",

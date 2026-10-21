@@ -12,7 +12,7 @@ let counter = 0;
 export class Context {
   readonly id: string;
   private readonly parent?: Context;
-  private readonly registry: Map<string, unknown>;
+  private readonly registry: Map<string, Array<{ value: unknown }>>;
   private readonly effects: Array<() => MaybePromise<void>> = [];
   private readonly listeners = new Map<string, Set<Listener>>();
   private disposed = false;
@@ -22,7 +22,7 @@ export class Context {
     this.id = id ?? `ctx-${++counter}`;
     this.registry = parent
       ? isolateServices
-        ? new Map(parent.registry)
+        ? new Map([...parent.registry].map(([key, stack]) => [key, [...stack]]))
         : parent.registry
       : new Map();
   }
@@ -38,15 +38,17 @@ export class Context {
   /** Register or override a service for the whole tree. */
   provide<T>(key: string, value: T): Disposable {
     this.assertActive();
-    const had = this.registry.has(key);
-    const previous = this.registry.get(key);
-    this.registry.set(key, value);
+    const registration = { value };
+    const stack = this.registry.get(key) ?? [];
+    stack.push(registration);
+    this.registry.set(key, stack);
 
     const restore = (): void => {
-      if (this.registry.get(key) === value) {
-        if (had) this.registry.set(key, previous);
-        else this.registry.delete(key);
-      }
+      const current = this.registry.get(key);
+      const index = current?.indexOf(registration) ?? -1;
+      if (index < 0 || !current) return;
+      current.splice(index, 1);
+      if (!current.length) this.registry.delete(key);
     };
     this.effects.push(restore);
     return { dispose: restore };
@@ -57,7 +59,7 @@ export class Context {
   }
 
   get<T>(key: string): T {
-    if (this.registry.has(key)) return this.registry.get(key) as T;
+    if (this.registry.has(key)) return this.registry.get(key)?.at(-1)?.value as T;
     throw new Error(`Service not found: ${key}`);
   }
 
@@ -75,6 +77,7 @@ export class Context {
   }
 
   on(event: string, listener: Listener): Disposable {
+    this.assertActive();
     let set = this.listeners.get(event);
     if (!set) {
       set = new Set();

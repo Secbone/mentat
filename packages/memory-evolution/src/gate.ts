@@ -26,7 +26,8 @@ export function memoryGate(artifactId = "memory"): Gate {
           return reject("entry.id must be a non-empty string");
         }
         if (typeof entry.text !== "string") return reject("entry.text must be a string");
-        if (typeof entry.createdAt !== "number") return reject("entry.createdAt must be a number");
+        if (typeof entry.createdAt !== "number" || !Number.isFinite(entry.createdAt))
+          return reject("entry.createdAt must be finite");
         if (seen.has(entry.id)) return reject(`duplicate entry id: ${entry.id}`);
         seen.add(entry.id);
       }

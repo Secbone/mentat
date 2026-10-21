@@ -31,9 +31,9 @@ export interface PiAdapterOptions {
 }
 
 const CAPABILITIES: HarnessCapabilities = {
-  steer: true,
-  compact: true,
-  fork: true,
+  steer: false,
+  compact: false,
+  fork: false,
   permissions: true,
   systemPrompt: "replace",
 };
@@ -110,8 +110,13 @@ class PiSession implements SessionHandle {
   }
 
   private async requestPermission(request: PermissionRequest): Promise<PermissionDecision> {
-    if (!this.deps.onPermission) return "allow";
-    return this.deps.onPermission.request(request);
+    try {
+      const decision = await this.deps.onPermission?.request(request);
+      return decision === "allow" ? "allow" : "deny";
+    } catch (error) {
+      this.deps.onDiagnostic?.({ code: "PI_PERMISSION_ERROR", message: String(error) });
+      return "deny";
+    }
   }
 
   async send(input: UserInput, _options?: SendOptions): Promise<void> {
