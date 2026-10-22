@@ -1,18 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { IterableArtifact, JsonValue } from "@mentat/core";
+import type { Artifact, ArtifactRef, ArtifactRegistry } from "@mentat/core";
 import type { Candidate, Proposal, Workspace } from "@mentat/evolution";
+import { validateArtifacts } from "@mentat/evolution";
 import { atomicJson, withFileLock } from "@mentat/storage-file";
-
-export interface ArtifactSnapshot {
-  kind: string;
-  id: string;
-  version: string;
-  snapshot: JsonValue;
-  protected?: boolean;
-}
-
-export type ArtifactRebuilder = (snapshot: ArtifactSnapshot) => IterableArtifact;
+import { ArtifactStore } from "./cas";
 
 function candidateFile(dir: string, id: string): string {
   if (!/^[A-Za-z0-9][A-Za-z0-9_.-]{0,199}$/.test(id) || id === "current")
@@ -24,33 +16,31 @@ interface StoredCandidate {
   id: string;
   version: string;
   parentId?: string;
-  artifacts: ArtifactSnapshot[];
-}
-
-function snapshotArtifact(artifact: IterableArtifact): ArtifactSnapshot {
-  return {
-    kind: artifact.kind,
-    id: artifact.id,
-    version: artifact.version,
-    snapshot: artifact.snapshot(),
-    ...(artifact.protected ? { protected: true } : {}),
-  };
+  artifacts: ArtifactRef[];
 }
 
 /**
  * A {@link Workspace} for *data* artifacts (memory, prompts, model config).
- * Each candidate is persisted as JSON under `dir`, and `current.json` points at
- * the active one, so a later run can resume the evolved state via {@link load}.
+ *
+ * Candidate files contain only content-addressed references; payloads live in
+ * `<dir>/artifacts/<sha256>.json`. This keeps candidates small, makes archive
+ * payloads deduplicated, and lets a later run resume without rebuilding
+ * artifacts from closure factories.
  */
 export class JsonStoreWorkspace implements Workspace {
   private active: Candidate;
   private readonly parents = new Map<string, Candidate>();
   private readonly dir: string;
+  private readonly registry: ArtifactRegistry;
+  private readonly store: ArtifactStore;
   private committedId: string;
 
-  constructor(dir: string, root: Candidate) {
+  constructor(dir: string, root: Candidate, registry: ArtifactRegistry) {
     this.dir = dir;
+    this.registry = registry;
+    this.store = new ArtifactStore(join(dir, "artifacts"));
     mkdirSync(dir, { recursive: true });
+    this.assertDataArtifacts(root.artifacts);
     this.active = root;
     this.committedId = root.id;
     withFileLock(join(dir, "workspace.lock"), () => {
@@ -68,10 +58,13 @@ export class JsonStoreWorkspace implements Workspace {
 
   async apply(proposal: Proposal): Promise<Candidate> {
     const parent = this.active;
+    const artifacts = proposal.artifacts ?? parent.artifacts;
+    validateArtifacts(artifacts);
+    this.assertDataArtifacts(artifacts);
     const child: Candidate = {
       id: proposal.id,
       version: `v-${crypto.randomUUID()}`,
-      artifacts: proposal.artifacts ?? [],
+      artifacts,
       parentId: parent.id,
     };
     this.persist(child, true);
@@ -96,6 +89,7 @@ export class JsonStoreWorkspace implements Workspace {
   }
 
   async checkout(candidate: Candidate): Promise<void> {
+    this.assertDataArtifacts(candidate.artifacts);
     this.persist(candidate);
     this.active = candidate;
     // Exploration may inspect rejected stepping stones; never publish them on checkout.
@@ -106,12 +100,23 @@ export class JsonStoreWorkspace implements Workspace {
     this.publishCurrent();
   }
 
+  private assertDataArtifacts(artifacts: readonly Artifact[]): void {
+    for (const artifact of artifacts) {
+      if (artifact.ref.form !== "data")
+        throw new Error(`JsonStoreWorkspace only stores data artifacts: ${artifact.ref.kind}`);
+      this.registry.validate(artifact);
+      const stored = this.store.put(artifact.payload);
+      if (stored !== artifact.ref.digest)
+        throw new Error(`artifact digest mismatch: ${artifact.ref.kind}:${artifact.ref.id}`);
+    }
+  }
+
   private persist(candidate: Candidate, exclusive = false): void {
     const stored: StoredCandidate = {
       id: candidate.id,
       version: candidate.version,
       ...(candidate.parentId ? { parentId: candidate.parentId } : {}),
-      artifacts: candidate.artifacts.map(snapshotArtifact),
+      artifacts: candidate.artifacts.map((artifact) => artifact.ref),
     };
     const path = candidateFile(this.dir, candidate.id);
     if (existsSync(path)) {
@@ -144,8 +149,8 @@ export class JsonStoreWorkspace implements Workspace {
     });
   }
 
-  /** Rebuild the active candidate of a previous run, or undefined if none. */
-  static load(dir: string, rebuild: ArtifactRebuilder): Candidate | undefined {
+  /** Rehydrate the active candidate of a previous run, or undefined if none. */
+  static load(dir: string, registry: ArtifactRegistry): Candidate | undefined {
     const currentPath = join(dir, "current.json");
     if (!existsSync(currentPath)) return undefined;
     const pointer = JSON.parse(readFileSync(currentPath, "utf8")) as { active?: unknown };
@@ -155,13 +160,21 @@ export class JsonStoreWorkspace implements Workspace {
     const stored = JSON.parse(readFileSync(file, "utf8")) as StoredCandidate;
     if (stored.id !== pointer.active || !Array.isArray(stored.artifacts))
       throw new Error("invalid candidate snapshot");
+    if (stored.artifacts.some((ref) => typeof ref?.digest !== "string"))
+      throw new Error(
+        "legacy candidate format without content digests; start a new --store or migrate it explicitly",
+      );
+    const store = new ArtifactStore(join(dir, "artifacts"));
+    const artifacts: Artifact[] = stored.artifacts.map((ref) => {
+      const artifact = { ref, payload: store.get(ref.digest) };
+      registry.validate(artifact);
+      return artifact;
+    });
+    validateArtifacts(artifacts);
     return {
       id: stored.id,
       version: stored.version,
-      artifacts: stored.artifacts.map((snapshot) => ({
-        ...rebuild(snapshot),
-        ...(snapshot.protected ? { protected: true } : {}),
-      })),
+      artifacts,
       ...(stored.parentId ? { parentId: stored.parentId } : {}),
     };
   }

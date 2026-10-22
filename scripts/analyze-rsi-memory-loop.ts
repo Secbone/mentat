@@ -4,7 +4,12 @@ import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { type Candidate, FunctionEvaluator } from "@mentat/evolution";
 import { createMemoryAccess } from "@mentat/memory";
-import { memoryArtifact, type RecallQuery, recallTask } from "@mentat/memory-evolution";
+import {
+  memoryArtifact,
+  memoryArtifactRegistry,
+  type RecallQuery,
+  recallTask,
+} from "@mentat/memory-evolution";
 import { FileMemoryRepository } from "@mentat/memory-file";
 import { readTrajectory, resolveEventData } from "@mentat/observability";
 
@@ -12,6 +17,14 @@ const output = process.argv[2];
 if (!output) throw new Error("expected completed loop output directory");
 const out = resolve(output);
 const read = (name: string) => JSON.parse(readFileSync(join(out, name), "utf8"));
+const entriesOf = (data: { artifacts: Array<{ snapshot?: unknown; digest?: string }> }) => {
+  const artifact = data.artifacts[0];
+  if (!artifact) throw new Error("candidate has no artifact");
+  if (artifact.snapshot !== undefined) return artifact.snapshot as never;
+  const hex = (artifact.digest ?? "").replace(/^sha256:/, "");
+  if (!/^[a-f0-9]{64}$/.test(hex)) throw new Error("invalid candidate digest");
+  return JSON.parse(readFileSync(join(out, "store", "artifacts", `${hex}.json`), "utf8")) as never;
+};
 const train = read("train-queries.json") as RecallQuery[],
   heldout = read("heldout-queries.json") as RecallQuery[];
 const accounting = JSON.parse(
@@ -35,12 +48,16 @@ for (const name of readdirSync(join(out, "store"))
   const candidate: Candidate = {
     id: data.id,
     version: data.version,
-    artifacts: [memoryArtifact("memory", data.artifacts[0].snapshot)],
+    artifacts: [memoryArtifact("memory", entriesOf(data))],
   };
   candidates.push({
     id: candidate.id,
-    train: await new FunctionEvaluator([recallTask(train)]).evaluate(candidate),
-    heldout: await new FunctionEvaluator([recallTask(heldout)]).evaluate(candidate),
+    train: await new FunctionEvaluator([recallTask(train)], memoryArtifactRegistry()).evaluate(
+      candidate,
+    ),
+    heldout: await new FunctionEvaluator([recallTask(heldout)], memoryArtifactRegistry()).evaluate(
+      candidate,
+    ),
   });
 }
 const repository = new FileMemoryRepository(join(out, "live-memory.json"));

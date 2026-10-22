@@ -1,4 +1,4 @@
-import type { Signal } from "@mentat/core";
+import { createArtifactRegistry, type Signal } from "@mentat/core";
 import type { Candidate, EvalTask } from "@mentat/evolution";
 import {
   FunctionEvaluator,
@@ -9,7 +9,7 @@ import {
   SelfIterationLoop,
 } from "@mentat/evolution";
 import type { InMemoryMemoryStore, MemoryEntry, MemoryService } from "@mentat/memory";
-import { MEMORY_SERVICE, memoryArtifact } from "./artifact";
+import { MEMORY_SERVICE, memoryAdapter, memoryArtifact, memoryEntries } from "./artifact";
 
 /** A held-out query with the memory id we expect retrieval to surface. */
 export interface RecallQuery {
@@ -93,8 +93,7 @@ export function applyEvolvedMemory(
 }
 
 function currentEntries(parent: Candidate): MemoryEntry[] {
-  const snapshot = parent.artifacts[0]?.snapshot();
-  return Array.isArray(snapshot) ? (snapshot as unknown as MemoryEntry[]) : [];
+  return memoryEntries(parent);
 }
 
 /** Mutation operator for memory: append one entry to the parent's entries (heredity). */
@@ -128,7 +127,10 @@ export async function runMemoryEvolutionDemo(): Promise<LoopResult> {
       addEntry(memoryEntry("m-deploy", "the deploy target is staging")),
       addEntry(memoryEntry("m-noise", "unrelated note about coffee")),
     ]),
-    evaluator: new FunctionEvaluator([recallTask(queries)]),
+    evaluator: new FunctionEvaluator(
+      [recallTask(queries)],
+      createArtifactRegistry().register(memoryAdapter),
+    ),
     config: { maxIterations: 3 },
   });
   return loop.run();

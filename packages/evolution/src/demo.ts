@@ -1,30 +1,46 @@
-import type { Disposable, IterableArtifact, Runtime } from "@mentat/core";
+import {
+  type Artifact,
+  type ArtifactAdapter,
+  createArtifact,
+  createArtifactRegistry,
+  type JsonValue,
+} from "@mentat/core";
 import { type EvalTask, FunctionEvaluator } from "./evaluator";
 import { type LoopResult, SelfIterationLoop } from "./loop";
 import { type ProposeStep, ScriptedProposer } from "./proposer";
 import type { Candidate } from "./types";
 import { InMemoryWorkspace } from "./workspace";
 
-/** A trivial artifact whose single "knob" value is the thing being optimized. */
-export function knobArtifact(value: number): IterableArtifact {
-  return {
-    kind: "prompt",
-    id: "knob",
-    version: `knob:${value}`,
-    form: "data",
-    apply: (runtime: Runtime): Disposable => runtime.provide("knob", value),
-    snapshot: () => value,
-    evalSpec: () => ({ suite: "knob", cases: ["knob"], metrics: ["knob"] }),
-  };
+/** A trivial data artifact whose single "knob" value is being optimized. */
+export const knobAdapter: ArtifactAdapter<number> = {
+  kind: "prompt",
+  form: "data",
+  parse(raw: unknown): number {
+    if (typeof raw !== "number" || !Number.isFinite(raw))
+      throw new Error("knob must be a finite number");
+    return raw;
+  },
+  snapshot: (value): JsonValue => value,
+  restore(raw): number {
+    return knobAdapter.parse(raw);
+  },
+  materialize: (value, host) => host.provide("knob", value),
+};
+
+export const knobRegistry = createArtifactRegistry().register(knobAdapter);
+
+export function knobArtifact(
+  value: number,
+  options: { protected?: boolean; version?: string } = {},
+): Artifact {
+  return createArtifact(knobAdapter, "knob", value, options);
 }
 
 export function readKnobTask(): EvalTask {
   return {
     id: "read-knob",
     metrics: ["knob"],
-    run: (runtime) => [
-      { name: "knob", value: runtime.get<number>("knob"), direction: "higher-better" },
-    ],
+    run: (host) => [{ name: "knob", value: host.get<number>("knob"), direction: "higher-better" }],
   };
 }
 
@@ -44,7 +60,7 @@ export async function runDemoLoop(values: number[] = [2, 0, 3]): Promise<LoopRes
   const loop = new SelfIterationLoop({
     workspace: new InMemoryWorkspace(root),
     proposer: new ScriptedProposer(steps),
-    evaluator: new FunctionEvaluator([readKnobTask()]),
+    evaluator: new FunctionEvaluator([readKnobTask()], knobRegistry),
     config: { maxIterations: values.length },
   });
   return loop.run();

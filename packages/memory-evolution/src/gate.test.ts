@@ -1,11 +1,16 @@
+import type { Artifact } from "@mentat/core";
 import type { Candidate } from "@mentat/evolution";
 import type { MemoryEntry } from "@mentat/memory";
 import { describe, expect, it } from "vitest";
 import { memoryArtifact } from "./artifact";
 import { memoryGate } from "./gate";
 
-function candidate(entries: MemoryEntry[]): Candidate {
-  return { id: "c", version: "c", artifacts: [memoryArtifact("memory", entries)] };
+function candidate(payload: unknown): Candidate {
+  // Build a malformed artifact on purpose: creation validates, but legacy data
+  // or hand-edited files still reach the gate.
+  const valid = memoryArtifact("memory", []);
+  const artifact: Artifact = { ref: valid.ref, payload: payload as Artifact["payload"] };
+  return { id: "c", version: "c", artifacts: [artifact] };
 }
 
 describe("memoryGate", () => {

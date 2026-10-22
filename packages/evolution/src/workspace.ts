@@ -1,9 +1,11 @@
+import { type Artifact, refKey } from "@mentat/core";
 import type { Candidate, Proposal } from "./types";
 
 /**
  * Where candidates live. The loop applies a proposal to produce a child,
  * then either commits it (accepted) or rolls it back (rejected).
- * The real implementation is git-backed; this interface is all the loop needs.
+ * Code workspaces commit to git; data workspaces persist content-addressed
+ * payloads. Both expose the same transaction surface.
  */
 export interface Workspace {
   current(): Candidate;
@@ -22,6 +24,16 @@ export interface Workspace {
   settle?(candidate: Candidate): Promise<void>;
 }
 
+/** Reject ambiguous manifests before they reach a workspace or archive. */
+export function validateArtifacts(artifacts: readonly Artifact[]): void {
+  const seen = new Set<string>();
+  for (const artifact of artifacts) {
+    const key = refKey(artifact.ref);
+    if (seen.has(key)) throw new Error(`duplicate artifact reference: ${key}`);
+    seen.add(key);
+  }
+}
+
 let counter = 0;
 
 /** In-memory workspace for deterministic tests. */
@@ -31,6 +43,7 @@ export class InMemoryWorkspace implements Workspace {
   private readonly identities: Set<string>;
 
   constructor(root: Candidate) {
+    validateArtifacts(root.artifacts);
     this.active = root;
     this.identities = new Set([root.id]);
   }
@@ -43,10 +56,12 @@ export class InMemoryWorkspace implements Workspace {
     if (this.identities.has(proposal.id)) throw new Error("candidate identity already exists");
     this.identities.add(proposal.id);
     const parent = this.active;
+    const artifacts = proposal.artifacts ?? parent.artifacts;
+    validateArtifacts(artifacts);
     const child: Candidate = {
       id: proposal.id,
       version: `v${++counter}`,
-      artifacts: proposal.artifacts ?? [],
+      artifacts,
       parentId: parent.id,
     };
     this.parents.set(child.id, parent);
@@ -58,16 +73,15 @@ export class InMemoryWorkspace implements Workspace {
     if (this.active.id === child.id) this.parents.delete(child.id);
   }
 
-  async checkout(candidate: Candidate): Promise<void> {
-    this.active = candidate;
-  }
-
   async rollback(child: Candidate): Promise<void> {
     if (this.active.id !== child.id) return;
     const parent = this.parents.get(child.id);
-    if (parent) {
-      this.active = parent;
-      this.parents.delete(child.id);
-    }
+    if (!parent) return;
+    this.active = parent;
+    this.parents.delete(child.id);
+  }
+
+  async checkout(candidate: Candidate): Promise<void> {
+    this.active = candidate;
   }
 }

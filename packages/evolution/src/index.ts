@@ -7,5 +7,7 @@ export * from "./gate";
 export * from "./loop";
 export * from "./pareto";
 export * from "./proposer";
+export * from "./protocol";
+export * from "./receipt";
 export * from "./types";
 export * from "./workspace";

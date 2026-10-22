@@ -1,5 +1,6 @@
-import { InMemoryMemoryStore, type MemoryEntry, MemoryService } from "@mentat/memory";
+import { InMemoryMemoryStore, MemoryService } from "@mentat/memory";
 import { describe, expect, it } from "vitest";
+import { memoryEntries } from "./artifact";
 import { applyEvolvedMemory, memoryEntry, runMemoryEvolutionDemo } from "./evolution";
 
 describe("memory evolution (offline, data artifact)", () => {
@@ -12,7 +13,7 @@ describe("memory evolution (offline, data artifact)", () => {
     expect(result.records[2]?.accepted).toBe(false); // noise rejected
     expect(result.records[2]?.reason).toBe("no improvement");
 
-    const entries = result.best.artifacts[0]?.snapshot() as unknown as MemoryEntry[];
+    const entries = memoryEntries(result.best);
     expect(entries.map((entry) => entry.id).sort()).toEqual(["m-build", "m-deploy"]);
 
     const recall = result.records[1]?.after?.find((signal) => signal.name === "recall")?.value;

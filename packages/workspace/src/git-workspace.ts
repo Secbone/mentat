@@ -2,6 +2,13 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import {
+  type Artifact,
+  type ArtifactAdapter,
+  type ArtifactKind,
+  createArtifact,
+  type JsonValue,
+} from "@mentat/core";
 import type { Candidate, Proposal, Workspace } from "@mentat/evolution";
 
 export interface GitIdentity {
@@ -11,6 +18,32 @@ export interface GitIdentity {
 
 export interface GitWorkspaceOptions {
   identity?: GitIdentity;
+  /** Identity of the code artifact this workspace attaches to each commit. */
+  artifact?: { kind?: ArtifactKind; id?: string; protected?: boolean };
+}
+
+interface WorkspaceCommit {
+  commit: string;
+}
+
+function commitAdapter(kind: ArtifactKind): ArtifactAdapter<WorkspaceCommit> {
+  return {
+    kind,
+    form: "code",
+    parse(raw: unknown): WorkspaceCommit {
+      if (!raw || typeof raw !== "object" || Array.isArray(raw))
+        throw new Error("invalid workspace artifact");
+      const commit = (raw as Record<string, unknown>).commit;
+      if (typeof commit !== "string" || !/^[a-f0-9]{7,64}$/.test(commit))
+        throw new Error("invalid workspace commit");
+      return { commit };
+    },
+    snapshot: ({ commit }): JsonValue => ({ commit }),
+    restore: (snapshot): WorkspaceCommit => commitAdapter(kind).parse(snapshot),
+    materialize: (): never => {
+      throw new Error("code artifacts are materialized by the workspace transaction");
+    },
+  };
 }
 
 function git(cwd: string, args: string[]): string {
@@ -30,6 +63,9 @@ function git(cwd: string, args: string[]): string {
 export class GitWorkspace implements Workspace {
   readonly cwd: string;
   private readonly identity: GitIdentity;
+  private readonly artifactAdapter: ArtifactAdapter<WorkspaceCommit>;
+  private readonly artifactId: string;
+  private readonly artifactProtected: boolean;
   private readonly parents = new Map<string, string>();
   private head: string;
   private proposing = false;
@@ -75,8 +111,25 @@ export class GitWorkspace implements Workspace {
   constructor(cwd: string, options: GitWorkspaceOptions = {}) {
     this.cwd = cwd;
     this.identity = options.identity ?? { name: "mentat", email: "mentat@localhost" };
+    this.artifactAdapter = commitAdapter(options.artifact?.kind ?? "core");
+    this.artifactId = options.artifact?.id ?? "workspace";
+    this.artifactProtected = options.artifact?.protected ?? false;
     this.head = git(cwd, ["rev-parse", "HEAD"]);
     this.assertClean();
+  }
+
+  private artifactFor(commit: string): Artifact {
+    return createArtifact(
+      this.artifactAdapter,
+      this.artifactId,
+      { commit },
+      {
+        version: commit,
+        digest: `git:${commit}`,
+        trust: "trusted",
+        ...(this.artifactProtected ? { protected: true } : {}),
+      },
+    );
   }
 
   private assertClean(): void {
@@ -105,7 +158,7 @@ export class GitWorkspace implements Workspace {
   }
 
   current(): Candidate {
-    return { id: this.head, version: this.head, artifacts: [] };
+    return { id: this.head, version: this.head, artifacts: [this.artifactFor(this.head)] };
   }
 
   async apply(proposal: Proposal): Promise<Candidate> {
@@ -127,7 +180,12 @@ export class GitWorkspace implements Workspace {
     this.parents.set(sha, this.head);
     this.head = sha;
     this.proposing = false;
-    return { id: sha, version: sha, artifacts: [] };
+    return {
+      id: sha,
+      version: sha,
+      parentId: this.parents.get(sha),
+      artifacts: [this.artifactFor(sha)],
+    };
   }
 
   async commit(child: Candidate): Promise<void> {

@@ -1,26 +1,15 @@
-import type { Disposable, IterableArtifact, Runtime } from "@mentat/core";
 import { MemoryTracer } from "@mentat/core";
 import { describe, expect, it } from "vitest";
 import { Archive } from "./archive";
+import { knobArtifact as knob, knobRegistry } from "./demo";
 import { type EvalTask, FunctionEvaluator } from "./evaluator";
 import { functionGate } from "./gate";
 import { SelfIterationLoop } from "./loop";
 import { type ProposeStep, ScriptedProposer } from "./proposer";
+import { defineEvalProtocol } from "./protocol";
+import type { IterationReceipt } from "./receipt";
 import type { Candidate } from "./types";
 import { InMemoryWorkspace } from "./workspace";
-
-function knob(value: number, options: { protected?: boolean } = {}): IterableArtifact {
-  return {
-    kind: "prompt",
-    id: "knob",
-    version: `knob:${value}`,
-    form: "data",
-    ...(options.protected ? { protected: true } : {}),
-    apply: (runtime: Runtime): Disposable => runtime.provide("knob", value),
-    snapshot: () => value,
-    evalSpec: () => ({ suite: "knob", cases: ["knob"], metrics: ["knob"] }),
-  };
-}
 
 const readKnob: EvalTask = {
   id: "read-knob",
@@ -42,6 +31,10 @@ function root(value = 1): Candidate {
   return { id: "root", version: "root", artifacts: [knob(value)] };
 }
 
+function resultDigest(candidate: Candidate): string | undefined {
+  return candidate.artifacts[0]?.ref.digest;
+}
+
 function signalValue(signals: { name: string; value: number }[] | undefined): number | undefined {
   return signals?.find((signal) => signal.name === "knob")?.value;
 }
@@ -51,7 +44,7 @@ describe("SelfIterationLoop", () => {
     const result = await new SelfIterationLoop({
       workspace: new InMemoryWorkspace(root()),
       proposer: new ScriptedProposer([propose(0), propose(2), propose(1), propose(3)]),
-      evaluator: new FunctionEvaluator([readKnob]),
+      evaluator: new FunctionEvaluator([readKnob], knobRegistry),
       config: { maxIterations: 4, maxFailures: 2 },
     }).run();
     expect(result.records).toHaveLength(4);
@@ -78,12 +71,7 @@ describe("SelfIterationLoop", () => {
   });
 
   it("rejects deletion and forged replacement of protected artifacts", async () => {
-    for (const artifacts of [
-      undefined,
-      [],
-      [knob(1)],
-      [{ ...knob(99), version: "knob:1", protected: true }],
-    ]) {
+    for (const artifacts of [undefined, [], [knob(1)], [knob(99, { protected: true })]]) {
       const workspace = new InMemoryWorkspace({
         ...root(),
         artifacts: [knob(1, { protected: true })],
@@ -91,7 +79,7 @@ describe("SelfIterationLoop", () => {
       const result = await new SelfIterationLoop({
         workspace,
         proposer: new ScriptedProposer([() => ({ id: "bad", description: "bypass", artifacts })]),
-        evaluator: new FunctionEvaluator([readKnob]),
+        evaluator: new FunctionEvaluator([readKnob], knobRegistry),
         config: { maxIterations: 1 },
       }).run();
       expect(result.records[0]?.reason).toBe("protected artifact");
@@ -122,7 +110,7 @@ describe("SelfIterationLoop", () => {
     const loop = new SelfIterationLoop({
       workspace,
       proposer: new ScriptedProposer([propose(2), propose(0)]),
-      evaluator: new FunctionEvaluator([readKnob]),
+      evaluator: new FunctionEvaluator([readKnob], knobRegistry),
       config: { maxIterations: 2 },
     });
 
@@ -137,7 +125,7 @@ describe("SelfIterationLoop", () => {
     // root + accepted child + rejected child are all archived (stepping stones)
     expect(result.archive.size()).toBe(3);
     expect(result.archive.get("cand-2")?.parentId).toBe("root");
-    expect(result.best.artifacts[0]?.snapshot()).toBe(2);
+    expect(result.best.artifacts[0]?.payload).toBe(2);
 
     // the regression was rolled back: active state is still the improved child
     expect(workspace.current().id).toBe("cand-2");
@@ -148,8 +136,8 @@ describe("SelfIterationLoop", () => {
     const loop = new SelfIterationLoop({
       workspace,
       proposer: new ScriptedProposer([propose(10)]),
-      evaluator: new FunctionEvaluator([readKnob]),
-      gates: functionGate("max", (candidate) => Number(candidate.artifacts[0]?.snapshot()) <= 5),
+      evaluator: new FunctionEvaluator([readKnob], knobRegistry),
+      gates: functionGate("max", (candidate) => Number(candidate.artifacts[0]?.payload) <= 5),
       config: { maxIterations: 1 },
     });
 
@@ -171,7 +159,7 @@ describe("SelfIterationLoop", () => {
     const loop = new SelfIterationLoop({
       workspace,
       proposer: new ScriptedProposer([propose(2)]),
-      evaluator: new FunctionEvaluator([readKnob]),
+      evaluator: new FunctionEvaluator([readKnob], knobRegistry),
       config: { maxIterations: 1 },
     });
 
@@ -188,7 +176,7 @@ describe("SelfIterationLoop", () => {
     const loop = new SelfIterationLoop({
       workspace,
       proposer: new ScriptedProposer([propose(3), propose(2)]),
-      evaluator: new FunctionEvaluator([readKnob]),
+      evaluator: new FunctionEvaluator([readKnob], knobRegistry),
       archive,
       config: { maxIterations: 2, parentSelection: "archive" },
     });
@@ -202,13 +190,35 @@ describe("SelfIterationLoop", () => {
     expect(result.records[1]?.accepted).toBe(true);
   });
 
+  it("emits a receipt that binds the change, signals and protocol", async () => {
+    const workspace = new InMemoryWorkspace(root(1));
+    const protocol = defineEvalProtocol({ id: "knob", version: 1, mode: "metric" });
+    const receipts: IterationReceipt[] = [];
+    const loop = new SelfIterationLoop({
+      workspace,
+      proposer: new ScriptedProposer([propose(2)]),
+      evaluator: new FunctionEvaluator([readKnob], knobRegistry),
+      protocol,
+      environment: "test",
+      config: { maxIterations: 1 },
+      onReceipt: (receipt) => receipts.push(receipt),
+    });
+
+    await loop.run();
+
+    expect(receipts).toHaveLength(1);
+    expect(receipts[0]?.accepted).toBe(true);
+    expect(receipts[0]?.protocol?.digest).toBe(protocol.digest);
+    expect(receipts[0]?.candidate.artifacts[0]?.digest).toBe(resultDigest(workspace.current()));
+  });
+
   it("emits a structured trace of every step", async () => {
     const workspace = new InMemoryWorkspace(root(1));
     const tracer = new MemoryTracer();
     const loop = new SelfIterationLoop({
       workspace,
       proposer: new ScriptedProposer([propose(2)]),
-      evaluator: new FunctionEvaluator([readKnob]),
+      evaluator: new FunctionEvaluator([readKnob], knobRegistry),
       config: { maxIterations: 1 },
       tracer,
     });
@@ -252,7 +262,7 @@ it("records successful commits and failed rollback explicitly", async () => {
   const loop = new SelfIterationLoop({
     workspace,
     proposer: new ScriptedProposer([propose(2)]),
-    evaluator: new FunctionEvaluator([readKnob]),
+    evaluator: new FunctionEvaluator([readKnob], knobRegistry),
     tracer,
     config: { maxIterations: 1 },
   });
@@ -265,7 +275,7 @@ it("records successful commits and failed rollback explicitly", async () => {
   const rejected = new SelfIterationLoop({
     workspace: bad,
     proposer: new ScriptedProposer([propose(0)]),
-    evaluator: new FunctionEvaluator([readKnob]),
+    evaluator: new FunctionEvaluator([readKnob], knobRegistry),
     tracer,
     config: { maxIterations: 1 },
   });

@@ -31,7 +31,12 @@ export const ALLOWED_WORKSPACE_DEPS = {
   "@mentat/models": ["@mentat/core"],
   "@mentat/memory": [],
   "@mentat/memory-file": ["@mentat/memory", "@mentat/storage-file"],
-  "@mentat/observability": ["@mentat/core", "@mentat/session", "@mentat/storage-file"],
+  "@mentat/observability": [
+    "@mentat/core",
+    "@mentat/evolution",
+    "@mentat/session",
+    "@mentat/storage-file",
+  ],
   "@mentat/memory-mcp": ["@mentat/core", "@mentat/memory", "@mentat/memory-file"],
   "@mentat/memory-evolution": ["@mentat/core", "@mentat/evolution", "@mentat/memory"],
   "@mentat/evaluation": ["@mentat/core", "@mentat/evolution"],

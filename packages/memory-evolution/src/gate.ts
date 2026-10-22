@@ -1,4 +1,5 @@
 import type { Candidate, Gate, GateResult } from "@mentat/evolution";
+import { parseMemoryEntries } from "./artifact";
 
 const NAME = "memory-schema";
 
@@ -8,28 +9,21 @@ function reject(reason: string): GateResult {
 
 /**
  * Data gate for memory artifacts: rejects malformed entries before they are
- * evaluated (schema, types, duplicate ids). Cheap and deterministic.
+ * evaluated (schema, types, duplicate ids). The adapter owns the same schema,
+ * so disk loading and proposals cannot drift from this check.
  */
 export function memoryGate(artifactId = "memory"): Gate {
   return {
     name: NAME,
     check: (candidate: Candidate): GateResult => {
-      const artifact = candidate.artifacts.find((entry) => entry.id === artifactId);
-      const snapshot = artifact?.snapshot();
-      if (!Array.isArray(snapshot)) return reject("memory snapshot is not an array");
-      const seen = new Set<string>();
-      for (const raw of snapshot) {
-        if (!raw || typeof raw !== "object" || Array.isArray(raw))
-          return reject("entry is not an object");
-        const entry = raw as Record<string, unknown>;
-        if (typeof entry.id !== "string" || entry.id.length === 0) {
-          return reject("entry.id must be a non-empty string");
-        }
-        if (typeof entry.text !== "string") return reject("entry.text must be a string");
-        if (typeof entry.createdAt !== "number" || !Number.isFinite(entry.createdAt))
-          return reject("entry.createdAt must be finite");
-        if (seen.has(entry.id)) return reject(`duplicate entry id: ${entry.id}`);
-        seen.add(entry.id);
+      const artifact = candidate.artifacts.find(
+        (entry) => entry.ref.kind === "memory" && entry.ref.id === artifactId,
+      );
+      if (!artifact) return reject("memory artifact is missing");
+      try {
+        parseMemoryEntries(artifact.payload);
+      } catch (error) {
+        return reject(error instanceof Error ? error.message : String(error));
       }
       return { passed: true, gate: NAME };
     },

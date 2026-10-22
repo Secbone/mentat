@@ -1,4 +1,10 @@
-import type { Disposable, Runtime, Signal } from "@mentat/core";
+import {
+  type ArtifactHost,
+  type ArtifactRegistry,
+  createArtifactRegistry,
+  type Disposable,
+  type Signal,
+} from "@mentat/core";
 import { Context } from "@mentat/kernel";
 import { validateSignals } from "./pareto";
 import type { Candidate } from "./types";
@@ -7,7 +13,7 @@ import type { Candidate } from "./types";
 export interface EvalTask {
   id: string;
   metrics: string[];
-  run(runtime: Runtime): Promise<Signal[]> | Signal[];
+  run(host: ArtifactHost): Promise<Signal[]> | Signal[];
 }
 
 export interface Evaluator {
@@ -26,11 +32,21 @@ export function defineTaskSuite(suite: TaskSuite): TaskSuite {
 }
 
 /**
- * Applies a candidate's artifacts to a fresh runtime, runs every task, and
- * aggregates the signals (mean per metric name).
+ * Materializes a candidate's *data* artifacts into a fresh host, runs every
+ * task, and aggregates the signals (mean per metric name).
+ *
+ * Code artifacts are already materialized by the workspace transaction (a git
+ * worktree/commit); re-applying them here would be both impossible and wrong.
  */
 export class FunctionEvaluator implements Evaluator {
-  constructor(private readonly tasks: EvalTask[]) {}
+  private readonly registry: ArtifactRegistry;
+
+  constructor(
+    private readonly tasks: EvalTask[],
+    registry: ArtifactRegistry,
+  ) {
+    this.registry = registry;
+  }
 
   async evaluate(candidate: Candidate): Promise<Signal[]> {
     const runtime = new Context(undefined, `eval-${candidate.id}`);
@@ -39,7 +55,8 @@ export class FunctionEvaluator implements Evaluator {
     const result: Signal[] = [];
     try {
       for (const artifact of candidate.artifacts) {
-        disposables.push(await artifact.apply(runtime));
+        if (artifact.ref.form !== "data") continue;
+        disposables.push(await this.registry.materialize(artifact, runtime));
       }
 
       const sums = new Map<string, number>();

@@ -6,15 +6,23 @@ import { type MemoryEntry, MemoryService } from "@mentat/memory";
 import {
   applyEvolvedMemory,
   memoryArtifact,
+  memoryEntries,
+  memoryEvalProtocol,
   memoryGate,
   type RecallQuery,
   RuleMemoryProposer,
   recallTask,
 } from "@mentat/memory-evolution";
 import { JsonFileMemoryStore, JsonlMemoryAudit } from "@mentat/memory-file";
-import { buildExperienceDigest, ExperienceStore, FileTrajectoryStore } from "@mentat/observability";
+import {
+  buildExperienceDigest,
+  ExperienceStore,
+  FileTrajectoryStore,
+  ReceiptStore,
+} from "@mentat/observability";
 import { runOnce } from "@mentat/session";
-import { type ArtifactSnapshot, JsonStoreWorkspace } from "@mentat/workspace";
+import { JsonStoreWorkspace } from "@mentat/workspace";
+import { evolutionArtifacts } from "../lib/artifacts";
 import { defaultExperienceDir, defaultMemoryPath, defaultMemoryStoreDir } from "../lib/paths";
 import { createAgentMemoryProposer } from "../lib/proposers";
 import { createDefaultRegistry } from "../lib/registry";
@@ -113,10 +121,8 @@ export async function evolveCommand(args: string[]): Promise<number> {
       throw new Error("training, selection and test queries overlap");
     for (const key of keys) seen.add(key);
   }
-  const rebuild = (snapshot: ArtifactSnapshot) =>
-    memoryArtifact(snapshot.id, snapshot.snapshot as unknown as MemoryEntry[]);
-
-  const root: Candidate = JsonStoreWorkspace.load(store, rebuild) ?? {
+  const artifacts = evolutionArtifacts();
+  const root: Candidate = JsonStoreWorkspace.load(store, artifacts) ?? {
     id: "root",
     version: "root",
     artifacts: [memoryArtifact("memory", [])],
@@ -127,6 +133,12 @@ export async function evolveCommand(args: string[]): Promise<number> {
     : "";
   const tracer = new FileTrajectoryStore(join(logDir, randomUUID()), {
     metadata: { operation: "evolve-memory", model: model ?? null, harness: harnessId },
+  });
+  const receipts = new ReceiptStore(tracer.dir);
+  const environment = `${process.platform}-${process.arch}`;
+  const protocol = memoryEvalProtocol(queries, {
+    ...(model ? { model } : {}),
+    environment,
   });
   tracer.emit("evolution.input", {
     protocol: "memory-evolution-split-v2",
@@ -154,10 +166,13 @@ export async function evolveCommand(args: string[]): Promise<number> {
 
   const loop = new SelfIterationLoop({
     tracer,
-    workspace: new JsonStoreWorkspace(store, root),
+    workspace: new JsonStoreWorkspace(store, root, artifacts),
     proposer,
-    evaluator: new FunctionEvaluator([recallTask(queries)]),
+    evaluator: new FunctionEvaluator([recallTask(queries)], artifacts),
     gates: new GateChain([memoryGate()]),
+    protocol,
+    environment,
+    onReceipt: (receipt) => receipts.append(receipt),
     config: { maxIterations: iterations > 0 ? iterations : useAgent ? 1 : facts.length },
   });
   try {
@@ -166,9 +181,9 @@ export async function evolveCommand(args: string[]): Promise<number> {
       const final = {
         candidateId: result.best.id,
         queriesSha256: createHash("sha256").update(JSON.stringify(testQueries)).digest("hex"),
-        signals: (await new FunctionEvaluator([recallTask(testQueries)]).evaluate(result.best)).map(
-          ({ name, value, direction }) => ({ name, value, direction }),
-        ),
+        signals: (
+          await new FunctionEvaluator([recallTask(testQueries)], artifacts).evaluate(result.best)
+        ).map(({ name, value, direction }) => ({ name, value, direction })),
         role: "final-only; never used for proposals, selection or publication decisions",
       };
       writeFileSync(join(tracer.dir, "final-evaluation.json"), JSON.stringify(final, null, 2), {
@@ -188,10 +203,11 @@ export async function evolveCommand(args: string[]): Promise<number> {
       );
     }
     process.stdout.write(`\nstore: ${store}\nbest: ${result.best.id}\n`);
+    process.stdout.write(`receipts: ${receipts.path}\n`);
 
     // Commit the selected entries to the live memory through the unified service
     // (dedup/versioning + audit), rather than bypassing it via the artifact store.
-    const bestEntries = (result.best.artifacts[0]?.snapshot() ?? []) as unknown as MemoryEntry[];
+    const bestEntries = memoryEntries(result.best);
     const service = new MemoryService(
       new JsonFileMemoryStore(memoryPath),
       new JsonlMemoryAudit(`${memoryPath}.audit.jsonl`),

@@ -74,6 +74,13 @@ describe("GitWorkspace", () => {
     const child = await workspace.apply({ id: "c1", description: "change a" });
     expect(child.id).not.toBe(root.id);
     expect(workspace.changedFiles(child)).toContain("a.txt");
+    // Code iterations now carry a real artifact identity (the git commit).
+    expect(child.artifacts[0]?.ref).toMatchObject({
+      kind: "core",
+      id: "workspace",
+      form: "code",
+      digest: `git:${child.id}`,
+    });
 
     await workspace.rollback(child);
     expect(workspace.current().id).toBe(root.id);

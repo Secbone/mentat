@@ -45,6 +45,12 @@ interface IterableArtifact {
 }
 ```
 
+> 2026-10-22 更新：上述契约已被 [ADR-0006](adr/0006-artifact-identity-and-adapters.md)
+> 取代。实际实现拆为 `ArtifactRef`（可序列化身份 + digest）、`Artifact`
+> （ref + 规范 JSON payload）、`ArtifactAdapter`（按 kind 校验/物化）和
+> `ArtifactRegistry`。评测协议不再属于制品，见
+> [设计说明](research/artifact-architecture-2026-10-22.md)。
+
 两种变更通道：
 
 - **code 制品**（tool / policy / adapter / core / pipeline）：沙箱内改源码 →

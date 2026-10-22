@@ -1,12 +1,7 @@
 import type { Signal } from "@mentat/core";
 import type { Candidate, Proposal, Proposer } from "@mentat/evolution";
 import type { MemoryEntry } from "@mentat/memory";
-import { memoryArtifact } from "./artifact";
-
-function entriesOf(parent: Candidate): MemoryEntry[] {
-  const snapshot = parent.artifacts[0]?.snapshot();
-  return Array.isArray(snapshot) ? (snapshot as unknown as MemoryEntry[]) : [];
-}
+import { memoryArtifact, memoryEntries } from "./artifact";
 
 /**
  * Rule-based mutation for memory: propose adding the next candidate entry the
@@ -21,7 +16,7 @@ export class RuleMemoryProposer implements Proposer {
   ) {}
 
   async propose(parent: Candidate, _signals: Signal[]): Promise<Proposal> {
-    const current = entriesOf(parent);
+    const current = memoryEntries(parent, this.artifactId);
     const existing = new Set(current.map((entry) => entry.id));
 
     while (this.index < this.candidates.length) {

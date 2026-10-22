@@ -229,6 +229,9 @@ importers:
       '@mentat/core':
         specifier: workspace:*
         version: link:../core
+      '@mentat/evolution':
+        specifier: workspace:*
+        version: link:../evolution
       '@mentat/session':
         specifier: workspace:*
         version: link:../session

@@ -7,6 +7,18 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
 ## Unreleased
 
 ### Added
+- Artifact identity/adapters refactor (ADR-0006): `ArtifactRef`, `Artifact`,
+  `ArtifactAdapter`, `ArtifactRegistry`, canonical-JSON `Digest`, and
+  content-addressed data candidates. See
+  `docs/research/artifact-architecture-2026-10-22.md`.
+- `@mentat/workspace`: `ArtifactStore` CAS; `JsonStoreWorkspace` persists refs
+  only and rehydrates payloads by digest.
+- `@mentat/evolution`: external `EvalProtocol`, `IterationReceipt`, per-iteration
+  `outcome`, and niche-aware archive selection.
+- `@mentat/observability`: append-only `ReceiptStore`; `evolve` and `iterate`
+  now persist a protocol digest and per-iteration receipts.
+- `@mentat/workspace`: `GitWorkspace` attaches a `form: "code"` artifact
+  (`digest: git:<commit>`) to every candidate.
 - CI: `.github/workflows/check.yml` runs the full `pnpm check` gate on push/PR.
 - `docs/adr/` decision records and this changelog.
 - `@mentat/observability`: `memoryAttribution()` aggregates a trajectory's
@@ -27,6 +39,8 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   model abstains instead of fabricating.
 
 ### Removed
+- `IterableArtifact`, `EvalSpec`, `EvalResult`, `ArtifactSnapshot` and
+  `ArtifactRebuilder`. Artifacts are now immutable values with adapters.
 - Dead `buildMemoryContext` (superseded by `buildTurnContext`).
 - Empty `packages/runtime` leftover directory.
 

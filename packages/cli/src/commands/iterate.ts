@@ -4,13 +4,19 @@ import type { JsonValue, PermissionMode } from "@mentat/core";
 import { CheckEvaluator, commandGate, JsonCommandEvaluator, runCommand } from "@mentat/evaluation";
 import {
   AgentProposer,
+  defineEvalProtocol,
   type Gate,
   GateChain,
   pathGuardGate,
   SelfIterationLoop,
   type SessionRunner,
 } from "@mentat/evolution";
-import { buildExperienceDigest, ExperienceStore, FileTrajectoryStore } from "@mentat/observability";
+import {
+  buildExperienceDigest,
+  ExperienceStore,
+  FileTrajectoryStore,
+  ReceiptStore,
+} from "@mentat/observability";
 import { runOnce } from "@mentat/session";
 import { GitWorkspace } from "@mentat/workspace";
 import { defaultExperienceDir } from "../lib/paths";
@@ -111,6 +117,16 @@ export async function iterateCommand(args: string[]): Promise<number> {
       runId,
     );
 
+    const receipts = new ReceiptStore(runDir);
+    const environment = `${process.platform}-${process.arch}`;
+    const protocol = defineEvalProtocol({
+      id: evalCmd ? "command-json" : "command-check",
+      version: 1,
+      mode: evalCmd ? "metric" : "verifier",
+      environment,
+      ...(model ? { model } : {}),
+    });
+
     tracer.emit("run.start", {
       target,
       task,
@@ -167,6 +183,9 @@ export async function iterateCommand(args: string[]): Promise<number> {
       gates: new GateChain(gates),
       config: { maxIterations: iterations },
       tracer,
+      protocol,
+      environment,
+      onReceipt: (receipt) => receipts.append(receipt),
     });
 
     let result: Awaited<ReturnType<typeof loop.run>>;
@@ -203,6 +222,7 @@ export async function iterateCommand(args: string[]): Promise<number> {
         gate: record.gate?.gate ?? "none",
         gatePassed: record.gate?.passed ?? true,
         accepted: record.accepted,
+        outcome: record.outcome,
         reason: record.reason ?? null,
         before: record.before as unknown as JsonValue,
         after: (record.after as unknown as JsonValue) ?? null,
@@ -219,6 +239,8 @@ export async function iterateCommand(args: string[]): Promise<number> {
       protect,
       best: result.best.id,
       archiveSize: result.archive.size(),
+      protocol: protocol.digest,
+      receipts: receipts.path,
       records: recordsJson,
     };
 
@@ -239,6 +261,7 @@ export async function iterateCommand(args: string[]): Promise<number> {
       `\narchive: ${result.archive.size()} candidates, best=${result.best.id}\n`,
     );
     process.stdout.write(`log: ${runDir}\n`);
+    process.stdout.write(`receipts: ${receipts.path}\n`);
     return 0;
   } finally {
     await workspace.dispose();

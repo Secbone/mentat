@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@mentat/core": "workspace:*",
+    "@mentat/evolution": "workspace:*",
     "@mentat/session": "workspace:*",
     "@mentat/storage-file": "workspace:*"
   },

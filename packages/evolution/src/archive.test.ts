@@ -1,4 +1,4 @@
-import type { IterableArtifact, Signal } from "@mentat/core";
+import type { Signal } from "@mentat/core";
 import { describe, expect, it } from "vitest";
 import { Archive } from "./archive";
 import type { Candidate } from "./types";
@@ -7,7 +7,7 @@ function candidate(id: string, parentId?: string): Candidate {
   return {
     id,
     version: id,
-    artifacts: [] as IterableArtifact[],
+    artifacts: [],
     ...(parentId ? { parentId } : {}),
   };
 }
@@ -43,5 +43,20 @@ describe("Archive", () => {
     archive.add(candidate("a"), { signals: score(1) });
     archive.add(candidate("b"), { signals: score(10) });
     expect(archive.selectParent()?.id).toBe("a");
+  });
+
+  it("keeps niche descriptors and samples niches uniformly", () => {
+    const draws = [0, 0.99, 0.99, 0.99];
+    let index = 0;
+    const archive = new Archive(() => draws[index++ % draws.length] ?? 0.5);
+    archive.add(candidate("strong"), { signals: score(100), niche: "code" });
+    archive.add(candidate("weak"), { signals: score(1), niche: "memory" });
+    expect(archive.get("strong")?.niche).toBe("code");
+    // The stronger niche is not guaranteed to win every draw.
+    const picks = new Set(
+      Array.from({ length: 8 }, () => archive.selectParent()?.id).filter(Boolean),
+    );
+    expect(picks).toContain("strong");
+    expect(picks).toContain("weak");
   });
 });

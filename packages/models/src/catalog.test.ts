@@ -1,6 +1,7 @@
+import { createArtifactRegistry } from "@mentat/core";
 import { Context } from "@mentat/kernel";
 import { describe, expect, it } from "vitest";
-import { MODEL_SERVICE, modelCatalogArtifact } from "./artifact";
+import { MODEL_SERVICE, modelAdapter, modelCatalogArtifact } from "./artifact";
 import { ModelCatalog, type ModelDescriptor } from "./catalog";
 
 const models: ModelDescriptor[] = [
@@ -36,9 +37,10 @@ describe("ModelCatalog", () => {
 });
 
 describe("modelCatalogArtifact", () => {
-  it("provides a catalog when applied", async () => {
+  it("provides a catalog when materialized", async () => {
     const runtime = new Context();
-    await modelCatalogArtifact("c", models).apply(runtime);
+    const registry = createArtifactRegistry().register(modelAdapter);
+    await registry.materialize(modelCatalogArtifact("c", models), runtime);
     expect(runtime.get<ModelCatalog>(MODEL_SERVICE).list()).toHaveLength(3);
     await runtime.dispose();
   });

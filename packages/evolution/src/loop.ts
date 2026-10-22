@@ -1,10 +1,12 @@
-import type { JsonValue, Signal, Tracer } from "@mentat/core";
+import { type JsonValue, type Signal, sameArtifact, type Tracer } from "@mentat/core";
 import { Archive } from "./archive";
 import type { Evaluator } from "./evaluator";
 import type { Gate } from "./gate";
 import { assertComparableSignals, dominates, validateSignals } from "./pareto";
 import type { Proposer } from "./proposer";
-import type { Candidate, IterationRecord, LoopConfig, Proposal } from "./types";
+import type { EvalProtocol } from "./protocol";
+import { buildReceipt, type IterationReceipt } from "./receipt";
+import type { Candidate, IterationOutcome, IterationRecord, LoopConfig, Proposal } from "./types";
 import type { Workspace } from "./workspace";
 
 export interface LoopDeps {
@@ -15,16 +17,30 @@ export interface LoopDeps {
   archive?: Archive;
   config?: Partial<LoopConfig>;
   tracer?: Tracer;
+  /** Frozen evaluation protocol recorded in every receipt. */
+  protocol?: EvalProtocol;
+  environment?: string;
   onIteration?: (record: IterationRecord) => void;
+  onReceipt?: (receipt: IterationReceipt) => void;
   onDiagnostic?: (error: unknown) => void;
 }
 
 const signalsJson = (signals: Signal[]): JsonValue => signals as unknown as JsonValue;
 
+const refJson = (ref: import("@mentat/core").ArtifactRef): JsonValue => ({
+  kind: ref.kind,
+  id: ref.id,
+  version: ref.version,
+  digest: ref.digest,
+  form: ref.form,
+  ...(ref.trust ? { trust: ref.trust } : {}),
+  ...(ref.protected ? { protected: true } : {}),
+});
+
 const candidateJson = (candidate: Candidate): JsonValue => ({
   id: candidate.id,
   version: candidate.version,
-  artifacts: candidate.artifacts.map((artifact) => artifact.id),
+  artifacts: candidate.artifacts.map((artifact) => refJson(artifact.ref)),
 });
 
 export interface LoopResult {
@@ -40,10 +56,25 @@ interface StepOutcome {
 }
 
 function touchesProtected(parent: Candidate, proposal: Proposal): boolean {
-  for (const artifact of parent.artifacts.filter((item) => item.protected)) {
-    const replacements = (proposal.artifacts ?? []).filter((item) => item.id === artifact.id);
-    // Retain the trusted implementation itself, not model-supplied metadata or code.
-    if (replacements.length !== 1 || replacements[0] !== artifact) return true;
+  const declaresArtifacts = proposal.artifacts !== undefined;
+  for (const artifact of parent.artifacts.filter((item) => item.ref.protected)) {
+    // Agent-driven code proposals edit the workspace in place and do not
+    // declare an artifact set; protected paths are enforced by `pathGuardGate`.
+    if (!declaresArtifacts && artifact.ref.form === "code") continue;
+    const replacements = (proposal.artifacts ?? []).filter(
+      (item) => item.ref.kind === artifact.ref.kind && item.ref.id === artifact.ref.id,
+    );
+    // Compare content, not object identity: a reloaded or cloned candidate is
+    // still the same trusted artifact, and a rewritten payload is still a change.
+    // The replacement must also keep the protected marker; otherwise a proposal
+    // could strip the guard while leaving the payload untouched.
+    if (
+      replacements.length !== 1 ||
+      !replacements[0] ||
+      !sameArtifact(replacements[0].ref, artifact.ref) ||
+      replacements[0].ref.protected !== true
+    )
+      return true;
   }
   return false;
 }
@@ -60,7 +91,10 @@ export class SelfIterationLoop {
   private readonly archive: Archive;
   private readonly config: LoopConfig;
   private readonly tracer?: Tracer;
+  private readonly protocol?: EvalProtocol;
+  private readonly environment?: string;
   private readonly onIteration?: (record: IterationRecord) => void;
+  private readonly onReceipt?: (receipt: IterationReceipt) => void;
   private readonly onDiagnostic?: (error: unknown) => void;
 
   constructor(deps: LoopDeps) {
@@ -78,8 +112,22 @@ export class SelfIterationLoop {
     )
       throw new Error("invalid evolution iteration budget");
     if (deps.tracer) this.tracer = deps.tracer;
+    if (deps.protocol) this.protocol = deps.protocol;
+    if (deps.environment) this.environment = deps.environment;
     if (deps.onIteration) this.onIteration = deps.onIteration;
+    if (deps.onReceipt) this.onReceipt = deps.onReceipt;
     this.onDiagnostic = deps.onDiagnostic;
+  }
+
+  private receipt(record: IterationRecord, parent: Candidate, child?: Candidate): void {
+    const receipt = buildReceipt(record, {
+      parent,
+      ...(child ? { child } : {}),
+      ...(this.protocol ? { protocol: this.protocol } : {}),
+      ...(this.environment ? { environment: this.environment } : {}),
+    });
+    this.onReceipt?.(receipt);
+    this.trace("iteration.receipt", receipt as unknown as JsonValue);
   }
 
   private trace(type: string, data?: JsonValue): void {
@@ -193,12 +241,7 @@ export class SelfIterationLoop {
       parentId: parent.id,
       proposalId: proposal.id,
       description: proposal.description,
-      artifacts:
-        proposal.artifacts?.map((a) => ({
-          id: a.id,
-          version: a.version,
-          snapshot: a.snapshot(),
-        })) ?? [],
+      artifacts: proposal.artifacts?.map((artifact) => refJson(artifact.ref)) ?? [],
     });
 
     if (touchesProtected(parent, proposal)) {
@@ -209,9 +252,17 @@ export class SelfIterationLoop {
         gate: "protected",
         reason: "protected artifact",
       });
-      return {
-        record: rejected(iteration, parent, proposal.id, proposal, before, "protected artifact"),
-      };
+      const record = rejected(
+        iteration,
+        parent,
+        proposal.id,
+        proposal,
+        before,
+        "protected artifact",
+        "invalid",
+      );
+      this.receipt(record, parent);
+      return { record };
     }
 
     let child: Candidate;
@@ -221,16 +272,17 @@ export class SelfIterationLoop {
       await this.workspace.abort?.();
       const reason = error instanceof Error ? error.message : String(error);
       this.trace("iteration.apply", { iteration, failed: true, reason });
-      return {
-        record: rejected(
-          iteration,
-          parent,
-          proposal.id,
-          proposal,
-          before,
-          `apply failed: ${reason}`,
-        ),
-      };
+      const record = rejected(
+        iteration,
+        parent,
+        proposal.id,
+        proposal,
+        before,
+        `apply failed: ${reason}`,
+        "error",
+      );
+      this.receipt(record, parent);
+      return { record };
     }
     this.trace("iteration.apply", { iteration, childId: child.id });
 
@@ -262,8 +314,10 @@ export class SelfIterationLoop {
           proposal,
           before,
           gate.reason ?? "gate rejected",
+          "invalid",
         );
         record.gate = gate;
+        this.receipt(record, parent, child);
         return { record, child };
       }
 
@@ -294,6 +348,7 @@ export class SelfIterationLoop {
         before,
         after,
         accepted,
+        outcome: "completed",
         ...(accepted ? {} : { reason: "no improvement" }),
       };
 
@@ -304,6 +359,7 @@ export class SelfIterationLoop {
       } else {
         await rollback();
       }
+      this.receipt(record, parent, child);
       return { record, child, after };
     } catch (error) {
       this.trace("iteration.error", { iteration, candidateId: child.id, error: String(error) });
@@ -335,6 +391,16 @@ function rejected(
   proposal: Proposal,
   before: Signal[],
   reason: string,
+  outcome: IterationOutcome = "error",
 ): IterationRecord {
-  return { iteration, parentId: parent.id, childId, proposal, before, accepted: false, reason };
+  return {
+    iteration,
+    parentId: parent.id,
+    childId,
+    proposal,
+    before,
+    accepted: false,
+    reason,
+    outcome,
+  };
 }

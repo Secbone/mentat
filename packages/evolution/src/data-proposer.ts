@@ -1,4 +1,4 @@
-import type { IterableArtifact, Signal } from "@mentat/core";
+import type { Artifact, Signal } from "@mentat/core";
 import type { Candidate, Proposal, Proposer } from "@mentat/evolution";
 
 export interface DataPromptContext {
@@ -17,7 +17,7 @@ export interface AgentDataProposerOptions {
   runner: DataRunner;
   buildPrompt: (context: DataPromptContext) => string;
   /** Turn the agent's text into the new artifact set. */
-  parse: (output: string, parent: Candidate) => IterableArtifact[];
+  parse: (output: string, parent: Candidate) => Artifact[];
 }
 
 /**

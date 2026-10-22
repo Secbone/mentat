@@ -1,7 +1,7 @@
 import type { Candidate } from "@mentat/evolution";
 import { FunctionEvaluator, InMemoryWorkspace, SelfIterationLoop } from "@mentat/evolution";
 import { describe, expect, it } from "vitest";
-import { memoryArtifact } from "./artifact";
+import { memoryArtifact, memoryArtifactRegistry, memoryEntries } from "./artifact";
 import { memoryEntry, type RecallQuery, recallTask } from "./evolution";
 import { RuleMemoryProposer } from "./proposer";
 
@@ -24,16 +24,15 @@ describe("RuleMemoryProposer", () => {
     const loop = new SelfIterationLoop({
       workspace: new InMemoryWorkspace(root),
       proposer: new RuleMemoryProposer(candidates),
-      evaluator: new FunctionEvaluator([recallTask(queries)]),
+      evaluator: new FunctionEvaluator([recallTask(queries)], memoryArtifactRegistry()),
       config: { maxIterations: 3 },
     });
 
     const result = await loop.run();
 
     expect(result.records.map((record) => record.accepted)).toEqual([true, false, true]);
-    const snapshot = result.best.artifacts[0]?.snapshot();
-    const ids = (Array.isArray(snapshot) ? snapshot : [])
-      .map((entry) => (entry as { id: string }).id)
+    const ids = memoryEntries(result.best)
+      .map((entry) => entry.id)
       .sort();
     expect(ids).toEqual(["m-build", "m-deploy"]);
   });

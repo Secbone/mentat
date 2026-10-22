@@ -1,22 +1,23 @@
-import type { IterableArtifact, Signal } from "@mentat/core";
+import type { Artifact, Signal } from "@mentat/core";
 
-/** A concrete framework state: a set of artifacts at some version. */
+/** A concrete framework state: a set of immutable artifacts at some version. */
 export interface Candidate {
   id: string;
   version: string;
-  artifacts: IterableArtifact[];
+  artifacts: Artifact[];
   parentId?: string;
 }
 
 /**
- * A proposed change. `artifacts` is the artifact set that replaces the
- * parent's (data/prompt/memory loops); agent-driven code loops leave it
- * undefined and edit the workspace directly.
+ * A proposed change. `artifacts` replaces the parent's artifact set for
+ * data/prompt/memory loops. Agent-driven code loops leave it undefined and
+ * edit the workspace directly; the workspace then attaches a code artifact to
+ * the child candidate.
  */
 export interface Proposal {
   id: string;
   description: string;
-  artifacts?: IterableArtifact[];
+  artifacts?: Artifact[];
 }
 
 export interface GateResult {
@@ -36,6 +37,8 @@ export interface LoopConfig {
   parentSelection?: "current" | "archive";
 }
 
+export type IterationOutcome = "completed" | "error" | "timeout" | "invalid";
+
 export interface IterationRecord {
   iteration: number;
   parentId: string;
@@ -46,4 +49,5 @@ export interface IterationRecord {
   after?: Signal[];
   accepted: boolean;
   reason?: string;
+  outcome: IterationOutcome;
 }

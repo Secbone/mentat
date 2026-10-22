@@ -3,6 +3,7 @@ export * from "./adapters/fake";
 export * from "./adapters/registry";
 export * from "./answer";
 export * from "./artifact";
+export * from "./digest";
 export * from "./events";
 export * from "./json";
 export * from "./prompt";
