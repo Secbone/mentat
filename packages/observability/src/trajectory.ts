@@ -273,8 +273,24 @@ export function projectExperience(dir: string, base: ExperienceBase, turnId: str
   for (const event of events)
     if (event.type === "agent.event" && event.turnId === turnId)
       recorder.handle(resolveEventData(dir, event) as unknown as import("@mentat/core").AgentEvent);
+  const acceptanceEvent = events.findLast(
+    (event) => event.type === "task.acceptance" && event.turnId === turnId,
+  );
+  const acceptance = acceptanceEvent
+    ? (resolveEventData(dir, acceptanceEvent) as unknown as import("@mentat/core").TaskAcceptance)
+    : undefined;
   return {
     ...recorder.snapshot(),
+    ...(acceptance
+      ? {
+          acceptance: {
+            evaluator: acceptance.evaluator,
+            status: acceptance.status,
+            issues: acceptance.issues,
+            ...(acceptance.evidence !== undefined ? { evidence: acceptance.evidence } : {}),
+          },
+        }
+      : {}),
     ts:
       source?.ts ??
       events.find((event) => event.turnId === turnId && event.type === "turn.start")?.ts ??

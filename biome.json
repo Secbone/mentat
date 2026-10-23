@@ -13,6 +13,7 @@
       "!dist",
       "!coverage",
       "!.mentat",
+      "!docs/research/2026-10-21-product-attribute-workers/evidence",
       "!tsconfig.paths.json",
       "!scripts/workspace-aliases.mjs"
     ]

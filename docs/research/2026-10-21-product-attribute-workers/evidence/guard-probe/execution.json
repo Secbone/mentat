@@ -1,0 +1,12 @@
+{
+  "exit_code": 0,
+  "elapsed_seconds": 24.17,
+  "inputs_unchanged": true,
+  "changed_inputs": [],
+  "unexpected_new_files": [],
+  "result_exists": true,
+  "filesystem_allowlist_passed": true,
+  "native_denial_trace_must_be_verified_separately": true,
+  "is_os_sandbox": false,
+  "control_directory": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/control"
+}

@@ -1,6 +1,7 @@
 import type { HarnessAdapter } from "@mentat/core";
 import { type AcpAdapterOptions, createAcpAdapter } from "@mentat/transport-acp";
 import { prepareOpenCodeMcp } from "./opencode-mcp";
+import { opencodeFilePolicy } from "./opencode-policy";
 
 /** OpenCode-specific prompt and MCP configuration. The generic ACP adapter
  * remains engine-agnostic; native tools keep their original permission checks.
@@ -15,13 +16,19 @@ export function createOpenCodeAdapter(options: Omit<AcpAdapterOptions, "id">): H
       ...base.capabilities(),
       systemPrompt: "replace",
       mcpToolNaming: "server-prefixed",
+      executionPolicy: "file-allowlist",
     }),
     async createSession(sessionOptions, deps) {
+      if (sessionOptions.executionPolicy && sessionOptions.mcpServers?.length)
+        throw new Error("restricted execution cannot expose MCP servers");
+      const rules = sessionOptions.executionPolicy
+        ? opencodeFilePolicy(sessionOptions.cwd, sessionOptions.executionPolicy)
+        : undefined;
       const replace =
         sessionOptions.systemPromptMode === "replace" && Boolean(sessionOptions.systemPrompt);
       const nativeMcp = prepareOpenCodeMcp(sessionOptions.mcpServers ?? []);
       try {
-        if (!replace && !sessionOptions.mcpServers?.length)
+        if (!replace && !sessionOptions.mcpServers?.length && !rules)
           return await base.createSession(sessionOptions, deps);
         const raw = options.env?.OPENCODE_CONFIG_CONTENT ?? process.env.OPENCODE_CONFIG_CONTENT;
         const config = raw ? JSON.parse(raw) : {};
@@ -43,15 +50,20 @@ export function createOpenCodeAdapter(options: Omit<AcpAdapterOptions, "id">): H
             ...options.env,
             OPENCODE_CONFIG_CONTENT: JSON.stringify({
               ...config,
-              ...(replace
+              ...(replace || rules
                 ? {
                     default_agent: agent,
                     agents: {
                       ...config.agents,
-                      [agent]: { ...config.agents?.[agent], system: sessionOptions.systemPrompt },
+                      [agent]: {
+                        ...config.agents?.[agent],
+                        ...(replace ? { system: sessionOptions.systemPrompt } : {}),
+                        ...(rules ? { permissions: rules } : {}),
+                      },
                     },
                   }
                 : {}),
+              ...(rules ? { permissions: rules } : {}),
               ...(sessionOptions.mcpServers?.length
                 ? {
                     mcp: {
@@ -63,7 +75,7 @@ export function createOpenCodeAdapter(options: Omit<AcpAdapterOptions, "id">): H
             }),
           },
         });
-        const { mcpServers: _, ...withoutMcp } = sessionOptions;
+        const { mcpServers: _, executionPolicy: __policy, ...withoutMcp } = sessionOptions;
         const { systemPrompt: __, systemPromptMode: ___, ...withoutSystem } = withoutMcp;
         if (replace)
           deps?.onDiagnostic?.({
@@ -73,6 +85,11 @@ export function createOpenCodeAdapter(options: Omit<AcpAdapterOptions, "id">): H
               delivery: "agent.system",
               characters: sessionOptions.systemPrompt?.length,
             }),
+          });
+        if (rules)
+          deps?.onDiagnostic?.({
+            code: "OPENCODE_FILE_POLICY_CONFIGURED",
+            message: JSON.stringify({ rules, enforcement: "native-tools", isOsSandbox: false }),
           });
         if (sessionOptions.mcpServers?.length)
           deps?.onDiagnostic?.({

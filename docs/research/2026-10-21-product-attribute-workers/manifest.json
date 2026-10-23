@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-21",
+  "source_project": "/Users/soar/Projects/pcp-match",
+  "observed_harness": "opencode",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "raw_traces_kept_in_source_project_not_copied": true,
+  "copied_files": [
+    {
+      "bundle_path": "HANDOFF.txt",
+      "original_path": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/MENTAT_HANDOFF.txt",
+      "sha256": "caaa2c31c1ca2cb3eb3478634dcb1b6e87a471bad6c05cb9303ca0c217637682"
+    },
+    {
+      "bundle_path": "evidence/short-context/root_comparison.json",
+      "original_path": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/deepseek-comparison-v1/root_comparison.json",
+      "sha256": "0ed6a3f598cc02f3985577b5b5c56d37b4800804d7ce4447fb5f8d6666a0ff01"
+    },
+    {
+      "bundle_path": "evidence/short-context/quality-verification.json",
+      "original_path": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/deepseek-comparison-v1/quality-verification.json",
+      "sha256": "376455ef603e4e478e0ece9f630f95814b5d225d32f13c7df428f2e3ba5897bc"
+    },
+    {
+      "bundle_path": "evidence/full-page/comparison.json",
+      "original_path": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/page-review-v1/comparison-root-v1/comparison.json",
+      "sha256": "29b87f10ba5762057086b71d41b52afaf436567997891695eb577b85b6d1d098"
+    },
+    {
+      "bundle_path": "evidence/full-page/native_reference_v1.jsonl",
+      "original_path": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/page-review-v1/native-independent-review/native_reference_v1.jsonl",
+      "sha256": "06519f2d973e08a8167288633d80dc48b74ad1557e069fb19015b84221ea20bc"
+    },
+    {
+      "bundle_path": "evidence/guard-probe/verification.json",
+      "original_path": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/guard_probe_verification.json",
+      "sha256": "80cbeda16fd1dd0dd459a574054d4bc8065919e4a7042c8a138e38674da36fd6"
+    },
+    {
+      "bundle_path": "evidence/guard-probe/opencode-config.json",
+      "original_path": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/control/opencode-config.json",
+      "sha256": "171031e3f691cbb66db8fadf29dd72625dc135ff047b308cfb49b32e3223f5bf"
+    },
+    {
+      "bundle_path": "evidence/guard-probe/execution.json",
+      "original_path": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/control/execution.json",
+      "sha256": "461159e1a2252ea8625a563aee31dd0b909a4694069b7067cb9c4ff8cb1b8720"
+    },
+    {
+      "bundle_path": "evidence/guard-probe/input_before_sha256.json",
+      "original_path": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/control/input_before_sha256.json",
+      "sha256": "6488cd71533c91a51eefefd0abd75aa174f15ef54de480b9f55266d5e3bd3527"
+    },
+    {
+      "bundle_path": "evidence/guard-probe/input_after_sha256.json",
+      "original_path": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/control/input_after_sha256.json",
+      "sha256": "055b6b23544e191ca2314fd4149ea4f280929d391df0cbff61901d2427236ec3"
+    },
+    {
+      "bundle_path": "reference-implementation/mentat_guarded_page_runner_v1.py",
+      "original_path": "/Users/soar/Projects/pcp-match/scripts/mentat_guarded_page_runner_v1.py",
+      "sha256": "637901ffc2c3eb19957d0b2518638ff28b5131ae9e6552f6321e1ad1a96ffbdb"
+    },
+    {
+      "bundle_path": "reference-implementation/raw_attribute_contract_v1.txt",
+      "original_path": "/Users/soar/Projects/pcp-match/scripts/mentat_raw_attribute_contract_v1.txt",
+      "sha256": "80cb374b0126303a59254f09ec8d13b5f22eb3bc3ce1c23fc5aa71a1aa742c77"
+    }
+  ],
+  "primary_entry": "HANDOFF.txt",
+  "contains_runtime_and_integration_findings_not_mentat_core_patch": true
+}

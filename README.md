@@ -42,6 +42,7 @@ pnpm dev chat --harness opencode --model opencode-go/deepseek-v4.1-flash \
 - [查看日志与判断完成状态](docs/usage.md#日志与结果判断)
 - [代码演化与记忆演化](docs/usage.md#代码演化与记忆演化)
 - [统一评测与常见问题](docs/usage.md#统一评测)
+- [受限批处理任务与结果验收](docs/worker-execution.md)
 
 默认值有所不同：`run` 使用 `fake` / `auto`，`chat` 使用 `pi` / `full`。示例显式传入引擎和 `ask`，避免依赖默认值。`ask` 对经过宿主权限处理器的请求逐次询问；引擎原生工具还受其自身权限配置控制。
 

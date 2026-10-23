@@ -1,0 +1,41 @@
+{
+  "case_count": 14,
+  "exact_value_agreement": 12,
+  "exact_value_agreement_fraction": 0.8571428571428571,
+  "semantic_agreement_including_0_1mm_rounding": 13,
+  "semantic_agreement_fraction": 0.9285714285714286,
+  "source_hash_and_literal_evidence_passed": 14,
+  "completed_worker_processes": 3,
+  "worker_wall_seconds": [
+    61.63,
+    58.96,
+    47.3
+  ],
+  "precision_checks": [
+    {
+      "case_id": "calibration-004",
+      "absolute_difference_mm": 0.0,
+      "numerically_equivalent_within_0_1mm": true
+    },
+    {
+      "case_id": "calibration-011",
+      "absolute_difference_mm": 0.01999999999998181,
+      "numerically_equivalent_within_0_1mm": true
+    }
+  ],
+  "real_disagreement": {
+    "case_id": "calibration-006",
+    "mentat_value": [
+      "camel"
+    ],
+    "reference_value": null,
+    "root_disposition": "do_not_apply_commercial_design_name_as_color_family",
+    "second_assistant_review": "Attribute_merge independently re-read HTML and native page; radiant golden adornment is shared line description, Le Camel commercial design lacks explicit physical color declaration."
+  },
+  "limits": [
+    "Prior assistant labels are not human gold.",
+    "Selected source-snippet case diagnostic, not representative accuracy or full-page extraction parity.",
+    "Two changes together: model and shortened task representation; this does not isolate their independent effects."
+  ],
+  "next_step": "Independent blind full-visible-page pilot, disjoint12 products over12roots; no automatic merge."
+}

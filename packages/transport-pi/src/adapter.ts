@@ -172,6 +172,8 @@ export function createPiAdapter(options: PiAdapterOptions = {}): HarnessAdapter 
     label: "Pi",
     capabilities: () => CAPABILITIES,
     createSession: async (sessionOptions: SessionOptions, deps: AdapterDeps = {}) => {
+      if (sessionOptions.executionPolicy)
+        throw new Error("Pi adapter cannot enforce execution policy");
       const args = [
         ...baseArgs,
         "--mode",

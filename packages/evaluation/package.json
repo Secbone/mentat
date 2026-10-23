@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@mentat/core": "workspace:*",
-    "@mentat/evolution": "workspace:*"
+    "@mentat/evolution": "workspace:*",
+    "ajv": "8.20.0"
   },
   "description": "Command and container execution gates and evaluators"
 }

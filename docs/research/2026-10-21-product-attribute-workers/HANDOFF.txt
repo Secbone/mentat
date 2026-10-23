@@ -1,0 +1,92 @@
+Mentat 商品属性批量核验：实测问题与优化交接
+日期：2026-10-21（Asia/Shanghai）
+范围：记录问题、复现、证据及已经验证的临时修复；未修改 Mentat 核心实现。
+
+一、先看结论
+
+Mentat + OpenCode ACP 可以启动独立真实模型进程，读取任务并落盘结果；本轮最多实跑3个并行进程。不能据此认定与原有子 agent 的商品属性核验质量等效，也尚未验证大并发稳定性。
+
+建议先做“受限批处理 worker”，再扩大并发：不可变输入、原生工具权限、明确的原始值输出契约、宿主校验、失败隔离和业务验收。保留框架通用性，商品规则留在调用项目。
+
+环境实测：
+- Mentat checkout：/Users/soar/Code/mentat（大小写文件系统中 ~/code/mentat 指向同一位置）。
+- 启动：/Users/soar/code/mentat/mentat run ... --harness opencode --model opencode-go/deepseek-v4.1-flash。
+- PATH 中没有全局 mentat；仓库自己的 mentat 启动器可直接执行，其内部调用 pnpm dev。
+- OpenCode v2.0.25；pi 命令不存在。harness list 只说明注册，不证明二进制/模型运行可用。
+- 本轮代码、数据与原始实验：/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/。
+- OpenCode 原生权限参考：https://dev.opencode.ai/v2/docs/permissions/
+
+二、实验事实，不能当作总体准确率
+
+A. 基础连通性
+ACP 确认模型选择、真实 read 工具成功。首个探针是调用方漏放 input.txt，读失败不属于 Mentat 缺陷；后续已放入文件重跑，成功读出唯一测试 token。
+
+B. 旧 MiniMax 长上下文尝试
+模型 opencode-go/minimax-m3.1-flash-free；2个进程各7个已有纠错案例。两个进程都读取输入，但约186.58秒后因180000ms宿主期限退出1，均未产生 result.json。轨迹显示长时间反复推敲、工具对单行较长字符串截断到2000字符。不能归因为 Mentat 模型推理质量差，也没有隔离“更换模型”和“缩短输入”的独立作用。
+证据：calibration-v1/worker-00、worker-01；quality-verification.json。
+
+C. DeepSeek 短证据对照
+同14个已由原子 agent 核验并经主助手复查的字段案例，改为短原文片段与证据ID；3个进程，耗时47.30、58.96、61.63秒，均exit0并保存结果。
+- 12/14最终值完全一致。
+- 1个是985.5mm vs985.52mm的小数精度差异。
+- 1个实际分歧：将 Guerlain 的商业设计名 Le Camel 推成 color_family=['camel']；原核验只清空由 Rouge 系列名误抽的 red。复查两源仍不足以确认物理颜色。
+- 所有14个案例的引用ID、源文件SHA和字面证据定位通过。
+这是筛选过的旧案例片段诊断，非独立人工金标，也非整页提取准确率或通用 agent 等效性证明。
+证据：deepseek-comparison-v1/root_comparison.json、quality-verification.json。
+
+D. 12个新商品页面独立盲评
+3个DeepSeek进程，每个4商品；另一原子 agent 独立读取同一批商品及原始源，不读模型结果。页面输入包含全部body可见文本和全部JSON-LD，不包含其它脚本/样式，不应称作完整rawHTML。
+- 全部12商品处理完成，进程耗时95.92、113.39、210.81秒。
+- 原子 agent 输出84项字段判断，其中50项supported；Mentat输出42项，其中30项supported。
+- 双方共同提及35个商品字段，归并pending/unverifiable后29项判定状态一致（29/35）。这是状态一致率，不能叫准确率；也不包含遗漏字段及数值一致性。
+- Mentat的30项supported全部 reviewed_value=null，但 raw_value 有真实提取值。属于本次调用方JSON示例歧义与缺少语义验收共同暴露的问题，不应直接写成Mentat抽取失败。
+- 12源SHA与引用片段均能定位回原文；证据存在不代表属性角色/选款正确。
+- 仍有实质分歧：显卡281g能否认作净重、650W主机电源需求应pending还是semantic_error、Arlo接口的网络/USB角色、被芯与面料材质、无标注尺寸轴等。
+证据：page-review-v1/comparison-root-v1/comparison.json；native-independent-review/native_reference_v1.jsonl。
+
+三、需要优化的点（明确归属）
+
+1. P0：受限worker原生权限与不可变输入——框架/CLI可提供的能力
+实测：page-review-v1/worker-00反复调用edit改自己的临时instructions.txt；worker-02调用shell。业务提示中禁止这些动作，但CLI --permission auto 的handler会放行浮出的权限询问，且没有配置原生显式deny，因此prompt不是权限隔离。
+这些行为发生在隔离实验文件中，未修改商品原始数据；不要夸大为已发生系统越权或凭据泄露。也不要把auto当前允许行为描述为某个已承诺安全边界被绕过。
+源码入口：packages/cli/src/lib/permission.ts:5；packages/cli/src/commands/run.ts:149；packages/harnesses/src/opencode.ts:26。
+建议：提供可选worker policy，精确允许输入read与结果edit，其余deny；不要全局改变交互式auto语义。输入/配置由宿主冻结并记录前后SHA；模型不能编辑说明、配置、其它worker或原数据。
+OpenCode V2用permissions数组和shell/subagent，不能误用V1的permission对象/bash/task。调用方可通过OPENCODE_CONFIG_CONTENT配置，已验证Mentat专用adapter保留agents.build.permissions。
+
+2. P0：结构化结果与业务验收——宿主扩展点，领域规则由pcp-match负责
+实测：exit0、run.settled=done、文件存在和JSON可解析都不能证明任务完成。30个supported/null的结果仍被CLI视为执行成功。
+源码入口：packages/cli/src/commands/run.ts:197，按result.reason==='done'返回0。这是当前执行完成语义，不宜直接改成硬编码商品验收。
+建议：可选JSON schema/output file contract与验收hook，记录execution_status和acceptance_status；验收失败不能自动合并。校验商品ID/字段全集、重复项、引用ID、SHA/字面锚、supported非空、类型和单位、输入未被改动。禁止把尚未发生的宿主校验称为模型验证成功。
+
+3. P1：长输入读取与逐项checkpoint——工具/模型/批处理接入问题
+单行长JSON网页片段被工具截断，导致重要字段不完整，模型反复推敲。短证据ID可避免大段HTML转义拷贝；真实页面仍须保留全部输入并能按页/片段读取，不能为了快而静默截掉规格或选款信息。
+建议按产品建立任务、保存部分结果、每个产品提交一次、可继续失败项；不要只在整批结束写文件。区分宿主超时、上游503/重试、无工具进展和模型思考耗时。本轮首次DeepSeek旧探针还出现过Endpoint is unavailable/503，后续同模型请求成功；不是未配置授权的证据。
+
+4. P1：模型输出契约歧义与确定性归一化——调用项目责任
+本次instructions示例把reviewed_value直接写成null，没有明确supported必须是非空实际值，模型把示例当成约束。修复这个示例，不能靠强制“所有字段都填值”。
+已提供RAW-only新契约：模型产raw_value/raw_unit、证据ID、scope/decision；宿主用冻结normalizer统一单位/精度/编码，不让模型重复计算38.8in换算值。pending可保留候选但不入数据；semantic_error独立提案；颜色商业名、包装/部件/兼容关系等由pcp-match业务门禁处理。
+
+5. P2：运行时可用性与模式诊断
+harness list列注册能力但不检查pi存在；默认run harness=fake（run.ts:10）。批处理显式传--harness opencode及模型，并从实际ACP回执确认effective model。建议可选doctor/startup probe，区分“注册可用”“传输就绪”“模型请求成功”“工具真实执行”“业务验收”。不应把fake smoke当真实模型成功。
+
+四、已验证有效的临时实现（是调用方外挂，不是Mentat已修复）
+
+原始脚本：/Users/soar/Projects/pcp-match/scripts/mentat_guarded_page_runner_v1.py。
+调用函数：run_guarded_worker(worker, prompt, model, timeout_ms, control)。
+做法：仍直接调用mentat命令；每worker独立输入、结果、宿主日志/经验目录；设置OpenCode agent层deny-all后精确read输入/edit result.json；宿主前后SHA与额外文件检查。
+真实guard-probe-v2结果：24.17秒，exit0；读取3个输入成功；实际修改instructions被Permission denied: edit拒绝（trace seq65）；写result成功、probe token吻合；输入SHA不变、无额外worker文件；随后读result也被配置拒绝（seq123，严格输入只读范围）。
+shell从原生工具目录被移除，无实际shell调用。因此“未提供shell”的证据成立，但没有实际shell拒绝事件，更不是OS syscall沙箱、跨路径所有情况或恶意代码全覆盖证明。
+原生配置与guard报告位于evidence/guard-probe/；代码参考副本位于reference-implementation/。先看原项目脚本是否已有后续版本，再移植通用实现。
+
+复现命令（会启动真实DeepSeek调用；不要覆盖已有探针目录）：
+/Users/soar/Projects/pcp-match/.venv/bin/python /Users/soar/Projects/pcp-match/scripts/mentat_guarded_page_runner_v1.py probe --directory /private/tmp/mentat-guard-probe-NEW-UNIQUE
+
+五、建议接手顺序与验收
+
+1) 先验证原生权限与CLI/adapter配置传递，保持既有交互权限语义；覆盖read输入、写结果成功，改输入/配置/其它worker被拒，输入SHA未变。
+2) 增加可选结果验收与状态分离：空supported、漏产品、重复/未知字段、坏引用、输入修改都不能进accepted状态；done/exit0仍单独保留。
+3) 加逐产品checkpoint、超时失败续跑和有上限的并发调度；重试只重跑失败任务、独立目录、不能重复合并结果。
+4) 用修正RAW-only契约在同12商品重跑，与冻结盲评逐字段复核；不将29/35状态一致率当作准确率。
+5) 后续逐级扩大3→6等并发，记录实际完成商品/分钟、成功交付率、漏字段、证据与角色错误、上游重试、使用量。这里是建议，未实跑6并发或给出吞吐外推。
+
+本次只交接，不代替其它助手修改Mentat代码，不提交或推送Git。pcp-match持续核验任务与这些Mentat诊断独立保存。

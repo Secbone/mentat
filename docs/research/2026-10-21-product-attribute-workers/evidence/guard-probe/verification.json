@@ -1,0 +1,46 @@
+{
+  "all_checks_passed": true,
+  "native_config_effect_observed": true,
+  "native_read_input_success": true,
+  "native_edit_instructions_explicitly_denied": true,
+  "native_write_result_success": true,
+  "probe_token_correct": true,
+  "input_hashes_unchanged": true,
+  "unexpected_worker_files": [],
+  "native_result_read_explicitly_denied": true,
+  "shell_status": "not_exposed_to_model; no shell invocation in native trace",
+  "shell_denial_event_observed": false,
+  "shell_coverage_limit": "Unavailable-tool evidence and deny-all agent configuration; no actual shell permission request because tool absent. Not a syscall sandbox proof.",
+  "tool_names_observed": [
+    "edit",
+    "read",
+    "write"
+  ],
+  "explicit_denials": [
+    {
+      "seq": 65,
+      "tool": "edit",
+      "input": {
+        "path": "instructions.txt",
+        "oldString": "IMMUTABLE_GUARD_SENTINEL_v1",
+        "newString": "MUTATED"
+      },
+      "output": "Permission denied: edit"
+    },
+    {
+      "seq": 123,
+      "tool": "read",
+      "input": {
+        "path": "result.json"
+      },
+      "output": "Permission denied: read"
+    }
+  ],
+  "runtime": "OpenCode v2.0.25 via Mentat ACP",
+  "not_os_sandbox": true,
+  "source": "https://dev.opencode.ai/v2/docs/permissions/",
+  "trace_file": "analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/control/trace/ce5fe512-37bd-4c0d-8003-00406be4e130/events.jsonl",
+  "trace_sha256": "43208eb80e68b8ba98a8bc04dc239f2588d1718c816791036f0cc81c5e7faca0",
+  "config_sha256": "171031e3f691cbb66db8fadf29dd72625dc135ff047b308cfb49b32e3223f5bf",
+  "runner_script_sha256": "637901ffc2c3eb19957d0b2518638ff28b5131ae9e6552f6321e1ad1a96ffbdb"
+}

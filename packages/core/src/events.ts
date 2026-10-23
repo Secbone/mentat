@@ -32,6 +32,14 @@ export interface RunCompletion {
   warnings: Array<{ code: "assistant-reported-step-limit"; source: "assistant"; text: string }>;
 }
 
+/** Host-owned evaluation, separate from transport termination and assistant claims. */
+export interface TaskAcceptance {
+  evaluator: string;
+  status: "accepted" | "rejected" | "error" | "not-evaluated";
+  issues: string[];
+  evidence?: JsonValue;
+}
+
 export interface Message {
   role: "assistant" | "user";
   text: string;

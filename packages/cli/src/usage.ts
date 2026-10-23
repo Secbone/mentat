@@ -24,6 +24,8 @@ Options:
   --log-dir <dir>     trajectory root directory (default: .mentat/runs)
   --timeout-ms <ms>   startup/turn timeout for run and chat (default: 120000)
   --log-protocol      capture redacted engine RPC diagnostics (run/chat)
+  --execution-policy <file>  run-only exact input/output file policy; requires native engine support
+  --output-contract <file>   run-only JSON Schema and optional trusted host validator
   --yes                shorthand for --permission full
 
 iterate options:

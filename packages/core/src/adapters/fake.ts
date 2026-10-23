@@ -114,6 +114,7 @@ export function createFakeAdapter(options: FakeAdapterOptions = {}): HarnessAdap
     label: options.label ?? "Fake",
     capabilities: () => capabilities,
     createSession: async (_options: SessionOptions, deps: AdapterDeps = {}) => {
+      if (_options.executionPolicy) throw new Error("Fake adapter cannot enforce execution policy");
       return new FakeSession(`fake-${++sessions}`, script, deps);
     },
   };

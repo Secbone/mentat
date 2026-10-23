@@ -24,6 +24,7 @@ export interface ReflectionBatch {
     outcome: string;
     termination?: ExperienceRecord["termination"];
     completion?: ExperienceRecord["completion"];
+    acceptance?: ExperienceRecord["acceptance"];
     tools: string[];
     error?: string;
     feedback?: ExperienceRecord["feedback"];
@@ -56,6 +57,7 @@ export function buildReflectionBatch(
       outcome: record.outcome,
       ...(record.termination ? { termination: structuredClone(record.termination) } : {}),
       ...(record.completion ? { completion: structuredClone(record.completion) } : {}),
+      ...(record.acceptance ? { acceptance: structuredClone(record.acceptance) } : {}),
       tools: [...record.tools],
       ...(record.error ? { error: record.error } : {}),
       ...(record.feedback?.length ? { feedback: structuredClone(record.feedback) } : {}),

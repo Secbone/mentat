@@ -4,6 +4,7 @@ import type {
   RunCompletion,
   RunTermination,
   StopReason,
+  TaskAcceptance,
   Usage,
 } from "@mentat/core";
 import { type EvidenceFragment, inputFragments, type TaskInput } from "./input";
@@ -52,6 +53,7 @@ export interface ExperienceRecord {
   outcome: StopReason;
   termination?: RunTermination;
   completion?: RunCompletion;
+  acceptance?: TaskAcceptance;
   error?: string;
   usage?: Usage;
   toolErrors: number;

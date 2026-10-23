@@ -424,6 +424,8 @@ export function createAcpAdapter(options: AcpAdapterOptions): HarnessAdapter {
     label: "ACP",
     capabilities: () => CAPABILITIES,
     createSession: async (sessionOptions: SessionOptions, deps: AdapterDeps = {}) => {
+      if (sessionOptions.executionPolicy)
+        throw new Error("ACP adapter cannot enforce execution policy");
       if (sessionOptions.systemPromptMode === "replace") {
         throw new Error(
           "ACP adapter cannot replace the agent system prompt; use task-context delivery",

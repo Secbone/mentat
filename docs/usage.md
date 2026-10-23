@@ -176,6 +176,8 @@ pnpm dev evolve memory --agent \
 
 ## 统一评测
 
+批量文件任务可选 `run --execution-policy <file> --output-contract <file>`，按原生工具权限限制输入/输出，并由宿主独立验收结果。配置、退出码和领域验收扩展见 [受限任务与验收](worker-execution.md)。普通 run/chat 行为不变。
+
 ```bash
 pnpm bench list
 pnpm bench list --json

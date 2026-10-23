@@ -16,6 +16,7 @@ import {
   validateHistoricalSessions,
 } from "@mentat/assistant";
 import type {
+  ExecutionPolicy,
   HarnessAdapter,
   JsonValue,
   McpServerSpec,
@@ -47,6 +48,7 @@ import {
   type TurnOptions,
 } from "@mentat/session";
 import { skillsMcpSpec } from "@mentat/skills-mcp";
+import { evaluateResult, type ResultEvaluator } from "./acceptance";
 import { createFragmentIngestor } from "./capture";
 import {
   readRepoState,
@@ -92,10 +94,12 @@ export interface HostConfig {
   requireFinalAnswer?: boolean;
   /** Defaults to one; automatic correction is suppressed after any tool activity. */
   correctiveRetries?: number;
+  executionPolicy?: ExecutionPolicy;
   /** Read-only setup probe; expectedOutput is never sent in a prompt. */
   startupToolProbe?: { toolName: string; expectedOutput: string; maxAttempts?: number };
 }
 export interface HostOverrides {
+  resultEvaluator?: ResultEvaluator;
   /** Structural seam for ModelCatalog or another host-owned routing policy. */
   modelSelector?: { select(): { id: string } | undefined };
   memory?: MemoryAccess;
@@ -149,6 +153,7 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
         {
           metadata: {
             cwd: config.cwd,
+            ...(config.executionPolicy ? { executionPolicy: { ...config.executionPolicy } } : {}),
             ...(config.scope !== undefined ? { scope: config.scope } : {}),
             revision,
             dirty,
@@ -157,6 +162,14 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
             permissionMode: config.permissionMode ?? "custom",
             protocolLog: config.protocolLog ?? false,
             promptVersion: ASSISTANT_PROMPT_VERSION,
+            ...(overrides.resultEvaluator
+              ? {
+                  resultEvaluator: {
+                    id: overrides.resultEvaluator.id,
+                    timeoutMs: overrides.resultEvaluator.timeoutMs ?? 30000,
+                  },
+                }
+              : {}),
           },
         },
         traceId,
@@ -290,6 +303,7 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
             cwd: config.cwd,
             ...(config.model ? { model: config.model } : {}),
             ...assistantPromptOptions(config.adapter, memoryTools),
+            ...(config.executionPolicy ? { executionPolicy: config.executionPolicy } : {}),
             ...(registerMemory || skillsServer || config.mcpServers?.length
               ? {
                   mcpServers: [
@@ -532,6 +546,18 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
             },
           }),
         );
+        const acceptanceStarted = Date.now();
+        if (overrides.resultEvaluator)
+          emit("task.acceptance.start", { turnId, evaluator: overrides.resultEvaluator.id });
+        const acceptance = overrides.resultEvaluator
+          ? await evaluateResult(overrides.resultEvaluator, input, result, signal)
+          : undefined;
+        if (acceptance)
+          emit("task.acceptance", {
+            turnId,
+            ...acceptance,
+            durationMs: Date.now() - acceptanceStarted,
+          });
         ingest();
         try {
           await file?.flush();
@@ -557,6 +583,7 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
             diagnostic({ code: "EXPERIENCE_PROJECTION_FAILED", message: String(error) });
           }
         let saved = false;
+        if (acceptance) record.acceptance = acceptance;
         try {
           experience.append(record);
           saved = true;
@@ -565,7 +592,7 @@ export function createAssistantHost(config: HostConfig, overrides: HostOverrides
           emit("experience.error", { turnId, error: String(error) });
         }
         if (saved) emit("experience.saved", { turnId, evidenceId: record.id });
-        return { result, record };
+        return { result, record, ...(acceptance ? { acceptance } : {}) };
       } catch (error) {
         if (!began)
           emit("turn.end", {

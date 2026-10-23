@@ -1,0 +1,201 @@
+{
+  "cases": 14,
+  "findings": [
+    {
+      "case_id": "calibration-000",
+      "field": "color_family",
+      "decision": "suppress",
+      "reviewed_value": null,
+      "reference_value": null,
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "\"Gold\" in the title is an edition label for a game, not a physical product color, and no supported replacement exists.",
+      "snippet_ids": [
+        "calibration-000-s0",
+        "calibration-000-s1"
+      ]
+    },
+    {
+      "case_id": "calibration-003",
+      "field": "color_family",
+      "decision": "suppress",
+      "reviewed_value": null,
+      "reference_value": null,
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "\"Gold Edition\" is a software edition name rather than a physical color, so the current gold value has no support.",
+      "snippet_ids": [
+        "calibration-003-s0",
+        "calibration-003-s1"
+      ]
+    },
+    {
+      "case_id": "calibration-006",
+      "field": "color_family",
+      "decision": "replace",
+      "reviewed_value": [
+        "camel"
+      ],
+      "reference_value": null,
+      "matches_previous_assistant_value": false,
+      "mechanical_errors": [],
+      "reason": "Red was taken from the \"Rouge G\" product-series name, while the source states the actual shade as Le Camel.",
+      "snippet_ids": [
+        "calibration-006-s0",
+        "calibration-006-s1"
+      ]
+    },
+    {
+      "case_id": "calibration-009",
+      "field": "mpn",
+      "decision": "replace",
+      "reviewed_value": "carseatcover02",
+      "reference_value": "carseatcover02",
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "The page's explicit Manufacturer Part Number is \"car seat cover 02\", which normalizes to carseatcover02 and the current value drops the numeric suffix.",
+      "snippet_ids": [
+        "calibration-009-s0",
+        "calibration-009-s1"
+      ]
+    },
+    {
+      "case_id": "calibration-012",
+      "field": "brand",
+      "decision": "replace",
+      "reviewed_value": "de buyer",
+      "reference_value": "de buyer",
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "Staffsas is the retailer taken from the shop domain, while the product title identifies the maker as De Buyer.",
+      "snippet_ids": [
+        "calibration-012-s0"
+      ]
+    },
+    {
+      "case_id": "calibration-001",
+      "field": "power",
+      "decision": "suppress",
+      "reviewed_value": null,
+      "reference_value": null,
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "The source excerpt \"3-Way Head\" denotes the tripod head type, not a wattage, so the current \"3 w\" is a wrong-role parse with no supported replacement.",
+      "snippet_ids": [
+        "calibration-001-s0"
+      ]
+    },
+    {
+      "case_id": "calibration-004",
+      "field": "height",
+      "decision": "replace",
+      "reviewed_value": "560 mm",
+      "reference_value": "560 mm",
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "The dimensions \"54D x 46B x 56H centimeter\" give a whole-item height of 56 cm (560 mm), contradicting the current 250 mm.",
+      "snippet_ids": [
+        "calibration-004-s0"
+      ]
+    },
+    {
+      "case_id": "calibration-007",
+      "field": "volume",
+      "decision": "suppress",
+      "reviewed_value": null,
+      "reference_value": null,
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "The excerpt \"0.3L per revolution\" is pump displacement per revolution, not item volume, so the current 300 ml is a wrong-role value with no supported replacement.",
+      "snippet_ids": [
+        "calibration-007-s0"
+      ]
+    },
+    {
+      "case_id": "calibration-010",
+      "field": "mpn",
+      "decision": "replace",
+      "reviewed_value": "38023",
+      "reference_value": "38023",
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "The page states the Manufacturer Part Number explicitly as 38023, while \"wrap\" is only a word from the product title (\"Wrap Around\" baffle).",
+      "snippet_ids": [
+        "calibration-010-s0",
+        "calibration-010-s1"
+      ]
+    },
+    {
+      "case_id": "calibration-013",
+      "field": "mpn",
+      "decision": "replace",
+      "reviewed_value": "setss8x14tc",
+      "reference_value": "setss8x14tc",
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "The page's Manufacturers Part Number field and title both give SET/SS8X1/4TC, which normalizes to setss8x14tc rather than the current synthetic code.",
+      "snippet_ids": [
+        "calibration-013-s0",
+        "calibration-013-s1"
+      ]
+    },
+    {
+      "case_id": "calibration-002",
+      "field": "mpn",
+      "decision": "suppress",
+      "reviewed_value": null,
+      "reference_value": null,
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "The 3789 value comes from the retailer's generic 'Référence' label, which is a store reference rather than a manufacturer part number, and no supported MPN appears in the snippets.",
+      "snippet_ids": [
+        "calibration-002-s0"
+      ]
+    },
+    {
+      "case_id": "calibration-005",
+      "field": "mpn",
+      "decision": "replace",
+      "reviewed_value": "20080131",
+      "reference_value": "20080131",
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "The page's explicit manufacturer-article-code field ('Codice articolo del produttore') gives 20080131, replacing the current code tsa4c.",
+      "snippet_ids": [
+        "calibration-005-s0"
+      ]
+    },
+    {
+      "case_id": "calibration-008",
+      "field": "mpn",
+      "decision": "replace",
+      "reviewed_value": "ar40110",
+      "reference_value": "ar40110",
+      "matches_previous_assistant_value": true,
+      "mechanical_errors": [],
+      "reason": "The product page's MPN field states AR-40-110, while the current 011838 is the retailer's product code carried in the URL.",
+      "snippet_ids": [
+        "calibration-008-s0",
+        "calibration-008-s1"
+      ]
+    },
+    {
+      "case_id": "calibration-011",
+      "field": "height",
+      "decision": "replace",
+      "reviewed_value": "985.5 mm",
+      "reference_value": "985.52 mm",
+      "matches_previous_assistant_value": false,
+      "mechanical_errors": [],
+      "reason": "The specs give an open (whole-item) height of 38.8 in, about 985.5 mm, whereas the current 444.5 mm matches the 17.5 in seat height.",
+      "snippet_ids": [
+        "calibration-011-s0",
+        "calibration-011-s1"
+      ]
+    }
+  ],
+  "agreement_count": 12,
+  "all_mechanical_checks_passed": true,
+  "not_human_gold_accuracy": true,
+  "no_dataset_application": true
+}

@@ -1,0 +1,102 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "build",
+  "permissions": [
+    {
+      "action": "*",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "instructions.txt",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/worker/instructions.txt",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "task.json",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/worker/task.json",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "page-00.json",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/worker/page-00.json",
+      "effect": "allow"
+    },
+    {
+      "action": "edit",
+      "resource": "result.json",
+      "effect": "allow"
+    },
+    {
+      "action": "edit",
+      "resource": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/worker/result.json",
+      "effect": "allow"
+    }
+  ],
+  "agents": {
+    "build": {
+      "permissions": [
+        {
+          "action": "*",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "read",
+          "resource": "instructions.txt",
+          "effect": "allow"
+        },
+        {
+          "action": "read",
+          "resource": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/worker/instructions.txt",
+          "effect": "allow"
+        },
+        {
+          "action": "read",
+          "resource": "task.json",
+          "effect": "allow"
+        },
+        {
+          "action": "read",
+          "resource": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/worker/task.json",
+          "effect": "allow"
+        },
+        {
+          "action": "read",
+          "resource": "page-00.json",
+          "effect": "allow"
+        },
+        {
+          "action": "read",
+          "resource": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/worker/page-00.json",
+          "effect": "allow"
+        },
+        {
+          "action": "edit",
+          "resource": "result.json",
+          "effect": "allow"
+        },
+        {
+          "action": "edit",
+          "resource": "/Users/soar/Projects/pcp-match/analysis/product-page-attributes-v1/mentat-workers-pilot-v1/guard-probe-v2/worker/result.json",
+          "effect": "allow"
+        }
+      ]
+    }
+  }
+}

@@ -17,6 +17,14 @@ export interface HarnessCapabilities {
   systemPrompt?: "replace" | "append" | "task-context";
   /** Naming of MCP tools exposed by this engine. */
   mcpToolNaming?: "bare" | "server-prefixed";
+  /** Native default-deny tools with exact file read/write exceptions. Not an OS sandbox. */
+  executionPolicy?: "file-allowlist";
+}
+
+export interface ExecutionPolicy {
+  kind: "file-allowlist";
+  readFiles: string[];
+  writeFiles: string[];
 }
 
 /** A stdio MCP server a session should connect to. */
@@ -37,6 +45,7 @@ export interface SessionOptions {
   systemPromptMode?: "replace" | "append";
   /** MCP servers the harness should connect for this session. */
   mcpServers?: McpServerSpec[];
+  executionPolicy?: ExecutionPolicy;
 }
 
 export interface UserInput {

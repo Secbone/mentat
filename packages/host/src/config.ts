@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { resolve } from "node:path";
+import { isAbsolute, relative, resolve, sep } from "node:path";
 import type { AssistantTools } from "@mentat/assistant";
 import type { McpServerSpec } from "@mentat/core";
 import type { HostConfig, HostOverrides } from "./host";
@@ -51,6 +51,40 @@ export function validateServerNames(
 }
 
 export function resolveHostPaths(config: HostConfig, overrides: HostOverrides): HostConfig {
+  if (
+    overrides.resultEvaluator &&
+    (!overrides.resultEvaluator.id?.trim() ||
+      typeof overrides.resultEvaluator.evaluate !== "function" ||
+      !Number.isSafeInteger(overrides.resultEvaluator.timeoutMs ?? 30000) ||
+      (overrides.resultEvaluator.timeoutMs ?? 30000) <= 0)
+  )
+    throw new Error("invalid result evaluator");
+  if (config.executionPolicy) {
+    if (config.adapter.capabilities().executionPolicy !== "file-allowlist")
+      throw new Error("harness cannot enforce execution policy");
+    if (
+      config.skillsPath ||
+      config.mcpServers?.length ||
+      config.history ||
+      config.nativeHistory ||
+      (config.memoryTools?.memory && config.memoryTools.memory !== "disabled")
+    )
+      throw new Error("restricted execution forbids memory, skills, history and MCP tools");
+    const root = resolve(config.cwd);
+    for (const [name, path] of [
+      ["logDir", config.logDir],
+      ["experienceDir", config.experienceDir],
+      ["memoryPath", config.memoryPath],
+    ] as const) {
+      if (!path && name !== "memoryPath")
+        throw new Error(`restricted execution requires external ${name}`);
+      if (path) {
+        const local = relative(root, resolve(path));
+        if (!isAbsolute(local) && local !== ".." && !local.startsWith(`..${sep}`))
+          throw new Error(`restricted execution requires external ${name}`);
+      }
+    }
+  }
   for (const scope of [config.scope, ...(config.sharedMemoryScopes ?? [])])
     if (
       scope !== undefined &&
@@ -86,6 +120,7 @@ export function resolveHostPaths(config: HostConfig, overrides: HostOverrides): 
     throw new Error("no model satisfies the configured selection policy");
   return {
     ...config,
+    ...(config.executionPolicy ? { memoryTools: { memory: "disabled" as const } } : {}),
     ...(selectedModel ? { model: selectedModel } : {}),
     cwd: resolve(config.cwd),
     ...(config.memoryPath ? { memoryPath: resolve(config.memoryPath) } : {}),

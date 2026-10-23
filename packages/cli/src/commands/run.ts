@@ -5,6 +5,7 @@ import type { TurnResult } from "@mentat/session";
 import { defaultExperienceDir, defaultMemoryPath } from "../lib/paths";
 import { createPermissionHandler, parsePermissionMode } from "../lib/permission";
 import { createDefaultRegistry } from "../lib/registry";
+import { prepareRunContract } from "../lib/run-contract";
 
 export async function runCommand(args: string[]): Promise<number> {
   let harnessId = "fake";
@@ -20,10 +21,22 @@ export async function runCommand(args: string[]): Promise<number> {
   let reflectAuto = false;
   let logDir: string | undefined;
   let timeoutMs = 120_000;
+  let policyFile: string | undefined;
+  let outputContractFile: string | undefined;
   const promptParts: string[] = [];
 
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
+    if (arg === "--execution-policy" || arg === "--output-contract") {
+      const value = args[++i];
+      if (!value || value.startsWith("--")) {
+        process.stderr.write(`${arg}: missing file\n`);
+        return 1;
+      }
+      if (arg === "--execution-policy") policyFile = value;
+      else outputContractFile = value;
+      continue;
+    }
     if (arg === "--log-protocol") continue;
     if (arg === "--log-dir") {
       logDir = args[++i];
@@ -132,6 +145,31 @@ export async function runCommand(args: string[]): Promise<number> {
   }
 
   const adapter = registry.get(harnessId);
+  let contract: ReturnType<typeof prepareRunContract> | undefined;
+  try {
+    if (policyFile && adapter.capabilities().executionPolicy !== "file-allowlist")
+      throw new Error("harness cannot enforce execution policy");
+    if (policyFile && (skillsPath || reflect || remember.length || (recallChars ?? 0) > 0))
+      throw new Error("restricted run forbids skills, reflection, remember and history recall");
+    if (policyFile || outputContractFile) {
+      contract = prepareRunContract(cwd, policyFile, outputContractFile);
+      cwd = contract.root;
+      if (policyFile) {
+        // Keep all host-owned state outside the worker; ignore no caller path silently.
+        if (args.some((arg) => ["--memory", "--experience", "--log-dir"].includes(arg)))
+          throw new Error(
+            "restricted run owns memory/experience/log paths; see printed control directory",
+          );
+        memoryPath = `${contract.control}/memory.json`;
+        experienceDir = `${contract.control}/experience`;
+        logDir = `${contract.control}/trace`;
+      }
+      process.stderr.write(`control: ${contract.control}\n`);
+    }
+  } catch (error) {
+    process.stderr.write(`run: ${String(error)}\n`);
+    return 1;
+  }
   const host = createAssistantHost(
     {
       cwd,
@@ -144,18 +182,37 @@ export async function runCommand(args: string[]): Promise<number> {
       logDir,
       timeoutMs,
       permissionMode: permission,
+      ...(contract?.policy
+        ? { executionPolicy: contract.policy, memoryTools: { memory: "disabled" as const } }
+        : {}),
       protocolLog: args.includes("--log-protocol"),
       reflectionAdapter: createDefaultRegistry("ask").get(harnessId),
       permission: createPermissionHandler(permission),
     },
-    { onDiagnostic: (d) => process.stderr.write(`[${d.code}] ${d.message}\n`) },
+    {
+      onDiagnostic: (d) => process.stderr.write(`[${d.code}] ${d.message}\n`),
+      ...(contract ? { resultEvaluator: contract.resultEvaluator } : {}),
+    },
   );
   process.stderr.write(`trace: ${host.logDir ?? host.traceId}\n`);
   try {
     const session = await host.open();
-    const { result, record } = await host.turn(session, prompt, { timeoutMs, onEvent: printEvent });
+    const taskInput = contract?.policy
+      ? {
+          text: prompt,
+          hostPolicy: `Restricted file task. Readable files: ${JSON.stringify(contract.policy.readFiles)}. Writable files: ${JSON.stringify(contract.policy.writeFiles)}. Other native tools are denied. Do not modify inputs or seek bypasses after denial. The host checks output files independently; do not read back a writable-only result.`,
+        }
+      : prompt;
+    const { result, record, acceptance } = await host.turn(session, taskInput, {
+      timeoutMs,
+      onEvent: printEvent,
+    });
     printResult(result);
     if (result.error) process.stderr.write(`${result.error}\n`);
+    if (acceptance)
+      process.stderr.write(
+        `acceptance: ${acceptance.status}${acceptance.evidence && typeof acceptance.evidence === "object" && !Array.isArray(acceptance.evidence) && typeof acceptance.evidence.coverage === "string" ? ` [${acceptance.evidence.coverage}]` : ""}${acceptance.issues.length ? ` (${acceptance.issues.join("; ")})` : ""}\n`,
+      );
     let added = 0;
     for (const fact of remember) {
       const saved = await host.remember(fact);
@@ -194,6 +251,8 @@ export async function runCommand(args: string[]): Promise<number> {
         }
       }
     }
+    if (acceptance && acceptance.status !== "not-evaluated")
+      return acceptance.status === "accepted" ? 0 : 2;
     return result.reason === "done" ? 0 : 1;
   } catch (error) {
     process.stderr.write(`${String(error)}\n`);

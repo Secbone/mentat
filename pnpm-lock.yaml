@@ -111,6 +111,9 @@ importers:
       '@mentat/evolution':
         specifier: workspace:*
         version: link:../evolution
+      ajv:
+        specifier: 8.20.0
+        version: 8.20.0
 
   packages/evolution:
     dependencies:
