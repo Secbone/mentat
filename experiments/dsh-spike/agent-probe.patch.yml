@@ -1,0 +1,3 @@
+- insert:
+    - id: agent-probe
+      name: 'file:///tmp/opencode/dsh-spike/agent-probe.js'

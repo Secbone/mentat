@@ -308,6 +308,7 @@ export class Engine {
     this.effects?.enqueue("launch", assignment.id, {
       assignment: assignment.id,
       ticket: ticketId,
+      prompt: trigger.text,
     });
     return decision;
   }

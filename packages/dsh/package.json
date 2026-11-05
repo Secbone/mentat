@@ -12,7 +12,11 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@mentat/domain": "workspace:*"
+    "@mentat/core": "workspace:*",
+    "@mentat/domain": "workspace:*",
+    "@mentat/effects": "workspace:*",
+    "@mentat/store": "workspace:*",
+    "@mentat/worker": "workspace:*"
   },
   "description": "Cordis plugin that hosts the Mentat control plane inside DeepSeek Harness"
 }

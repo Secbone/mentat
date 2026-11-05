@@ -1,11 +1,13 @@
-import type { Policy } from "@mentat/domain";
-import { Engine, InMemoryRepositories } from "@mentat/domain";
+import { join } from "node:path";
+import type { Decision, Trigger } from "@mentat/domain";
+import type { RouterAgentPort, RuntimeReceipt } from "./runtime";
+import type { MentatService } from "./service";
+import { createMentatService } from "./service";
 
-/**
- * The narrow DSH surface this plugin uses. Keeping it structural avoids
- * importing DSH packages into Mentat's typecheck while still matching the
- * Cordis plugin contract.
- */
+export type { RuntimeReceipt } from "./runtime";
+export type { MentatService } from "./service";
+
+/** The narrow DSH surface this plugin uses; no DSH package is imported. */
 export interface DshToolDefinition {
   name: string;
   description: string;
@@ -17,55 +19,198 @@ export interface DshToolDefinition {
   execute(args: unknown, exec: unknown): Promise<unknown>;
 }
 
+export interface DshAgentHandle {
+  agent: { id: string };
+  dispose(): Promise<void>;
+}
+
 export interface DshContext {
   provide(name: string, value: unknown): () => void;
   tools: { register(definition: DshToolDefinition): () => void };
+  agents?: {
+    create(options: {
+      sessionId: string;
+      meta?: { cwd?: string };
+      agentOptions?: { model?: string };
+    }): Promise<DshAgentHandle>;
+  };
+  logger?: { error?(message: string): void };
 }
 
-export interface MentatService {
-  engine: Engine;
-  repos: InMemoryRepositories;
+export interface MentatConfig {
+  dir?: string;
+  model?: string;
 }
-
-const POLICY: Policy = {
-  version: 1,
-  acceptMode: "off",
-  rules: [],
-  sources: {},
-};
 
 export const name = "mentat";
-export const inject = ["tools"];
+export const inject = ["tools", "agents"];
 
-/** Mount the Mentat control plane and its first status tool into DSH. */
-export function apply(ctx: DshContext): void {
-  const repos = new InMemoryRepositories();
-  const engine = new Engine({ repos, policy: () => POLICY });
-  const service: MentatService = { engine, repos };
+function text(value: unknown) {
+  return [{ type: "text" as const, text: JSON.stringify(value) }];
+}
+
+function objectSchema(properties: Record<string, unknown>, required: string[]) {
+  return { type: "object", properties, required, additionalProperties: false };
+}
+
+function routerAgents(ctx: DshContext): RouterAgentPort | undefined {
+  const agents = ctx.agents;
+  if (!agents) return undefined;
+  const handles = new Map<string, DshAgentHandle>();
+  return {
+    async create(options) {
+      const handle = await agents.create({
+        sessionId: options.sessionId,
+        meta: { cwd: options.cwd },
+        ...(options.model ? { agentOptions: { model: options.model } } : {}),
+      });
+      handles.set(handle.agent.id, handle);
+      return { sessionId: handle.agent.id };
+    },
+    async dispose(sessionId) {
+      const handle = handles.get(sessionId);
+      handles.delete(sessionId);
+      await handle?.dispose();
+    },
+  };
+}
+
+/** Mount the Mentat control plane, its Router session and its tools into DSH. */
+export function apply(ctx: DshContext, config: MentatConfig = {}): void {
+  const dir =
+    config.dir ?? process.env.MENTAT_STATE_DIR ?? join(process.cwd(), ".mentat", "superagent");
+  const agents = routerAgents(ctx);
+  const service: MentatService = createMentatService({
+    dir,
+    ...(agents ? { agents } : {}),
+    ...(config.model ? { model: config.model } : {}),
+  });
   ctx.provide("mentat", service);
+  if (process.env.MENTAT_DEBUG) console.error("[mentat] plugin loaded");
 
   ctx.tools.register({
     name: "mentat_status",
-    description: "Return Mentat's current ticket, thread and decision counts.",
+    description: "Return Mentat's ticket, thread, decision and Router counts.",
     parameters: {},
     output: {
-      schema: {
-        type: "object",
-        properties: {
+      schema: objectSchema(
+        {
           tickets: { type: "number" },
           threads: { type: "number" },
           decisions: { type: "number" },
+          router: { type: "string" },
         },
-        required: ["tickets", "threads", "decisions"],
-        additionalProperties: false,
-      },
-      render: (_args, value) => [{ type: "text", text: JSON.stringify(value) }],
+        ["tickets", "threads", "decisions", "router"],
+      ),
+      render: (_args, value) => text(value),
     },
     async execute() {
       return {
-        tickets: repos.tickets.list().length,
-        threads: repos.threads.list().length,
-        decisions: repos.decisions.list().length,
+        tickets: service.repos.tickets.list().length,
+        threads: service.repos.threads.list().length,
+        decisions: service.repos.decisions.list().length,
+        router: service.runtime.router ?? "",
+      };
+    },
+  });
+
+  ctx.tools.register({
+    name: "mentat_receive",
+    description: "Receive a local Trigger, start due Evals and run due effects.",
+    parameters: {
+      text: { type: "string", required: true, description: "Request text" },
+      thread: { type: "string", description: "Thread id; defaults to local" },
+      actor: { type: "string", description: "Sender id; defaults to local-user" },
+    },
+    output: {
+      schema: objectSchema({ stored: { type: "string" }, evals: { type: "number" } }, [
+        "stored",
+        "evals",
+      ]),
+      render: (_args, value) => text(value),
+    },
+    async execute(raw) {
+      const args = raw as { text: string; thread?: string; actor?: string };
+      const trigger: Trigger = {
+        id: `trigger-${crypto.randomUUID()}`,
+        source: "local",
+        thread: args.thread ?? "local",
+        actor: args.actor ?? "local-user",
+        bot: false,
+        addressed: "mention",
+        text: args.text,
+        at: new Date().toISOString(),
+        meta: { scope: "local" },
+      };
+      const stored = service.runtime.receive(trigger);
+      await service.runtime.evaluate();
+      return { stored, evals: service.repos.evals.list().length };
+    },
+  });
+
+  ctx.tools.register({
+    name: "mentat_dispatch",
+    description: "Accept one candidate and run its Assignment through the Worker.",
+    parameters: {
+      trigger: { type: "string", required: true, description: "Trigger id" },
+    },
+    output: {
+      schema: objectSchema(
+        { outcome: { type: "string" }, tickets: { type: "array", items: { type: "string" } } },
+        ["outcome", "tickets"],
+      ),
+      render: (_args, value) => text(value),
+    },
+    async execute(raw) {
+      const args = raw as { trigger: string };
+      const decision: Decision = await service.runtime.dispatch(args.trigger);
+      return {
+        outcome: decision.outcome,
+        tickets: service.repos.tickets.list().map((ticket) => ticket.id),
+      };
+    },
+  });
+
+  ctx.tools.register({
+    name: "mentat_run",
+    description: "Receive, evaluate and dispatch one local request end-to-end.",
+    parameters: {
+      text: { type: "string", required: true, description: "Request text" },
+    },
+    output: {
+      schema: objectSchema(
+        {
+          outcome: { type: "string" },
+          ticket: { type: "string" },
+          receipt: { type: "object" },
+        },
+        ["outcome", "ticket", "receipt"],
+      ),
+      render: (_args, value) => text(value),
+    },
+    async execute(raw) {
+      const args = raw as { text: string };
+      await service.runtime.startRouter();
+      const trigger: Trigger = {
+        id: `trigger-${crypto.randomUUID()}`,
+        source: "local",
+        thread: "local",
+        actor: "local-user",
+        bot: false,
+        addressed: "mention",
+        text: args.text,
+        at: new Date().toISOString(),
+        meta: { scope: "local" },
+      };
+      service.runtime.receive(trigger);
+      await service.runtime.evaluate();
+      const decision = await service.runtime.dispatch(trigger.id);
+      const ticket = service.repos.tickets.list().at(-1);
+      const receipt: RuntimeReceipt | undefined = service.runtime.lastReceipt;
+      return {
+        outcome: decision.outcome,
+        ticket: ticket?.id ?? "",
+        receipt: receipt ?? {},
       };
     },
   });

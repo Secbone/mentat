@@ -2,13 +2,30 @@
 
 Cordis plugin that hosts the Mentat control plane inside DeepSeek Harness.
 
-This is the first vertical slice: it provides a `mentat` service and a
-`mentat_status` tool, backed by in-memory repositories. Persistence, the
-Router/Worker loop and the panel land in later slices.
+## Surface
 
-## Mount in DSH
+- service `mentat`: `{ runtime, repos, queue, receipts }`
+- tools:
+  - `mentat_status` — ticket/thread/decision counts and the Router session
+  - `mentat_receive` — receive a local Trigger, start due Evals, run due effects
+  - `mentat_dispatch` — accept one candidate and run its Assignment
+  - `mentat_run` — receive → evaluate → dispatch one local request end-to-end
 
-Build the workspace package, then insert it through a profile patch:
+`mentat_run` starts the Router lazily. The DSH agent factory is registered by
+`dsh-agent-loop` after plugin startup, so creating an Agent in `apply()` races
+the factory; the first tool call is safe. The plugin injects both `tools` and
+`agents`.
+
+## State
+
+`MENTAT_STATE_DIR` selects the state directory (default
+`<cwd>/.mentat/superagent`):
+
+- `state/state.json` — control-plane records
+- `effects.json` — durable effects
+- `receipts.jsonl` — one Assignment receipt per line
+
+## Mount
 
 ```yaml
 - insert:
@@ -16,21 +33,8 @@ Build the workspace package, then insert it through a profile patch:
       name: '@mentat/dsh'
 ```
 
-Or use a local path while developing:
+The spike in `experiments/dsh-spike` validates the same mounting path and
+`ctx.agents.create` on DSH `0.2.1-rc.5`.
 
-```yaml
-- insert:
-    - id: mentat
-      name: 'file:///absolute/path/to/packages/dsh/src/index.ts'
-```
-
-DSH loads TypeScript plugin entries through its runtime; the spike in
-`experiments/dsh-spike` validates the same mounting path on DSH `0.2.1-rc.5`.
-
-## Surface
-
-- service `mentat`: `{ engine, repos }`
-- tool `mentat_status`: current ticket/thread/decision counts
-
-The engine is the single writer of Triggers, Threads, Evals, Decisions,
-Tickets and Assignments. See `docs/research/mentat-on-dsh-2026-11-05.md`.
+The default Worker is `FakeWorker`; a real OpenCode/Pi Worker is injected by
+the runtime composition when configured.

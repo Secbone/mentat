@@ -107,9 +107,21 @@ importers:
 
   packages/dsh:
     dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
       '@mentat/domain':
         specifier: workspace:*
         version: link:../domain
+      '@mentat/effects':
+        specifier: workspace:*
+        version: link:../effects
+      '@mentat/store':
+        specifier: workspace:*
+        version: link:../store
+      '@mentat/worker':
+        specifier: workspace:*
+        version: link:../worker
 
   packages/effects:
     dependencies:

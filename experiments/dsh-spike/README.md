@@ -29,3 +29,21 @@ unless a provider key is configured; the spike logs appear before that failure:
 ```
 
 Verified on DSH `0.2.1-rc.5`, Node `26.8.1`, 2026-11-05.
+
+## Agent factory probe
+
+`agent-probe.js` verifies that `ctx.agents.create` works in the same profile
+without making a model call. The factory is registered by `dsh-agent-loop`
+after startup, so a plugin must not create an Agent in `apply()`; defer it to
+the first tool call or a later tick.
+
+```bash
+dsh headless --patch experiments/dsh-spike/agent-probe.patch.yml "say hi"
+```
+
+Observed on DSH `0.2.1-rc.5`:
+
+```text
+[agent-probe] created probe-session-1
+[agent-probe] disposed
+```
