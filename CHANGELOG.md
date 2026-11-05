@@ -6,6 +6,11 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
 
 ## Unreleased
 
+### Docs
+- Add ADR-0007 and `docs/research/mentat-on-dsh-2026-11-05.md`: Mentat as a
+  DSH-hosted product with a Router/Worker control plane, heterogeneous workers
+  and a versioned Capability Pack for self-evolution.
+
 ### Added
 - Artifact identity/adapters refactor (ADR-0006): `ArtifactRef`, `Artifact`,
   `ArtifactAdapter`, `ArtifactRegistry`, canonical-JSON `Digest`, and
