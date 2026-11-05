@@ -51,8 +51,12 @@ export interface Thread {
   id: ThreadId;
   source: SourceId;
   triggers: TriggerId[];
+  /** Triggers waiting for the next Eval on this Thread. */
+  pending: TriggerId[];
   subscriptions: TicketId[];
   activeEval?: EvalId;
+  /** Consecutive Evals that expired without a decision. */
+  expired?: number;
 }
 
 /** Why an Eval or a Decision reached its result. */
@@ -70,7 +74,9 @@ export interface Eval {
   triggers: TriggerId[];
   policyVersion: number;
   startedAt: string;
+  /** Starts counting when the candidate reaches the Router. */
   deadlineAt: string;
+  deliveredAt?: string;
 }
 
 export interface Decision {
@@ -80,6 +86,7 @@ export interface Decision {
   strength: Strength;
   reasons: Reason[];
   at: string;
+  dismissedAt?: string;
 }
 
 /** Why work may be done, how far, and under which Policy version. */
@@ -170,6 +177,16 @@ export interface Channel {
   source: SourceId;
   thread: ThreadId;
   address: string;
+}
+
+/** A message the Router asks a Channel to send. */
+export interface ReplyRequest {
+  id: string;
+  purpose: "acknowledgement" | "answer" | "result" | "attention";
+  ticket?: TicketId;
+  channel: ChannelId;
+  text: string;
+  at: string;
 }
 
 /** One receiving scope's admission table. */
