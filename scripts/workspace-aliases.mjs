@@ -33,6 +33,7 @@ export const workspaceAliases = {
   "@mentat/models": resolve("packages/models/src/index.ts"),
   "@mentat/skills": resolve("packages/skills/src/index.ts"),
   "@mentat/worker": resolve("packages/worker/src/index.ts"),
+  "@mentat/panel": resolve("packages/panel/src/index.ts"),
   "@mentat/store": resolve("packages/store/src/index.ts"),
   "@mentat/core": resolve("packages/core/src/index.ts"),
   "@mentat/host": resolve("packages/host/src/index.ts"),

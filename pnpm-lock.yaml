@@ -119,6 +119,9 @@ importers:
       '@mentat/pack':
         specifier: workspace:*
         version: link:../pack
+      '@mentat/panel':
+        specifier: workspace:*
+        version: link:../panel
       '@mentat/source-github':
         specifier: workspace:*
         version: link:../source-github
@@ -297,6 +300,12 @@ importers:
       '@mentat/core':
         specifier: workspace:*
         version: link:../core
+
+  packages/panel:
+    dependencies:
+      '@mentat/domain':
+        specifier: workspace:*
+        version: link:../domain
 
   packages/session:
     dependencies:

@@ -89,6 +89,9 @@
       "@mentat/worker": [
         "packages/worker/src/index.ts"
       ],
+      "@mentat/panel": [
+        "packages/panel/src/index.ts"
+      ],
       "@mentat/store": [
         "packages/store/src/index.ts"
       ],

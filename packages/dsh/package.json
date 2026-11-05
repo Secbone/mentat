@@ -16,6 +16,7 @@
     "@mentat/domain": "workspace:*",
     "@mentat/effects": "workspace:*",
     "@mentat/pack": "workspace:*",
+    "@mentat/panel": "workspace:*",
     "@mentat/source-github": "workspace:*",
     "@mentat/store": "workspace:*",
     "@mentat/worker": "workspace:*"

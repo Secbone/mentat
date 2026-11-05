@@ -9,6 +9,7 @@ Cordis plugin that hosts the Mentat control plane inside DeepSeek Harness.
   - `mentat_status` — ticket/thread/decision counts and the Router session
   - `mentat_receive` — receive a local Trigger, start due Evals, run due effects
   - `mentat_dispatch` — accept one candidate and run its Assignment
+  - `mentat_overview` — person-blocked Tickets, open work, assignments and decisions
   - `mentat_poll` — poll the configured Source now
   - `mentat_run` — receive → evaluate → dispatch one local request end-to-end
 

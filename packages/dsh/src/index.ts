@@ -1,5 +1,6 @@
 import { join } from "node:path";
 import type { Decision, Trigger } from "@mentat/domain";
+import { buildOverview } from "@mentat/panel";
 import { FileSourceState, GhCliGitHubApi, GitHubSource } from "@mentat/source-github";
 import type { RouterAgentPort, RuntimeReceipt } from "./runtime";
 import type { MentatService } from "./service";
@@ -200,6 +201,20 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
         outcome: decision.outcome,
         tickets: service.repos.tickets.list().map((ticket) => ticket.id),
       };
+    },
+  });
+
+  ctx.tools.register({
+    name: "mentat_overview",
+    description:
+      "Return the panel overview: person-blocked Tickets, open work, assignments and decisions.",
+    parameters: {},
+    output: {
+      schema: objectSchema({ overview: { type: "object" } }, ["overview"]),
+      render: (_args, value) => text(value),
+    },
+    async execute() {
+      return { overview: buildOverview(service.repos) };
     },
   });
 

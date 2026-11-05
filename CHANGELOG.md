@@ -12,6 +12,9 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `@mentat/panel`: read-only overview projection (`needsPerson`, open/ended
+  Tickets, assignments, decisions) and a terminal renderer; exposed through
+  `mentat_overview`.
 - `@mentat/dsh`: mount `GitHubSource` with a `SourcePoller` driven by
   `MENTAT_GITHUB_REPO`/`MENTAT_GITHUB_AGENT`, plus a `mentat_poll` tool.
 - `@mentat/source-github`: `GitHubSource` for Issue/PR/review/comment/CI
