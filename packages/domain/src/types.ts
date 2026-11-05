@@ -179,6 +179,11 @@ export interface Channel {
   address: string;
 }
 
+/** A port the Engine uses to enqueue durable external work. */
+export interface EffectPort {
+  enqueue(kind: string, key: string, payload: unknown): void;
+}
+
 /** A message the Router asks a Channel to send. */
 export interface ReplyRequest {
   id: string;

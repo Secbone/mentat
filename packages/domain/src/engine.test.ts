@@ -3,7 +3,7 @@ import { Engine } from "./engine";
 import { defaultAdmissionRow } from "./policy";
 import { InMemoryRepositories } from "./repositories";
 import { ticketStage } from "./stage";
-import type { Policy, Report, Trigger } from "./types";
+import type { EffectPort, Policy, Report, Trigger } from "./types";
 
 function policy(overrides: Partial<Policy> = {}): Policy {
   return {
@@ -32,7 +32,7 @@ function trigger(id: string, overrides: Partial<Trigger> = {}): Trigger {
   };
 }
 
-function setup(initial: Policy = policy()) {
+function setup(initial: Policy = policy(), effects?: EffectPort) {
   const repos = new InMemoryRepositories();
   let current = initial;
   let now = new Date("2026-11-05T00:00:00.000Z");
@@ -41,6 +41,7 @@ function setup(initial: Policy = policy()) {
     policy: () => current,
     now: () => now,
     evalTimeoutMs: 1000,
+    ...(effects ? { effects } : {}),
   });
   return {
     repos,
@@ -190,6 +191,39 @@ describe("Engine", () => {
     ctx.setPolicy(stricter);
     ctx.engine.policyChanged();
     expect(ctx.repos.mandates.get(ctx.ticket.mandate)?.withdrawnAt).toBeDefined();
+  });
+
+  it("enqueues launch, notice and reply effects", () => {
+    const effects: Array<{ kind: string; key: string; payload: unknown }> = [];
+    const ctx = setup(policy(), {
+      enqueue(kind, key, payload) {
+        effects.push({ kind, key, payload });
+      },
+    });
+    ctx.engine.receive(trigger("t1"));
+    ctx.engine.evaluateDue();
+    ctx.engine.candidateDelivered(candidate(ctx.engine, "t1").eval.id);
+    ctx.engine.decide("t1", "accept");
+    expect(effects[0]).toMatchObject({ kind: "launch" });
+
+    ctx.engine.reply({
+      id: "reply-1",
+      channel: "github:1",
+      purpose: "answer",
+      text: "done",
+      at: "2026-11-05T00:00:00.000Z",
+    });
+    expect(effects.at(-1)).toMatchObject({ kind: "reply", key: "reply-1" });
+
+    const ticket = ctx.repos.tickets.list()[0];
+    if (!ticket) throw new Error("no ticket");
+    ctx.engine.report(ticket.id, {
+      kind: "blocked",
+      summary: "need input",
+      question: "which branch?",
+      at: "2026-11-05T00:01:00.000Z",
+    });
+    expect(effects.at(-1)).toMatchObject({ kind: "notice", key: ticket.id });
   });
 
   it("unsubscribes every Ticket from a Thread", () => {

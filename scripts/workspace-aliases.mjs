@@ -23,6 +23,7 @@ export const workspaceAliases = {
   "@mentat/evolution": resolve("packages/evolution/src/index.ts"),
   "@mentat/harnesses": resolve("packages/harnesses/src/index.ts"),
   "@mentat/workspace": resolve("packages/workspace/src/index.ts"),
+  "@mentat/effects": resolve("packages/effects/src/index.ts"),
   "@mentat/session": resolve("packages/session/src/index.ts"),
   "@mentat/domain": resolve("packages/domain/src/index.ts"),
   "@mentat/kernel": resolve("packages/kernel/src/index.ts"),

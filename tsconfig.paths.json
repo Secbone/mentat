@@ -59,6 +59,9 @@
       "@mentat/workspace": [
         "packages/workspace/src/index.ts"
       ],
+      "@mentat/effects": [
+        "packages/effects/src/index.ts"
+      ],
       "@mentat/session": [
         "packages/session/src/index.ts"
       ],

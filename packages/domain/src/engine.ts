@@ -5,6 +5,7 @@ import type {
   Assignment,
   Decision,
   DecisionOutcome,
+  EffectPort,
   Eval,
   Input,
   Mandate,
@@ -30,6 +31,7 @@ export interface EngineOptions {
    */
   id?: (prefix: string) => string;
   evalTimeoutMs?: number;
+  effects?: EffectPort;
 }
 
 export type ReceiveResult = "stored" | "duplicate" | "filtered";
@@ -67,6 +69,7 @@ export class Engine {
   private readonly clock: () => Date;
   private readonly nextId: (prefix: string) => string;
   private readonly evalTimeoutMs: number;
+  private readonly effects?: EffectPort;
   private counter = 0;
 
   constructor(options: EngineOptions) {
@@ -80,6 +83,7 @@ export class Engine {
         return `${prefix}-${this.counter}`;
       });
     this.evalTimeoutMs = options.evalTimeoutMs ?? 15 * 60 * 1000;
+    if (options.effects) this.effects = options.effects;
   }
 
   private at(): string {
@@ -301,6 +305,10 @@ export class Engine {
     this.repos.tickets.save(ticket);
     view.thread.subscriptions.push(ticketId);
     this.repos.threads.save(view.thread);
+    this.effects?.enqueue("launch", assignment.id, {
+      assignment: assignment.id,
+      ticket: ticketId,
+    });
     return decision;
   }
 
@@ -386,8 +394,13 @@ export class Engine {
     const ticket = this.repos.tickets.get(ticketId);
     if (!ticket) throw new Error("ticket not found");
     ticket.latestReport = report.kind;
-    if (report.question) ticket.attention = { question: report.question, at: report.at };
-    else delete ticket.attention;
+    if (report.question) {
+      ticket.attention = { question: report.question, at: report.at };
+      this.effects?.enqueue("notice", ticketId, {
+        ticket: ticketId,
+        question: report.question,
+      });
+    } else delete ticket.attention;
     if (report.kind === "dropped") {
       ticket.endedAt = report.at;
       ticket.outcome = "dropped";
@@ -484,6 +497,7 @@ export class Engine {
 
   reply(request: ReplyRequest): void {
     this.repos.replies.save(request);
+    this.effects?.enqueue("reply", request.id, { reply: request.id });
   }
 
   unsubscribe(threadId: string): void {

@@ -111,6 +111,15 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/effects:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/storage-file':
+        specifier: workspace:*
+        version: link:../storage-file
+
   packages/evaluation:
     dependencies:
       '@mentat/core':
