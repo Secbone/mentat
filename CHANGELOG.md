@@ -12,6 +12,9 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `@mentat/evolve`: Dream/Evolution loop with versioned pack candidates,
+  injected evaluation, gate chain, Pareto acceptance, JSON pack archive and a
+  durable `dream` effect on `@mentat/effects`.
 - `@mentat/pack`: versioned `CapabilityPack` contract with content addressing.
   `MentatRuntime` attaches its digest to Assignments and receipts;
   `HarnessWorker` injects prompt/model/MCP/executionPolicy and rejects

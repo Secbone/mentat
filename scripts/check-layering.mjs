@@ -23,6 +23,7 @@ export const ALLOWED_WORKSPACE_DEPS = {
   ],
   "@mentat/effects": ["@mentat/core", "@mentat/storage-file"],
   "@mentat/pack": ["@mentat/core"],
+  "@mentat/evolve": ["@mentat/core", "@mentat/effects", "@mentat/pack", "@mentat/storage-file"],
   "@mentat/store": ["@mentat/domain", "@mentat/storage-file"],
   "@mentat/worker": ["@mentat/core", "@mentat/domain", "@mentat/pack", "@mentat/session"],
   "@mentat/benchmark": [],

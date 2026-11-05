@@ -68,6 +68,9 @@
       "@mentat/domain": [
         "packages/domain/src/index.ts"
       ],
+      "@mentat/evolve": [
+        "packages/evolve/src/index.ts"
+      ],
       "@mentat/kernel": [
         "packages/kernel/src/index.ts"
       ],

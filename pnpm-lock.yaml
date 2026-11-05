@@ -156,6 +156,21 @@ importers:
         specifier: workspace:*
         version: link:../kernel
 
+  packages/evolve:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/effects':
+        specifier: workspace:*
+        version: link:../effects
+      '@mentat/pack':
+        specifier: workspace:*
+        version: link:../pack
+      '@mentat/storage-file':
+        specifier: workspace:*
+        version: link:../storage-file
+
   packages/harnesses:
     dependencies:
       '@mentat/core':
