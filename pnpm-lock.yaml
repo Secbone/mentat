@@ -103,6 +103,8 @@ importers:
 
   packages/core: {}
 
+  packages/domain: {}
+
   packages/evaluation:
     dependencies:
       '@mentat/core':

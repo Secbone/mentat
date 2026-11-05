@@ -24,6 +24,7 @@ export const workspaceAliases = {
   "@mentat/harnesses": resolve("packages/harnesses/src/index.ts"),
   "@mentat/workspace": resolve("packages/workspace/src/index.ts"),
   "@mentat/session": resolve("packages/session/src/index.ts"),
+  "@mentat/domain": resolve("packages/domain/src/index.ts"),
   "@mentat/kernel": resolve("packages/kernel/src/index.ts"),
   "@mentat/memory": resolve("packages/memory/src/index.ts"),
   "@mentat/models": resolve("packages/models/src/index.ts"),

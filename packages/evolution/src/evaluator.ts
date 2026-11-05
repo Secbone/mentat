@@ -1,10 +1,4 @@
-import {
-  type ArtifactHost,
-  type ArtifactRegistry,
-  createArtifactRegistry,
-  type Disposable,
-  type Signal,
-} from "@mentat/core";
+import type { ArtifactHost, ArtifactRegistry, Disposable, Signal } from "@mentat/core";
 import { Context } from "@mentat/kernel";
 import { validateSignals } from "./pareto";
 import type { Candidate } from "./types";

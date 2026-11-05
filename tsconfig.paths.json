@@ -62,6 +62,9 @@
       "@mentat/session": [
         "packages/session/src/index.ts"
       ],
+      "@mentat/domain": [
+        "packages/domain/src/index.ts"
+      ],
       "@mentat/kernel": [
         "packages/kernel/src/index.ts"
       ],
