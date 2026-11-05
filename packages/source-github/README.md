@@ -16,3 +16,14 @@ GitHub repository events as a Mentat `SourceKind`.
 
 GitHub notifications are not used: repository events carry the actor and the
 payload needed for gate/assessment. A 404/410 on a comment settles as `gone`.
+
+## Real smoke
+
+With `gh auth login`:
+
+```bash
+pnpm exec tsx scripts/github-source-smoke.ts
+```
+
+It reads a public repository, maps real events, checks that the second poll
+replays nothing, and checks a 404 comment as `gone` without writing anything.

@@ -12,6 +12,8 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `scripts/github-source-smoke.ts`: real `gh` auth/network smoke for the
+  GitHub Source (manual; not run in `pnpm check`).
 - `@mentat/dsh/panel`: server-rendered `/mentat` panel with overview and
   immediate Source poll, mounted only in web profiles.
 - `@mentat/panel`: read-only overview projection (`needsPerson`, open/ended
