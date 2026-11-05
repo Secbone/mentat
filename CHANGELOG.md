@@ -12,6 +12,8 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `@mentat/dsh/panel`: server-rendered `/mentat` panel with overview and
+  immediate Source poll, mounted only in web profiles.
 - `@mentat/panel`: read-only overview projection (`needsPerson`, open/ended
   Tickets, assignments, decisions) and a terminal renderer; exposed through
   `mentat_overview`.

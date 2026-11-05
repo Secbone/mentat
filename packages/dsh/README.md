@@ -39,6 +39,24 @@ MENTAT_GITHUB_POLL_MS=60000   # optional
 `<state>/github-state.json`. `SourcePoller` starts with the plugin and is
 stopped by the plugin effect. `mentat_poll` triggers one immediate poll.
 
+## Panel
+
+The panel is a second plugin entry so headless profiles do not require a web
+server. Mount both rows in a web profile:
+
+```yaml
+- insert:
+    - id: mentat
+      name: '@mentat/dsh'
+    - id: mentat-panel
+      name: '@mentat/dsh/panel'
+```
+
+Open `http://127.0.0.1:3080/mentat`. The page reads `/mentat/overview` (the
+same projection as `mentat_overview`) and posts `/mentat/poll` for an immediate
+Source poll. It is intentionally server-rendered and dependency-free; a DSH
+client-shell page can replace it later without changing the data contract.
+
 ## State
 
 `MENTAT_STATE_DIR` selects the state directory (default
