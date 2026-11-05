@@ -17,6 +17,9 @@
       "@mentat/observability": [
         "packages/observability/src/index.ts"
       ],
+      "@mentat/source-github": [
+        "packages/source-github/src/index.ts"
+      ],
       "@mentat/transport-acp": [
         "packages/transport-acp/src/index.ts"
       ],

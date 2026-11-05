@@ -9,6 +9,7 @@ export const workspaceAliases = {
   "@mentat/memory-evolution": resolve("packages/memory-evolution/src/index.ts"),
   "@mentat/benchmark-file": resolve("packages/benchmark-file/src/index.ts"),
   "@mentat/observability": resolve("packages/observability/src/index.ts"),
+  "@mentat/source-github": resolve("packages/source-github/src/index.ts"),
   "@mentat/transport-acp": resolve("packages/transport-acp/src/index.ts"),
   "@mentat/core/testing": resolve("packages/core/src/testing/contract.ts"),
   "@mentat/storage-file": resolve("packages/storage-file/src/index.ts"),

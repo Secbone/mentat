@@ -8,6 +8,7 @@ import type {
   SessionHandle,
   SessionOptions,
 } from "@mentat/core";
+import type { SourceKind } from "@mentat/domain";
 import { defineCapabilityPack } from "@mentat/pack";
 import { FileRepositories } from "@mentat/store";
 import { HarnessWorker } from "@mentat/worker";
@@ -144,5 +145,33 @@ describe("MentatRuntime vertical slice", () => {
 
     await service.runtime.dispose();
     expect(agents.disposed).toEqual([routerSession]);
+  });
+
+  it("polls a Source into the Engine", async () => {
+    const service = createMentatService({
+      dir: mkdtempSync(join(tmpdir(), "mentat-runtime-source-")),
+    });
+    const source: SourceKind = {
+      id: "fake",
+      label: "Fake",
+      async poll() {
+        return [
+          {
+            id: "s1",
+            source: "fake",
+            thread: "thread-s",
+            actor: "local-user",
+            bot: false,
+            addressed: "mention",
+            text: "from a source",
+            at: "2026-11-06T00:00:00.000Z",
+            meta: { scope: "local" },
+          },
+        ];
+      },
+    };
+    expect(await service.runtime.pollSource(source)).toBe(1);
+    expect(service.repos.triggers.list()).toHaveLength(1);
+    await service.runtime.dispose();
   });
 });

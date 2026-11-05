@@ -12,6 +12,9 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `@mentat/source-github`: `GitHubSource` for Issue/PR/review/comment/CI
+  Triggers, persisted read positions, and an `OutboxTransport` Channel over
+  `gh api`.
 - `@mentat/evolve`: Dream/Evolution loop with versioned pack candidates,
   injected evaluation, gate chain, Pareto acceptance, JSON pack archive and a
   durable `dream` effect on `@mentat/effects`.

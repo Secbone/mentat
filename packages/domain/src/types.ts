@@ -179,6 +179,19 @@ export interface Channel {
   address: string;
 }
 
+/** Durable read position and source-owned metadata. */
+export interface SourceState {
+  get<T>(key: string): T | undefined;
+  set(key: string, value: unknown): void;
+}
+
+/** A stream of events. Implementations own polling and translation. */
+export interface SourceKind {
+  readonly id: string;
+  readonly label: string;
+  poll(): Promise<Trigger[]>;
+}
+
 /** A port the Engine uses to enqueue durable external work. */
 export interface EffectPort {
   enqueue(kind: string, key: string, payload: unknown): void;

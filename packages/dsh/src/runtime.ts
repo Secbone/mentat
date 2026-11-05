@@ -4,6 +4,7 @@ import {
   Engine,
   type Policy,
   type Repositories,
+  type SourceKind,
   type Trigger,
 } from "@mentat/domain";
 import type { EffectQueue } from "@mentat/effects";
@@ -145,6 +146,14 @@ export class MentatRuntime {
 
   receive(trigger: Trigger): "stored" | "duplicate" | "filtered" {
     return this.engine.receive(trigger);
+  }
+
+  /** Poll one Source, receive its Triggers and run due Evals/effects. */
+  async pollSource(source: SourceKind): Promise<number> {
+    const triggers = await source.poll();
+    for (const trigger of triggers) this.receive(trigger);
+    if (triggers.length > 0) await this.evaluate();
+    return triggers.length;
   }
 
   /** Start due Evals and run every due effect. */
