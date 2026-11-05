@@ -18,6 +18,7 @@ export const ALLOWED_WORKSPACE_DEPS = {
     "@mentat/core",
     "@mentat/domain",
     "@mentat/effects",
+    "@mentat/evolve",
     "@mentat/pack",
     "@mentat/panel",
     "@mentat/source-github",

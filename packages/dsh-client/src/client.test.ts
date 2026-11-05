@@ -29,22 +29,43 @@ describe("Mentat client plugin", () => {
       if (name === "react") return react;
       throw new Error(`unexpected module ${name}`);
     });
-    const registered: Array<{ name?: string; id?: string; order?: number; label?: string }> = [];
+    const registered: Array<{
+      name?: string;
+      id?: string;
+      order?: number;
+      label?: () => string;
+    }> = [];
+    const dictionaries: string[] = [];
+    const t = (key: string) => key;
     module.apply({
+      effect: (setup: () => () => void) => setup(),
+      locale: {
+        register: (namespace: string) => {
+          dictionaries.push(namespace);
+          return () => {};
+        },
+        bind: () => t,
+      },
       slots: {
         inject: (_name: string, callback: () => unknown) => callback(),
-        register: (definition: { name?: string; id?: string; order?: number; label?: string }) => {
+        register: (definition: {
+          name?: string;
+          id?: string;
+          order?: number;
+          label?: () => string;
+        }) => {
           registered.push(definition);
           return () => {};
         },
       },
     });
     expect(entry.id).toBe("@mentat/dsh-client");
+    expect(dictionaries).toEqual(["mentat"]);
     expect(registered[0]).toMatchObject({
       name: "settings.section",
       id: "mentat",
       order: 80,
-      label: "Mentat",
     });
+    expect(registered[0]?.label?.()).toBe("nav");
   });
 });

@@ -116,6 +116,9 @@ importers:
       '@mentat/effects':
         specifier: workspace:*
         version: link:../effects
+      '@mentat/evolve':
+        specifier: workspace:*
+        version: link:../evolve
       '@mentat/pack':
         specifier: workspace:*
         version: link:../pack

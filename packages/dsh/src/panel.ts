@@ -140,7 +140,19 @@ export function apply(ctx: PanelContext): void {
   const disposeOverview = ctx.webServer.register({
     kind: "exact",
     path: "/mentat/overview",
-    handler: (_req, res) => sendJson(res, buildOverview(ctx.mentat.repos)),
+    handler: (_req, res) =>
+      sendJson(
+        res,
+        buildOverview(ctx.mentat.repos, {
+          evolution: ctx.mentat.packs.list().map((candidate) => ({
+            id: candidate.id,
+            status: candidate.status,
+            version: candidate.pack.version,
+            digest: candidate.pack.digest,
+            ...(candidate.reason ? { reason: candidate.reason } : {}),
+          })),
+        }),
+      ),
   });
   const disposePoll = ctx.webServer.register({
     kind: "exact",

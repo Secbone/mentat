@@ -25,6 +25,14 @@ export interface AssignmentView {
   packDigest: string;
 }
 
+export interface EvolutionView {
+  id: string;
+  status: string;
+  version: number;
+  digest: string;
+  reason?: string;
+}
+
 export interface Overview {
   generatedAt: string;
   counts: {
@@ -38,6 +46,7 @@ export interface Overview {
   open: TicketView[];
   ended: TicketView[];
   assignments: AssignmentView[];
+  evolution: EvolutionView[];
   decisions: Record<DecisionOutcome, number>;
 }
 
@@ -64,7 +73,10 @@ function view(ticket: Ticket, repos: Repositories): TicketView {
  * Read-only projection for the panel: what needs a person first, then open
  * work, then history. No writes, no timers.
  */
-export function buildOverview(repos: Repositories, options: { now?: () => Date } = {}): Overview {
+export function buildOverview(
+  repos: Repositories,
+  options: { now?: () => Date; evolution?: EvolutionView[] } = {},
+): Overview {
   const tickets = repos.tickets.list().map((ticket) => view(ticket, repos));
   const decisions: Record<DecisionOutcome, number> = {
     accept: 0,
@@ -95,6 +107,7 @@ export function buildOverview(repos: Repositories, options: { now?: () => Date }
       state: assignment.state,
       packDigest: assignment.packDigest,
     })),
+    evolution: options.evolution ?? [],
     decisions,
   };
 }
@@ -113,6 +126,9 @@ export function renderOverviewText(overview: Overview): string {
   for (const ticket of overview.open) {
     lines.push(`  - ${ticket.id}  ${ticket.stage}  ${ticket.latestReport ?? ""}`.trimEnd());
   }
+  lines.push(
+    `assignments: ${overview.assignments.length}  evolution: ${overview.evolution.length}`,
+  );
   lines.push(
     `decisions: accept=${overview.decisions.accept} stop=${overview.decisions.stop} ignore=${overview.decisions.ignore} unavailable=${overview.decisions.unavailable}`,
   );

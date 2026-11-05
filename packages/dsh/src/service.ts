@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import type { Policy, SourceKind } from "@mentat/domain";
 import { EffectQueue } from "@mentat/effects";
+import { PackArchive } from "@mentat/evolve";
 import type { CapabilityPack } from "@mentat/pack";
 import { FileRepositories } from "@mentat/store";
 import type { WorkerAdapter } from "@mentat/worker";
@@ -14,6 +15,7 @@ export interface MentatServiceOptions {
   worker?: WorkerAdapter;
   agents?: RouterAgentPort;
   receipts?: ReceiptSink;
+  packs?: PackArchive;
   policy?: Policy;
   model?: string;
   systemPrompt?: string;
@@ -29,6 +31,7 @@ export interface MentatService {
   repos: FileRepositories;
   queue: EffectQueue;
   receipts: ReceiptSink;
+  packs: PackArchive;
   poller?: SourcePoller;
 }
 
@@ -54,6 +57,7 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
   const repos = new FileRepositories(join(options.dir, "state"));
   const queue = new EffectQueue({ path: join(options.dir, "effects.json") });
   const receipts = options.receipts ?? new FileReceiptSink(join(options.dir, "receipts.jsonl"));
+  const packs = options.packs ?? new PackArchive(join(options.dir, "packs.json"));
   const runtime = new MentatRuntime({
     repos,
     queue,
@@ -75,5 +79,5 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
         ...(options.onPollError ? { onError: options.onPollError } : {}),
       })
     : undefined;
-  return { runtime, repos, queue, receipts, ...(poller ? { poller } : {}) };
+  return { runtime, repos, queue, receipts, packs, ...(poller ? { poller } : {}) };
 }

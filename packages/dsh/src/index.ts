@@ -214,7 +214,17 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
       render: (_args, value) => text(value),
     },
     async execute() {
-      return { overview: buildOverview(service.repos) };
+      return {
+        overview: buildOverview(service.repos, {
+          evolution: service.packs.list().map((candidate) => ({
+            id: candidate.id,
+            status: candidate.status,
+            version: candidate.pack.version,
+            digest: candidate.pack.digest,
+            ...(candidate.reason ? { reason: candidate.reason } : {}),
+          })),
+        }),
+      };
     },
   });
 

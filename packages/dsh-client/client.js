@@ -5,6 +5,44 @@ window.__ModuleLoader__.load({
     const exports = module.exports;
     const React = require("react");
 
+    const EN = {
+      nav: "Mentat",
+      refresh: "Refresh",
+      poll: "Poll source",
+      needs: "Needs a person",
+      open: "Open",
+      assignments: "Assignments",
+      evolution: "Evolution",
+      decisions: "Decisions",
+      emptyNeeds: "Nothing needs a person.",
+      emptyOpen: "No open Tickets.",
+      emptyAssignments: "No Assignments.",
+      emptyEvolution: "No evolution candidates.",
+      loading: "Loading…",
+      unavailable: "Mentat unavailable: {error}",
+      counts: "needs person {needs} · open {open} · tickets {tickets}",
+      noPack: "no pack",
+    };
+
+    const ZH = {
+      nav: "Mentat",
+      refresh: "刷新",
+      poll: "轮询来源",
+      needs: "需要人处理",
+      open: "进行中",
+      assignments: "执行任务",
+      evolution: "进化候选",
+      decisions: "决策",
+      emptyNeeds: "当前不需要人处理。",
+      emptyOpen: "没有进行中的工单。",
+      emptyAssignments: "没有执行任务。",
+      emptyEvolution: "没有进化候选。",
+      loading: "加载中…",
+      unavailable: "Mentat 不可用：{error}",
+      counts: "需要人 {needs} · 进行中 {open} · 工单 {tickets}",
+      noPack: "无能力包",
+    };
+
     const styles = {
       root: { padding: "4px 2px", color: "var(--dsw-alias-label-primary)" },
       head: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" },
@@ -27,9 +65,24 @@ window.__ModuleLoader__.load({
         background: "var(--dsw-alias-fill-l1)",
       },
       tag: { marginLeft: "6px", fontSize: "11px", color: "var(--dsw-alias-label-tertiary)" },
+      mono: { fontFamily: "var(--dsw-font-mono)", fontSize: "11px" },
     };
 
-    function MentatSection() {
+    function shortDigest(digest) {
+      if (!digest) return "";
+      const value = String(digest);
+      return value.length > 16 ? value.slice(0, 16) + "…" : value;
+    }
+
+    function format(t, key, values) {
+      let text = t(key);
+      for (const [name, value] of Object.entries(values ?? {})) {
+        text = text.replaceAll("{" + name + "}", String(value));
+      }
+      return text;
+    }
+
+    function MentatSection({ t }) {
       const [state, setState] = React.useState({ loading: true });
 
       const load = React.useCallback(async () => {
@@ -56,38 +109,39 @@ window.__ModuleLoader__.load({
         }
       }, [load]);
 
-      if (state.loading) return React.createElement("div", { style: styles.muted }, "Loading…");
+      if (state.loading) return React.createElement("div", { style: styles.muted }, t("loading"));
       if (state.error) {
         return React.createElement(
           "div",
           { style: styles.muted },
-          "Mentat unavailable: " + state.error,
+          format(t, "unavailable", { error: state.error }),
         );
       }
       const overview = state.overview;
+      const assignments = overview.assignments ?? [];
+      const evolution = overview.evolution ?? [];
       return React.createElement(
         "div",
         { style: styles.root },
         React.createElement(
           "div",
           { style: styles.head },
-          React.createElement("h2", { style: styles.title }, "Mentat"),
-          React.createElement("button", { style: styles.button, onClick: load }, "Refresh"),
-          React.createElement("button", { style: styles.button, onClick: poll }, "Poll source"),
+          React.createElement("h2", { style: styles.title }, t("nav")),
+          React.createElement("button", { style: styles.button, onClick: load }, t("refresh")),
+          React.createElement("button", { style: styles.button, onClick: poll }, t("poll")),
         ),
         React.createElement(
           "div",
           { style: styles.muted },
-          "needs person " +
-            overview.counts.needsPerson +
-            " · open " +
-            overview.counts.open +
-            " · tickets " +
-            overview.counts.tickets,
+          format(t, "counts", {
+            needs: overview.counts.needsPerson,
+            open: overview.counts.open,
+            tickets: overview.counts.tickets,
+          }),
         ),
-        React.createElement("h3", { style: styles.muted }, "Needs a person"),
+        React.createElement("h3", { style: styles.muted }, t("needs")),
         overview.needsPerson.length === 0
-          ? React.createElement("div", { style: styles.muted }, "Nothing needs a person.")
+          ? React.createElement("div", { style: styles.muted }, t("emptyNeeds"))
           : overview.needsPerson.map((ticket) =>
               React.createElement(
                 "div",
@@ -101,9 +155,9 @@ window.__ModuleLoader__.load({
                 ),
               ),
             ),
-        React.createElement("h3", { style: styles.muted }, "Open"),
+        React.createElement("h3", { style: styles.muted }, t("open")),
         overview.open.length === 0
-          ? React.createElement("div", { style: styles.muted }, "No open Tickets.")
+          ? React.createElement("div", { style: styles.muted }, t("emptyOpen"))
           : overview.open.map((ticket) =>
               React.createElement(
                 "div",
@@ -112,24 +166,63 @@ window.__ModuleLoader__.load({
                 React.createElement("span", { style: styles.tag }, ticket.stage),
               ),
             ),
+        React.createElement("h3", { style: styles.muted }, t("assignments")),
+        assignments.length === 0
+          ? React.createElement("div", { style: styles.muted }, t("emptyAssignments"))
+          : assignments.map((assignment) =>
+              React.createElement(
+                "div",
+                { key: assignment.id, style: styles.row },
+                React.createElement("strong", null, assignment.worker),
+                React.createElement("span", { style: styles.tag }, assignment.state),
+                React.createElement(
+                  "div",
+                  { style: styles.mono },
+                  assignment.packDigest ? shortDigest(assignment.packDigest) : t("noPack"),
+                ),
+              ),
+            ),
+        React.createElement("h3", { style: styles.muted }, t("evolution")),
+        evolution.length === 0
+          ? React.createElement("div", { style: styles.muted }, t("emptyEvolution"))
+          : evolution.map((candidate) =>
+              React.createElement(
+                "div",
+                { key: candidate.id, style: styles.row },
+                React.createElement("strong", null, "v" + candidate.version),
+                React.createElement("span", { style: styles.tag }, candidate.status),
+                React.createElement(
+                  "div",
+                  { style: styles.mono },
+                  shortDigest(candidate.digest) +
+                    (candidate.reason ? " · " + candidate.reason : ""),
+                ),
+              ),
+            ),
         React.createElement(
           "div",
           { style: { ...styles.muted, marginTop: "12px" } },
-          Object.entries(overview.decisions)
-            .map(([key, value]) => key + "=" + value)
-            .join("  "),
+          t("decisions") +
+            ": " +
+            Object.entries(overview.decisions)
+              .map(([key, value]) => key + "=" + value)
+              .join("  "),
         ),
       );
     }
 
     function apply(ctx) {
+      ctx.effect(() => ctx.locale.register("mentat", { en: EN, zh: ZH }), "mentat: dictionaries");
+      const t = ctx.locale.bind("mentat");
       ctx.slots.inject("settings.section", () =>
         ctx.slots.register(
           {
             name: "settings.section",
             id: "mentat",
             order: 80,
-            label: "Mentat",
+            label: () => t("nav"),
+            locale: "mentat",
+            inject: () => ({ t }),
           },
           MentatSection,
         ),
@@ -137,7 +230,7 @@ window.__ModuleLoader__.load({
     }
 
     exports.apply = apply;
-    exports.inject = ["slots"];
+    exports.inject = ["slots", "locale"];
     return module.exports;
   },
 });

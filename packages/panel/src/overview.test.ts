@@ -62,6 +62,8 @@ describe("panel overview", () => {
     });
     expect(overview.ended[0]).toMatchObject({ id: "t2", outcome: "completed" });
     expect(overview.decisions.accept).toBe(1);
+    expect(overview.assignments[0]).toMatchObject({ worker: "fake", state: "running" });
+    expect(overview.evolution).toEqual([]);
     expect(renderOverviewText(overview)).toContain("needs person: 1");
   });
 });
