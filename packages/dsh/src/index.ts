@@ -1,5 +1,6 @@
 import { join } from "node:path";
 import type { Decision, Trigger } from "@mentat/domain";
+import { FileSourceState, GhCliGitHubApi, GitHubSource } from "@mentat/source-github";
 import type { RouterAgentPort, RuntimeReceipt } from "./runtime";
 import type { MentatService } from "./service";
 import { createMentatService } from "./service";
@@ -26,6 +27,7 @@ export interface DshAgentHandle {
 
 export interface DshContext {
   provide(name: string, value: unknown): () => void;
+  effect?(setup: () => (() => void) | void): () => void;
   tools: { register(definition: DshToolDefinition): () => void };
   agents?: {
     create(options: {
@@ -40,10 +42,23 @@ export interface DshContext {
 export interface MentatConfig {
   dir?: string;
   model?: string;
+  github?: { repo: string; agent: string; intervalMs?: number };
 }
 
 export const name = "mentat";
 export const inject = ["tools", "agents"];
+
+function githubFromEnv(): { repo: string; agent: string; intervalMs?: number } | undefined {
+  const repo = process.env.MENTAT_GITHUB_REPO;
+  const agent = process.env.MENTAT_GITHUB_AGENT;
+  if (!repo || !agent) return undefined;
+  const interval = Number(process.env.MENTAT_GITHUB_POLL_MS ?? "");
+  return {
+    repo,
+    agent,
+    ...(Number.isSafeInteger(interval) && interval > 0 ? { intervalMs: interval } : {}),
+  };
+}
 
 function text(value: unknown) {
   return [{ type: "text" as const, text: JSON.stringify(value) }];
@@ -80,13 +95,30 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
   const dir =
     config.dir ?? process.env.MENTAT_STATE_DIR ?? join(process.cwd(), ".mentat", "superagent");
   const agents = routerAgents(ctx);
+  const github = config.github ?? githubFromEnv();
+  const source = github
+    ? new GitHubSource({
+        api: new GhCliGitHubApi(),
+        state: new FileSourceState(join(dir, "github-state.json")),
+        repo: github.repo,
+        agentLogin: github.agent,
+      })
+    : undefined;
   const service: MentatService = createMentatService({
     dir,
     ...(agents ? { agents } : {}),
     ...(config.model ? { model: config.model } : {}),
+    ...(source ? { source } : {}),
+    ...(github?.intervalMs !== undefined ? { pollIntervalMs: github.intervalMs } : {}),
+    onPollError: (error) => {
+      if (process.env.MENTAT_DEBUG) console.error(`[mentat] source poll failed: ${String(error)}`);
+    },
   });
   ctx.provide("mentat", service);
   if (process.env.MENTAT_DEBUG) console.error("[mentat] plugin loaded");
+  service.poller?.start();
+  const stopPoller = () => service.poller?.stop();
+  if (ctx.effect) ctx.effect(() => stopPoller);
 
   ctx.tools.register({
     name: "mentat_status",
@@ -168,6 +200,20 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
         outcome: decision.outcome,
         tickets: service.repos.tickets.list().map((ticket) => ticket.id),
       };
+    },
+  });
+
+  ctx.tools.register({
+    name: "mentat_poll",
+    description: "Poll the configured Source now and return how many Triggers arrived.",
+    parameters: {},
+    output: {
+      schema: objectSchema({ polled: { type: "number" } }, ["polled"]),
+      render: (_args, value) => text(value),
+    },
+    async execute() {
+      if (!service.poller) return { polled: 0 };
+      return { polled: await service.poller.tick() };
     },
   });
 

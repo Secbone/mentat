@@ -1,11 +1,12 @@
 import { join } from "node:path";
-import type { Policy } from "@mentat/domain";
+import type { Policy, SourceKind } from "@mentat/domain";
 import { EffectQueue } from "@mentat/effects";
 import type { CapabilityPack } from "@mentat/pack";
 import { FileRepositories } from "@mentat/store";
 import type { WorkerAdapter } from "@mentat/worker";
 import { FakeWorker } from "@mentat/worker";
 import { FileReceiptSink } from "./file-receipts";
+import { SourcePoller } from "./poller";
 import { MentatRuntime, type ReceiptSink, type RouterAgentPort } from "./runtime";
 
 export interface MentatServiceOptions {
@@ -18,6 +19,9 @@ export interface MentatServiceOptions {
   systemPrompt?: string;
   timeoutMs?: number;
   pack?: CapabilityPack;
+  source?: SourceKind;
+  pollIntervalMs?: number;
+  onPollError?: (error: unknown) => void;
 }
 
 export interface MentatService {
@@ -25,6 +29,7 @@ export interface MentatService {
   repos: FileRepositories;
   queue: EffectQueue;
   receipts: ReceiptSink;
+  poller?: SourcePoller;
 }
 
 const DEFAULT_POLICY: Policy = {
@@ -62,5 +67,13 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
     ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
     ...(options.pack ? { pack: options.pack } : {}),
   });
-  return { runtime, repos, queue, receipts };
+  const poller = options.source
+    ? new SourcePoller({
+        source: options.source,
+        runtime,
+        intervalMs: options.pollIntervalMs ?? 60_000,
+        ...(options.onPollError ? { onError: options.onPollError } : {}),
+      })
+    : undefined;
+  return { runtime, repos, queue, receipts, ...(poller ? { poller } : {}) };
 }

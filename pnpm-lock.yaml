@@ -119,6 +119,9 @@ importers:
       '@mentat/pack':
         specifier: workspace:*
         version: link:../pack
+      '@mentat/source-github':
+        specifier: workspace:*
+        version: link:../source-github
       '@mentat/store':
         specifier: workspace:*
         version: link:../store

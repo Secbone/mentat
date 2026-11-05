@@ -9,6 +9,7 @@ Cordis plugin that hosts the Mentat control plane inside DeepSeek Harness.
   - `mentat_status` — ticket/thread/decision counts and the Router session
   - `mentat_receive` — receive a local Trigger, start due Evals, run due effects
   - `mentat_dispatch` — accept one candidate and run its Assignment
+  - `mentat_poll` — poll the configured Source now
   - `mentat_run` — receive → evaluate → dispatch one local request end-to-end
 
 `mentat_run` starts the Router lazily. The DSH agent factory is registered by
@@ -22,6 +23,20 @@ The runtime runs one `CapabilityPack` per Assignment. `@mentat/pack` freezes
 the prompt/model/tools/policy bundle and its digest is stored on the Assignment
 and in the receipt. `HarnessWorker` injects prompt, model, MCP servers,
 execution policy and timeout; unsupported pack capabilities fail explicitly.
+
+## GitHub Source
+
+Set these to mount the GitHub Source and a periodic poll:
+
+```bash
+MENTAT_GITHUB_REPO=owner/name
+MENTAT_GITHUB_AGENT=mentat-bot
+MENTAT_GITHUB_POLL_MS=60000   # optional
+```
+
+`GitHubSource` uses `gh api` repository events; the read position is stored in
+`<state>/github-state.json`. `SourcePoller` starts with the plugin and is
+stopped by the plugin effect. `mentat_poll` triggers one immediate poll.
 
 ## State
 

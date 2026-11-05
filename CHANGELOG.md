@@ -12,6 +12,8 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `@mentat/dsh`: mount `GitHubSource` with a `SourcePoller` driven by
+  `MENTAT_GITHUB_REPO`/`MENTAT_GITHUB_AGENT`, plus a `mentat_poll` tool.
 - `@mentat/source-github`: `GitHubSource` for Issue/PR/review/comment/CI
   Triggers, persisted read positions, and an `OutboxTransport` Channel over
   `gh api`.
