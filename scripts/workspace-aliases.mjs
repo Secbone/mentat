@@ -33,4 +33,5 @@ export const workspaceAliases = {
   "@mentat/core": resolve("packages/core/src/index.ts"),
   "@mentat/host": resolve("packages/host/src/index.ts"),
   "@mentat/cli": resolve("packages/cli/src/index.ts"),
+  "@mentat/dsh": resolve("packages/dsh/src/index.ts"),
 };

@@ -105,6 +105,12 @@ importers:
 
   packages/domain: {}
 
+  packages/dsh:
+    dependencies:
+      '@mentat/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/evaluation:
     dependencies:
       '@mentat/core':

@@ -88,6 +88,9 @@
       ],
       "@mentat/cli": [
         "packages/cli/src/index.ts"
+      ],
+      "@mentat/dsh": [
+        "packages/dsh/src/index.ts"
       ]
     }
   }
