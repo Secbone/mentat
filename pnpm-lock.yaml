@@ -296,6 +296,18 @@ importers:
         specifier: workspace:*
         version: link:../core
 
+  packages/worker:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mentat/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@mentat/session':
+        specifier: workspace:*
+        version: link:../session
+
   packages/workspace:
     dependencies:
       '@mentat/core':

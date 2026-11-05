@@ -13,6 +13,7 @@ export const ALLOWED_WORKSPACE_DEPS = {
   "@mentat/skills-mcp": ["@mentat/core", "@mentat/skills", "@mentat/skills-file"],
   "@mentat/core": [],
   "@mentat/domain": [],
+  "@mentat/worker": ["@mentat/core", "@mentat/domain", "@mentat/session"],
   "@mentat/benchmark": [],
   "@mentat/benchmark-file": ["@mentat/benchmark", "@mentat/evaluation", "@mentat/storage-file"],
   "@mentat/session": ["@mentat/core"],
