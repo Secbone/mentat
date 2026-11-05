@@ -144,6 +144,7 @@ export function apply(ctx: PanelContext): void {
       sendJson(
         res,
         buildOverview(ctx.mentat.repos, {
+          ...(ctx.mentat.poller ? { source: ctx.mentat.poller.health() } : {}),
           evolution: ctx.mentat.packs.list().map((candidate) => ({
             id: candidate.id,
             status: candidate.status,

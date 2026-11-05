@@ -216,6 +216,7 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
     async execute() {
       return {
         overview: buildOverview(service.repos, {
+          ...(service.poller ? { source: service.poller.health() } : {}),
           evolution: service.packs.list().map((candidate) => ({
             id: candidate.id,
             status: candidate.status,

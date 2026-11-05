@@ -39,6 +39,10 @@ describe("SourcePoller", () => {
     expect(service.poller).toBeDefined();
     expect(await service.poller?.tick()).toBe(1);
     expect(service.repos.triggers.list()).toHaveLength(1);
+    expect(service.poller?.health()).toMatchObject({
+      lastPollCount: 1,
+      consecutiveFailures: 0,
+    });
     await service.runtime.dispose();
   });
 
@@ -77,6 +81,11 @@ describe("SourcePoller", () => {
     expect(scheduled).toHaveLength(1);
     await poller.tick();
     expect(errors).toHaveLength(1);
+    expect(poller.health()).toMatchObject({
+      active: true,
+      lastError: "offline",
+      consecutiveFailures: 1,
+    });
     poller.stop();
     expect(poller.active).toBe(false);
     expect(cleared).toEqual(["timer-1"]);

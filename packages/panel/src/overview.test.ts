@@ -65,5 +65,16 @@ describe("panel overview", () => {
     expect(overview.assignments[0]).toMatchObject({ worker: "fake", state: "running" });
     expect(overview.evolution).toEqual([]);
     expect(renderOverviewText(overview)).toContain("needs person: 1");
+
+    const withSource = buildOverview(seed(), {
+      source: {
+        active: true,
+        lastPollAt: "2026-11-06T00:00:00.000Z",
+        lastPollCount: 3,
+        consecutiveFailures: 0,
+      },
+    });
+    expect(withSource.source).toMatchObject({ active: true, lastPollCount: 3 });
+    expect(renderOverviewText(withSource)).toContain("source: active");
   });
 });

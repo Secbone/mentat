@@ -14,6 +14,14 @@ window.__ModuleLoader__.load({
       assignments: "Assignments",
       evolution: "Evolution",
       decisions: "Decisions",
+      source: "Source",
+      sourceActive: "active",
+      sourceIdle: "idle",
+      noSource: "No source configured.",
+      lastPoll: "last poll",
+      never: "never",
+      pollCount: "triggers",
+      pollError: "error",
       emptyNeeds: "Nothing needs a person.",
       emptyOpen: "No open Tickets.",
       emptyAssignments: "No Assignments.",
@@ -33,6 +41,14 @@ window.__ModuleLoader__.load({
       assignments: "执行任务",
       evolution: "进化候选",
       decisions: "决策",
+      source: "来源",
+      sourceActive: "运行中",
+      sourceIdle: "空闲",
+      noSource: "未配置来源。",
+      lastPoll: "上次轮询",
+      never: "从未",
+      pollCount: "触发数",
+      pollError: "错误",
       emptyNeeds: "当前不需要人处理。",
       emptyOpen: "没有进行中的工单。",
       emptyAssignments: "没有执行任务。",
@@ -139,6 +155,31 @@ window.__ModuleLoader__.load({
             tickets: overview.counts.tickets,
           }),
         ),
+        React.createElement("h3", { style: styles.muted }, t("source")),
+        overview.source
+          ? React.createElement(
+              "div",
+              { style: styles.row },
+              React.createElement(
+                "strong",
+                null,
+                overview.source.active ? t("sourceActive") : t("sourceIdle"),
+              ),
+              React.createElement(
+                "div",
+                { style: styles.muted },
+                t("lastPoll") +
+                  ": " +
+                  (overview.source.lastPollAt || t("never")) +
+                  (overview.source.lastPollCount !== undefined
+                    ? " · " + t("pollCount") + " " + overview.source.lastPollCount
+                    : "") +
+                  (overview.source.lastError
+                    ? " · " + t("pollError") + ": " + overview.source.lastError
+                    : ""),
+              ),
+            )
+          : React.createElement("div", { style: styles.muted }, t("noSource")),
         React.createElement("h3", { style: styles.muted }, t("needs")),
         overview.needsPerson.length === 0
           ? React.createElement("div", { style: styles.muted }, t("emptyNeeds"))

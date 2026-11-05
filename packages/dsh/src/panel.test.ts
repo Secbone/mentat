@@ -67,7 +67,14 @@ describe("Mentat panel", () => {
   });
 
   it("polls the source through the panel route", async () => {
-    const { routes } = panel();
+    const { routes, service } = panel();
+    await service.poller?.tick();
+    const overview = response();
+    await routes.get("/mentat/overview")?.handler({} as PanelRequest, overview.res);
+    expect(JSON.parse(overview.text())).toMatchObject({
+      source: { lastPollCount: 0, consecutiveFailures: 0 },
+    });
+
     const result = response();
     await routes.get("/mentat/poll")?.handler({ method: "POST" } as PanelRequest, result.res);
     expect(JSON.parse(result.text())).toEqual({ polled: 0 });

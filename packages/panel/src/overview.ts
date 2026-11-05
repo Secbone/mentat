@@ -33,6 +33,14 @@ export interface EvolutionView {
   reason?: string;
 }
 
+export interface SourceView {
+  active: boolean;
+  lastPollAt?: string;
+  lastPollCount?: number;
+  lastError?: string;
+  consecutiveFailures: number;
+}
+
 export interface Overview {
   generatedAt: string;
   counts: {
@@ -47,6 +55,7 @@ export interface Overview {
   ended: TicketView[];
   assignments: AssignmentView[];
   evolution: EvolutionView[];
+  source?: SourceView;
   decisions: Record<DecisionOutcome, number>;
 }
 
@@ -75,7 +84,7 @@ function view(ticket: Ticket, repos: Repositories): TicketView {
  */
 export function buildOverview(
   repos: Repositories,
-  options: { now?: () => Date; evolution?: EvolutionView[] } = {},
+  options: { now?: () => Date; evolution?: EvolutionView[]; source?: SourceView } = {},
 ): Overview {
   const tickets = repos.tickets.list().map((ticket) => view(ticket, repos));
   const decisions: Record<DecisionOutcome, number> = {
@@ -108,6 +117,7 @@ export function buildOverview(
       packDigest: assignment.packDigest,
     })),
     evolution: options.evolution ?? [],
+    ...(options.source ? { source: options.source } : {}),
     decisions,
   };
 }
@@ -129,6 +139,13 @@ export function renderOverviewText(overview: Overview): string {
   lines.push(
     `assignments: ${overview.assignments.length}  evolution: ${overview.evolution.length}`,
   );
+  if (overview.source) {
+    lines.push(
+      `source: ${overview.source.active ? "active" : "idle"}  last poll: ${
+        overview.source.lastPollAt ?? "never"
+      }${overview.source.lastError ? `  error: ${overview.source.lastError}` : ""}`,
+    );
+  }
   lines.push(
     `decisions: accept=${overview.decisions.accept} stop=${overview.decisions.stop} ignore=${overview.decisions.ignore} unavailable=${overview.decisions.unavailable}`,
   );
