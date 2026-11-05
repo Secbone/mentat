@@ -77,3 +77,28 @@ describe("GhCliGitHubApi", () => {
     await expect(gone.comment({ repo: "acme/app", number: 12, body: "x" })).resolves.toBe("gone");
   });
 });
+
+describe("GhCliGitHubApi pagination", () => {
+  it("walks pages until a short page and dedupes ids", async () => {
+    const calls: string[] = [];
+    const page = (id: string) => ({
+      id,
+      type: "IssuesEvent",
+      created_at: `2026-11-06T00:0${id}:00.000Z`,
+      actor: { login: "alice", type: "User" },
+      payload: { issue: { number: Number(id), title: "x", body: "y" } },
+    });
+    const run: CommandRunner = async (args) => {
+      const url = args[1] ?? "";
+      calls.push(url);
+      const number = Number(new URLSearchParams(url.split("?")[1]).get("page"));
+      return JSON.stringify(number === 1 ? [page("1"), page("2")] : [page("3")]);
+    };
+    const api = new GhCliGitHubApi({ run, perPage: 2, maxPages: 5 });
+    const events = await api.events({ repo: "acme/app" });
+    expect(events.map((event) => event.id)).toEqual(["1", "2", "3"]);
+    expect(calls).toHaveLength(2);
+    expect(calls[0]).toContain("page=1");
+    expect(calls[1]).toContain("page=2");
+  });
+});

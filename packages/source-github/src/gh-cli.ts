@@ -140,8 +140,12 @@ function mapEvent(event: GitHubRepoEvent, repo: string): GitHubEvent | undefined
  */
 export class GhCliGitHubApi implements GitHubApi {
   private readonly run: CommandRunner;
+  private readonly perPage: number;
+  private readonly maxPages: number;
 
-  constructor(options: { run?: CommandRunner } = {}) {
+  constructor(options: { run?: CommandRunner; perPage?: number; maxPages?: number } = {}) {
+    this.perPage = options.perPage ?? 100;
+    this.maxPages = options.maxPages ?? 10;
     this.run =
       options.run ??
       (async (args) => {
@@ -151,13 +155,25 @@ export class GhCliGitHubApi implements GitHubApi {
   }
 
   async events(input: { repo: string; since?: string }): Promise<GitHubEvent[]> {
-    const raw = await this.run(["api", `repos/${input.repo}/events?per_page=100`]);
-    const parsed = JSON.parse(raw) as GitHubRepoEvent[];
-    if (!Array.isArray(parsed)) throw new Error("GitHub events response is not an array");
-    return parsed
-      .map((event) => mapEvent(event, input.repo))
-      .filter((event): event is GitHubEvent => event !== undefined)
-      .filter((event) => !input.since || event.at > input.since);
+    const seen = new Set<string>();
+    const out: GitHubEvent[] = [];
+    for (let page = 1; page <= this.maxPages; page += 1) {
+      const raw = await this.run([
+        "api",
+        `repos/${input.repo}/events?per_page=${this.perPage}&page=${page}`,
+      ]);
+      const parsed = JSON.parse(raw) as GitHubRepoEvent[];
+      if (!Array.isArray(parsed)) throw new Error("GitHub events response is not an array");
+      for (const event of parsed) {
+        const mapped = mapEvent(event, input.repo);
+        if (!mapped || seen.has(mapped.id)) continue;
+        if (input.since && mapped.at <= input.since) continue;
+        seen.add(mapped.id);
+        out.push(mapped);
+      }
+      if (parsed.length < this.perPage) break;
+    }
+    return out;
   }
 
   async comment(input: { repo: string; number: number; body: string }): Promise<"sent" | "gone"> {

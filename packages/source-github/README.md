@@ -7,7 +7,8 @@ GitHub repository events as a Mentat `SourceKind`.
   plus a bounded seen-id set so a restart does not replay.
 - `GitHubSource.channel()` returns an `OutboxTransport`; `Outbox` can send
   acknowledgements, answers and results as issue/PR comments.
-- `GhCliGitHubApi` uses `gh api repos/{owner}/{repo}/events` and
+- `GhCliGitHubApi` walks `gh api repos/{owner}/{repo}/events` pages
+  (`perPage`, `maxPages`) and posts
   `POST /repos/{owner}/{repo}/issues/{number}/comments`; tests inject the
   command runner, so no network or credentials are needed.
 - `FileSourceState` stores the read position atomically under a lock;
