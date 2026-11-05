@@ -116,6 +116,9 @@ importers:
       '@mentat/effects':
         specifier: workspace:*
         version: link:../effects
+      '@mentat/pack':
+        specifier: workspace:*
+        version: link:../pack
       '@mentat/store':
         specifier: workspace:*
         version: link:../store
@@ -271,6 +274,12 @@ importers:
         specifier: workspace:*
         version: link:../storage-file
 
+  packages/pack:
+    dependencies:
+      '@mentat/core':
+        specifier: workspace:*
+        version: link:../core
+
   packages/session:
     dependencies:
       '@mentat/core':
@@ -340,6 +349,9 @@ importers:
       '@mentat/domain':
         specifier: workspace:*
         version: link:../domain
+      '@mentat/pack':
+        specifier: workspace:*
+        version: link:../pack
       '@mentat/session':
         specifier: workspace:*
         version: link:../session

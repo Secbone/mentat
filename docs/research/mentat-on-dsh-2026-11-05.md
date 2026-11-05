@@ -274,6 +274,12 @@ export interface CapabilityPack {
 - Pack 可以 canary、回滚、按 Worker/任务类型分组；
 - Pack 的变更必须经过 Eval + Gate，不能直接改线上。
 
+2026-11-06 首版实现：`@mentat/pack` 定义 `CapabilityPack` 与
+`defineCapabilityPack()`，对整包做内容寻址；`MentatRuntime` 把 digest 写入
+Assignment 和 receipt；`HarnessWorker` 注入 prompt/model/MCP/executionPolicy，
+对 skills、memory 和 tool allowlist 目前显式报错，而不是静默丢弃。skills/memory
+的真实注入由后续的 Skill/Memory 插件提供。
+
 ## 8. 自进化层
 
 ```

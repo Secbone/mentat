@@ -167,18 +167,33 @@ export class HarnessWorker implements WorkerAdapter {
 
   async spawn(task: WorkerTask): Promise<WorkerSession> {
     const pack = task.pack;
+    const capabilities = this.capabilities();
+    if (pack.skills?.length && capabilities.skills === "none")
+      throw new Error("worker does not support capability-pack skills");
+    if (pack.prompt.system && capabilities.promptInjection === "none")
+      throw new Error("worker does not support system-prompt injection");
+    if (pack.tools?.allowlist?.length || pack.tools?.blockedCommands?.length)
+      throw new Error("worker does not support tool allowlists yet");
+    if (pack.memory?.snapshot || pack.memory?.digest)
+      throw new Error("worker does not inject capability-pack memory yet");
+
     const session = await this.adapter.createSession(
       {
         cwd: task.cwd,
-        ...(pack.model ? { model: pack.model } : {}),
-        ...(pack.systemPrompt
-          ? { systemPrompt: pack.systemPrompt, systemPromptMode: "replace" as const }
+        ...(pack.model?.model ? { model: pack.model.model } : {}),
+        ...(pack.prompt.system
+          ? { systemPrompt: pack.prompt.system, systemPromptMode: "replace" as const }
           : {}),
-        ...(pack.mcpServers ? { mcpServers: pack.mcpServers } : {}),
-        ...(pack.executionPolicy ? { executionPolicy: pack.executionPolicy } : {}),
+        ...(pack.tools?.mcpServers ? { mcpServers: pack.tools.mcpServers } : {}),
+        ...(pack.tools?.executionPolicy ? { executionPolicy: pack.tools.executionPolicy } : {}),
       },
       this.options.deps,
     );
-    return new HarnessSession(session, task, this.options);
+    return new HarnessSession(session, task, {
+      ...this.options,
+      ...(pack.policy?.budget?.wallMs !== undefined
+        ? { timeoutMs: pack.policy.budget.wallMs }
+        : {}),
+    });
   }
 }

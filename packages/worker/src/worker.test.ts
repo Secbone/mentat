@@ -1,4 +1,5 @@
 import type { AgentEvent, AgentEventListener, HarnessAdapter, SessionHandle } from "@mentat/core";
+import { defineCapabilityPack } from "@mentat/pack";
 import type { TurnResult } from "@mentat/session";
 import { describe, expect, it } from "vitest";
 import type { WorkerTask } from "./contract";
@@ -10,7 +11,12 @@ const task: WorkerTask = {
   ticketId: "t1",
   cwd: "/tmp",
   prompt: "do the work",
-  pack: { systemPrompt: "be useful", model: "test/model" },
+  pack: defineCapabilityPack({
+    id: "test-worker",
+    version: 1,
+    prompt: { system: "be useful", role: "worker" },
+    model: { model: "test/model" },
+  }),
 };
 
 describe("reportFromTurn", () => {
@@ -51,48 +57,52 @@ describe("FakeWorker", () => {
   });
 });
 
+function fakeHarness(): HarnessAdapter {
+  return {
+    id: "fake-harness",
+    capabilities: () => ({
+      steer: false,
+      compact: false,
+      fork: false,
+      permissions: false,
+      systemPrompt: "replace",
+    }),
+    async createSession(): Promise<SessionHandle> {
+      const listeners = new Set<AgentEventListener>();
+      const emit = (event: AgentEvent) => {
+        for (const listener of listeners) listener(event);
+      };
+      return {
+        id: "session-1",
+        async send() {
+          emit({ type: "run.started", sessionId: "session-1" });
+          emit({ type: "message.delta", sessionId: "session-1", text: "hello" });
+          emit({
+            type: "message.completed",
+            sessionId: "session-1",
+            message: { role: "assistant", text: "hello" },
+          });
+          emit({
+            type: "usage",
+            sessionId: "session-1",
+            usage: { inputTokens: 2, outputTokens: 3 },
+          });
+          emit({ type: "run.settled", sessionId: "session-1", reason: "done" });
+        },
+        async interrupt() {},
+        subscribe(listener) {
+          listeners.add(listener);
+          return () => listeners.delete(listener);
+        },
+        async dispose() {},
+      };
+    },
+  };
+}
+
 describe("HarnessWorker", () => {
   it("runs one turn through an existing harness and maps its events", async () => {
-    const adapter: HarnessAdapter = {
-      id: "fake-harness",
-      capabilities: () => ({
-        steer: false,
-        compact: false,
-        fork: false,
-        permissions: false,
-        systemPrompt: "replace",
-      }),
-      async createSession(): Promise<SessionHandle> {
-        const listeners = new Set<AgentEventListener>();
-        const emit = (event: AgentEvent) => {
-          for (const listener of listeners) listener(event);
-        };
-        return {
-          id: "session-1",
-          async send() {
-            emit({ type: "run.started", sessionId: "session-1" });
-            emit({ type: "message.delta", sessionId: "session-1", text: "hello" });
-            emit({
-              type: "message.completed",
-              sessionId: "session-1",
-              message: { role: "assistant", text: "hello" },
-            });
-            emit({
-              type: "usage",
-              sessionId: "session-1",
-              usage: { inputTokens: 2, outputTokens: 3 },
-            });
-            emit({ type: "run.settled", sessionId: "session-1", reason: "done" });
-          },
-          async interrupt() {},
-          subscribe(listener) {
-            listeners.add(listener);
-            return () => listeners.delete(listener);
-          },
-          async dispose() {},
-        };
-      },
-    };
+    const adapter = fakeHarness();
     const worker = new HarnessWorker(adapter);
     expect(worker.capabilities()).toMatchObject({ promptInjection: "system", streaming: true });
     const session = await worker.spawn(task);
@@ -100,5 +110,20 @@ describe("HarnessWorker", () => {
     for await (const event of session.events()) events.push(event);
     expect(events.map((event) => event.type)).toEqual(["message", "usage", "settled"]);
     expect(await session.report()).toMatchObject({ kind: "ready", text: "hello" });
+  });
+
+  it("rejects pack capabilities the adapter cannot inject", async () => {
+    const worker = new HarnessWorker(fakeHarness());
+    await expect(
+      worker.spawn({
+        ...task,
+        pack: defineCapabilityPack({
+          id: "unsupported",
+          version: 1,
+          prompt: { system: "x", role: "worker" },
+          skills: [{ name: "debug" }],
+        }),
+      }),
+    ).rejects.toThrow("skills");
   });
 });

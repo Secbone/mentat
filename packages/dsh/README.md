@@ -16,6 +16,13 @@ Cordis plugin that hosts the Mentat control plane inside DeepSeek Harness.
 the factory; the first tool call is safe. The plugin injects both `tools` and
 `agents`.
 
+## Capability Pack
+
+The runtime runs one `CapabilityPack` per Assignment. `@mentat/pack` freezes
+the prompt/model/tools/policy bundle and its digest is stored on the Assignment
+and in the receipt. `HarnessWorker` injects prompt, model, MCP servers,
+execution policy and timeout; unsupported pack capabilities fail explicitly.
+
 ## State
 
 `MENTAT_STATE_DIR` selects the state directory (default

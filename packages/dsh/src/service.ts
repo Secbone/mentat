@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import type { Policy } from "@mentat/domain";
 import { EffectQueue } from "@mentat/effects";
+import type { CapabilityPack } from "@mentat/pack";
 import { FileRepositories } from "@mentat/store";
 import type { WorkerAdapter } from "@mentat/worker";
 import { FakeWorker } from "@mentat/worker";
@@ -16,6 +17,7 @@ export interface MentatServiceOptions {
   model?: string;
   systemPrompt?: string;
   timeoutMs?: number;
+  pack?: CapabilityPack;
 }
 
 export interface MentatService {
@@ -58,6 +60,7 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
     ...(options.model ? { model: options.model } : {}),
     ...(options.systemPrompt ? { systemPrompt: options.systemPrompt } : {}),
     ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
+    ...(options.pack ? { pack: options.pack } : {}),
   });
   return { runtime, repos, queue, receipts };
 }

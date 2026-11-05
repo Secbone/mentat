@@ -92,6 +92,9 @@
       "@mentat/host": [
         "packages/host/src/index.ts"
       ],
+      "@mentat/pack": [
+        "packages/pack/src/index.ts"
+      ],
       "@mentat/cli": [
         "packages/cli/src/index.ts"
       ],

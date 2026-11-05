@@ -1,5 +1,6 @@
 import type { JsonValue } from "@mentat/core";
 import type { ReportKind } from "@mentat/domain";
+import type { CapabilityPack } from "@mentat/pack";
 
 /** What a Worker can accept from the control plane. */
 export interface WorkerCapabilities {
@@ -13,24 +14,12 @@ export interface WorkerCapabilities {
   fork: boolean;
 }
 
-/** The capability subset a Worker needs for one Assignment. */
-export interface WorkerPack {
-  systemPrompt?: string;
-  model?: string;
-  /** Skill names or paths, interpreted by the adapter. */
-  skills?: string[];
-  /** MCP servers the adapter should connect. */
-  mcpServers?: import("@mentat/core").McpServerSpec[];
-  executionPolicy?: import("@mentat/core").ExecutionPolicy;
-  timeoutMs?: number;
-}
-
 export interface WorkerTask {
   assignmentId: string;
   ticketId: string;
   cwd: string;
   prompt: string;
-  pack: WorkerPack;
+  pack: CapabilityPack;
 }
 
 export type WorkerEvent =

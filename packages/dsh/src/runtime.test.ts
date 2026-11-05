@@ -1,14 +1,21 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AgentEvent, AgentEventListener, HarnessAdapter, SessionHandle } from "@mentat/core";
+import type {
+  AgentEvent,
+  AgentEventListener,
+  HarnessAdapter,
+  SessionHandle,
+  SessionOptions,
+} from "@mentat/core";
+import { defineCapabilityPack } from "@mentat/pack";
 import { FileRepositories } from "@mentat/store";
 import { HarnessWorker } from "@mentat/worker";
 import { describe, expect, it } from "vitest";
 import type { ReceiptSink, RouterAgentPort, RuntimeReceipt } from "./runtime";
 import { createMentatService } from "./service";
 
-function fakeHarness(): HarnessAdapter {
+function fakeHarness(captured: SessionOptions[] = []): HarnessAdapter {
   return {
     id: "fake-harness",
     capabilities: () => ({
@@ -18,7 +25,8 @@ function fakeHarness(): HarnessAdapter {
       permissions: false,
       systemPrompt: "replace",
     }),
-    async createSession(): Promise<SessionHandle> {
+    async createSession(options): Promise<SessionHandle> {
+      captured.push(options);
       const listeners = new Set<AgentEventListener>();
       const emit = (event: AgentEvent) => {
         for (const listener of listeners) listener(event);
@@ -77,11 +85,19 @@ describe("MentatRuntime vertical slice", () => {
     const dir = mkdtempSync(join(tmpdir(), "mentat-runtime-"));
     const agents = router();
     const receipts = memorySink();
+    const captured: SessionOptions[] = [];
+    const pack = defineCapabilityPack({
+      id: "test-pack",
+      version: 2,
+      prompt: { system: "pack prompt", role: "worker" },
+      model: { model: "pack/model" },
+    });
     const service = createMentatService({
       dir,
       agents,
       receipts,
-      worker: new HarnessWorker(fakeHarness()),
+      pack,
+      worker: new HarnessWorker(fakeHarness(captured)),
     });
 
     const routerSession = await service.runtime.startRouter();
@@ -109,13 +125,18 @@ describe("MentatRuntime vertical slice", () => {
       trigger: "t1",
       worker: "fake-harness",
       outcome: "completed",
+      pack: { id: "test-pack", version: 2, digest: pack.digest },
       report: { kind: "ready", text: "done" },
+    });
+    expect(captured[0]).toMatchObject({
+      systemPrompt: "pack prompt",
+      model: "pack/model",
     });
     const ticket = service.repos.tickets.list()[0];
     expect(ticket).toBeDefined();
     const assignment = service.repos.assignments.get(ticket?.assignments[0] ?? "");
     expect(assignment).toMatchObject({ state: "ended" });
-    expect(assignment?.packDigest).toMatch(/^sha256:[a-f0-9]{64}$/);
+    expect(assignment?.packDigest).toBe(pack.digest);
 
     const reloaded = new FileRepositories(join(dir, "state"));
     expect(reloaded.tickets.list()).toHaveLength(1);

@@ -15,6 +15,7 @@
     "@mentat/core": "workspace:*",
     "@mentat/domain": "workspace:*",
     "@mentat/effects": "workspace:*",
+    "@mentat/pack": "workspace:*",
     "@mentat/store": "workspace:*",
     "@mentat/worker": "workspace:*"
   },

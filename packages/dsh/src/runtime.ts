@@ -1,4 +1,4 @@
-import { digestOf, type JsonValue } from "@mentat/core";
+import type { JsonValue } from "@mentat/core";
 import {
   type Decision,
   Engine,
@@ -7,6 +7,7 @@ import {
   type Trigger,
 } from "@mentat/domain";
 import type { EffectQueue } from "@mentat/effects";
+import { type CapabilityPack, defineCapabilityPack, type PackRef, packRef } from "@mentat/pack";
 import type { WorkerAdapter, WorkerReport, WorkerTask } from "@mentat/worker";
 
 /** The narrow DSH agent surface the Router uses. */
@@ -29,6 +30,7 @@ export interface RuntimeReceipt {
   assignment: string;
   worker: string;
   packDigest: string;
+  pack: PackRef;
   report: WorkerReport;
   events: number;
   outcome: "completed" | "error";
@@ -50,6 +52,7 @@ export interface MentatRuntimeOptions {
   model?: string;
   systemPrompt?: string;
   timeoutMs?: number;
+  pack?: CapabilityPack;
   now?: () => Date;
   id?: (prefix: string) => string;
 }
@@ -76,8 +79,7 @@ export class MentatRuntime {
   private readonly agents?: RouterAgentPort;
   private readonly cwd: string;
   private readonly model?: string;
-  private readonly systemPrompt: string;
-  private readonly timeoutMs?: number;
+  private readonly pack: CapabilityPack;
   private readonly clock: () => Date;
   private readonly nextId: (prefix: string) => string;
   private readonly disposeLaunch: () => void;
@@ -92,8 +94,17 @@ export class MentatRuntime {
     if (options.agents) this.agents = options.agents;
     this.cwd = options.cwd;
     if (options.model) this.model = options.model;
-    this.systemPrompt = options.systemPrompt ?? DEFAULT_WORKER_PROMPT;
-    if (options.timeoutMs !== undefined) this.timeoutMs = options.timeoutMs;
+    this.pack =
+      options.pack ??
+      defineCapabilityPack({
+        id: "worker-default",
+        version: 1,
+        prompt: { system: options.systemPrompt ?? DEFAULT_WORKER_PROMPT, role: "worker" },
+        ...(options.model ? { model: { model: options.model } } : {}),
+        ...(options.timeoutMs !== undefined
+          ? { policy: { budget: { wallMs: options.timeoutMs } } }
+          : {}),
+      });
     this.clock = options.now ?? (() => new Date());
     this.nextId = options.id ?? ((prefix) => `${prefix}-${crypto.randomUUID()}`);
     this.engine = new Engine({
@@ -165,12 +176,8 @@ export class MentatRuntime {
     if (!assignment || !ticket) throw new Error("launch target is missing");
     this.engine.assignmentStarted(ticket.id, assignment.id);
 
-    const pack = {
-      systemPrompt: this.systemPrompt,
-      ...(this.model ? { model: this.model } : {}),
-      ...(this.timeoutMs !== undefined ? { timeoutMs: this.timeoutMs } : {}),
-    };
-    const packDigest = digestOf(pack as unknown as JsonValue);
+    const pack = this.pack;
+    const packDigest = pack.digest;
     assignment.packDigest = packDigest;
     this.repos.assignments.save(assignment);
 
@@ -216,6 +223,7 @@ export class MentatRuntime {
       assignment: assignment.id,
       worker: this.worker.id,
       packDigest,
+      pack: packRef(pack),
       report,
       events,
       outcome,

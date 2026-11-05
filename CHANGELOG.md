@@ -12,6 +12,10 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `@mentat/pack`: versioned `CapabilityPack` contract with content addressing.
+  `MentatRuntime` attaches its digest to Assignments and receipts;
+  `HarnessWorker` injects prompt/model/MCP/executionPolicy and rejects
+  unsupported skills/memory/tool allowlists.
 - Artifact identity/adapters refactor (ADR-0006): `ArtifactRef`, `Artifact`,
   `ArtifactAdapter`, `ArtifactRegistry`, canonical-JSON `Digest`, and
   content-addressed data candidates. See

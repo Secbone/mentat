@@ -14,6 +14,7 @@
   "dependencies": {
     "@mentat/core": "workspace:*",
     "@mentat/domain": "workspace:*",
+    "@mentat/pack": "workspace:*",
     "@mentat/session": "workspace:*"
   },
   "description": "WorkerAdapter contract for heterogeneous agent executors"
