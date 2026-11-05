@@ -1,0 +1,19 @@
+{
+  "name": "@mentat/store",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mentat/domain": "workspace:*",
+    "@mentat/storage-file": "workspace:*"
+  },
+  "description": "Durable JSON repositories for the Mentat control plane"
+}

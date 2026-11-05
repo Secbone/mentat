@@ -80,6 +80,9 @@
       "@mentat/worker": [
         "packages/worker/src/index.ts"
       ],
+      "@mentat/store": [
+        "packages/store/src/index.ts"
+      ],
       "@mentat/core": [
         "packages/core/src/index.ts"
       ],

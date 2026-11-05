@@ -290,6 +290,15 @@ importers:
 
   packages/storage-file: {}
 
+  packages/store:
+    dependencies:
+      '@mentat/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@mentat/storage-file':
+        specifier: workspace:*
+        version: link:../storage-file
+
   packages/transport-acp:
     dependencies:
       '@mentat/core':
