@@ -2,8 +2,14 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@mentat/dsh-client/package.json": [
+        "packages/dsh-client/package.json"
+      ],
       "@mentat/memory/write-rules": [
         "packages/memory/src/write-rules.mjs"
+      ],
+      "@mentat/dsh-client/client": [
+        "packages/dsh-client/client.js"
       ],
       "@mentat/storage-file/lock": [
         "packages/storage-file/src/lock.mjs"
@@ -37,6 +43,9 @@
       ],
       "@mentat/skills-file": [
         "packages/skills-file/src/index.ts"
+      ],
+      "@mentat/dsh-client": [
+        "packages/dsh-client/index.js"
       ],
       "@mentat/evaluation": [
         "packages/evaluation/src/index.ts"

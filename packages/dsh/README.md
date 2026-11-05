@@ -54,8 +54,11 @@ server. Mount both rows in a web profile:
 
 Open `http://127.0.0.1:3080/mentat`. The page reads `/mentat/overview` (the
 same projection as `mentat_overview`) and posts `/mentat/poll` for an immediate
-Source poll. It is intentionally server-rendered and dependency-free; a DSH
-client-shell page can replace it later without changing the data contract.
+Source poll. It is intentionally server-rendered and dependency-free.
+
+For the client-shell page, also install `@mentat/dsh-client` and add its row
+`@mentat/dsh-client` to the same web profile. It registers Settings → Mentat
+and reads the same `/mentat/overview` contract.
 
 ## State
 

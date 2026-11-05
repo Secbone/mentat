@@ -4,7 +4,9 @@ import { fileURLToPath } from "node:url";
 const resolve = (relative) => fileURLToPath(new URL(`../${relative}`, import.meta.url));
 
 export const workspaceAliases = {
+  "@mentat/dsh-client/package.json": resolve("packages/dsh-client/package.json"),
   "@mentat/memory/write-rules": resolve("packages/memory/src/write-rules.mjs"),
+  "@mentat/dsh-client/client": resolve("packages/dsh-client/client.js"),
   "@mentat/storage-file/lock": resolve("packages/storage-file/src/lock.mjs"),
   "@mentat/memory-evolution": resolve("packages/memory-evolution/src/index.ts"),
   "@mentat/benchmark-file": resolve("packages/benchmark-file/src/index.ts"),
@@ -16,6 +18,7 @@ export const workspaceAliases = {
   "@mentat/transport-pi": resolve("packages/transport-pi/src/index.ts"),
   "@mentat/memory-file": resolve("packages/memory-file/src/index.ts"),
   "@mentat/skills-file": resolve("packages/skills-file/src/index.ts"),
+  "@mentat/dsh-client": resolve("packages/dsh-client/index.js"),
   "@mentat/evaluation": resolve("packages/evaluation/src/index.ts"),
   "@mentat/memory-mcp": resolve("packages/memory-mcp/src/index.ts"),
   "@mentat/skills-mcp": resolve("packages/skills-mcp/src/index.ts"),

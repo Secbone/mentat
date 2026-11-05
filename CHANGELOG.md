@@ -12,6 +12,8 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `@mentat/dsh-client`: DSH client-shell Settings → Mentat page reading the
+  `/mentat/overview` projection; verified in a real `dsh web` run.
 - `scripts/github-source-smoke.ts`: real `gh` auth/network smoke for the
   GitHub Source (manual; not run in `pnpm check`).
 - `@mentat/dsh/panel`: server-rendered `/mentat` panel with overview and
