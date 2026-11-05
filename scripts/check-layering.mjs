@@ -13,6 +13,7 @@ export const ALLOWED_WORKSPACE_DEPS = {
   "@mentat/skills-mcp": ["@mentat/core", "@mentat/skills", "@mentat/skills-file"],
   "@mentat/core": [],
   "@mentat/domain": [],
+  "@mentat/dsh-client": [],
   "@mentat/dsh": [
     "@mentat/core",
     "@mentat/domain",
