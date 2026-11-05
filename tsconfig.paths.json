@@ -53,6 +53,9 @@
       "@mentat/benchmark": [
         "packages/benchmark/src/index.ts"
       ],
+      "@mentat/dsh/panel": [
+        "packages/dsh/src/panel.ts"
+      ],
       "@mentat/evolution": [
         "packages/evolution/src/index.ts"
       ],

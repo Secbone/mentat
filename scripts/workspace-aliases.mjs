@@ -21,6 +21,7 @@ export const workspaceAliases = {
   "@mentat/skills-mcp": resolve("packages/skills-mcp/src/index.ts"),
   "@mentat/assistant": resolve("packages/assistant/src/index.ts"),
   "@mentat/benchmark": resolve("packages/benchmark/src/index.ts"),
+  "@mentat/dsh/panel": resolve("packages/dsh/src/panel.ts"),
   "@mentat/evolution": resolve("packages/evolution/src/index.ts"),
   "@mentat/harnesses": resolve("packages/harnesses/src/index.ts"),
   "@mentat/workspace": resolve("packages/workspace/src/index.ts"),
