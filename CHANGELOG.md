@@ -12,6 +12,9 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `MENTAT_WORKER=opencode`: dispatch Assignments through `HarnessWorker` and
+  the OpenCode ACP adapter. Verified end-to-end with the OpenCode API:
+  Router session → `mentat_run` → Worker report → receipt.
 - `@mentat/dsh-client`: DSH client-shell Settings → Mentat page reading the
   `/mentat/overview` projection; verified in a real `dsh web` run.
 - `scripts/github-source-smoke.ts`: real `gh` auth/network smoke for the

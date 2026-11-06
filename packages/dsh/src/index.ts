@@ -1,7 +1,9 @@
 import { join } from "node:path";
 import type { Decision, Trigger } from "@mentat/domain";
+import { createOpenCodeAdapter } from "@mentat/harnesses";
 import { buildOverview } from "@mentat/panel";
 import { FileSourceState, GhCliGitHubApi, GitHubSource } from "@mentat/source-github";
+import { HarnessWorker } from "@mentat/worker";
 import type { RouterAgentPort, RuntimeReceipt } from "./runtime";
 import type { MentatService } from "./service";
 import { createMentatService } from "./service";
@@ -105,9 +107,14 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
         agentLogin: github.agent,
       })
     : undefined;
+  const worker =
+    process.env.MENTAT_WORKER === "opencode"
+      ? new HarnessWorker(createOpenCodeAdapter({ binary: "opencode" }), { timeoutMs: 120_000 })
+      : undefined;
   const service: MentatService = createMentatService({
     dir,
     ...(agents ? { agents } : {}),
+    ...(worker ? { worker } : {}),
     ...(config.model ? { model: config.model } : {}),
     ...(source ? { source } : {}),
     ...(github?.intervalMs !== undefined ? { pollIntervalMs: github.intervalMs } : {}),

@@ -119,6 +119,9 @@ importers:
       '@mentat/evolve':
         specifier: workspace:*
         version: link:../evolve
+      '@mentat/harnesses':
+        specifier: workspace:*
+        version: link:../harnesses
       '@mentat/pack':
         specifier: workspace:*
         version: link:../pack

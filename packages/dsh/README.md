@@ -80,5 +80,8 @@ and reads the same `/mentat/overview` contract.
 The spike in `experiments/dsh-spike` validates the same mounting path and
 `ctx.agents.create` on DSH `0.2.1-rc.5`.
 
-The default Worker is `FakeWorker`; a real OpenCode/Pi Worker is injected by
-the runtime composition when configured.
+The default Worker is `FakeWorker`. Set `MENTAT_WORKER=opencode` to dispatch
+Assignments through `HarnessWorker` + the OpenCode ACP adapter; the Worker
+uses the OpenCode credential store (or `OPENCODE_API_KEY`). The real
+model-driven path was verified with `opencode-go/deepseek-v4.1-flash`: Router
+session, `mentat_run`, Worker report `pong`, receipt persisted.
