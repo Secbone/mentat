@@ -40,6 +40,12 @@ export interface RuntimeReceipt {
 
 export interface ReceiptSink {
   append(receipt: RuntimeReceipt): void;
+  /** Present on durable sinks; evolution reads history through this. */
+  list?(): RuntimeReceipt[];
+}
+
+export interface ReceiptStore extends ReceiptSink {
+  list(): RuntimeReceipt[];
 }
 
 export interface MentatRuntimeOptions {

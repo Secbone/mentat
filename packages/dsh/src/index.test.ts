@@ -38,6 +38,7 @@ describe("Mentat DSH plugin", () => {
       "mentat_receive",
       "mentat_dispatch",
       "mentat_dream",
+      "mentat_evolve",
       "mentat_overview",
       "mentat_poll",
       "mentat_run",

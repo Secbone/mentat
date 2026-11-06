@@ -1,13 +1,11 @@
 import type { SourceKind } from "@mentat/domain";
+import { defaultTimerScheduler, type TimerScheduler } from "./scheduler";
 
 export interface PollTarget {
   pollSource(source: SourceKind): Promise<number>;
 }
 
-export interface PollScheduler {
-  set(action: () => void, intervalMs: number): unknown;
-  clear(handle: unknown): void;
-}
+export type PollScheduler = TimerScheduler;
 
 export interface SourcePollerOptions {
   source: SourceKind;
@@ -26,10 +24,7 @@ export interface PollerHealth {
   consecutiveFailures: number;
 }
 
-const defaultScheduler: PollScheduler = {
-  set: (action, intervalMs) => setInterval(action, intervalMs),
-  clear: (handle) => clearInterval(handle as ReturnType<typeof setInterval>),
-};
+const defaultScheduler: PollScheduler = defaultTimerScheduler;
 
 /**
  * Periodic Source poll. The plugin owns the timer; a failed poll is reported

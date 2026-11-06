@@ -12,9 +12,16 @@ import type { CapabilityPack } from "@mentat/pack";
 import { FileRepositories } from "@mentat/store";
 import type { WorkerAdapter } from "@mentat/worker";
 import { FakeWorker } from "@mentat/worker";
+import { EvolutionScheduler } from "./evolution-scheduler";
+import { MentatEvolver } from "./evolver";
 import { FileReceiptSink } from "./file-receipts";
 import { SourcePoller } from "./poller";
-import { MentatRuntime, type ReceiptSink, type RouterAgentPort } from "./runtime";
+import {
+  MentatRuntime,
+  type ReceiptSink,
+  type ReceiptStore,
+  type RouterAgentPort,
+} from "./runtime";
 
 export interface MentatServiceOptions {
   dir: string;
@@ -31,6 +38,9 @@ export interface MentatServiceOptions {
   source?: SourceKind;
   pollIntervalMs?: number;
   onPollError?: (error: unknown) => void;
+  evolveIntervalMs?: number;
+  maxObservations?: number;
+  onEvolveError?: (error: unknown) => void;
 }
 
 export interface MentatService {
@@ -40,6 +50,8 @@ export interface MentatService {
   receipts: ReceiptSink;
   packs: PackArchive;
   dream?: DreamService;
+  evolver?: MentatEvolver;
+  evolutionScheduler?: EvolutionScheduler;
   poller?: SourcePoller;
 }
 
@@ -88,6 +100,26 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
         }),
       )
     : undefined;
+  let evolver: MentatEvolver | undefined;
+  if (dream && receipts.list) {
+    evolver = new MentatEvolver({
+      receipts: receipts as ReceiptStore,
+      packs,
+      dream,
+      currentPack: () => runtime.currentPack,
+      ...(options.maxObservations !== undefined
+        ? { maxObservations: options.maxObservations }
+        : {}),
+    });
+  }
+  const evolutionScheduler =
+    evolver && options.evolveIntervalMs
+      ? new EvolutionScheduler({
+          evolver,
+          intervalMs: options.evolveIntervalMs,
+          ...(options.onEvolveError ? { onError: options.onEvolveError } : {}),
+        })
+      : undefined;
   const poller = options.source
     ? new SourcePoller({
         source: options.source,
@@ -103,6 +135,8 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
     receipts,
     packs,
     ...(dream ? { dream } : {}),
+    ...(evolver ? { evolver } : {}),
+    ...(evolutionScheduler ? { evolutionScheduler } : {}),
     ...(poller ? { poller } : {}),
   };
 }

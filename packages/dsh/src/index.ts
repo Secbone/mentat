@@ -78,6 +78,15 @@ function evolveFromEnv(): { command: string; cwd?: string; timeoutMs?: number } 
   };
 }
 
+function evolutionFromEnv(): { intervalMs?: number; maxObservations?: number } {
+  const interval = Number(process.env.MENTAT_EVOLVE_INTERVAL_MS ?? "");
+  const max = Number(process.env.MENTAT_EVOLVE_MAX_OBSERVATIONS ?? "");
+  return {
+    ...(Number.isSafeInteger(interval) && interval > 0 ? { intervalMs: interval } : {}),
+    ...(Number.isSafeInteger(max) && max > 0 ? { maxObservations: max } : {}),
+  };
+}
+
 function benchmarkFromEnv(): BenchmarkConfig | undefined {
   const plan = process.env.MENTAT_BENCH_PLAN;
   const dataset = process.env.MENTAT_BENCH_DATASET;
@@ -164,6 +173,7 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
   const github = config.github ?? githubFromEnv();
   const evolve = config.evolve ?? evolveFromEnv();
   const benchmark = config.benchmark ?? benchmarkFromEnv();
+  const evolution = evolutionFromEnv();
   const worker =
     process.env.MENTAT_WORKER === "opencode"
       ? new HarnessWorker(createOpenCodeAdapter({ binary: "opencode" }), { timeoutMs: 120_000 })
@@ -195,15 +205,28 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
     ...(source ? { source } : {}),
     ...(evaluator ? { evaluator } : {}),
     ...(github?.intervalMs !== undefined ? { pollIntervalMs: github.intervalMs } : {}),
+    ...(evolution.intervalMs !== undefined ? { evolveIntervalMs: evolution.intervalMs } : {}),
+    ...(evolution.maxObservations !== undefined
+      ? { maxObservations: evolution.maxObservations }
+      : {}),
     onPollError: (error) => {
       if (process.env.MENTAT_DEBUG) console.error(`[mentat] source poll failed: ${String(error)}`);
+    },
+    onEvolveError: (error) => {
+      if (process.env.MENTAT_DEBUG) console.error(`[mentat] evolution failed: ${String(error)}`);
     },
   });
   ctx.provide("mentat", service);
   if (process.env.MENTAT_DEBUG) console.error("[mentat] plugin loaded");
   service.poller?.start();
+  service.evolutionScheduler?.start();
   const stopPoller = () => service.poller?.stop();
-  if (ctx.effect) ctx.effect(() => stopPoller);
+  const stopEvolution = () => service.evolutionScheduler?.stop();
+  if (ctx.effect)
+    ctx.effect(() => {
+      stopPoller();
+      stopEvolution();
+    });
 
   ctx.tools.register({
     name: "mentat_status",
@@ -331,6 +354,55 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
         },
         gate: result.gate,
         signals: { base: result.baseSignals, candidate: result.candidateSignals },
+      };
+    },
+  });
+
+  ctx.tools.register({
+    name: "mentat_evolve",
+    description:
+      "Collect failed Assignment receipts, then run Dream: propose, evaluate, gate and archive one CapabilityPack candidate.",
+    parameters: {},
+    output: {
+      schema: objectSchema(
+        {
+          observations: { type: "number" },
+          accepted: { type: "boolean" },
+          candidate: { type: "object" },
+          gate: { type: "object" },
+          signals: { type: "object" },
+          skipped: { type: "string" },
+        },
+        ["observations", "accepted"],
+      ),
+      render: (_args, value) => text(value),
+    },
+    async execute() {
+      if (!service.evolver)
+        throw new Error(
+          "evolution requires a listable receipt store and a pack evaluator (MENTAT_BENCH_PLAN or MENTAT_EVAL_COMMAND)",
+        );
+      const outcome = await service.evolver.evolve();
+      if (!outcome.result)
+        return {
+          observations: outcome.observations.length,
+          accepted: false,
+          skipped: "no failed receipts to learn from",
+        };
+      return {
+        observations: outcome.observations.length,
+        accepted: outcome.result.accepted,
+        candidate: {
+          id: outcome.result.candidate.id,
+          status: outcome.result.candidate.status,
+          version: outcome.result.candidate.pack.version,
+          digest: outcome.result.candidate.pack.digest,
+        },
+        gate: outcome.result.gate,
+        signals: {
+          base: outcome.result.baseSignals,
+          candidate: outcome.result.candidateSignals,
+        },
       };
     },
   });

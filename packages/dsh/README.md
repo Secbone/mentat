@@ -47,6 +47,21 @@ export MENTAT_BENCH_ARMS=reset             # optional, comma-separated
 The fixture `benchmarks/evolution/passphrase-plan.json` is a smoke benchmark:
 the base pack scores 0, and a pack carrying the passphrase lesson scores 1.
 
+### Automatic evolution
+
+`mentat_evolve` reads failed Assignment receipts, turns them into Dream
+observations, and runs the same propose → evaluate → gate → archive loop.
+Receipts already named by an archived candidate are skipped, and duplicate
+lesson text is collapsed in one batch.
+
+```bash
+export MENTAT_EVOLVE_INTERVAL_MS=3600000      # optional periodic pass
+export MENTAT_EVOLVE_MAX_OBSERVATIONS=5       # optional, newest first
+```
+
+The scheduler skips overlapping passes and reports failures without stopping
+the next one. `mentat_evolve` also runs one pass on demand.
+
 ### Command evaluator
 
 Set `MENTAT_EVAL_COMMAND` (or `config.evolve.command`). The command receives the

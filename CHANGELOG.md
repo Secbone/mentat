@@ -12,6 +12,10 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `MentatEvolver` + `EvolutionScheduler`: read failed Assignment receipts,
+  deduplicate and skip already-learned observations, then run Dream through the
+  configured pack evaluator. Exposed as `mentat_evolve` and an optional
+  `MENTAT_EVOLVE_INTERVAL_MS` periodic pass.
 - `BenchmarkPackEvaluator`: run a `@mentat/benchmark` episode plan against each
   CapabilityPack through a `WorkerAdapter`, expose macro-averaged
   `<arm>.<metric>` signals, and wire it into `mentat_dream` with
