@@ -11,6 +11,7 @@
     "gen": "node scripts/gen-aliases.mjs",
     "check:layering": "node scripts/check-layering.mjs",
     "dev": "tsx packages/cli/src/bin.ts",
+    "build:dsh": "node scripts/build-dsh.mjs",
     "bench": "tsx packages/cli/src/bin.ts bench",
     "bench:smoke": "node scripts/benchmark-smoke.mjs",
     "test:benchmarks": "node scripts/gen-aliases.mjs && vitest run packages/benchmark packages/benchmark-file packages/cli/src/integration/benchmark.test.ts",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",
     "@types/node": "^24.10.1",
+    "esbuild": "0.28.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"

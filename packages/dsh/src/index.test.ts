@@ -2,7 +2,13 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { apply, type DshContext, type DshToolDefinition, type MentatService } from "./index";
+import {
+  apply,
+  type DshContext,
+  type DshToolDefinition,
+  type MentatService,
+  workerFromEnv,
+} from "./index";
 
 function context() {
   const services = new Map<string, unknown>();
@@ -50,6 +56,13 @@ describe("Mentat DSH plugin", () => {
       decisions: 0,
       router: "",
     });
+  });
+
+  it("selects the configured heterogeneous worker", () => {
+    expect(workerFromEnv({})).toBeUndefined();
+    expect(workerFromEnv({ MENTAT_WORKER: "pi" })?.id).toBe("pi");
+    expect(workerFromEnv({ MENTAT_WORKER: "opencode" })?.id).toBe("opencode");
+    expect(() => workerFromEnv({ MENTAT_WORKER: "codex" })).toThrow("unknown MENTAT_WORKER");
   });
 
   it("runs one request through the tool surface and records a receipt", async () => {

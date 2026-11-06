@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateDataset, validateEpisodePlan, validatePlan } from "@mentat/benchmark";
 import type { Decision, Trigger } from "@mentat/domain";
-import { createOpenCodeAdapter } from "@mentat/harnesses";
+import { createOpenCodeAdapter, createPiAdapter } from "@mentat/harnesses";
 import { packRef } from "@mentat/pack";
 import { buildOverview } from "@mentat/panel";
 import { FileSourceState, GhCliGitHubApi, GitHubSource } from "@mentat/source-github";
@@ -77,6 +77,17 @@ function evolveFromEnv(): { command: string; cwd?: string; timeoutMs?: number } 
     ...(cwd ? { cwd } : {}),
     ...(Number.isSafeInteger(timeout) && timeout > 0 ? { timeoutMs: timeout } : {}),
   };
+}
+
+/** Compose the configured Worker adapter; an unknown name is a hard error. */
+export function workerFromEnv(env: NodeJS.ProcessEnv = process.env): WorkerAdapter | undefined {
+  const name = env.MENTAT_WORKER;
+  if (!name) return undefined;
+  if (name === "opencode")
+    return new HarnessWorker(createOpenCodeAdapter({ binary: "opencode" }), { timeoutMs: 120_000 });
+  if (name === "pi")
+    return new HarnessWorker(createPiAdapter({ permissionMode: "auto" }), { timeoutMs: 120_000 });
+  throw new Error(`unknown MENTAT_WORKER: ${name} (expected opencode or pi)`);
 }
 
 function evolutionFromEnv(): { intervalMs?: number; maxObservations?: number } {
@@ -175,10 +186,8 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
   const evolve = config.evolve ?? evolveFromEnv();
   const benchmark = config.benchmark ?? benchmarkFromEnv();
   const evolution = evolutionFromEnv();
-  const worker =
-    process.env.MENTAT_WORKER === "opencode"
-      ? new HarnessWorker(createOpenCodeAdapter({ binary: "opencode" }), { timeoutMs: 120_000 })
-      : undefined;
+  const model = config.model ?? process.env.MENTAT_MODEL;
+  const worker = workerFromEnv();
   let evaluator: BenchmarkPackEvaluator | CommandPackEvaluator | undefined;
   if (benchmark) {
     if (!worker) throw new Error("benchmark evaluation requires MENTAT_WORKER=opencode");
@@ -202,7 +211,7 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
     dir,
     ...(agents ? { agents } : {}),
     ...(worker ? { worker } : {}),
-    ...(config.model ? { model: config.model } : {}),
+    ...(model ? { model } : {}),
     ...(source ? { source } : {}),
     ...(evaluator ? { evaluator } : {}),
     ...(github?.intervalMs !== undefined ? { pollIntervalMs: github.intervalMs } : {}),

@@ -144,10 +144,21 @@ The spike in `experiments/dsh-spike` validates the same mounting path and
 `ctx.agents.create` on DSH `0.2.1-rc.5`.
 
 The default Worker is `FakeWorker`. Set `MENTAT_WORKER=opencode` to dispatch
-Assignments through `HarnessWorker` + the OpenCode ACP adapter; the Worker
-uses the OpenCode credential store (or `OPENCODE_API_KEY`). The real
-model-driven path was verified with `opencode-go/deepseek-v4.1-flash`: Router
-session, `mentat_run`, Worker report `pong`, receipt persisted.
+Assignments through `HarnessWorker` + the OpenCode ACP adapter, or
+`MENTAT_WORKER=pi` for the Pi RPC adapter. `MENTAT_MODEL` sets the pack model
+(for example `opencode-go/deepseek-v4.1-flash`). Both real model-driven paths
+were verified end-to-end: Router session, `mentat_run`, Worker report `pong`,
+receipt persisted with `worker: "opencode"` or `worker: "pi"`.
+
+For a file-URL profile, build the plugin entries with:
+
+```bash
+pnpm build:dsh /tmp/mentat-dsh
+```
+
+This writes `index.js`, `panel.js`, the Pi bridge under `bridge/`, and the
+client-shell package under `dsh-client/`. The bridge copy is required because
+the Pi adapter resolves its extension relative to the loaded module.
 
 Route DSH itself through the OpenCode API (no DeepSeek key needed):
 

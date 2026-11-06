@@ -12,6 +12,11 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `MENTAT_WORKER=pi`: dispatch Assignments through `HarnessWorker` + the Pi
+  RPC adapter, with `MENTAT_MODEL` selecting the pack model. Verified in a real
+  DSH model-driven run (`worker: "pi"`, report `pong`).
+- `pnpm build:dsh [out]`: bundle the DSH plugin entries and copy the Pi bridge
+  plus the client-shell package into one deployable directory.
 - `PackChannel`: deterministic stable/canary selection, promotion and rollback
   with durable `pack-channel.json` state. Assignments and receipts record the
   selected channel; `mentat_channel` exposes status/canary/promote/rollback,
