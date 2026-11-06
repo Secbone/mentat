@@ -140,11 +140,21 @@ export function apply(ctx: PanelContext): void {
   const disposeOverview = ctx.webServer.register({
     kind: "exact",
     path: "/mentat/overview",
-    handler: (_req, res) =>
+    handler: (_req, res) => {
+      const channel = ctx.mentat.packChannel;
+      const stable = channel.current();
+      const canary = channel.canary();
       sendJson(
         res,
         buildOverview(ctx.mentat.repos, {
           ...(ctx.mentat.poller ? { source: ctx.mentat.poller.health() } : {}),
+          channel: {
+            stable: { id: stable.id, version: stable.version, digest: stable.digest },
+            ...(canary
+              ? { canary: { id: canary.id, version: canary.version, digest: canary.digest } }
+              : {}),
+            canaryRatio: channel.ratio(),
+          },
           evolution: ctx.mentat.packs.list().map((candidate) => ({
             id: candidate.id,
             status: candidate.status,
@@ -153,7 +163,8 @@ export function apply(ctx: PanelContext): void {
             ...(candidate.reason ? { reason: candidate.reason } : {}),
           })),
         }),
-      ),
+      );
+    },
   });
   const disposePoll = ctx.webServer.register({
     kind: "exact",

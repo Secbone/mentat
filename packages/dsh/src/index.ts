@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { validateDataset, validateEpisodePlan, validatePlan } from "@mentat/benchmark";
 import type { Decision, Trigger } from "@mentat/domain";
 import { createOpenCodeAdapter } from "@mentat/harnesses";
+import { packRef } from "@mentat/pack";
 import { buildOverview } from "@mentat/panel";
 import { FileSourceState, GhCliGitHubApi, GitHubSource } from "@mentat/source-github";
 import type { WorkerAdapter } from "@mentat/worker";
@@ -403,6 +404,66 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
           base: outcome.result.baseSignals,
           candidate: outcome.result.candidateSignals,
         },
+      };
+    },
+  });
+
+  ctx.tools.register({
+    name: "mentat_channel",
+    description:
+      "Inspect or change the stable/canary CapabilityPack channel. action=status|canary|promote|rollback; canary requires an accepted candidate id and optional ratio.",
+    parameters: {
+      action: {
+        type: "string",
+        required: true,
+        enum: ["status", "canary", "promote", "rollback"],
+        description: "Channel operation",
+      },
+      candidate: { type: "string", description: "Accepted candidate id" },
+      ratio: { type: "number", description: "Canary ratio from 0 to 1" },
+    },
+    output: {
+      schema: objectSchema(
+        {
+          stable: { type: "object" },
+          canary: { type: "object" },
+          canaryRatio: { type: "number" },
+        },
+        ["stable", "canaryRatio"],
+      ),
+      render: (_args, value) => text(value),
+    },
+    async execute(raw) {
+      const args = raw as { action: string; candidate?: string; ratio?: number };
+      const accepted = (id: string) => {
+        const candidate = service.packs.accepted().find((row) => row.id === id);
+        if (!candidate) throw new Error(`accepted candidate not found: ${id}`);
+        return candidate;
+      };
+      switch (args.action) {
+        case "status":
+          break;
+        case "canary": {
+          if (!args.candidate) throw new Error("canary requires candidate");
+          service.packChannel.setCanary(accepted(args.candidate).pack, args.ratio ?? 0.1);
+          break;
+        }
+        case "promote": {
+          if (args.candidate) service.packChannel.setStable(accepted(args.candidate).pack);
+          else service.packChannel.promote();
+          break;
+        }
+        case "rollback":
+          service.packChannel.rollback();
+          break;
+        default:
+          throw new Error(`unknown channel action: ${args.action}`);
+      }
+      const canary = service.packChannel.canary();
+      return {
+        stable: packRef(service.packChannel.current()),
+        ...(canary ? { canary: packRef(canary) } : {}),
+        canaryRatio: service.packChannel.ratio(),
       };
     },
   });

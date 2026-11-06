@@ -5,6 +5,7 @@ import {
   DreamService,
   EvolutionLoop,
   PackArchive,
+  type PackChannel,
   type PackEvaluator,
   RulePackProposer,
 } from "@mentat/evolve";
@@ -15,8 +16,10 @@ import { FakeWorker } from "@mentat/worker";
 import { EvolutionScheduler } from "./evolution-scheduler";
 import { MentatEvolver } from "./evolver";
 import { FileReceiptSink } from "./file-receipts";
+import { loadPackChannel } from "./pack-channel-store";
 import { SourcePoller } from "./poller";
 import {
+  defaultWorkerPack,
   MentatRuntime,
   type ReceiptSink,
   type ReceiptStore,
@@ -35,6 +38,7 @@ export interface MentatServiceOptions {
   systemPrompt?: string;
   timeoutMs?: number;
   pack?: CapabilityPack;
+  packChannel?: PackChannel;
   source?: SourceKind;
   pollIntervalMs?: number;
   onPollError?: (error: unknown) => void;
@@ -49,6 +53,7 @@ export interface MentatService {
   queue: EffectQueue;
   receipts: ReceiptSink;
   packs: PackArchive;
+  packChannel: PackChannel;
   dream?: DreamService;
   evolver?: MentatEvolver;
   evolutionScheduler?: EvolutionScheduler;
@@ -78,6 +83,12 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
   const queue = new EffectQueue({ path: join(options.dir, "effects.json") });
   const receipts = options.receipts ?? new FileReceiptSink(join(options.dir, "receipts.jsonl"));
   const packs = options.packs ?? new PackArchive(join(options.dir, "packs.json"));
+  const packChannel =
+    options.packChannel ??
+    loadPackChannel(
+      join(options.dir, "pack-channel.json"),
+      options.pack ?? defaultWorkerPack(options),
+    );
   const runtime = new MentatRuntime({
     repos,
     queue,
@@ -89,7 +100,7 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
     ...(options.model ? { model: options.model } : {}),
     ...(options.systemPrompt ? { systemPrompt: options.systemPrompt } : {}),
     ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
-    ...(options.pack ? { pack: options.pack } : {}),
+    packChannel,
   });
   const dream = options.evaluator
     ? new DreamService(
@@ -134,6 +145,7 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
     queue,
     receipts,
     packs,
+    packChannel,
     ...(dream ? { dream } : {}),
     ...(evolver ? { evolver } : {}),
     ...(evolutionScheduler ? { evolutionScheduler } : {}),

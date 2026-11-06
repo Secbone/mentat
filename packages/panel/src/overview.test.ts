@@ -76,5 +76,15 @@ describe("panel overview", () => {
     });
     expect(withSource.source).toMatchObject({ active: true, lastPollCount: 3 });
     expect(renderOverviewText(withSource)).toContain("source: active");
+
+    const withChannel = buildOverview(seed(), {
+      channel: {
+        stable: { id: "worker", version: 2, digest: "sha256:stable" },
+        canary: { id: "worker", version: 3, digest: "sha256:canary" },
+        canaryRatio: 0.1,
+      },
+    });
+    expect(withChannel.channel).toMatchObject({ canaryRatio: 0.1 });
+    expect(renderOverviewText(withChannel)).toContain("pack: stable v2  canary v3 (10%)");
   });
 });

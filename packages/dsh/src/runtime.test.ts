@@ -9,9 +9,10 @@ import type {
   SessionOptions,
 } from "@mentat/core";
 import type { SourceKind } from "@mentat/domain";
+import { PackChannel } from "@mentat/evolve";
 import { defineCapabilityPack } from "@mentat/pack";
 import { FileRepositories } from "@mentat/store";
-import { HarnessWorker } from "@mentat/worker";
+import { FakeWorker, HarnessWorker, type WorkerAdapter, type WorkerTask } from "@mentat/worker";
 import { describe, expect, it } from "vitest";
 import type { ReceiptSink, RouterAgentPort, RuntimeReceipt } from "./runtime";
 import { createMentatService } from "./service";
@@ -145,6 +146,56 @@ describe("MentatRuntime vertical slice", () => {
 
     await service.runtime.dispose();
     expect(agents.disposed).toEqual([routerSession]);
+  });
+
+  it("routes an Assignment through the canary pack and records the channel", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "mentat-runtime-canary-"));
+    const stable = defineCapabilityPack({
+      id: "stable",
+      version: 1,
+      prompt: { system: "stable prompt", role: "worker" },
+    });
+    const canary = defineCapabilityPack({
+      id: "canary",
+      version: 2,
+      prompt: { system: "canary prompt", role: "worker" },
+    });
+    const captured: WorkerTask[] = [];
+    const inner = new FakeWorker();
+    const worker: WorkerAdapter = {
+      id: "capture",
+      capabilities: () => inner.capabilities(),
+      spawn(task) {
+        captured.push(task);
+        return inner.spawn(task);
+      },
+    };
+    const receipts = memorySink();
+    const service = createMentatService({
+      dir,
+      receipts,
+      worker,
+      packChannel: new PackChannel({ stable, canary, canaryRatio: 1 }),
+    });
+    service.runtime.receive({
+      id: "t1",
+      source: "local",
+      thread: "thread-1",
+      actor: "local-user",
+      bot: false,
+      addressed: "mention",
+      text: "run the canary",
+      at: "2026-11-06T00:00:00.000Z",
+      meta: { scope: "local" },
+    });
+    await service.runtime.evaluate();
+    await service.runtime.dispatch("t1");
+    expect(captured[0]?.pack.digest).toBe(canary.digest);
+    expect(receipts.receipts[0]).toMatchObject({
+      packChannel: "canary",
+      pack: { id: "canary", version: 2, digest: canary.digest },
+    });
+    await service.runtime.dispose();
   });
 
   it("polls a Source into the Engine", async () => {

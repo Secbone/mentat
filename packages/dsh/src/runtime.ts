@@ -8,6 +8,7 @@ import {
   type Trigger,
 } from "@mentat/domain";
 import type { EffectQueue } from "@mentat/effects";
+import { PackChannel } from "@mentat/evolve";
 import { type CapabilityPack, defineCapabilityPack, type PackRef, packRef } from "@mentat/pack";
 import type { WorkerAdapter, WorkerReport, WorkerTask } from "@mentat/worker";
 
@@ -32,6 +33,8 @@ export interface RuntimeReceipt {
   worker: string;
   packDigest: string;
   pack: PackRef;
+  /** Stable or canary selection for this Assignment. */
+  packChannel?: "stable" | "canary";
   report: WorkerReport;
   events: number;
   outcome: "completed" | "error";
@@ -60,6 +63,7 @@ export interface MentatRuntimeOptions {
   systemPrompt?: string;
   timeoutMs?: number;
   pack?: CapabilityPack;
+  packChannel?: PackChannel;
   now?: () => Date;
   id?: (prefix: string) => string;
 }
@@ -72,6 +76,25 @@ interface LaunchPayload {
 
 const DEFAULT_WORKER_PROMPT =
   "You are a Mentat Worker. Complete the assigned ticket, verify the result, and report honestly.";
+
+export interface DefaultWorkerPackOptions {
+  model?: string;
+  systemPrompt?: string;
+  timeoutMs?: number;
+}
+
+/** The pack a fresh control plane starts with before any evolution. */
+export function defaultWorkerPack(options: DefaultWorkerPackOptions = {}): CapabilityPack {
+  return defineCapabilityPack({
+    id: "worker-default",
+    version: 1,
+    prompt: { system: options.systemPrompt ?? DEFAULT_WORKER_PROMPT, role: "worker" },
+    ...(options.model ? { model: { model: options.model } } : {}),
+    ...(options.timeoutMs !== undefined
+      ? { policy: { budget: { wallMs: options.timeoutMs } } }
+      : {}),
+  });
+}
 
 /**
  * The control-plane runtime: owns the Router session, runs the Engine, and
@@ -86,7 +109,7 @@ export class MentatRuntime {
   private readonly agents?: RouterAgentPort;
   private readonly cwd: string;
   private readonly model?: string;
-  private readonly pack: CapabilityPack;
+  private readonly packChannel: PackChannel;
   private readonly clock: () => Date;
   private readonly nextId: (prefix: string) => string;
   private readonly disposeLaunch: () => void;
@@ -101,17 +124,9 @@ export class MentatRuntime {
     if (options.agents) this.agents = options.agents;
     this.cwd = options.cwd;
     if (options.model) this.model = options.model;
-    this.pack =
-      options.pack ??
-      defineCapabilityPack({
-        id: "worker-default",
-        version: 1,
-        prompt: { system: options.systemPrompt ?? DEFAULT_WORKER_PROMPT, role: "worker" },
-        ...(options.model ? { model: { model: options.model } } : {}),
-        ...(options.timeoutMs !== undefined
-          ? { policy: { budget: { wallMs: options.timeoutMs } } }
-          : {}),
-      });
+    this.packChannel =
+      options.packChannel ??
+      new PackChannel({ stable: options.pack ?? defaultWorkerPack(options) });
     this.clock = options.now ?? (() => new Date());
     this.nextId = options.id ?? ((prefix) => `${prefix}-${crypto.randomUUID()}`);
     this.engine = new Engine({
@@ -129,7 +144,11 @@ export class MentatRuntime {
   }
 
   get currentPack(): CapabilityPack {
-    return this.pack;
+    return this.packChannel.current();
+  }
+
+  get channel(): PackChannel {
+    return this.packChannel;
   }
 
   get lastReceipt(): RuntimeReceipt | undefined {
@@ -195,7 +214,8 @@ export class MentatRuntime {
     if (!assignment || !ticket) throw new Error("launch target is missing");
     this.engine.assignmentStarted(ticket.id, assignment.id);
 
-    const pack = this.pack;
+    const selection = this.packChannel.select(assignment.id);
+    const pack = selection.pack;
     const packDigest = pack.digest;
     assignment.packDigest = packDigest;
     this.repos.assignments.save(assignment);
@@ -243,6 +263,7 @@ export class MentatRuntime {
       worker: this.worker.id,
       packDigest,
       pack: packRef(pack),
+      packChannel: selection.channel,
       report,
       events,
       outcome,

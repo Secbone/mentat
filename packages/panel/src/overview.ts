@@ -41,6 +41,18 @@ export interface SourceView {
   consecutiveFailures: number;
 }
 
+export interface PackRefView {
+  id: string;
+  version: number;
+  digest: string;
+}
+
+export interface PackChannelView {
+  stable: PackRefView;
+  canary?: PackRefView;
+  canaryRatio: number;
+}
+
 export interface Overview {
   generatedAt: string;
   counts: {
@@ -55,6 +67,7 @@ export interface Overview {
   ended: TicketView[];
   assignments: AssignmentView[];
   evolution: EvolutionView[];
+  channel?: PackChannelView;
   source?: SourceView;
   decisions: Record<DecisionOutcome, number>;
 }
@@ -84,7 +97,12 @@ function view(ticket: Ticket, repos: Repositories): TicketView {
  */
 export function buildOverview(
   repos: Repositories,
-  options: { now?: () => Date; evolution?: EvolutionView[]; source?: SourceView } = {},
+  options: {
+    now?: () => Date;
+    evolution?: EvolutionView[];
+    channel?: PackChannelView;
+    source?: SourceView;
+  } = {},
 ): Overview {
   const tickets = repos.tickets.list().map((ticket) => view(ticket, repos));
   const decisions: Record<DecisionOutcome, number> = {
@@ -117,6 +135,7 @@ export function buildOverview(
       packDigest: assignment.packDigest,
     })),
     evolution: options.evolution ?? [],
+    ...(options.channel ? { channel: options.channel } : {}),
     ...(options.source ? { source: options.source } : {}),
     decisions,
   };
@@ -139,6 +158,16 @@ export function renderOverviewText(overview: Overview): string {
   lines.push(
     `assignments: ${overview.assignments.length}  evolution: ${overview.evolution.length}`,
   );
+  if (overview.channel) {
+    const canary = overview.channel.canary;
+    lines.push(
+      `pack: stable v${overview.channel.stable.version}${
+        canary
+          ? `  canary v${canary.version} (${Math.round(overview.channel.canaryRatio * 100)}%)`
+          : ""
+      }`,
+    );
+  }
   if (overview.source) {
     lines.push(
       `source: ${overview.source.active ? "active" : "idle"}  last poll: ${

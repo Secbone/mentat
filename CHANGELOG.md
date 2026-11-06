@@ -12,6 +12,10 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `PackChannel`: deterministic stable/canary selection, promotion and rollback
+  with durable `pack-channel.json` state. Assignments and receipts record the
+  selected channel; `mentat_channel` exposes status/canary/promote/rollback,
+  and the panel overview shows the active versions.
 - `MentatEvolver` + `EvolutionScheduler`: read failed Assignment receipts,
   deduplicate and skip already-learned observations, then run Dream through the
   configured pack evaluator. Exposed as `mentat_evolve` and an optional

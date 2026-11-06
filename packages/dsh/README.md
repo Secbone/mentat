@@ -62,6 +62,22 @@ export MENTAT_EVOLVE_MAX_OBSERVATIONS=5       # optional, newest first
 The scheduler skips overlapping passes and reports failures without stopping
 the next one. `mentat_evolve` also runs one pass on demand.
 
+### Canary and rollback
+
+`mentat_channel` inspects or changes the stable/canary pack channel:
+
+```text
+action=status
+action=canary candidate=<accepted id> ratio=0.1
+action=promote candidate=<accepted id>   # or omit candidate to promote the canary
+action=rollback
+```
+
+Selection is deterministic per Assignment id, so a retry stays in the same
+channel. Receipts record `packChannel: "stable" | "canary"`, and the channel is
+persisted in `<state>/pack-channel.json` so a restart keeps the promoted pack.
+The panel overview exposes the current stable/canary versions.
+
 ### Command evaluator
 
 Set `MENTAT_EVAL_COMMAND` (or `config.evolve.command`). The command receives the

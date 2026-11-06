@@ -63,6 +63,7 @@ describe("Mentat panel", () => {
     expect(overview.headers["content-type"]).toContain("application/json");
     expect(JSON.parse(overview.text())).toMatchObject({
       counts: { tickets: 0, needsPerson: 0 },
+      channel: { stable: { id: "worker-default", version: 1 } },
     });
   });
 
