@@ -11,6 +11,7 @@ export interface PackChannelSnapshot {
   stable: CapabilityPack;
   canary?: CapabilityPack;
   canaryRatio: number;
+  canaryAt?: string;
   previous: CapabilityPack[];
 }
 
@@ -18,10 +19,12 @@ export interface PackChannelOptions {
   stable: CapabilityPack;
   canary?: CapabilityPack;
   canaryRatio?: number;
+  canaryAt?: string;
   previous?: CapabilityPack[];
   /** Deterministic [0, 1) bucket; defaults to FNV-1a over the assignment id. */
   bucket?: (assignmentId: string) => number;
   onChange?: (snapshot: PackChannelSnapshot) => void;
+  now?: () => Date;
 }
 
 function defaultBucket(assignmentId: string): number {
@@ -50,16 +53,20 @@ export class PackChannel {
   private stablePack: CapabilityPack;
   private canaryPack?: CapabilityPack;
   private canaryRatio: number;
+  private canaryAt?: string;
   private previousPacks: CapabilityPack[];
   private readonly bucket: (assignmentId: string) => number;
   private readonly onChange?: (snapshot: PackChannelSnapshot) => void;
+  private readonly clock: () => Date;
 
   constructor(options: PackChannelOptions) {
     this.stablePack = options.stable;
     if (options.canary) this.canaryPack = options.canary;
     this.canaryRatio = ratio(options.canaryRatio);
+    if (options.canaryAt) this.canaryAt = options.canaryAt;
     this.previousPacks = [...(options.previous ?? [])];
     this.bucket = options.bucket ?? defaultBucket;
+    this.clock = options.now ?? (() => new Date());
     if (options.onChange) this.onChange = options.onChange;
   }
 
@@ -77,6 +84,10 @@ export class PackChannel {
     return this.canaryPack;
   }
 
+  canarySince(): string | undefined {
+    return this.canaryAt;
+  }
+
   ratio(): number {
     return this.canaryRatio;
   }
@@ -85,18 +96,21 @@ export class PackChannel {
     this.remember(this.stablePack);
     this.stablePack = pack;
     this.canaryPack = undefined;
+    this.canaryAt = undefined;
     this.persist();
   }
 
   setCanary(pack: CapabilityPack, canaryRatio = 0.1): void {
     this.canaryPack = pack;
     this.canaryRatio = ratio(canaryRatio);
+    this.canaryAt = this.clock().toISOString();
     this.persist();
   }
 
   clearCanary(): void {
     if (!this.canaryPack) return;
     this.canaryPack = undefined;
+    this.canaryAt = undefined;
     this.persist();
   }
 
@@ -106,6 +120,7 @@ export class PackChannel {
     this.remember(this.stablePack);
     this.stablePack = this.canaryPack;
     this.canaryPack = undefined;
+    this.canaryAt = undefined;
     this.persist();
   }
 
@@ -113,6 +128,7 @@ export class PackChannel {
   rollback(): void {
     if (this.canaryPack) {
       this.canaryPack = undefined;
+      this.canaryAt = undefined;
       this.persist();
       return;
     }
@@ -127,6 +143,7 @@ export class PackChannel {
       stable: this.stablePack,
       ...(this.canaryPack ? { canary: this.canaryPack } : {}),
       canaryRatio: this.canaryRatio,
+      ...(this.canaryAt ? { canaryAt: this.canaryAt } : {}),
       previous: [...this.previousPacks],
     };
   }

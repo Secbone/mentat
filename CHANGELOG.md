@@ -12,6 +12,9 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `CanaryMonitor` + `CanaryScheduler`: compare canary receipts with the stable
+  baseline and automatically roll back above an absolute failure ceiling or a
+  regression delta. `mentat_channel` reports the assessment.
 - `MatrixPackEvaluator` + `MENTAT_BENCH_WORKERS`: evaluate one pack across
   several workers, namespace signals by worker, and accept only when no worker
   regresses.

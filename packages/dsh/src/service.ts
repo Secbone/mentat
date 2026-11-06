@@ -13,6 +13,8 @@ import type { CapabilityPack } from "@mentat/pack";
 import { FileRepositories } from "@mentat/store";
 import type { WorkerAdapter } from "@mentat/worker";
 import { FakeWorker } from "@mentat/worker";
+import { type CanaryAssessment, CanaryMonitor, type CanaryPolicy } from "./canary-monitor";
+import { CanaryScheduler } from "./canary-scheduler";
 import { EvolutionScheduler } from "./evolution-scheduler";
 import { MentatEvolver } from "./evolver";
 import { FileReceiptSink } from "./file-receipts";
@@ -45,6 +47,10 @@ export interface MentatServiceOptions {
   evolveIntervalMs?: number;
   maxObservations?: number;
   onEvolveError?: (error: unknown) => void;
+  canaryIntervalMs?: number;
+  canaryPolicy?: Partial<CanaryPolicy>;
+  onCanaryRollback?: (assessment: CanaryAssessment & { rolledBack: true }) => void;
+  onCanaryError?: (error: unknown) => void;
 }
 
 export interface MentatService {
@@ -57,6 +63,8 @@ export interface MentatService {
   dream?: DreamService;
   evolver?: MentatEvolver;
   evolutionScheduler?: EvolutionScheduler;
+  canaryMonitor?: CanaryMonitor;
+  canaryScheduler?: CanaryScheduler;
   poller?: SourcePoller;
 }
 
@@ -131,6 +139,22 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
           ...(options.onEvolveError ? { onError: options.onEvolveError } : {}),
         })
       : undefined;
+  const canaryMonitor = receipts.list
+    ? new CanaryMonitor({
+        receipts: receipts as ReceiptStore,
+        channel: packChannel,
+        ...(options.canaryPolicy ? { policy: options.canaryPolicy } : {}),
+      })
+    : undefined;
+  const canaryScheduler =
+    canaryMonitor && options.canaryIntervalMs
+      ? new CanaryScheduler({
+          monitor: canaryMonitor,
+          intervalMs: options.canaryIntervalMs,
+          ...(options.onCanaryRollback ? { onRollback: options.onCanaryRollback } : {}),
+          ...(options.onCanaryError ? { onError: options.onCanaryError } : {}),
+        })
+      : undefined;
   const poller = options.source
     ? new SourcePoller({
         source: options.source,
@@ -149,6 +173,8 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
     ...(dream ? { dream } : {}),
     ...(evolver ? { evolver } : {}),
     ...(evolutionScheduler ? { evolutionScheduler } : {}),
+    ...(canaryMonitor ? { canaryMonitor } : {}),
+    ...(canaryScheduler ? { canaryScheduler } : {}),
     ...(poller ? { poller } : {}),
   };
 }

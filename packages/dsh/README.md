@@ -83,6 +83,20 @@ channel. Receipts record `packChannel: "stable" | "canary"`, and the channel is
 persisted in `<state>/pack-channel.json` so a restart keeps the promoted pack.
 The panel overview exposes the current stable/canary versions.
 
+Set `MENTAT_CANARY_INTERVAL_MS` to check canary health periodically. The
+monitor compares canary receipts since the canary started with the stable
+baseline and rolls back when either threshold is crossed:
+
+```bash
+MENTAT_CANARY_INTERVAL_MS=60000
+MENTAT_CANARY_MIN_SAMPLES=5          # default 5
+MENTAT_CANARY_MAX_FAILURE_RATE=0.5   # absolute ceiling
+MENTAT_CANARY_MAX_DELTA=0.2          # allowed regression vs stable
+```
+
+`mentat_channel action=status` includes the current assessment, and a rollback
+clears the canary without touching the stable pack.
+
 ### Command evaluator
 
 Set `MENTAT_EVAL_COMMAND` (or `config.evolve.command`). The command receives the

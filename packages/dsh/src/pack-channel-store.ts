@@ -10,6 +10,7 @@ export function loadPackChannel(path: string, fallback: CapabilityPack): PackCha
     stable: snapshot?.stable ?? fallback,
     ...(snapshot?.canary ? { canary: snapshot.canary } : {}),
     canaryRatio: snapshot?.canaryRatio ?? 0.1,
+    ...(snapshot?.canaryAt ? { canaryAt: snapshot.canaryAt } : {}),
     previous: snapshot?.previous ?? [],
     onChange: (state) => writeSnapshot(path, state),
   });
@@ -27,6 +28,7 @@ function readSnapshot(path: string): PackChannelSnapshot | undefined {
     stable: data.stable,
     ...(data.canary ? { canary: data.canary } : {}),
     canaryRatio: typeof data.canaryRatio === "number" ? data.canaryRatio : 0.1,
+    ...(typeof data.canaryAt === "string" ? { canaryAt: data.canaryAt } : {}),
     previous: Array.isArray(data.previous) ? data.previous : [],
   };
 }

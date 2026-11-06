@@ -7,6 +7,7 @@ import { packRef } from "@mentat/pack";
 import { buildOverview } from "@mentat/panel";
 import { FileSourceState, GhCliGitHubApi, GitHubSource } from "@mentat/source-github";
 import { BenchmarkPackEvaluator } from "./benchmark-evaluator";
+import type { CanaryPolicy } from "./canary-monitor";
 import { CommandPackEvaluator } from "./command-evaluator";
 import type { RouterAgentPort, RuntimeReceipt } from "./runtime";
 import type { MentatService } from "./service";
@@ -78,6 +79,26 @@ function evolveFromEnv(): { command: string; cwd?: string; timeoutMs?: number } 
     command,
     ...(cwd ? { cwd } : {}),
     ...(Number.isSafeInteger(timeout) && timeout > 0 ? { timeoutMs: timeout } : {}),
+  };
+}
+
+function canaryFromEnv(): { intervalMs?: number; policy?: Partial<CanaryPolicy> } {
+  const interval = Number(process.env.MENTAT_CANARY_INTERVAL_MS ?? "");
+  const minSamples = Number(process.env.MENTAT_CANARY_MIN_SAMPLES ?? "");
+  const maxFailureRate = Number(process.env.MENTAT_CANARY_MAX_FAILURE_RATE ?? "");
+  const maxDelta = Number(process.env.MENTAT_CANARY_MAX_DELTA ?? "");
+  const policy: Partial<CanaryPolicy> = {
+    ...(Number.isSafeInteger(minSamples) && minSamples > 0 ? { minSamples } : {}),
+    ...(Number.isFinite(maxFailureRate) && maxFailureRate >= 0 && maxFailureRate <= 1
+      ? { maxFailureRate }
+      : {}),
+    ...(Number.isFinite(maxDelta) && maxDelta >= 0 && maxDelta <= 1
+      ? { maxFailureRateDelta: maxDelta }
+      : {}),
+  };
+  return {
+    ...(Number.isSafeInteger(interval) && interval > 0 ? { intervalMs: interval } : {}),
+    ...(Object.keys(policy).length > 0 ? { policy } : {}),
   };
 }
 
@@ -187,6 +208,7 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
   const evolve = config.evolve ?? evolveFromEnv();
   const benchmark = config.benchmark ?? benchmarkFromEnv();
   const evolution = evolutionFromEnv();
+  const canary = canaryFromEnv();
   const model = config.model ?? process.env.MENTAT_MODEL;
   const worker = workerFromEnv();
   let evaluator: PackEvaluator | undefined;
@@ -219,23 +241,35 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
     ...(evolution.maxObservations !== undefined
       ? { maxObservations: evolution.maxObservations }
       : {}),
+    ...(canary.intervalMs !== undefined ? { canaryIntervalMs: canary.intervalMs } : {}),
+    ...(canary.policy ? { canaryPolicy: canary.policy } : {}),
     onPollError: (error) => {
       if (process.env.MENTAT_DEBUG) console.error(`[mentat] source poll failed: ${String(error)}`);
     },
     onEvolveError: (error) => {
       if (process.env.MENTAT_DEBUG) console.error(`[mentat] evolution failed: ${String(error)}`);
     },
+    onCanaryRollback: (assessment) => {
+      if (process.env.MENTAT_DEBUG)
+        console.error(`[mentat] canary rollback: ${assessment.reason ?? "regression"}`);
+    },
+    onCanaryError: (error) => {
+      if (process.env.MENTAT_DEBUG) console.error(`[mentat] canary check failed: ${String(error)}`);
+    },
   });
   ctx.provide("mentat", service);
   if (process.env.MENTAT_DEBUG) console.error("[mentat] plugin loaded");
   service.poller?.start();
   service.evolutionScheduler?.start();
+  service.canaryScheduler?.start();
   const stopPoller = () => service.poller?.stop();
   const stopEvolution = () => service.evolutionScheduler?.stop();
+  const stopCanary = () => service.canaryScheduler?.stop();
   if (ctx.effect)
     ctx.effect(() => {
       stopPoller();
       stopEvolution();
+      stopCanary();
     });
 
   ctx.tools.register({
@@ -437,6 +471,7 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
           stable: { type: "object" },
           canary: { type: "object" },
           canaryRatio: { type: "number" },
+          assessment: { type: "object" },
         },
         ["stable", "canaryRatio"],
       ),
@@ -468,11 +503,13 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
         default:
           throw new Error(`unknown channel action: ${args.action}`);
       }
-      const canary = service.packChannel.canary();
+      const canaryPack = service.packChannel.canary();
+      const assessment = service.canaryMonitor?.assess();
       return {
         stable: packRef(service.packChannel.current()),
-        ...(canary ? { canary: packRef(canary) } : {}),
+        ...(canaryPack ? { canary: packRef(canaryPack) } : {}),
         canaryRatio: service.packChannel.ratio(),
+        ...(assessment ? { assessment } : {}),
       };
     },
   });
