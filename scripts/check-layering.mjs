@@ -15,6 +15,7 @@ export const ALLOWED_WORKSPACE_DEPS = {
   "@mentat/domain": [],
   "@mentat/dsh-client": [],
   "@mentat/dsh": [
+    "@mentat/benchmark",
     "@mentat/core",
     "@mentat/domain",
     "@mentat/effects",

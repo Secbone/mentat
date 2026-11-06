@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "benchmark": {
+    "id": "mentat-evolution-passphrase",
+    "version": "1",
+    "track": "smoke"
+  },
+  "dataset": {
+    "revision": "1",
+    "sha256": "8358c7cb7043a0ece2b15f3c294f36d4a81a83694a9487b51b0a7515b272cfa0",
+    "split": "smoke",
+    "source": "benchmarks/evolution/passphrase-episodes.json"
+  },
+  "scorer": {
+    "id": "native-rules",
+    "revision": "1",
+    "config": {}
+  },
+  "protocol": {
+    "id": "host-episodes",
+    "revision": "1",
+    "config": {
+      "permission": "deny",
+      "session": "fresh-per-episode",
+      "confirmation": "explicit typed user directives",
+      "candidateActivation": "disabled",
+      "isolation": "local-process-only"
+    },
+    "arms": [
+      {
+        "id": "reset",
+        "memory": "reset"
+      }
+    ],
+    "maxCalls": 4,
+    "turnTimeoutMs": 120000
+  },
+  "subject": {
+    "id": "mentat",
+    "revision": "fixture-1",
+    "codeSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "harness": "opencode",
+    "harnessVersion": "2.2.5",
+    "model": "opencode-go/deepseek-v4.1-flash",
+    "modelVersion": "2026-11-06",
+    "config": {}
+  },
+  "metrics": [
+    {
+      "id": "passphrase.exact",
+      "dimension": "task-quality",
+      "direction": "higher-better",
+      "unit": "ratio",
+      "min": 0,
+      "max": 1
+    }
+  ],
+  "units": [
+    {
+      "caseId": "passphrase-probe",
+      "familyId": "passphrase",
+      "arm": "reset",
+      "repetition": 0,
+      "sourceId": "passphrase-probe",
+      "metricIds": ["passphrase.exact"]
+    }
+  ]
+}

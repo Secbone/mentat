@@ -28,10 +28,30 @@ execution policy and timeout; unsupported pack capabilities fail explicitly.
 
 ## Dream evaluator
 
-`mentat_dream` is enabled when `MENTAT_EVAL_COMMAND` (or `config.evolve.command`)
-is set. The command receives the pack as `MENTAT_PACK` JSON plus
-`MENTAT_PACK_VERSION`/`MENTAT_PACK_DIGEST`, and prints a `Signal[]` JSON array.
-The model never supplies the evaluator.
+`mentat_dream` is enabled by one of two operator-owned evaluators. The model
+never supplies the evaluator.
+
+### Benchmark evaluator
+
+Run a native benchmark episode set against each pack. The pack digest is
+recorded in the run plan and signals are named `<arm>.<metric>`.
+
+```bash
+export MENTAT_WORKER=opencode
+export MENTAT_BENCH_PLAN=benchmarks/evolution/passphrase-plan.json
+export MENTAT_BENCH_DATASET=benchmarks/evolution/passphrase-episodes.json
+export MENTAT_BENCH_OUT=/tmp/mentat-bench   # optional, default <state>/bench
+export MENTAT_BENCH_ARMS=reset             # optional, comma-separated
+```
+
+The fixture `benchmarks/evolution/passphrase-plan.json` is a smoke benchmark:
+the base pack scores 0, and a pack carrying the passphrase lesson scores 1.
+
+### Command evaluator
+
+Set `MENTAT_EVAL_COMMAND` (or `config.evolve.command`). The command receives the
+pack as `MENTAT_PACK` JSON plus `MENTAT_PACK_VERSION`/`MENTAT_PACK_DIGEST`, and
+prints a `Signal[]` JSON array.
 
 ```bash
 export MENTAT_EVAL_COMMAND='node -e "console.log(JSON.stringify([{name:"quality",value:Number(process.env.MENTAT_PACK_VERSION),direction:"higher-better"}]))"'

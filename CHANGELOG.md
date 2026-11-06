@@ -12,6 +12,11 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `BenchmarkPackEvaluator`: run a `@mentat/benchmark` episode plan against each
+  CapabilityPack through a `WorkerAdapter`, expose macro-averaged
+  `<arm>.<metric>` signals, and wire it into `mentat_dream` with
+  `MENTAT_BENCH_PLAN`/`MENTAT_BENCH_DATASET`. Verified in a real DSH
+  model-driven run: passphrase benchmark 0 → 1, accepted, archived.
 - `mentat_dream`: operator-configured `CommandPackEvaluator` wired through
   `@mentat/evolve`, with a real DSH model-driven E2E (quality 1 → 2, accepted,
   archived).

@@ -1,13 +1,18 @@
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { validateDataset, validateEpisodePlan, validatePlan } from "@mentat/benchmark";
 import type { Decision, Trigger } from "@mentat/domain";
 import { createOpenCodeAdapter } from "@mentat/harnesses";
 import { buildOverview } from "@mentat/panel";
 import { FileSourceState, GhCliGitHubApi, GitHubSource } from "@mentat/source-github";
+import type { WorkerAdapter } from "@mentat/worker";
 import { HarnessWorker } from "@mentat/worker";
+import { BenchmarkPackEvaluator } from "./benchmark-evaluator";
 import { CommandPackEvaluator } from "./command-evaluator";
 import type { RouterAgentPort, RuntimeReceipt } from "./runtime";
 import type { MentatService } from "./service";
 import { createMentatService } from "./service";
+import { workerSubjectFactory } from "./worker-subject";
 
 export type { RuntimeReceipt } from "./runtime";
 export type { MentatService } from "./service";
@@ -43,11 +48,19 @@ export interface DshContext {
   logger?: { error?(message: string): void };
 }
 
+export interface BenchmarkConfig {
+  plan: string;
+  dataset: string;
+  out?: string;
+  arms?: string[];
+}
+
 export interface MentatConfig {
   dir?: string;
   model?: string;
   github?: { repo: string; agent: string; intervalMs?: number };
   evolve?: { command: string; cwd?: string; timeoutMs?: number };
+  benchmark?: BenchmarkConfig;
 }
 
 export const name = "mentat";
@@ -63,6 +76,42 @@ function evolveFromEnv(): { command: string; cwd?: string; timeoutMs?: number } 
     ...(cwd ? { cwd } : {}),
     ...(Number.isSafeInteger(timeout) && timeout > 0 ? { timeoutMs: timeout } : {}),
   };
+}
+
+function benchmarkFromEnv(): BenchmarkConfig | undefined {
+  const plan = process.env.MENTAT_BENCH_PLAN;
+  const dataset = process.env.MENTAT_BENCH_DATASET;
+  if (!plan || !dataset) return undefined;
+  const out = process.env.MENTAT_BENCH_OUT;
+  const arms = process.env.MENTAT_BENCH_ARMS?.split(",")
+    .map((arm) => arm.trim())
+    .filter(Boolean);
+  return {
+    plan,
+    dataset,
+    ...(out ? { out } : {}),
+    ...(arms?.length ? { arms } : {}),
+  };
+}
+
+function benchmarkEvaluator(
+  config: BenchmarkConfig,
+  worker: WorkerAdapter,
+  dir: string,
+): BenchmarkPackEvaluator {
+  const plan = validatePlan(JSON.parse(readFileSync(config.plan, "utf8")) as unknown);
+  const dataset = validateDataset(JSON.parse(readFileSync(config.dataset, "utf8")) as unknown);
+  validateEpisodePlan(plan, dataset);
+  return new BenchmarkPackEvaluator({
+    plan,
+    dataset,
+    createSubject: workerSubjectFactory({
+      worker,
+      cwd: dir,
+      out: config.out ?? join(dir, "bench"),
+    }),
+    ...(config.arms ? { arms: config.arms } : {}),
+  });
 }
 
 function githubFromEnv(): { repo: string; agent: string; intervalMs?: number } | undefined {
@@ -114,13 +163,22 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
   const agents = routerAgents(ctx);
   const github = config.github ?? githubFromEnv();
   const evolve = config.evolve ?? evolveFromEnv();
-  const evaluator = evolve
-    ? new CommandPackEvaluator({
-        shell: evolve.command,
-        cwd: evolve.cwd ?? dir,
-        ...(evolve.timeoutMs !== undefined ? { timeoutMs: evolve.timeoutMs } : {}),
-      })
-    : undefined;
+  const benchmark = config.benchmark ?? benchmarkFromEnv();
+  const worker =
+    process.env.MENTAT_WORKER === "opencode"
+      ? new HarnessWorker(createOpenCodeAdapter({ binary: "opencode" }), { timeoutMs: 120_000 })
+      : undefined;
+  let evaluator: BenchmarkPackEvaluator | CommandPackEvaluator | undefined;
+  if (benchmark) {
+    if (!worker) throw new Error("benchmark evaluation requires MENTAT_WORKER=opencode");
+    evaluator = benchmarkEvaluator(benchmark, worker, dir);
+  } else if (evolve) {
+    evaluator = new CommandPackEvaluator({
+      shell: evolve.command,
+      cwd: evolve.cwd ?? dir,
+      ...(evolve.timeoutMs !== undefined ? { timeoutMs: evolve.timeoutMs } : {}),
+    });
+  }
   const source = github
     ? new GitHubSource({
         api: new GhCliGitHubApi(),
@@ -129,10 +187,6 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
         agentLogin: github.agent,
       })
     : undefined;
-  const worker =
-    process.env.MENTAT_WORKER === "opencode"
-      ? new HarnessWorker(createOpenCodeAdapter({ binary: "opencode" }), { timeoutMs: 120_000 })
-      : undefined;
   const service: MentatService = createMentatService({
     dir,
     ...(agents ? { agents } : {}),
@@ -254,7 +308,10 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
       render: (_args, value) => text(value),
     },
     async execute(raw) {
-      if (!service.dream) throw new Error("MENTAT_EVAL_COMMAND is not configured");
+      if (!service.dream)
+        throw new Error(
+          "no pack evaluator is configured (MENTAT_BENCH_PLAN or MENTAT_EVAL_COMMAND)",
+        );
       const args = raw as { text: string };
       const result = await service.dream.dream(service.runtime.currentPack, [
         {

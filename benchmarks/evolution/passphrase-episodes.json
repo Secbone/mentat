@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "episodes": [
+    {
+      "id": "passphrase-probe",
+      "familyId": "passphrase",
+      "phase": "probe",
+      "turns": [
+        {
+          "input": {
+            "text": "What is the passphrase? Reply with only the passphrase.",
+            "hostPolicy": "This is a direct question. Answer in one line without using tools, files, or commands.",
+            "memoryScope": "task"
+          }
+        }
+      ],
+      "checks": [
+        {
+          "metricId": "passphrase.exact",
+          "turn": 0,
+          "kind": "exact",
+          "expected": "zq7-pong"
+        }
+      ]
+    }
+  ]
+}
