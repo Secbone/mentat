@@ -2,21 +2,21 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateDataset, validateEpisodePlan, validatePlan } from "@mentat/benchmark";
 import type { Decision, Trigger } from "@mentat/domain";
-import { createOpenCodeAdapter, createPiAdapter } from "@mentat/harnesses";
+import { MatrixPackEvaluator, type PackEvaluator } from "@mentat/evolve";
 import { packRef } from "@mentat/pack";
 import { buildOverview } from "@mentat/panel";
 import { FileSourceState, GhCliGitHubApi, GitHubSource } from "@mentat/source-github";
-import type { WorkerAdapter } from "@mentat/worker";
-import { HarnessWorker } from "@mentat/worker";
 import { BenchmarkPackEvaluator } from "./benchmark-evaluator";
 import { CommandPackEvaluator } from "./command-evaluator";
 import type { RouterAgentPort, RuntimeReceipt } from "./runtime";
 import type { MentatService } from "./service";
 import { createMentatService } from "./service";
 import { workerSubjectFactory } from "./worker-subject";
+import { createWorker, workerFromEnv } from "./workers";
 
 export type { RuntimeReceipt } from "./runtime";
 export type { MentatService } from "./service";
+export { workerFromEnv } from "./workers";
 
 /** The narrow DSH surface this plugin uses; no DSH package is imported. */
 export interface DshToolDefinition {
@@ -54,6 +54,8 @@ export interface BenchmarkConfig {
   dataset: string;
   out?: string;
   arms?: string[];
+  /** Worker names to evaluate as a matrix; defaults to MENTAT_WORKER. */
+  workers?: string[];
 }
 
 export interface MentatConfig {
@@ -79,17 +81,6 @@ function evolveFromEnv(): { command: string; cwd?: string; timeoutMs?: number } 
   };
 }
 
-/** Compose the configured Worker adapter; an unknown name is a hard error. */
-export function workerFromEnv(env: NodeJS.ProcessEnv = process.env): WorkerAdapter | undefined {
-  const name = env.MENTAT_WORKER;
-  if (!name) return undefined;
-  if (name === "opencode")
-    return new HarnessWorker(createOpenCodeAdapter({ binary: "opencode" }), { timeoutMs: 120_000 });
-  if (name === "pi")
-    return new HarnessWorker(createPiAdapter({ permissionMode: "auto" }), { timeoutMs: 120_000 });
-  throw new Error(`unknown MENTAT_WORKER: ${name} (expected opencode or pi)`);
-}
-
 function evolutionFromEnv(): { intervalMs?: number; maxObservations?: number } {
   const interval = Number(process.env.MENTAT_EVOLVE_INTERVAL_MS ?? "");
   const max = Number(process.env.MENTAT_EVOLVE_MAX_OBSERVATIONS ?? "");
@@ -107,32 +98,42 @@ function benchmarkFromEnv(): BenchmarkConfig | undefined {
   const arms = process.env.MENTAT_BENCH_ARMS?.split(",")
     .map((arm) => arm.trim())
     .filter(Boolean);
+  const workers = process.env.MENTAT_BENCH_WORKERS?.split(",")
+    .map((worker) => worker.trim())
+    .filter(Boolean);
   return {
     plan,
     dataset,
     ...(out ? { out } : {}),
     ...(arms?.length ? { arms } : {}),
+    ...(workers?.length ? { workers } : {}),
   };
 }
 
-function benchmarkEvaluator(
-  config: BenchmarkConfig,
-  worker: WorkerAdapter,
-  dir: string,
-): BenchmarkPackEvaluator {
+function benchmarkEvaluator(config: BenchmarkConfig, dir: string): PackEvaluator {
   const plan = validatePlan(JSON.parse(readFileSync(config.plan, "utf8")) as unknown);
   const dataset = validateDataset(JSON.parse(readFileSync(config.dataset, "utf8")) as unknown);
   validateEpisodePlan(plan, dataset);
-  return new BenchmarkPackEvaluator({
-    plan,
-    dataset,
-    createSubject: workerSubjectFactory({
-      worker,
-      cwd: dir,
-      out: config.out ?? join(dir, "bench"),
+  const workers = config.workers ?? (process.env.MENTAT_WORKER ? [process.env.MENTAT_WORKER] : []);
+  if (workers.length === 0)
+    throw new Error("benchmark evaluation requires MENTAT_WORKER or MENTAT_BENCH_WORKERS");
+  const out = config.out ?? join(dir, "bench");
+  const entries = workers.map((worker) => ({
+    worker,
+    evaluator: new BenchmarkPackEvaluator({
+      plan,
+      dataset,
+      createSubject: workerSubjectFactory({
+        worker: createWorker(worker),
+        cwd: dir,
+        out: join(out, worker),
+      }),
+      ...(config.arms ? { arms: config.arms } : {}),
     }),
-    ...(config.arms ? { arms: config.arms } : {}),
-  });
+  }));
+  return entries.length === 1 && entries[0]
+    ? entries[0].evaluator
+    : new MatrixPackEvaluator(entries);
 }
 
 function githubFromEnv(): { repo: string; agent: string; intervalMs?: number } | undefined {
@@ -188,10 +189,9 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
   const evolution = evolutionFromEnv();
   const model = config.model ?? process.env.MENTAT_MODEL;
   const worker = workerFromEnv();
-  let evaluator: BenchmarkPackEvaluator | CommandPackEvaluator | undefined;
+  let evaluator: PackEvaluator | undefined;
   if (benchmark) {
-    if (!worker) throw new Error("benchmark evaluation requires MENTAT_WORKER=opencode");
-    evaluator = benchmarkEvaluator(benchmark, worker, dir);
+    evaluator = benchmarkEvaluator(benchmark, dir);
   } else if (evolve) {
     evaluator = new CommandPackEvaluator({
       shell: evolve.command,

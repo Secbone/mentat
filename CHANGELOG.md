@@ -12,6 +12,9 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `MatrixPackEvaluator` + `MENTAT_BENCH_WORKERS`: evaluate one pack across
+  several workers, namespace signals by worker, and accept only when no worker
+  regresses.
 - `MENTAT_WORKER=pi`: dispatch Assignments through `HarnessWorker` + the Pi
   RPC adapter, with `MENTAT_MODEL` selecting the pack model. Verified in a real
   DSH model-driven run (`worker: "pi"`, report `pong`).

@@ -62,7 +62,7 @@ describe("Mentat DSH plugin", () => {
     expect(workerFromEnv({})).toBeUndefined();
     expect(workerFromEnv({ MENTAT_WORKER: "pi" })?.id).toBe("pi");
     expect(workerFromEnv({ MENTAT_WORKER: "opencode" })?.id).toBe("opencode");
-    expect(() => workerFromEnv({ MENTAT_WORKER: "codex" })).toThrow("unknown MENTAT_WORKER");
+    expect(() => workerFromEnv({ MENTAT_WORKER: "codex" })).toThrow("unknown worker: codex");
   });
 
   it("runs one request through the tool surface and records a receipt", async () => {

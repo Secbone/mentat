@@ -47,6 +47,11 @@ export MENTAT_BENCH_ARMS=reset             # optional, comma-separated
 The fixture `benchmarks/evolution/passphrase-plan.json` is a smoke benchmark:
 the base pack scores 0, and a pack carrying the passphrase lesson scores 1.
 
+Set `MENTAT_BENCH_WORKERS=opencode,pi` to evaluate the same pack across a
+Worker matrix. Signals are namespaced `<worker>.<arm>.<metric>`, so a gain on
+one Worker cannot be reported as a system-wide gain; the improvement gate
+requires every Worker to be no worse.
+
 ### Automatic evolution
 
 `mentat_evolve` reads failed Assignment receipts, turns them into Dream
