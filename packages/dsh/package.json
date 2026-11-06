@@ -16,6 +16,7 @@
     "@mentat/core": "workspace:*",
     "@mentat/domain": "workspace:*",
     "@mentat/effects": "workspace:*",
+    "@mentat/evaluation": "workspace:*",
     "@mentat/evolve": "workspace:*",
     "@mentat/harnesses": "workspace:*",
     "@mentat/pack": "workspace:*",

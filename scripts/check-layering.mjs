@@ -18,6 +18,7 @@ export const ALLOWED_WORKSPACE_DEPS = {
     "@mentat/core",
     "@mentat/domain",
     "@mentat/effects",
+    "@mentat/evaluation",
     "@mentat/evolve",
     "@mentat/harnesses",
     "@mentat/pack",

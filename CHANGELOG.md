@@ -12,6 +12,9 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   and a versioned Capability Pack for self-evolution.
 
 ### Added
+- `mentat_dream`: operator-configured `CommandPackEvaluator` wired through
+  `@mentat/evolve`, with a real DSH model-driven E2E (quality 1 → 2, accepted,
+  archived).
 - `MENTAT_WORKER=opencode`: dispatch Assignments through `HarnessWorker` and
   the OpenCode ACP adapter. Verified end-to-end with the OpenCode API:
   Router session → `mentat_run` → Worker report → receipt.

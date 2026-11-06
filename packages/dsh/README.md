@@ -10,6 +10,7 @@ Cordis plugin that hosts the Mentat control plane inside DeepSeek Harness.
   - `mentat_receive` — receive a local Trigger, start due Evals, run due effects
   - `mentat_dispatch` — accept one candidate and run its Assignment
   - `mentat_overview` — person-blocked Tickets, open work, assignments and decisions
+  - `mentat_dream` — propose, evaluate, gate and archive one CapabilityPack candidate
   - `mentat_poll` — poll the configured Source now
   - `mentat_run` — receive → evaluate → dispatch one local request end-to-end
 
@@ -24,6 +25,17 @@ The runtime runs one `CapabilityPack` per Assignment. `@mentat/pack` freezes
 the prompt/model/tools/policy bundle and its digest is stored on the Assignment
 and in the receipt. `HarnessWorker` injects prompt, model, MCP servers,
 execution policy and timeout; unsupported pack capabilities fail explicitly.
+
+## Dream evaluator
+
+`mentat_dream` is enabled when `MENTAT_EVAL_COMMAND` (or `config.evolve.command`)
+is set. The command receives the pack as `MENTAT_PACK` JSON plus
+`MENTAT_PACK_VERSION`/`MENTAT_PACK_DIGEST`, and prints a `Signal[]` JSON array.
+The model never supplies the evaluator.
+
+```bash
+export MENTAT_EVAL_COMMAND='node -e "console.log(JSON.stringify([{name:"quality",value:Number(process.env.MENTAT_PACK_VERSION),direction:"higher-better"}]))"'
+```
 
 ## GitHub Source
 

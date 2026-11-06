@@ -1,7 +1,13 @@
 import { join } from "node:path";
 import type { Policy, SourceKind } from "@mentat/domain";
 import { EffectQueue } from "@mentat/effects";
-import { PackArchive } from "@mentat/evolve";
+import {
+  DreamService,
+  EvolutionLoop,
+  PackArchive,
+  type PackEvaluator,
+  RulePackProposer,
+} from "@mentat/evolve";
 import type { CapabilityPack } from "@mentat/pack";
 import { FileRepositories } from "@mentat/store";
 import type { WorkerAdapter } from "@mentat/worker";
@@ -16,6 +22,7 @@ export interface MentatServiceOptions {
   agents?: RouterAgentPort;
   receipts?: ReceiptSink;
   packs?: PackArchive;
+  evaluator?: PackEvaluator;
   policy?: Policy;
   model?: string;
   systemPrompt?: string;
@@ -32,6 +39,7 @@ export interface MentatService {
   queue: EffectQueue;
   receipts: ReceiptSink;
   packs: PackArchive;
+  dream?: DreamService;
   poller?: SourcePoller;
 }
 
@@ -71,6 +79,15 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
     ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
     ...(options.pack ? { pack: options.pack } : {}),
   });
+  const dream = options.evaluator
+    ? new DreamService(
+        new EvolutionLoop({
+          proposer: new RulePackProposer(),
+          evaluator: options.evaluator,
+          archive: packs,
+        }),
+      )
+    : undefined;
   const poller = options.source
     ? new SourcePoller({
         source: options.source,
@@ -79,5 +96,13 @@ export function createMentatService(options: MentatServiceOptions): MentatServic
         ...(options.onPollError ? { onError: options.onPollError } : {}),
       })
     : undefined;
-  return { runtime, repos, queue, receipts, packs, ...(poller ? { poller } : {}) };
+  return {
+    runtime,
+    repos,
+    queue,
+    receipts,
+    packs,
+    ...(dream ? { dream } : {}),
+    ...(poller ? { poller } : {}),
+  };
 }

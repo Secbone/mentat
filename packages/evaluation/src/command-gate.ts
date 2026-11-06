@@ -11,6 +11,8 @@ export interface CommandSpec {
   command?: string;
   args?: string[];
   shell?: string;
+  /** Extra environment for the child; merged over the host environment. */
+  env?: NodeJS.ProcessEnv;
 }
 export interface CommandResult {
   ok: boolean;
@@ -49,6 +51,7 @@ export async function runCommand(spec: CommandSpec): Promise<CommandResult> {
       });
     const child = spawn(command, args, {
       cwd: spec.cwd,
+      env: spec.env ? { ...process.env, ...spec.env } : process.env,
       detached: process.platform !== "win32",
       stdio: ["ignore", "pipe", "pipe"],
     });

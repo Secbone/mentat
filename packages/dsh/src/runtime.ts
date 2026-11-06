@@ -122,6 +122,10 @@ export class MentatRuntime {
     });
   }
 
+  get currentPack(): CapabilityPack {
+    return this.pack;
+  }
+
   get lastReceipt(): RuntimeReceipt | undefined {
     return this.receipt ? { ...this.receipt } : undefined;
   }

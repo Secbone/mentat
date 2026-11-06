@@ -4,6 +4,7 @@ import { createOpenCodeAdapter } from "@mentat/harnesses";
 import { buildOverview } from "@mentat/panel";
 import { FileSourceState, GhCliGitHubApi, GitHubSource } from "@mentat/source-github";
 import { HarnessWorker } from "@mentat/worker";
+import { CommandPackEvaluator } from "./command-evaluator";
 import type { RouterAgentPort, RuntimeReceipt } from "./runtime";
 import type { MentatService } from "./service";
 import { createMentatService } from "./service";
@@ -46,10 +47,23 @@ export interface MentatConfig {
   dir?: string;
   model?: string;
   github?: { repo: string; agent: string; intervalMs?: number };
+  evolve?: { command: string; cwd?: string; timeoutMs?: number };
 }
 
 export const name = "mentat";
 export const inject = ["tools", "agents"];
+
+function evolveFromEnv(): { command: string; cwd?: string; timeoutMs?: number } | undefined {
+  const command = process.env.MENTAT_EVAL_COMMAND;
+  if (!command) return undefined;
+  const cwd = process.env.MENTAT_EVAL_CWD;
+  const timeout = Number(process.env.MENTAT_EVAL_TIMEOUT_MS ?? "");
+  return {
+    command,
+    ...(cwd ? { cwd } : {}),
+    ...(Number.isSafeInteger(timeout) && timeout > 0 ? { timeoutMs: timeout } : {}),
+  };
+}
 
 function githubFromEnv(): { repo: string; agent: string; intervalMs?: number } | undefined {
   const repo = process.env.MENTAT_GITHUB_REPO;
@@ -99,6 +113,14 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
     config.dir ?? process.env.MENTAT_STATE_DIR ?? join(process.cwd(), ".mentat", "superagent");
   const agents = routerAgents(ctx);
   const github = config.github ?? githubFromEnv();
+  const evolve = config.evolve ?? evolveFromEnv();
+  const evaluator = evolve
+    ? new CommandPackEvaluator({
+        shell: evolve.command,
+        cwd: evolve.cwd ?? dir,
+        ...(evolve.timeoutMs !== undefined ? { timeoutMs: evolve.timeoutMs } : {}),
+      })
+    : undefined;
   const source = github
     ? new GitHubSource({
         api: new GhCliGitHubApi(),
@@ -117,6 +139,7 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
     ...(worker ? { worker } : {}),
     ...(config.model ? { model: config.model } : {}),
     ...(source ? { source } : {}),
+    ...(evaluator ? { evaluator } : {}),
     ...(github?.intervalMs !== undefined ? { pollIntervalMs: github.intervalMs } : {}),
     onPollError: (error) => {
       if (process.env.MENTAT_DEBUG) console.error(`[mentat] source poll failed: ${String(error)}`);
@@ -207,6 +230,50 @@ export function apply(ctx: DshContext, config: MentatConfig = {}): void {
       return {
         outcome: decision.outcome,
         tickets: service.repos.tickets.list().map((ticket) => ticket.id),
+      };
+    },
+  });
+
+  ctx.tools.register({
+    name: "mentat_dream",
+    description:
+      "Turn one observation into a versioned CapabilityPack candidate, evaluate it with the configured evaluator, gate it and archive it.",
+    parameters: {
+      text: { type: "string", required: true, description: "Observation or lesson text" },
+    },
+    output: {
+      schema: objectSchema(
+        {
+          accepted: { type: "boolean" },
+          candidate: { type: "object" },
+          gate: { type: "object" },
+          signals: { type: "object" },
+        },
+        ["accepted", "candidate", "gate", "signals"],
+      ),
+      render: (_args, value) => text(value),
+    },
+    async execute(raw) {
+      if (!service.dream) throw new Error("MENTAT_EVAL_COMMAND is not configured");
+      const args = raw as { text: string };
+      const result = await service.dream.dream(service.runtime.currentPack, [
+        {
+          id: `obs-${crypto.randomUUID()}`,
+          at: new Date().toISOString(),
+          text: args.text,
+          kind: "failure",
+        },
+      ]);
+      return {
+        accepted: result.accepted,
+        candidate: {
+          id: result.candidate.id,
+          status: result.candidate.status,
+          version: result.candidate.pack.version,
+          digest: result.candidate.pack.digest,
+        },
+        gate: result.gate,
+        signals: { base: result.baseSignals, candidate: result.candidateSignals },
       };
     },
   });
