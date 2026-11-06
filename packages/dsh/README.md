@@ -85,3 +85,26 @@ Assignments through `HarnessWorker` + the OpenCode ACP adapter; the Worker
 uses the OpenCode credential store (or `OPENCODE_API_KEY`). The real
 model-driven path was verified with `opencode-go/deepseek-v4.1-flash`: Router
 session, `mentat_run`, Worker report `pong`, receipt persisted.
+
+Route DSH itself through the OpenCode API (no DeepSeek key needed):
+
+```yaml
+- id: llm-pi-ai
+  config:
+    providers:
+      opencode-go:
+        apiKeyEnv: OPENCODE_API_KEY
+- id: agent-default-model
+  config:
+    provider: opencode-go
+    model: deepseek-v4.1-flash
+- insert:
+    - id: mentat
+      name: '@mentat/dsh'
+```
+
+```bash
+export OPENCODE_API_KEY=...
+export MENTAT_WORKER=opencode
+dsh headless --patch <profile-patch.yml>   'Use the mentat_run tool once with text "Reply with exactly: pong".'
+```
