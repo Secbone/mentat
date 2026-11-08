@@ -2,6 +2,59 @@
 
 Cordis plugin that hosts the Mentat control plane inside DeepSeek Harness.
 
+## Quick start (local profile)
+
+Build the deployable plugin entries once, and again after code changes:
+
+```bash
+pnpm build:dsh ~/.local/share/mentat/dsh
+```
+
+Point a web profile at the build and add the OpenCode route. In
+`~/.dsh/profiles/mentat-web/cordis.patch.yml`:
+
+```yaml
+- insert:
+    - id: mentat
+      name: 'file:///home/<user>/.local/share/mentat/dsh/index.js'
+    - id: mentat-panel
+      name: 'file:///home/<user>/.local/share/mentat/dsh/panel.js'
+    - id: mentat-client
+      name: '@mentat/dsh-client'
+- id: llm-pi-ai
+  config:
+    providers:
+      opencode-go:
+        apiKeyEnv: OPENCODE_API_KEY
+- id: agent-default-model
+  config:
+    provider: opencode-go
+    model: deepseek-v4.1-flash
+```
+
+Keep the credential and runtime switches in `~/.dsh/.env` (mode 600):
+
+```bash
+OPENCODE_API_KEY=...
+MENTAT_WORKER=opencode
+MENTAT_MODEL=opencode-go/deepseek-v4.1-flash
+MENTAT_STATE_DIR=/home/<user>/.local/share/mentat/state
+```
+
+Start the service:
+
+```bash
+dsh --profile mentat-web --no-open --port 3080
+```
+
+The launcher prints the authenticated Web URL. The server-rendered panel is at
+`http://127.0.0.1:3080/mentat`, and its JSON projection is
+`http://127.0.0.1:3080/mentat/overview`. Stop it with:
+
+```bash
+pkill -f "dsh/lib/bin.js --profile mentat-web"
+```
+
 ## Surface
 
 - service `mentat`: `{ runtime, repos, queue, receipts }`
