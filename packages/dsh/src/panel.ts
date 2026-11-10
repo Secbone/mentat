@@ -3,6 +3,7 @@ import type { MentatService } from "./service";
 
 export interface PanelRequest {
   method?: string;
+  headers?: Record<string, string | string[] | undefined>;
 }
 
 export interface PanelResponse {
@@ -20,11 +21,24 @@ export interface PanelRoute {
 export interface PanelContext {
   mentat: MentatService;
   webServer: { register(route: PanelRoute): () => void };
+  connection: {
+    requestRejection(request: {
+      headers: Record<string, string | string[] | undefined>;
+    }): 401 | 403 | undefined;
+  };
   effect?(setup: () => (() => void) | void): () => void;
 }
 
 export const name = "mentat-panel";
-export const inject = ["webServer", "mentat"];
+export const inject = ["webServer", "mentat", "connection"];
+
+/** Apply DSH's Host/Origin fence and signed browser cookie to a panel route. */
+function reject(ctx: PanelContext, req: PanelRequest, res: PanelResponse): boolean {
+  const status = ctx.connection.requestRejection({ headers: req.headers ?? {} });
+  if (!status) return false;
+  sendJson(res, { error: status === 403 ? "forbidden" : "unauthorized" }, status);
+  return true;
+}
 
 function sendJson(res: PanelResponse, value: unknown, status = 200): void {
   res.statusCode = status;
@@ -135,12 +149,16 @@ export function apply(ctx: PanelContext): void {
   const dispose = ctx.webServer.register({
     kind: "exact",
     path: "/mentat",
-    handler: (_req, res) => sendHtml(res, renderPanelHtml()),
+    handler: (req, res) => {
+      if (reject(ctx, req, res)) return;
+      sendHtml(res, renderPanelHtml());
+    },
   });
   const disposeOverview = ctx.webServer.register({
     kind: "exact",
     path: "/mentat/overview",
-    handler: (_req, res) => {
+    handler: (req, res) => {
+      if (reject(ctx, req, res)) return;
       const channel = ctx.mentat.packChannel;
       const stable = channel.current();
       const canary = channel.canary();
@@ -170,6 +188,7 @@ export function apply(ctx: PanelContext): void {
     kind: "exact",
     path: "/mentat/poll",
     handler: async (req, res) => {
+      if (reject(ctx, req, res)) return;
       if (req.method !== "POST") return sendJson(res, { error: "POST required" }, 405);
       const polled = ctx.mentat.poller ? await ctx.mentat.poller.tick() : 0;
       return sendJson(res, { polled });

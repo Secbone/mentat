@@ -26,7 +26,7 @@ function response() {
   return { res, headers, text: () => body };
 }
 
-function panel() {
+function panel(rejection?: 401 | 403) {
   const routes = new Map<string, PanelRoute>();
   const service = createMentatService({
     dir: mkdtempSync(join(tmpdir(), "mentat-panel-")),
@@ -45,6 +45,9 @@ function panel() {
         routes.set(route.path, route);
         return () => routes.delete(route.path);
       },
+    },
+    connection: {
+      requestRejection: () => rejection,
     },
   });
   return { routes, service };
@@ -65,6 +68,16 @@ describe("Mentat panel", () => {
       counts: { tickets: 0, needsPerson: 0 },
       channel: { stable: { id: "worker-default", version: 1 } },
     });
+  });
+
+  it("rejects an unauthenticated panel request", async () => {
+    const { routes } = panel(401);
+    const page = response();
+    await routes.get("/mentat")?.handler({} as PanelRequest, page.res);
+    expect(page.res.statusCode).toBe(401);
+    const overview = response();
+    await routes.get("/mentat/overview")?.handler({} as PanelRequest, overview.res);
+    expect(overview.res.statusCode).toBe(401);
   });
 
   it("polls the source through the panel route", async () => {

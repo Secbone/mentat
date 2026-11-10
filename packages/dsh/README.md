@@ -47,9 +47,12 @@ Start the service:
 dsh --profile mentat-web --no-open --port 3080
 ```
 
-The launcher prints the authenticated Web URL. The server-rendered panel is at
+The launcher prints the authenticated Web URL. Open that URL once to receive
+the signed browser cookie, then the server-rendered panel is at
 `http://127.0.0.1:3080/mentat`, and its JSON projection is
-`http://127.0.0.1:3080/mentat/overview`. Stop it with:
+`http://127.0.0.1:3080/mentat/overview`. The panel routes use DSH's Host/Origin
+fence and browser authentication, so an unauthenticated request gets 401.
+Stop it with:
 
 ```bash
 pkill -f "dsh/lib/bin.js --profile mentat-web"

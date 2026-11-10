@@ -11,6 +11,12 @@ milestone list in [`docs/plan.md`](docs/plan.md) is historical background.
   DSH-hosted product with a Router/Worker control plane, heterogeneous workers
   and a versioned Capability Pack for self-evolution.
 
+### Fixed
+- The Mentat panel now calls DSH `connection.requestRejection` on `/mentat`,
+  `/mentat/overview` and `/mentat/poll`, so the panel uses the same Host/Origin
+  fence and signed browser cookie as the rest of the Web UI. Unauthenticated
+  requests return 401 instead of exposing the overview.
+
 ### Added
 - `CanaryMonitor` + `CanaryScheduler`: compare canary receipts with the stable
   baseline and automatically roll back above an absolute failure ceiling or a
